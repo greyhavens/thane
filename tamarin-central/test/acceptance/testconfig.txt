@@ -1,0 +1,62 @@
+# ***** BEGIN LICENSE BLOCK ***** 
+# Version: MPL 1.1/GPL 2.0/LGPL 2.1 
+#
+# The contents of this file are subject to the Mozilla Public License Version 1.1 (the 
+# "License"); you may not use this file except in compliance with the License. You may obtain 
+# a copy of the License at http://www.mozilla.org/MPL/ 
+#
+# Software distributed under the License is distributed on an "AS IS" basis, WITHOUT 
+# WARRANTY OF ANY KIND, either express or implied. See the License for the specific 
+# language governing rights and limitations under the License. 
+#
+# created by dschaffe@adobe.com for use with tamarin tests
+#
+# Alternatively, the contents of this file may be used under the terms of either the GNU 
+# General Public License Version 2 or later (the "GPL"), or the GNU Lesser General Public 
+# License Version 2.1 or later (the "LGPL"), in which case the provisions of the GPL or the 
+# LGPL are applicable instead of those above. If you wish to allow use of your version of this 
+# file only under the terms of either the GPL or the LGPL, and not to allow others to use your 
+# version of this file under the terms of the MPL, indicate your decision by deleting provisions 
+# above and replace them with the notice and other provisions required by the GPL or the 
+# LGPL. If you do not delete the provisions above, a recipient may use your version of this file 
+# under the terms of any one of the MPL, the GPL or the LGPL. 
+# 
+# ***** END LICENSE BLOCK ***** */
+
+
+
+# comments begin with #
+# fields are: TESTNAME, CONFIGURATION, COMMANDS, DETAILS
+# each field separate by , and whitespace is removed before/after from each field
+#
+# TESTNAME may contain : testcase (for the vm tests) : is the separator
+# TESTNAME and testcase are regular expressions and can match multiple test files / test cases
+#
+# CONFIGURATION is also a regular expression
+# CONFIGURATION format is {CPU_ARCH}-{OS}-{VM}-{VERSION}-{VMSWITCH}
+#
+# COMMANDS are currently : asc.args, expectedfailure, skip
+#    expectedfailure - expects the test to fail, details should provide bug number and a comment
+#    skip - the test is not run, for example the configuration does not support a feature or the file is not a test and is a helper file to another test
+#    include - includes a specific testcase even if the parent has been skipped
+
+# Example:
+# ecma3/Math/e15_8_2_12:Infinity/Math.min\(0.*   ,   .*-tvm-release-Dinterp   ,  expectedfail   ,   bug tamarin: https://bugzilla.mozilla.org/show_bug.cgi?id=401095
+
+
+# skipping decimal tests until asc compiler supports them
+es4/vector/.*  , .* , skip , skipping vector tests until asc compiler supports them
+
+# Currently failing on linux, bug #402864
+ecma3/GlobalObject/e15_1_2_2_2:parseInt\("123456789012345678"\)   ,   .*lnx-tvm-.*   ,  expectedfail   ,   bug tamarin: https://bugzilla.mozilla.org/show_bug.cgi?id=402864
+ecma3/GlobalObject/e15_1_2_6:isNaN\(\)                            ,   .*lnx-tvm-.*   ,  expectedfail   ,   bug tamarin: https://bugzilla.mozilla.org/show_bug.cgi?id=402864
+ecma3/GlobalObject/e15_1_2_7:isFinite\(\)                         ,   .*lnx-tvm-.*   ,  expectedfail   ,   bug tamarin: https://bugzilla.mozilla.org/show_bug.cgi?id=402864
+ecma3/TypeConversion/e9_3_1_3_rt:parseInt\("123456789012345678"\) ,   .*lnx-tvm-.*   ,  expectedfail   ,   bug tamarin: https://bugzilla.mozilla.org/show_bug.cgi?id=402864
+
+# Failures in Math ecma3 testsuite for Infinity value on OSX 10.5 on intel hardware, https://bugzilla.mozilla.org/show_bug.cgi?id=408057
+ecma3/Math/e15_8_2_6:Infinity/Math.ceil\(-Number.MIN_VALUE\)    ,   x86-mac10.5-tvm.*     ,   expectedfail   ,   bug https://bugzilla.mozilla.org/show_bug.cgi?id=408057
+ecma3/Math/e15_8_2_6:Infinity/Math.ceil\(-0.9\)                 ,   x86-mac10.5-tvm.*     ,   expectedfail   ,   bug https://bugzilla.mozilla.org/show_bug.cgi?id=408057
+
+# Failures on 64bit windows in release bug https://bugzilla.mozilla.org/show_bug.cgi?id=429477
+as3/Definitions/const/ConstVarInsideGlobalFunction2             ,   x86-win64-tvm-release ,   expectedfail   ,   bug https://bugzilla.mozilla.org/show_bug.cgi?id=429477
+as3/Definitions/const/ConstVarInsideGlobalFunction4             ,   x86-win64-tvm-release ,   expectedfail   ,   bug https://bugzilla.mozilla.org/show_bug.cgi?id=429477
