@@ -6,6 +6,9 @@
 
 namespace thane
 {
+# include <netinet/in.h>
+# include <sys/socket.h>
+
 # define SOCK_BUF_SZ 0x1000
 
 	class Socket
@@ -16,10 +19,12 @@ namespace thane
 
         int getDescriptor () { return m_descriptor; }
         U8 *getBuffer () { return m_buffer; }
+        int connect (const char *host, int port);
 
 	protected:
         U8 m_buffer[SOCK_BUF_SZ];
         int m_descriptor;
+        sockaddr_in m_host;
 
 		void ThrowMemoryError();
 	};
@@ -29,7 +34,7 @@ namespace thane
 	public:
 		SocketObject(VTable *ivtable, ScriptObject *delegate);
 
-		bool connect (String *host, int port);
+		int connect (String *host, int port);
         void disconnect ();
         int read (ByteArrayObject *bytes);
         int write (ByteArrayObject *bytes);

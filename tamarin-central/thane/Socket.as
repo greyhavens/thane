@@ -83,7 +83,13 @@ public class Socket extends EventDispatcher
     }
 
     private native function nb_disconnect() :void;
-    private native function nb_connect (host :String, port :int) :Boolean;
+
+    /**
+     * Returns -1 for error, 0 for keep trying, 1 for success.
+     *
+     * Note: No DNS lookup. Send in 127.0.0.1.
+     */
+    private native function nb_connect (host :String, port :int) :int;
     private native function nb_read (iBuf :ByteArray) :int;
     private native function nb_write (oBuf :ByteArray) :int;
 

@@ -1,10 +1,12 @@
 //
 // $Id: $
 
+# include <unistd.h>
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <sys/ioctl.h>
-# include <unistd.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
 
 #include "avmthane.h"
 
@@ -34,6 +36,46 @@ namespace thane
  		}
 	}
 
+    /**
+     * Returns -1 for error, 0 for keep trying, 1 for success.
+     *
+     * Note: No DNS lookup. Send in 127.0.0.1.
+     */
+    int Socket::connect (const char *host, int port)
+    {
+        if (-1 == m_descriptor) {
+            memset(&m_host, 0, sizeof(m_host));
+            m_host.sin_family = AF_INET;
+            m_host.sin_port = htons(port);
+            m_host.sin_addr.s_addr = inet_addr(host);
+            if (m_host.sin_addr.s_addr == INADDR_NONE) {
+                // TODO: throw an error instead
+                return -1;
+            }
+            m_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+            if (-1 == m_descriptor) {
+                // TODO: throw an error instead
+                return -1;
+            }
+            int flags = fcntl(m_descriptor, F_GETFL, 0);
+            fcntl(m_descriptor, F_SETFL, (flags > 0 ? flags : 0) | O_NONBLOCK);
+
+            // fall through to connect
+        }
+        if (-1 == ::connect(m_descriptor, (struct sockaddr*) &m_host, sizeof(m_host))) {
+            if (errno == EALREADY || errno == EINPROGRESS) {
+                // tell caller to try us again later
+                return 0;
+            }
+            if (errno != EISCONN) {
+                // anything else is a real error
+                return -1;
+            }
+        }
+        // success!
+        return 1;
+    }
+
 	void Socket::ThrowMemoryError()
 	{
 		// todo throw out of memory exception
@@ -52,10 +94,9 @@ namespace thane
 		c.set(&m_socket, sizeof(Socket));
 	}
 
-    bool SocketObject::connect (String *host, int port)
+    int SocketObject::connect (String *host, int port)
     {
-        // TODO
-        return false;
+        return m_socket.connect(host->toUTF8String()->c_str(), port);
     }
 
     void SocketObject::disconnect ()
