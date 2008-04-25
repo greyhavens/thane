@@ -87,7 +87,7 @@ namespace thane
         }
     }
 
-    int Socket::read (ByteArray &bytes)
+    int Socket::read (ByteArrayFile &bytes)
     {
         if (m_descriptor < 0) {
             return -1;
@@ -101,7 +101,7 @@ namespace thane
                 return tot_bytes;
             }
             if (size == -1) {
-                // let AS3 code throw an IOError
+                // TODO: throw an error
                 return -1;
             }
             bytes.Push(m_buffer, size);
@@ -109,9 +109,26 @@ namespace thane
         }
     }
 
-    int Socket::write (ByteArray &bytes)
+    int Socket::write (ByteArrayFile &bytes)
     {
-        return -1;
+        if (m_descriptor < 0) {
+            return -1;
+        }
+
+        int tot_bytes = 0;
+        while (true) {
+            int ptr = bytes.GetFilePointer();
+            int size = ::write(m_descriptor, bytes.GetBuffer() + ptr, bytes.Available());
+            if (size == -1) {
+                // TODO: throw an error
+                return -1;
+            }
+            if (size == 0) {
+                return tot_bytes;
+            }
+            bytes.Seek(ptr + size);
+            tot_bytes += size;
+        }
     }
 
 	void Socket::ThrowMemoryError()
@@ -144,12 +161,12 @@ namespace thane
 
     int SocketObject::write (ByteArrayObject *bytes)
     {
-        return m_socket.write(bytes->GetByteArray());
+        return m_socket.write(bytes->GetByteArrayFile());
     }
 
     int SocketObject::read (ByteArrayObject *bytes)
 	{
-        return m_socket.read(bytes->GetByteArray());
+        return m_socket.read(bytes->GetByteArrayFile());
 	}
 
 	//

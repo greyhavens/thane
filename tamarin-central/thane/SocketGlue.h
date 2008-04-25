@@ -19,8 +19,8 @@ namespace thane
 
         int connect (const char *host, int port);
         void disconnect ();
-        int read (ByteArray &bytes);
-        int write (ByteArray &bytes);
+        int read (ByteArrayFile &bytes);
+        int write (ByteArrayFile &bytes);
 
 	protected:
         U8 m_buffer[SOCK_BUF_SZ];

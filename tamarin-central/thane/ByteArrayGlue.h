@@ -147,6 +147,7 @@ namespace thane
 		void set_endian(Stringp type);
 		
 		ByteArray& GetByteArray() { return m_byteArray; }
+		ByteArrayFile& GetByteArrayFile() { return m_byteArray; }
 
 		void writeFile(Stringp filename);
 
