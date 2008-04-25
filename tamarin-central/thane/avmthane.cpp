@@ -36,12 +36,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-#include "avmthane.h"
-
 #if defined(DARWIN) || defined(AVMPLUS_UNIX)
 #include <sys/signal.h>
 #include <unistd.h>
 #endif
+
+#include "avmthane.h"
 
 #if defined(SOLARIS)
 #include <ucontext.h>

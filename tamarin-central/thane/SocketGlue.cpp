@@ -1,14 +1,16 @@
 //
 // $Id: $
 
-# include <unistd.h>
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <sys/ioctl.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
+# include <fcntl.h>
+# include <errno.h>
+# include <unistd.h>
 
-#include "avmthane.h"
+# include "avmthane.h"
 
 namespace thane
 {
