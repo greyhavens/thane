@@ -33,8 +33,8 @@ public class Socket extends EventDispatcher
 
     public function connect (host: String, port: int) :void
     {
-        if (host != "localhost") {
-            throw new Error("You may only connect to 'localhost'");
+        if (host != "127.0.0.1") {
+            throw new Error("You may only connect to '127.0.0.1'");
         }
 
         if (_state == ST_WAITING) {
@@ -45,7 +45,6 @@ public class Socket extends EventDispatcher
             close();
         }
 
-        _host = host;
         _port = port;
 
         _state = ST_WAITING;
@@ -75,7 +74,7 @@ public class Socket extends EventDispatcher
             break;
 
         case ST_WAITING:
-            if (nb_connect(_host, _port)) {
+            if (nb_connect(_port)) {
                 _state = ST_CONNECTED;
                 dispatchEvent(new Event(Event.CONNECT));
             }
@@ -86,10 +85,8 @@ public class Socket extends EventDispatcher
 
     /**
      * Returns -1 for error, 0 for keep trying, 1 for success.
-     *
-     * Note: No DNS lookup. Send in 127.0.0.1.
      */
-    private native function nb_connect (host :String, port :int) :int;
+    private native function nb_connect (port :int) :int;
     private native function nb_read (iBuf :ByteArray) :int;
     private native function nb_write (oBuf :ByteArray) :int;
 
@@ -237,7 +234,6 @@ public class Socket extends EventDispatcher
     }
 
     private var _state :int;
-    private var _host :String;
     private var _port :int;
 
     private var _iBuf :ByteArray = new ByteArray();

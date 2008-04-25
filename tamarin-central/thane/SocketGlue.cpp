@@ -40,16 +40,14 @@ namespace thane
 
     /**
      * Returns -1 for error, 0 for keep trying, 1 for success.
-     *
-     * Note: No DNS lookup. Send in 127.0.0.1.
      */
-    int Socket::connect (const char *host, int port)
+    int Socket::connect (int port)
     {
         if (-1 == m_descriptor) {
             memset(&m_host, 0, sizeof(m_host));
             m_host.sin_family = AF_INET;
             m_host.sin_port = htons(port);
-            m_host.sin_addr.s_addr = inet_addr(host);
+            m_host.sin_addr.s_addr = inet_addr("127.0.0.1");
             if (m_host.sin_addr.s_addr == INADDR_NONE) {
                 // TODO: throw an error instead
                 return -1;
@@ -150,9 +148,9 @@ namespace thane
 		c.set(&m_socket, sizeof(Socket));
 	}
 
-    int SocketObject::connect (String *host, int port)
+    int SocketObject::connect (int port)
     {
-        return m_socket.connect(host->toUTF8String()->c_str(), port);
+        return m_socket.connect(port);
     }
 
     void SocketObject::disconnect ()
