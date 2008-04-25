@@ -69,6 +69,8 @@ namespace thane
             }
             if (errno != EISCONN) {
                 // anything else is a real error
+                close(m_descriptor);
+                m_descriptor = -1;
                 return -1;
             }
         }
