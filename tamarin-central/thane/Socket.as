@@ -62,7 +62,7 @@ public class Socket extends EventDispatcher
     {
         switch(_state) {
         case ST_VIRGIN:
-            return;
+            break;
 
         case ST_CONNECTED:
             nb_read(_iBuf);
@@ -71,6 +71,10 @@ public class Socket extends EventDispatcher
                 var n :int = nb_write(_oBuf);
                 _oBuf.position = pos + n;
             }
+
+            _iBuf = massageBuffer(_iBuf);
+            _oBuf = massageBuffer(_oBuf);
+
             break;
 
         case ST_WAITING:
@@ -78,6 +82,7 @@ public class Socket extends EventDispatcher
                 _state = ST_CONNECTED;
                 dispatchEvent(new Event(Event.CONNECT));
             }
+            break;
         }
     }
 
@@ -231,6 +236,18 @@ public class Socket extends EventDispatcher
     public function writeUTFBytes(value :String) :void
     {
         _oBuf.writeUTFBytes(value);
+    }
+
+    protected function massageBuffer (buffer :ByteArray) :ByteArray
+    {
+        // we only switch buffers if we're wasting 25% and at least 64k
+        if (buffer.position < 0x10000 || 4*buffer.position < buffer.length) {
+            return buffer;
+        }
+        var newBuffer :ByteArray = new ByteArray();
+
+        buffer.readBytes(newBuffer, buffer.position);
+        return newBuffer;
     }
 
     private var _state :int;
