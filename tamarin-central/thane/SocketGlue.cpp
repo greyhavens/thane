@@ -69,13 +69,47 @@ namespace thane
             }
             if (errno != EISCONN) {
                 // anything else is a real error
-                close(m_descriptor);
-                m_descriptor = -1;
+                disconnect();
                 return -1;
             }
         }
         // success!
         return 1;
+    }
+
+    void Socket::disconnect ()
+    {
+        if (-1 != m_descriptor) {
+            close(m_descriptor);
+            m_descriptor = -1;
+        }
+    }
+
+    int Socket::read (ByteArray &bytes)
+    {
+        if (m_descriptor < 0) {
+            return -1;
+        }
+        int tot_bytes = 0;
+
+        while (true) {
+            int size = ::read(m_descriptor, m_buffer, SOCK_BUF_SZ);
+            if (size == 0) {
+                // nothing more to read
+                return tot_bytes;
+            }
+            if (size == -1) {
+                // let AS3 code throw an IOError
+                return -1;
+            }
+            bytes.Push(m_buffer, size);
+            tot_bytes += size;
+        }
+    }
+
+    int Socket::write (ByteArray &bytes)
+    {
+        return -1;
     }
 
 	void Socket::ThrowMemoryError()
@@ -103,37 +137,18 @@ namespace thane
 
     void SocketObject::disconnect ()
     {
-        // TODO
+        m_socket.disconnect();
     }
 
     int SocketObject::write (ByteArrayObject *bytes)
     {
-        // TODO
-        return 0;
+        return m_socket.write(bytes->GetByteArray());
     }
 
     int SocketObject::read (ByteArrayObject *bytes)
 	{
-        if (m_socket.getDescriptor() < 0) {
-            return -1;
-        }
-        int tot_bytes = 0;
-
-        while (true) {
-            int size = ::read(m_socket.getDescriptor(), m_socket.getBuffer(), SOCK_BUF_SZ);
-            if (size == 0) {
-                // nothing more to read
-                return tot_bytes;
-            }
-            if (size == -1) {
-                // let AS3 code throw an IOError
-                return -1;
-            }
-            bytes->GetByteArray().Push(m_socket.getBuffer(), size);
-            tot_bytes += size;
-        }
+        return m_socket.read(bytes->GetByteArray());
 	}
-
 
 	//
 	// SocketClass

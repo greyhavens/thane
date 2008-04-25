@@ -17,9 +17,10 @@ namespace thane
 		Socket();
 		~Socket();
 
-        int getDescriptor () { return m_descriptor; }
-        U8 *getBuffer () { return m_buffer; }
         int connect (const char *host, int port);
+        void disconnect ();
+        int read (ByteArray &bytes);
+        int write (ByteArray &bytes);
 
 	protected:
         U8 m_buffer[SOCK_BUF_SZ];
