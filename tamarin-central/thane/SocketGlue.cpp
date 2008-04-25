@@ -115,20 +115,21 @@ namespace thane
             return -1;
         }
 
-        int tot_bytes = 0;
-        while (true) {
-            int ptr = bytes.GetFilePointer();
-            int size = ::write(m_descriptor, bytes.GetBuffer() + ptr, bytes.Available());
-            if (size == -1) {
-                // TODO: throw an error
-                return -1;
-            }
-            if (size == 0) {
-                return tot_bytes;
-            }
-            bytes.Seek(ptr + size);
-            tot_bytes += size;
+        int avail = bytes.Available();
+        if (avail == 0) {
+            return 0;
         }
+        int ptr = bytes.GetFilePointer();
+        int size = ::write(m_descriptor, bytes.GetBuffer() + ptr, avail);
+        if (size == -1) {
+            // TODO: throw an error
+            return -1;
+        }
+
+        if (size > 0) {
+            bytes.Seek(ptr + size);
+        }
+        return size;
     }
 
 	void Socket::ThrowMemoryError()
