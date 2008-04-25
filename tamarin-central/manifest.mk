@@ -61,7 +61,7 @@ $(call RECURSE_DIRS,platform/unix)
 endif
 endif
 
-$(call RECURSE_DIRS,shell)
+$(call RECURSE_DIRS,thane)
 
 echo:
 	@echo avmplus_CXXFLAGS = $(avmplus_CXXFLAGS)
