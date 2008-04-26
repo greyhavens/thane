@@ -659,6 +659,30 @@ namespace thane
                 }
             }
 
+            // find the Thane object by looking up its constructor
+            AbstractFunction *ctor = shellPool->cinits[avmplus::NativeID::abcclass_Thane];
+            Traits *traits = ctor->declaringTraits->itraits;
+            Multiname qname(traits->ns, traits->name);
+            ScriptObject *thaneObj = toplevel->vtable->init->finddef(&qname);
+
+            // find the class object
+            Atom classAtom = toplevel->getproperty(thaneObj->atom(), &qname, thaneObj->vtable);
+            ClassClosure *cc = (ClassClosure*)AvmCore::atomToScriptObject(classAtom);
+
+            // look up the heartbeat method
+            Binding b = cc->traits()->getName(constantString("heartbeat"));
+            MethodEnv *fun = cc->vtable->methods[AvmCore::bindingToMethodId(b)];
+
+            // and construct the 'this' arg
+            Atom args[1] = { cc->atom() };
+
+            // now just call heartbeat() forever
+            while (true) {
+                fun->coerceEnter(0, args);
+                // TODO: do something fancier with timers here
+                usleep(100);
+            }
+
 			#ifdef DEBUGGER
 			delete profiler;
 			#endif
