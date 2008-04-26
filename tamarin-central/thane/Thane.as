@@ -12,7 +12,7 @@ public class Thane
         }
     }
 
-    public static function heartbeat () :void
+    private static function heartbeat () :void
     {
         for each (var heart :Function in _hearts) {
             try {
