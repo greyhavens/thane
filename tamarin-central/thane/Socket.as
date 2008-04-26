@@ -88,11 +88,13 @@ public class Socket extends EventDispatcher
 
     private native function nb_disconnect() :void;
 
-    /**
-     * Returns -1 for error, 0 for keep trying, 1 for success.
-     */
+    /** Returns -1 for error, 0 for keep trying, 1 for success. */
     private native function nb_connect (port :int) :int;
+
+    /** Returns -1 for error, else the number of bytes read. */
     private native function nb_read (iBuf :ByteArray) :int;
+
+    /** Returns -1 for error, else the number of bytes written. */
     private native function nb_write (oBuf :ByteArray) :int;
 
     public function flush () :void

@@ -208,7 +208,7 @@ namespace thane
 	void Shell::usage()
 	{
 		printf("avmplus shell " AVMPLUS_VERSION_USER " build " AVMPLUS_BUILD_CODE "\n\n");
-		printf("usage: avmplus\n");
+		printf("usage: avmthane\n");
 		#ifdef DEBUGGER
 			printf("          [-d]          enter debugger on start\n");
 		#endif
@@ -256,9 +256,6 @@ namespace thane
 
 		printf("          [-Dtimeout]   enforce maximum 15 seconds execution\n");
 		printf("          [-error]      crash opens debug dialog, instead of dumping\n");
-		#ifdef AVMPLUS_INTERACTIVE
-		printf("          [-i]          interactive mode\n");
-		#endif //AVMPLUS_INTERACTIVE
 		printf("          [-log]\n");
 		printf("          [-- args]     args passed to AS3 program\n");
 		printf("          [-jargs ... ;] args passed to Java runtime\n");
@@ -391,110 +388,6 @@ namespace thane
 		computeStackBase();
 	}
 
-	bool Shell::executeProjector(int argc, char *argv[], int& exitCode)
-	{
-		TRY(this, kCatchAction_ReportAsError)
-		{
-			uint8 header[8];
-
-			char executablePath[256];
-
-			#ifdef WIN32
-			GetModuleFileName(NULL, executablePath, sizeof(executablePath));
-			#else
-			strncpy(executablePath, argv[0], sizeof(executablePath));
-			#endif
-		   
-			FileInputStream file(executablePath);
-			if (!file.valid())
-			{
-				return false;
-			}
-			
-			file.seek(file.length() - 8);
-			file.read(header, 8);
-
-			// Check the magic number
-			if (header[0] != 0x56 ||
-				header[1] != 0x34 ||
-				header[2] != 0x12 ||
-				header[3] != 0xFA)
-			{
-				return false;
-			}
-
-			int abcLength = (header[4]     |
-							 header[5]<<8  |
-							 header[6]<<16 |
-							 header[7]<<24);
-
-			ScriptBuffer code = newScriptBuffer(abcLength);
-			file.seek(file.length() - 8 - abcLength);
-			file.read(code.getBuffer(), abcLength);
-			
-			initBuiltinPool();
-			initShellPool();
-
-			#ifdef DEBUGGER
-			// Create the debugger
-			debugCLI = new (GetGC()) DebugCLI(this);
-			debugger = debugCLI;
-
-			// Create the profiler
-			profiler = new (GetGC()) Profiler(this);
-			#endif
-		
-			// init toplevel internally
-			Toplevel* toplevel = initShellBuiltins();
-
-			// Create a new Domain for the user code
-			Domain* domain = new (GetGC()) Domain(this,
-											 builtinDomain);
-
-			// Return a new DomainEnv for the user code
-			DomainEnv* domainEnv = new (GetGC()) DomainEnv(this,
-													  domain,
-													  toplevel->domainEnv());
-
-			ShellCodeContext* codeContext = new (GetGC()) ShellCodeContext();
-			codeContext->m_domainEnv = domainEnv;
-				
-			// parse new bytecode
-			handleActionBlock(code, 0, domainEnv, toplevel, NULL, NULL, NULL, codeContext);
-
-			#ifdef DEBUGGER
-			delete profiler;
-			#endif
-		}
-		CATCH(Exception *exception)
-		{
-			#ifdef DEBUGGER
-			if (!(exception->flags & Exception::SEEN_BY_DEBUGGER))
-			{
-				console << string(exception->atom) << "\n";
-			}
-			if (exception->getStackTrace()) {
-				console << exception->getStackTrace()->format(this) << '\n';
-			}
-			delete profiler;
-			#else
-			// [ed] always show error, even in release mode,
-			// see bug #121382
-			console << string(exception->atom) << "\n";
-			#endif
-			exit(1);
-		}
-		END_CATCH
-		END_TRY
-				
-		#ifdef AVMPLUS_PROFILE
-			dump();
-		#endif
-
-		exitCode = 0;
-		return true;
-	}
-		
 	int Shell::main(int argc, char *argv[])
 	{
 		TRY(this, kCatchAction_ReportAsError)
@@ -509,15 +402,11 @@ namespace thane
 			#endif
 			#endif
 
-			int exitCode = 0;
-			if (executeProjector(argc, argv, exitCode))
-			{
-				return exitCode;
-			}
-						
+# if 0
 			if (argc < 2) {
 				usage();
 			}
+# endif
 
 			int filenamesPos = -1;
 			int endFilenamePos = -1;
@@ -526,7 +415,6 @@ namespace thane
 #ifdef DEBUGGER
 			bool do_debugger = false;
 #endif
-			bool do_interactive = false;
 #ifdef AVMPLUS_VERBOSE
 			bool do_verbose = false;
 #endif
@@ -616,10 +504,6 @@ namespace thane
 						}
 					} else if (!strcmp(arg, "-log")) {
 						do_log = true;
-					#ifdef AVMPLUS_INTERACTIVE
-					} else if (!strcmp(arg, "-i")) {
-						do_interactive = true;
-					#endif //AVMPLUS_INTERACTIVE
 					}
 					else if (!strcmp(arg, "-error")) {
 						show_error = true;
@@ -667,10 +551,12 @@ namespace thane
 					filename = arg;
 				}
 			}
-		
-			if (!filename && !do_interactive) {
+
+# if 0
+			if (!filename) {
 				usage();
 			}
+# endif
 
 			if( do_log )
 			{
@@ -743,268 +629,35 @@ namespace thane
 													  domain,
 													  toplevel->domainEnv());
 
-			ShellCodeContext* lastCodeContext = 0;
+            if (filenamesPos > 0) {
+                filename = argv[filenamesPos];
 
-			// execute each abc file
-			for (int i=filenamesPos; filename && i < endFilenamePos; i++)
-			{
-				filename = argv[i];
+#ifdef AVMPLUS_VERBOSE
+                if (verbose) {
+                    console << "run " << filename << "\n";
+                }
+#endif
 
-				#ifdef AVMPLUS_VERBOSE
-				if (verbose) {
-					console << "run " << filename << "\n";
-				}
-				#endif
+                FileInputStream f(filename);
+                bool isValid = f.valid();
+                if (!isValid) {
+                    fprintf(stderr, "cannot open file: %s\n", filename);
+#ifdef DEBUGGER
+                    delete profiler;
+#endif
+                    return(1);
+                }
 
-				FileInputStream f(filename);
-				bool isValid = f.valid();
-				if (!isValid) {
-					fprintf(stderr, "cannot open file: %s\n", filename);
-					#ifdef DEBUGGER
-					delete profiler;
-					#endif
-					if (!do_interactive) 
-						return(1);
-				}
-
-				ShellCodeContext* codeContext = new (GetGC()) ShellCodeContext();
-				codeContext->m_domainEnv = domainEnv;
+                ShellCodeContext* codeContext = new (GetGC()) ShellCodeContext();
+                codeContext->m_domainEnv = domainEnv;
 				
-				// parse new bytecode
-				if (isValid)
-				{
-					ScriptBuffer code = newScriptBuffer(f.available());
-					f.read(code.getBuffer(), f.available());
-					handleActionBlock(code, 0, domainEnv, toplevel, NULL, NULL, NULL, codeContext);
-				}
-
-				lastCodeContext = codeContext;
-			}
-
-			#ifdef MMGC_COUNTERS
-			console << "\nGC stats\n";
-			console << "mark item         " << MMgc::GC::MarkItemCount << "\n";
-			console << "mark null ptr     " << MMgc::GC::marknullCount << "\n";
-			console << "mark alloc        " << MMgc::GC::markallocCount << "\n";
-			console << "mark large        " << MMgc::GC::marklargeCount << "\n";
-			console << "mark skip         " << MMgc::GC::markskipCount << "\n";
-			console << "TrapWriteCount    " << MMgc::GC::TrapWriteCount << "\n";
-
-			console << "\nGCAlloc stats\n";
-			console << "SweepBlockCount   " << MMgc::GCAlloc::SweepBlockCount << "\n";
-			console << "AllocCount        " << MMgc::GCAlloc::AllocCount << "\n";
-			console << "FreeItemCount     " << MMgc::GCAlloc::FreeItemCount << "\n";
-			#endif
-
-			#ifdef AVMPLUS_INTERACTIVE
-			if (do_interactive)
-			{
-				enum { kMaxCommandLine = 1024 };
-				char commandLine[kMaxCommandLine];
-				enum { kMaxFileName = 1024 };
-				char fileName[kMaxFileName];
-				char imports[kMaxCommandLine];
-				strcpy(imports, " ");
-
-				// some defaults
-				addToImports(imports, "C:\\src\\farm\\main\\as\\lib\\shell.abc");
-				addToImports(imports, "C:\\src\\farm\\main\\as\\lib\\global.abc");
-
-				STARTUPINFO si;
-				PROCESS_INFORMATION pi;
-
-				while(do_interactive)
-				{
-					console << "(avmplus) ";
-					fflush(stdout);
-					fgets(commandLine, kMaxCommandLine, stdin);
-
-					commandLine[strlen(commandLine)-1] = 0;
-
-					// build up the file that we are going to compile
-					bool compile = true;
-					bool exec = true;
-					fileName[0] = '\0';
-					if (strstr(commandLine, ".run ") == commandLine)
-					{
-						// arg 
-						strcpy(fileName, &commandLine[5]);
-
-						// search for .as extension
-						const char* dotAt = strrchr(fileName, '.');
-						bool fail = true;
-						if (dotAt)
-						{
-							if (strcmp(dotAt, ".abc") == 0)
-							{
-								compile = false;
-								fail = false;
-							}
-							else if (strcmp(dotAt, ".as") == 0)
-							{
-								fail = false;
-							}
-						}
-
-						if (fail)
-						{
-							console << "only .as and .abc files are supported \n";
-							continue;
-						}
-					}
-					else if (strstr(commandLine, ".import ") == commandLine)
-					{
-						// add to the import list
-						strcpy(fileName, &commandLine[8]);
-						compile = false;
-						exec = false;
-
-						if (!addToImports(imports, fileName))
-						{
-							console << "file does not exist; not added to import list \n";
-						}
-						console << imports << "\n";
-					}
-					else if (strstr(commandLine, ".quit") == commandLine)
-					{
-						return 0;
-					}
-					else if (commandLine[0] == '\0' ||  (strstr(commandLine, ".help") == commandLine) )
-					{
-						console << "ActionScript source can be directly entered on the command line.\nIt will be compiled and executed once the enter key is pressed.\nThe following directives are also recognized\n" ;
-						console << ".run [f.as|f.abc]   - runs f, compiles f.as first if required\n" ;
-						console << ".import f           - add f to the -import list for compiling \n" ;
-						console << ".quit               - exits this shell \n" ;
-						console << ".help               - displays help information \n" ;
-						continue;
-					}
-					else
-					{
-						// put our command line contents in a file
-						strcpy(fileName, "___file_for_io.as");
-						FILE* f = fopen(fileName , "w");
-						if (!f)
-						{
-							console << "i/o error \n";
-							return 1;
-						}			
-
-						fputs(commandLine, f);
-						fclose(f);
-					}
-
-					// set up for the compile if needed
-					if (compile)
-					{
-						// Set the bInheritHandle flag so pipe handles are inherited. 
-						SECURITY_ATTRIBUTES saAttr; 
-						saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
-						saAttr.bInheritHandle = TRUE; 
-						saAttr.lpSecurityDescriptor = NULL; 
-
-						HANDLE pRd, pWr;
-						CreatePipe(&pRd, &pWr, &saAttr, 64*kMaxCommandLine);
-						SetHandleInformation( pRd, HANDLE_FLAG_INHERIT, 0);  // don't inherit read portion; only allow writes from child proc
-						SetHandleInformation( GetStdHandle(STD_INPUT_HANDLE), HANDLE_FLAG_INHERIT, 0);  // don't inherit stdin 
-
-						ZeroMemory( &si, sizeof(si) );
-						si.cb = sizeof(si);
-						ZeroMemory( &pi, sizeof(pi) );
-						si.hStdError = pWr;
-						si.hStdOutput = pWr;
-						si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-						si.dwFlags = STARTF_USESTDHANDLES;
-
-						// now compile and wait
-						commandLine[0] = '\0';
-						strcpy(commandLine, "asc.exe -debug ");
-						strcat(commandLine, imports);
-						strcat(commandLine, fileName);
-						DWORD err = CreateProcess(0, commandLine, 0,0,TRUE,0,0,0, &si, &pi);
-						if (err)
-						{
-							// Wait until child process exits.
-							WaitForSingleObject( pi.hProcess, 20000 );
-						}
-						else
-						{
-							console << "failed to compile err=0x";
-							console.writeHexAddr(GetLastError());
-							console << "\n";
-							exec = false;
-						}
-
-						// Close process and thread handles. 
-						CloseHandle( pi.hProcess );
-						CloseHandle( pi.hThread );
-
-						// now check the compile 
-						CloseHandle(pWr);  // Close the write end of the pipe before reading from the read end of the pipe.
-						commandLine[0] = '\0';
-						DWORD dwRead = 0; 
-						ReadFile( pRd, commandLine, kMaxCommandLine, &dwRead, NULL);
-						if (dwRead > 0) commandLine[dwRead] = '\0';
-						if ( !strstr(commandLine, "bytes written") )
-						{
-							// failed compile						
-							console << commandLine;
-
-							// dump the rest of the message
-							for(;;)
-							{
-								if (!ReadFile( pRd, commandLine, kMaxCommandLine, &dwRead, NULL) || dwRead == 0)
-									break;
-
-								console << commandLine;
-							}
-							exec = false;
-							console << "\n";
-						}
-
-						// now run the abc
-						int afterDot = strlen(fileName) - 2;
-						strcpy(&fileName[afterDot], "abc");
-					}
-
-					if (exec)
-					{
-						FileInputStream fl(fileName);
-						bool isValid = fl.valid();
-						if (isValid)
-						{
-							TRY(this, kCatchAction_ReportAsError)
-							{
-								ScriptBuffer code = newScriptBuffer(fl.available());
-								fl.read(code.getBuffer(), fl.available());
-								handleActionBlock(code, 0, domainEnv, toplevel, NULL, NULL, NULL, lastCodeContext);
-							}
-							CATCH(Exception *exception)
-							{
-								#ifdef DEBUGGER
-								if (!(exception->flags & Exception::SEEN_BY_DEBUGGER))
-								{
-									console << string(exception->atom) << "\n";
-								}
-								if (exception->getStackTrace()) {
-									console << exception->getStackTrace()->format(this) << '\n';
-								}
-								#else
-								// [ed] always show error, even in release mode,
-								// see bug #121382
-								console << string(exception->atom) << "\n";
-								#endif
-							}
-							END_CATCH
-							END_TRY
-						}
-						else
-						{
-							console << "can't find " << fileName << "\n";
-						}
-					}
-				}
-			}
-			#endif //AVMPLUS_INTERACTIVE
+                // parse new bytecode
+                if (isValid) {
+                    ScriptBuffer code = newScriptBuffer(f.available());
+                    f.read(code.getBuffer(), f.available());
+                    handleActionBlock(code, 0, domainEnv, toplevel, NULL, NULL, NULL, codeContext);
+                }
+            }
 
 			#ifdef DEBUGGER
 			delete profiler;
@@ -1039,26 +692,6 @@ namespace thane
 #endif /* AVMPLUS_WITH_JNI */
 		return 0;
 	}
-
-	#ifdef AVMPLUS_INTERACTIVE
-	int Shell::addToImports(char* imports, char* addition)
-	{
-		int worked = 0;
-		if (addition && addition[0] != '\0')
-		{
-			FileInputStream fl(addition);
-			if (fl.valid())
-			{
-				strcat(imports, " ");
-				strcat(imports, " -import \"");
-				strcat(imports, addition);
-				strcat(imports, "\" ");
-				worked = 1;
-			}
-		}
-		return worked;
-	}
-	#endif //AVMPLUS_INTERACTIVE
 }
 
 int _main(int argc, char *argv[])
