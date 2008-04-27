@@ -680,7 +680,7 @@ namespace thane
             while (true) {
                 fun->coerceEnter(0, args);
                 // TODO: do something fancier with timers here
-                usleep(100);
+                usleep(100000);
             }
 
 			#ifdef DEBUGGER
