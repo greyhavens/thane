@@ -15,12 +15,12 @@ public class Thane
     private static function heartbeat () :void
     {
         for each (var heart :Function in _hearts) {
-            try {
-                heart();
-            } catch (err :Error) {
-                trace("Heartbeat error: " + err);
+                try {
+                    heart();
+                } catch (err :Error) {
+                    trace("Heartbeat error: " + err);
+                }
             }
-        }
     }
 
     private static var _hearts :Array = new Array();
