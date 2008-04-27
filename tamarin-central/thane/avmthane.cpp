@@ -552,12 +552,6 @@ namespace thane
 				}
 			}
 
-# if 0
-			if (!filename) {
-				usage();
-			}
-# endif
-
 			if( do_log )
 			{
 				// open logfile based on last filename
@@ -629,8 +623,10 @@ namespace thane
 													  domain,
 													  toplevel->domainEnv());
 
-            if (filenamesPos > 0) {
-                filename = argv[filenamesPos];
+			// execute each abc file
+			for (int i=filenamesPos; filename && i < endFilenamePos; i++)
+			{
+				filename = argv[i];
 
 #ifdef AVMPLUS_VERBOSE
                 if (verbose) {
@@ -652,11 +648,9 @@ namespace thane
                 codeContext->m_domainEnv = domainEnv;
 				
                 // parse new bytecode
-                if (isValid) {
-                    ScriptBuffer code = newScriptBuffer(f.available());
-                    f.read(code.getBuffer(), f.available());
-                    handleActionBlock(code, 0, domainEnv, toplevel, NULL, NULL, NULL, codeContext);
-                }
+                ScriptBuffer code = newScriptBuffer(f.available());
+                f.read(code.getBuffer(), f.available());
+                handleActionBlock(code, 0, domainEnv, toplevel, NULL, NULL, NULL, codeContext);
             }
 
             // find the Thane object by looking up its constructor

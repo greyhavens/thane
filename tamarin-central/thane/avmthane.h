@@ -131,8 +131,6 @@ namespace thane
 		bool inStackOverflow;
 		PoolObject* shellPool;
 
-		bool executeProjector(int argc, char *argv[], int& exitCode);
-		
 		void computeStackBase();
 		
 		#ifdef DEBUGGER
