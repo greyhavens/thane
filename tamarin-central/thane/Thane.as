@@ -18,7 +18,6 @@ public class Thane
             try {
                 heart();
             } catch (err :Error) {
-                // TODO: how are we doing logging?
                 trace("Heartbeat error: " + err);
             }
         }

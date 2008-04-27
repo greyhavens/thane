@@ -35,6 +35,17 @@ public class ProgressEvent extends Event
         super(type, bubbles, cancelable);
     }
 }
+
+public class IOErrorEvent extends Event
+{
+    public static const IO_ERROR :String = "ioError";
+
+    public function IOErrorEvent (
+        type :String, bubbles :Boolean = false, cancelable :Boolean = false, text :String = "")
+    {
+        super(type, bubbles, cancelable);
+    }
+}
 }
 
 package flash.net

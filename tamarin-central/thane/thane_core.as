@@ -24,9 +24,6 @@ public class Event
     public static const CONNECT :String = "connect";
     public static const CLOSE :String = "close";
 
-    // TODO: This event must not exist
-    public static const ENTER_FRAME :String = "enterFrame";
-
     public function Event (type :String, bubbles :Boolean = false, cancelable :Boolean = false)
     {
         if (bubbles || cancelable) {
@@ -70,7 +67,7 @@ public class EventDispatcher
         } else if (-1 == _listenerMap.indexOf(listener)) {
             return;
         }
-        _listenerMap.push(listener);
+        listeners.push(listener);
     }
 
     public function removeEventListener (
@@ -90,6 +87,16 @@ public class EventDispatcher
 
     public function dispatchEvent (event :Event) :Boolean
     {
+        var listeners :Array = _listenerMap[event.type] as Array;
+        for each (var listener :Function in listeners) {
+            try {
+                listener(event);
+            } catch (err :Error) {
+                trace("Event[" + event + "] dispatch error: " + err);
+            }
+        }
+        // TODO: "A value of true unless preventDefault() is called on the event,
+        //        in which case it returns false. "
         return true;
     }
 

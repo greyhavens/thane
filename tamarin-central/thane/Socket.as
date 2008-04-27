@@ -8,6 +8,8 @@ import flash.errors.IOError;
 
 import flash.events.Event;
 import flash.events.EventDispatcher;
+import flash.events.IOErrorEvent;
+import flash.events.ProgressEvent;
 
 import flash.utils.ByteArray;
 import flash.utils.IDataInput;
@@ -33,6 +35,9 @@ public class Socket extends EventDispatcher
 
     public function connect (host: String, port: int) :void
     {
+        if (!host) {
+            throw new IOError("No host specified in connect()");
+        }
         if (host != "127.0.0.1") {
             throw new Error("You may only connect to '127.0.0.1'");
         }
@@ -48,6 +53,7 @@ public class Socket extends EventDispatcher
         _port = port;
 
         _state = ST_WAITING;
+        trace("Socket:connect() switching to ST_WAITING...");
     }
 
     public function close () :void
@@ -60,29 +66,52 @@ public class Socket extends EventDispatcher
 
     protected function heartbeat () :void
     {
+        if (_theSocket == null) {
+            return;
+        }
         switch(_state) {
         case ST_VIRGIN:
             break;
 
         case ST_CONNECTED:
-            nb_read(_iBuf);
-            if (_oBuf.bytesAvailable > 0) {
-                var pos :int = _oBuf.position;
-                var n :int = nb_write(_oBuf);
-                _oBuf.position = pos + n;
+            _oBuf.position = _oPos;
+            var wrote :int = 0;
+
+            var read :int = nb_read(_iBuf);
+            if (_oPos < _oBuf.length) {
+                wrote = nb_write(_oBuf);
+            }
+            if (read > 0 || wrote > 0) {
+                trace("Socket:heartbeat() read " + read + ", wrote " + wrote);
             }
 
             _iBuf = massageBuffer(_iBuf);
             _oBuf = massageBuffer(_oBuf);
 
+            _oPos = _oBuf.position;
+
+            if (read > 0) {
+                _bytesTotal += read;
+                dispatchEvent(new ProgressEvent(ProgressEvent.SOCKET_DATA));
+            }
+
             break;
 
         case ST_WAITING:
-            if (nb_connect(_port)) {
+            switch(nb_connect(_port)) {
+            case -1:
+                dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+                _state = ST_VIRGIN;
+                break;
+            case 0:
+                trace("Socket:heartbeat() trying to connect...");
+                break;
+            case 1:
+                trace("Socket:heartbeat() connected!");
                 _state = ST_CONNECTED;
                 dispatchEvent(new Event(Event.CONNECT));
+                break;
             }
-            break;
         }
     }
 
@@ -246,9 +275,12 @@ public class Socket extends EventDispatcher
         if (buffer.position < 0x10000 || 4*buffer.position < buffer.length) {
             return buffer;
         }
+
         var newBuffer :ByteArray = new ByteArray();
 
-        buffer.readBytes(newBuffer, buffer.position);
+        if (buffer.bytesAvailable > 0) {
+            buffer.readBytes(newBuffer, 0, buffer.bytesAvailable);
+        }
         return newBuffer;
     }
 
@@ -257,6 +289,11 @@ public class Socket extends EventDispatcher
 
     private var _iBuf :ByteArray = new ByteArray();
     private var _oBuf :ByteArray = new ByteArray();
+
+    // we have to keep our own position in oBuf because writing changes it (?!)
+    private var _oPos :int = 0;
+
+    private var _bytesTotal :int = 0;
 
     private static var _theSocket :Socket = null;
 

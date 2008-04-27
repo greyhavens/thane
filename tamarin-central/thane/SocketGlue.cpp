@@ -94,16 +94,24 @@ namespace thane
 
         while (true) {
             int size = ::read(m_descriptor, m_buffer, SOCK_BUF_SZ);
-            if (size == 0) {
+            if (size == -1) {
+                if (errno != EAGAIN) {
+                    // TODO: throw an error
+                    return -1;
+                }
+                // EOF in non-blocking just means there was nothing to read
+                size = 0;
+            }
+
+            if (size > 0) {
+                bytes.Push(m_buffer, size);
+                tot_bytes += size;
+            }
+
+            if (size < SOCK_BUF_SZ) {
                 // nothing more to read
                 return tot_bytes;
             }
-            if (size == -1) {
-                // TODO: throw an error
-                return -1;
-            }
-            bytes.Push(m_buffer, size);
-            tot_bytes += size;
         }
     }
 
@@ -120,8 +128,12 @@ namespace thane
         int ptr = bytes.GetFilePointer();
         int size = ::write(m_descriptor, bytes.GetBuffer() + ptr, avail);
         if (size == -1) {
-            // TODO: throw an error
-            return -1;
+            if (errno != EAGAIN) {
+                // TODO: throw an error
+                return -1;
+            }
+            // no non-blocking writes are possible
+            size = 0;
         }
 
         if (size > 0) {
