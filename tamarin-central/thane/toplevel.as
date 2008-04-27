@@ -43,6 +43,7 @@ package avmplus
 		public native static function trace(a:Array):void
 		public native static function debugger():void
 		public native static function isDebugger():Boolean
+		public native static function getTimer():int;
 	}	
 	
 	public function debugger()

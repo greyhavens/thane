@@ -47,6 +47,7 @@ namespace thane
 		NATIVE_METHOD(avmplus_System_trace, SystemClass::trace)
 		NATIVE_METHOD(avmplus_System_debugger, SystemClass::debugger)
 		NATIVE_METHOD(avmplus_System_isDebugger, SystemClass::isDebugger)
+		NATIVE_METHOD(avmplus_System_getTimer, SystemClass::getTimer)
 	END_NATIVE_MAP()
 					  
 	SystemClass::SystemClass(VTable *cvtable)
@@ -131,4 +132,16 @@ namespace thane
 		return false;
 		#endif
 	}
+
+	unsigned SystemClass::getTimer()
+	{
+#ifdef PERFORMANCE_GETTIMER
+		double time = ((double) (MMgc::GC::getPerformanceCounter() - initialTime) * 1000.0 /
+					   (double)MMgc::GC::getPerformanceFrequency());
+		return (uint32)time;
+#else
+		return (uint32)(OSDep::currentTimeMillis() - initialTime);
+#endif /* PERFORMANCE_GETTIMER */
+
+    }
 }

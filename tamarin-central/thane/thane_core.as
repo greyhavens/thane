@@ -120,53 +120,26 @@ package flash.utils {
 
 import flash.events.EventDispatcher;
 
+import avmplus.*;
+
 public function describeType (c :Object) :XML
 {
-    return null;
+    throw new Error("Not implemented");
 }
 
 public function getDefinitionByName (c :String) :Class
 {
-    return null;
+    throw new Error("Not implemented");
 }
 
 public function getQualifiedClassName (c :Object) :String
 {
-    return null;
+    throw new Error("Not implemented");
 }
 
-public function getTimer () :uint
+public function getTimer () :int
 {
-    return 1;
-}
-
-public class Timer extends EventDispatcher
-{
-    public function Timer (n :uint)
-    {
-    }
-
-    public function get running () :Boolean
-    {
-        return _running;
-    }
-
-    public function start () :void
-    {
-        _running = true;
-    }
-
-    public function stop () :void
-    {
-        _running = false;
-    }
-
-    public function reset () :void
-    {
-        stop();
-    }
-
-    private var _running :Boolean;
+    return System.getTimer();
 }
 
 public interface IDataInput
