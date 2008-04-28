@@ -48,7 +48,7 @@ public class Timer extends EventDispatcher
             return;
         }
 
-        queueTimer(getTimer() + _delay);
+        enqueue(new Buddy(this, getTimer() + _delay));
     }
 
     public function stop () :void
@@ -75,7 +75,8 @@ public class Timer extends EventDispatcher
         _currentCount ++;
         dispatchEvent(new TimerEvent(TimerEvent.TIMER));
         if (_currentCount < _repeatCount) {
-            queueTimer(buddy.expiration + _delay);
+            buddy.expiration += _delay;
+            enqueue(buddy);
 
         } else {
             dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
@@ -83,10 +84,9 @@ public class Timer extends EventDispatcher
         }
     }
 
-    private function queueTimer (when :int) :void
+    private function enqueue (buddy :Buddy) :void
     {
-        // spawn a new buddy and toss it on the heap
-        _buddy = new Buddy(this, when);
+        _buddy = buddy;
         if (_heap.enqueue(_buddy)) {
             return;
         }
@@ -101,7 +101,9 @@ public class Timer extends EventDispatcher
 
         while (_heap.size > 0 && _heap.front.expiration <= now) {
             var buddy :Buddy = _heap.dequeue();
-            buddy.budette.expire(buddy);
+            if (buddy.budette != null) {
+                buddy.budette.expire(buddy);
+            }
         }
     }
 
