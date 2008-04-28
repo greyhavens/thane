@@ -57,7 +57,7 @@ public class EventDispatcher
         priority :int = 0, useWeakReference :Boolean = false) :void
     {
         if (useCapture || priority != 0 || useWeakReference) {
-            throw new Error("Not implemented");            
+            throw new Error("Fancy addEventListener not implemented");            
         }
 
         var listeners :Array = _listenerMap[type] as Array;
@@ -74,7 +74,7 @@ public class EventDispatcher
         type :String, listener :Function, useCapture :Boolean = false) :void
     {
         if (useCapture) {
-            throw new Error("Not implemented");
+            throw new Error("Fancy removeListener not implemented");
         }
         var listeners :Array = _listenerMap[type] as Array;
         if (listeners != null) {
@@ -125,16 +125,17 @@ import avmplus.*;
 
 public function describeType (c :Object) :XML
 {
-    throw new Error("Not implemented");
+    throw new Error("describeType() Not implemented");
 }
 
 public function getDefinitionByName (c :String) :Class
 {
-    throw new Error("Not implemented");
+    return getClassByName(c);
 }
 
 public function getQualifiedClassName (c :Object) :String
 {
+    return "Test";
     throw new Error("Not implemented");
 }
 

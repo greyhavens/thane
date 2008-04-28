@@ -74,10 +74,9 @@ namespace avmplus
 #include "DebugCLI.h"
 #include "Profiler.h"
 #include "DataIO.h"
-#include "ByteArrayGlue.h"
-#include "SocketGlue.h"
+#include "flash/net/SocketGlue.h"
+#include "flash/utils/ByteArrayGlue.h"
 #include "DictionaryGlue.h"
-#include "JavaGlue.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4996)

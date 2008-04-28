@@ -14,7 +14,6 @@ endif
 
 shell_CXXSRCS := $(shell_CXXSRCS) \
   $(curdir)/avmthane.cpp \
-  $(curdir)/ByteArrayGlue.cpp \
   $(curdir)/ConsoleOutputStream.cpp \
   $(curdir)/DataIO.cpp \
   $(curdir)/DebugCLI.cpp \
@@ -22,6 +21,7 @@ shell_CXXSRCS := $(shell_CXXSRCS) \
   $(curdir)/FileInputStream.cpp \
   $(curdir)/StringBuilderClass.cpp \
   $(curdir)/SystemClass.cpp \
-  $(curdir)/SocketGlue.cpp \
+  $(curdir)/flash/net/SocketGlue.cpp \
+  $(curdir)/flash/utils/ByteArrayGlue.cpp \
   $(curdir)/../extensions/DictionaryGlue.cpp \
   $(NULL)
