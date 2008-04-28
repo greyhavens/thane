@@ -19,8 +19,7 @@ public class Timer extends EventDispatcher
 
         _delay = delay;
         _repeatCount = repeatCount;
-        _currentCount = 0;
-        _expiration = 0;
+        reset();
     }
 
     public function get currentCount () :int
@@ -40,58 +39,52 @@ public class Timer extends EventDispatcher
 
     public function get running () :Boolean
     {
-        return _expiration > 0;
-    }
-
-    protected function get nextExpirationStamp() :int
-    {
-        return _expiration;
+        return _buddy != null;
     }
 
     public function start () :void
     {
-        if (_expiration > 0) {
+        if (_buddy != null) {
             return;
         }
 
-        _currentCount = 0;
         queueTimer(getTimer() + _delay);
     }
 
     public function stop () :void
     {
-        // TODO: Find or write a free Heap implementation with a full Remove operation
-        trace("FIXME: Timer.stop() not really implemented!");
-        _expiration = 0;
+        // cut any current enqueued buddy adrift
+        _buddy = null;
     }
 
     public function reset () :void
     {
-        // TODO: Find or write a free Heap implementation with a full Remove operation
-        throw new Error("Timer.reset() Not implemented");
+        stop();
+        _currentCount = 0;
     }
 
-    protected function expire () :void
+    protected function expire (buddy :Buddy) :void
     {
-        // TODO: hack while stop() not really implemented
-        if (_expiration == 0) {
+        if (buddy != _buddy) {
+            // the timer was stopped since this buddy was enqueued
             return;
         }
         _currentCount ++;
         dispatchEvent(new TimerEvent(TimerEvent.TIMER));
         if (_currentCount < _repeatCount) {
-            queueTimer(_expiration + _delay);
+            queueTimer(buddy.expiration + _delay);
 
         } else {
             dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
-            _expiration = 0;
+            _buddy = null;
         }
     }
 
     private function queueTimer (when :int) :void
     {
-        _expiration = when;
-        if (_heap.enqueue(this)) {
+        // spawn a new buddy and toss it on the heap
+        _buddy = new Buddy(this, when);
+        if (_heap.enqueue(_buddy)) {
             return;
         }
 
@@ -103,22 +96,36 @@ public class Timer extends EventDispatcher
     {
         var now :int = getTimer();
 
-        while (_heap.size > 0 && _heap.front.nextExpirationStamp <= now) {
-            _heap.dequeue().expire();
+        while (_heap.size > 0 && _heap.front.expiration <= now) {
+            var buddy :Buddy = _heap.dequeue();
+            buddy.budette.expire(buddy);
         }
     }
 
-    private static function compareTimers (a :Timer, b :Timer) :int
+    private static function compareTimers (a :Buddy, b :Buddy) :int
     {
         // b-a rather than a-b so as to order low values before high
-        return b.nextExpirationStamp - a.nextExpirationStamp;
+        return b.expiration - a.expiration;
     }
 
     private var _currentCount :int;
     private var _delay :Number;
     private var _repeatCount :int;
-    private var _expiration :int;
+    private var _buddy :Buddy;
 
     private static var _heap :Heap;
 }
+}
+
+import flash.utils.Timer;
+
+class Buddy {
+    public var budette :Timer;
+    public var expiration :int;
+
+    public function Buddy (timer :Timer, expiration :int)
+    {
+        this.budette = timer;
+        this.expiration = expiration;
+    }
 }
