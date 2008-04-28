@@ -54,7 +54,10 @@ public class Timer extends EventDispatcher
     public function stop () :void
     {
         // cut any current enqueued buddy adrift
-        _buddy = null;
+        if (_buddy != null) {
+            _buddy.budette = null;
+            _buddy = null;
+        }
     }
 
     public function reset () :void
