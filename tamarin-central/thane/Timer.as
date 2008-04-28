@@ -61,17 +61,22 @@ public class Timer extends EventDispatcher
     public function stop () :void
     {
         // TODO: Find or write a free Heap implementation with a full Remove operation
-        throw new Error("Not implemented");
+        trace("FIXME: Timer.stop() not really implemented!");
+        _expiration = 0;
     }
 
     public function reset () :void
     {
         // TODO: Find or write a free Heap implementation with a full Remove operation
-        throw new Error("Not implemented");
+        throw new Error("Timer.reset() Not implemented");
     }
 
     protected function expire () :void
     {
+        // TODO: hack while stop() not really implemented
+        if (_expiration == 0) {
+            return;
+        }
         _currentCount ++;
         dispatchEvent(new TimerEvent(TimerEvent.TIMER));
         if (_currentCount < _repeatCount) {
