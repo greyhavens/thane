@@ -50,7 +50,9 @@ namespace thane
 		void constructFromDomain(DomainObject *base);
 		Atom loadBytes(ByteArrayObject *bytes);
 		ClassClosure* getClass(Stringp name);
-		
+		Stringp getClassName (Atom a);
+        Traits *getTraits (Atom a);
+       
 		DWB(DomainEnv*) domainEnv;
 		DRCWB(Toplevel*) domainToplevel;
 

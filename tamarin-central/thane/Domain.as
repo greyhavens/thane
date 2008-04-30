@@ -45,6 +45,7 @@ public class Domain
 	public native function Domain(base:Domain);
 	public native function loadBytes(byteArray:ByteArray);
 	public native function getClass(className:String):Class;
+	public native function getClassName(value :*): String;
 	public native static function get currentDomain():Domain;
 
 	public function load(filename:String)
@@ -52,5 +53,5 @@ public class Domain
 		return loadBytes(ByteArray.readFile(filename))
 	}
 }
- 
+
 }

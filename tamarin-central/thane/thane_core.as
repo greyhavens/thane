@@ -131,13 +131,17 @@ public function describeType (c :Object) :XML
 
 public function getDefinitionByName (c :String) :Class
 {
-    return getClassByName(c);
+    return Domain.currentDomain.getClass(name);
 }
 
-public function getQualifiedClassName (c :Object) :String
+public function getQualifiedClassName (c :*) :String
 {
-    return "Test";
-    throw new Error("Not implemented");
+    return Domain.currentDomain.getClassName(c);
+}
+
+public function getQualifiedSuperclassName (c :*) :String
+{
+    throw new Error("getQualifiedSuperclassName() not implemented");
 }
 
 var timers :Dictionary = new Dictionary();

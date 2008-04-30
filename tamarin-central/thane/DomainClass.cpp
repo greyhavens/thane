@@ -45,6 +45,7 @@ namespace thane
 		NATIVE_METHOD(avmplus_Domain_loadBytes, DomainObject::loadBytes)
 		NATIVE_METHOD(avmplus_Domain_currentDomain_get, DomainClass::get_currentDomain)
 		NATIVE_METHOD(avmplus_Domain_getClass, DomainObject::getClass)
+		NATIVE_METHOD(avmplus_Domain_getClassName, DomainObject::getClassName)
 	END_NATIVE_MAP()
 	
 	DomainObject::DomainObject(VTable *vtable, ScriptObject *delegate)
@@ -162,9 +163,40 @@ namespace thane
 
 		if (!core->istype(atom, core->traits.class_itraits)) {
 			toplevel()->throwTypeError(kClassNotFoundError, core->toErrorString(&multiname));
-		}			
+		}
 		return (ClassClosure*)AvmCore::atomToScriptObject(atom);
 	}
+
+    Stringp DomainObject::getClassName (Atom a)
+    {
+        return getTraits(a)->formatClassName();
+    }
+
+    Traits *DomainObject::getTraits (Atom a)
+    {
+        if (a < kSpecialType) {
+            return core()->traits.null_itraits;
+        }
+        if (a == kSpecialType) {
+            return core()->traits.void_itraits;
+        }
+        switch (a & 7) {
+        case kObjectType:
+            return AvmCore::atomToScriptObject(a)->traits();
+        case kNamespaceType:
+            return core()->traits.namespace_itraits;
+        case kStringType:
+            return core()->traits.string_itraits;
+        case kBooleanType:
+            return core()->traits.boolean_itraits;
+        case kIntegerType:
+            return core()->traits.int_itraits; 
+        case kDoubleType:
+            return core()->traits.number_itraits;
+        }
+        toplevel()->throwArgumentError(kNotImplementedError, core()->toErrorString("value")); 
+        return core()->traits.void_itraits;
+   }
 
 	DomainClass::DomainClass(VTable *cvtable)
 		: ClassClosure(cvtable)
