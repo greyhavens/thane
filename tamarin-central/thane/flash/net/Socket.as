@@ -38,9 +38,6 @@ public class Socket extends EventDispatcher
         if (!host) {
             throw new IOError("No host specified in connect()");
         }
-        if (host != "127.0.0.1") {
-            throw new Error("You may only connect to '127.0.0.1'");
-        }
 
         if (_state == ST_WAITING) {
             return;

@@ -9,6 +9,7 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <unistd.h>
+# include <netdb.h>
 
 # include "avmthane.h"
 
@@ -41,26 +42,41 @@ namespace thane
     /**
      * Returns -1 for error, 0 for keep trying, 1 for success.
      */
-    int Socket::connect (int port)
+    int Socket::connect (const char *host_name, int port)
     {
+        // see if we've opened up a socket yet
         if (-1 == m_descriptor) {
+            // if not, we may still be resolving the address
+            struct hostent *resolution = gethostbyname(host_name);
+            if (resolution == NULL) {
+                if (h_errno == TRY_AGAIN) {
+                    // tell caller to hit us again in a little while
+                    return 0;
+                }
+                return -1;
+            }
+
+            // address finished resolving
             memset(&m_host, 0, sizeof(m_host));
             m_host.sin_family = AF_INET;
             m_host.sin_port = htons(port);
-            m_host.sin_addr.s_addr = inet_addr("127.0.0.1");
-            if (m_host.sin_addr.s_addr == INADDR_NONE) {
-                // TODO: throw an error instead
+            in_addr_t addr = inet_addr(resolution->h_addr);
+            if (addr == INADDR_NONE) {
                 return -1;
             }
+            m_host.sin_addr.s_addr = addr;
+
+            // if the address bits all went well, open the socket
             m_descriptor = socket(AF_INET, SOCK_STREAM, 0);
             if (-1 == m_descriptor) {
-                // TODO: throw an error instead
                 return -1;
             }
+
+            // flag it as non-blocking
             int flags = fcntl(m_descriptor, F_GETFL, 0);
             fcntl(m_descriptor, F_SETFL, (flags > 0 ? flags : 0) | O_NONBLOCK);
 
-            // fall through to connect
+            // and fall through to connect
         }
         if (-1 == ::connect(m_descriptor, (struct sockaddr*) &m_host, sizeof(m_host))) {
             if (errno == EALREADY || errno == EINPROGRESS) {
@@ -160,9 +176,9 @@ namespace thane
 		c.set(&m_socket, sizeof(Socket));
 	}
 
-    int SocketObject::connect (int port)
+    int SocketObject::connect (String *host, int port)
     {
-        return m_socket.connect(port);
+        return m_socket.connect(host->toUTF8String()->c_str(), port);
     }
 
     void SocketObject::disconnect ()

@@ -17,7 +17,7 @@ namespace thane
 		Socket();
 		~Socket();
 
-        int connect (int port);
+        int connect (const char *host_name, int port);
         void disconnect ();
         int read (ByteArrayFile &bytes);
         int write (ByteArrayFile &bytes);
@@ -35,7 +35,7 @@ namespace thane
 	public:
 		SocketObject(VTable *ivtable, ScriptObject *delegate);
 
-		int connect (int port);
+		int connect (Stringp host, int port);
         void disconnect ();
         int read (ByteArrayObject *bytes);
         int write (ByteArrayObject *bytes);
