@@ -46,6 +46,7 @@ namespace thane
 		NATIVE_METHOD(avmplus_Domain_currentDomain_get, DomainClass::get_currentDomain)
 		NATIVE_METHOD(avmplus_Domain_getClass, DomainObject::getClass)
 		NATIVE_METHOD(avmplus_Domain_getClassName, DomainObject::getClassName)
+		NATIVE_METHOD(avmplus_Domain_isAssignableAs, DomainObject::isAssignableAs)
 	END_NATIVE_MAP()
 	
 	DomainObject::DomainObject(VTable *vtable, ScriptObject *delegate)
@@ -197,6 +198,12 @@ namespace thane
         toplevel()->throwArgumentError(kNotImplementedError, core()->toErrorString("value")); 
         return core()->traits.void_itraits;
    }
+
+    bool DomainObject::isAssignableAs (ClassClosure *asClass, ClassClosure *srcClass)
+    {
+        // Note: itraits guaranteed != NULL in ClassClosure
+        return srcClass->traits()->itraits->containsInterface(asClass->traits()->itraits);
+    }
 
 	DomainClass::DomainClass(VTable *cvtable)
 		: ClassClosure(cvtable)

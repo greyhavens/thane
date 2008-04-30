@@ -129,7 +129,7 @@ public function describeType (c :Object) :XML
     throw new Error("describeType() Not implemented");
 }
 
-public function getDefinitionByName (c :String) :Class
+public function getDefinitionByName (name :String) :Class
 {
     return Domain.currentDomain.getClass(name);
 }

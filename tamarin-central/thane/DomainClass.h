@@ -51,6 +51,7 @@ namespace thane
 		Atom loadBytes(ByteArrayObject *bytes);
 		ClassClosure* getClass(Stringp name);
 		Stringp getClassName (Atom a);
+        bool isAssignableAs (ClassClosure *asClass, ClassClosure *srcClass);
         Traits *getTraits (Atom a);
        
 		DWB(DomainEnv*) domainEnv;

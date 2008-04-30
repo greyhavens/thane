@@ -46,6 +46,8 @@ public class Domain
 	public native function loadBytes(byteArray:ByteArray);
 	public native function getClass(className:String):Class;
 	public native function getClassName(value :*): String;
+    public native function isAssignableAs (asClass :Class, srcClass :Class) :Boolean;
+
 	public native static function get currentDomain():Domain;
 
 	public function load(filename:String)
