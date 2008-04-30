@@ -47,6 +47,7 @@ public class Socket extends EventDispatcher
             close();
         }
 
+        _host = host;
         _port = port;
 
         _state = ST_WAITING;
@@ -95,7 +96,7 @@ public class Socket extends EventDispatcher
             break;
 
         case ST_WAITING:
-            switch(nb_connect(_port)) {
+            switch(nb_connect(_host, _port)) {
             case -1:
                 dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
                 _state = ST_VIRGIN;
@@ -115,7 +116,7 @@ public class Socket extends EventDispatcher
     private native function nb_disconnect() :void;
 
     /** Returns -1 for error, 0 for keep trying, 1 for success. */
-    private native function nb_connect (port :int) :int;
+    private native function nb_connect (host :String, port :int) :int;
 
     /** Returns -1 for error, else the number of bytes read. */
     private native function nb_read (iBuf :ByteArray) :int;
@@ -282,6 +283,7 @@ public class Socket extends EventDispatcher
     }
 
     private var _state :int;
+    private var _host :String;
     private var _port :int;
 
     private var _iBuf :ByteArray = new ByteArray();

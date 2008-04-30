@@ -176,7 +176,7 @@ namespace thane
 		c.set(&m_socket, sizeof(Socket));
 	}
 
-    int SocketObject::connect (String *host, int port)
+    int SocketObject::connect (Stringp host, int port)
     {
         return m_socket.connect(host->toUTF8String()->c_str(), port);
     }
