@@ -58,13 +58,9 @@ namespace thane
 
             // address finished resolving
             memset(&m_host, 0, sizeof(m_host));
-            m_host.sin_family = AF_INET;
+            m_host.sin_family = resolution->h_addrtype;
             m_host.sin_port = htons(port);
-            in_addr_t addr = inet_addr(resolution->h_addr);
-            if (addr == INADDR_NONE) {
-                return -1;
-            }
-            m_host.sin_addr.s_addr = addr;
+            memcpy(&m_host.sin_addr.s_addr, resolution->h_addr, resolution->h_length);
 
             // if the address bits all went well, open the socket
             m_descriptor = socket(AF_INET, SOCK_STREAM, 0);
