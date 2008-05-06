@@ -45,6 +45,7 @@ namespace thane
 		NATIVE_METHOD(avmplus_Domain_loadBytes, DomainObject::loadBytes)
 		NATIVE_METHOD(avmplus_Domain_currentDomain_get, DomainClass::get_currentDomain)
 		NATIVE_METHOD(avmplus_Domain_getClass, DomainObject::getClass)
+        NATIVE_METHOD(avmplus_Domain_getVariables, DomainObject::getVariables)
 		NATIVE_METHOD(avmplus_Domain_getClassName, DomainObject::getClassName)
 		NATIVE_METHOD(avmplus_Domain_isAssignableAs, DomainObject::isAssignableAs)
 	END_NATIVE_MAP()
@@ -167,6 +168,26 @@ namespace thane
 		}
 		return (ClassClosure*)AvmCore::atomToScriptObject(atom);
 	}
+
+    ArrayObject *DomainObject::getVariables (Atom a)
+    {
+        ArrayObject *result = toplevel()->arrayClass->newArray(0);
+
+        Traits *traits = getTraits(a);
+        int i = 0;
+        while ((i = traits->next(i)) != 0) {
+            Namespace *ns = traits->nsAt(i);
+            Stringp name = traits->keyAt(i);
+            Binding b = traits->valueAt(i);
+
+            if (core()->isVarBinding(b) && ns->getType() == Namespace::NS_Public) {
+                Atom nameAtom = name->atom();
+                result->push(&nameAtom, 1);
+            }
+        }
+
+        return result;
+    }
 
     Stringp DomainObject::getClassName (Atom a)
     {

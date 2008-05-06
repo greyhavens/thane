@@ -50,6 +50,7 @@ namespace thane
 		void constructFromDomain(DomainObject *base);
 		Atom loadBytes(ByteArrayObject *bytes);
 		ClassClosure* getClass(Stringp name);
+        ArrayObject *getVariables (Atom a);
 		Stringp getClassName (Atom a);
         bool isAssignableAs (ClassClosure *asClass, ClassClosure *srcClass);
         Traits *getTraits (Atom a);
