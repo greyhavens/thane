@@ -181,7 +181,7 @@ namespace thane
             Binding b = traits->valueAt(i);
 
             if (core()->isVarBinding(b) && ns->getType() == Namespace::NS_Public) {
-                Atom nameAtom = name->atom();
+                Atom nameAtom = core->internString(name)->atom();
                 result->push(&nameAtom, 1);
             }
         }
