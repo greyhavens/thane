@@ -175,7 +175,7 @@ namespace thane
 
     Traits *DomainObject::getTraits (Atom a)
     {
-        if (a < kSpecialType) {
+        if (ISNULL(a)) {
             return core()->traits.null_itraits;
         }
         if (a == kSpecialType) {
