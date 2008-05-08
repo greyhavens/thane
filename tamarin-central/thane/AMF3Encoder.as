@@ -135,6 +135,7 @@ public class AMF3Encoder
             encodeInteger(_ctx.oRef.table[arr] << 1);
             return;
         }
+        _ctx.oRef.table[arr] = _ctx.oRef.ix ++;
 
         // arrays consist of a dense part (zero-based uninterrupted numerical indices)
         // and an associate part; find the dense first --
@@ -160,8 +161,6 @@ public class AMF3Encoder
         for (var ii :int = 0; ii < denseEnd; ii ++) {
             encodeValue(arr[ii]);
         }
-
-        _ctx.oRef.table[arr] = _ctx.oRef.ix ++;
     }
 
     private static function encodeObject (object :Object) :void
@@ -170,6 +169,7 @@ public class AMF3Encoder
             encodeInteger(_ctx.oRef.table[object] << 1);
             return;
         }
+        _ctx.oRef.table[object] = _ctx.oRef.ix ++;
 
         // enumerate the sealed types
         var vars :Array = Domain.currentDomain.getVariables(object);
@@ -213,8 +213,6 @@ public class AMF3Encoder
         if (dynVars.length > 0) {
             encodeString("");
         }
-
-        _ctx.oRef.table[object] = _ctx.oRef.ix ++;
     }
 
 
@@ -224,13 +222,12 @@ public class AMF3Encoder
             encodeInteger(_ctx.oRef.table[bytes] << 1);
             return;
         }
+        _ctx.oRef.table[bytes] = _ctx.oRef.ix ++;
 
         // a byte array consists of a 1 bit, followed by the byte count
         encodeInteger(1 | (bytes.length << 1));
         // and then just... all the bytes
         _ctx.bytes.writeBytes(bytes);
-
-        _ctx.oRef.table[bytes] = _ctx.oRef.ix ++;
     }
 
     private static var _ctx :Context;
