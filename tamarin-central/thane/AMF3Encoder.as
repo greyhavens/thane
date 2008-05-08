@@ -139,7 +139,7 @@ public class AMF3Encoder
         // arrays consist of a dense part (zero-based uninterrupted numerical indices)
         // and an associate part; find the dense first --
         var denseEnd :int = 0;
-        while (denseEnd < arr.size && arr[denseEnd] === undefined) {
+        while (denseEnd < arr.length && arr[denseEnd] !== undefined) {
             denseEnd ++;
         }
         // and jot down in the bytestream how much of that there is
