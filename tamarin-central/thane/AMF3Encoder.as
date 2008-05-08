@@ -30,21 +30,24 @@ public class AMF3Encoder
         } else if (value === true) {
             _ctx.bytes.writeByte(AMF3.MARK_TRUE);
 
-        } else if (value is int || value is uint || value is Number) {
-            // figure out if this number could be represented as an AMF3 int
-            var doublify :Boolean;
-            if (value is int) {
-                // signed integers must lie within -2^28 and 2^28-1
-                doublify = (value < -(1 << 28)) || (value >= (1 << 28));
-                if (value < 0) {
-                    value = (1 << 29) + value;
-                }
-            } else if (value is uint) {
-                // unsigned between 0 and 2^29-1
-                doublify = (value >= (1 << 29));
-            } else {
-                // general Numbers are always doubles
+        } else if (value is Number) {
+            var className =  Domain.currentDomain.getClassName(value);
+            trace("test: " + className);
+
+            var doublify :Boolean = false;
+
+            if (className == "Number") {
+                trace("NUMBER: " + value);
                 doublify = true;
+
+            } else if ((value < -(1 << 28)) || (value >= (1 << 28))) {
+                trace("Out of range: " + value);
+                doublify = true;
+
+            } else if (value < 0) {
+                trace("Negative: " + value);
+                value = (1 << 29) + value;
+
             }
 
             if (doublify) {
@@ -52,7 +55,7 @@ public class AMF3Encoder
                 encodeDouble(value);
             } else {
                 _ctx.bytes.writeByte(AMF3.MARK_INTEGER);
-                encodeInteger(uint(value));
+                encodeInteger(value);
             }
 
         } else if (value is String) {
