@@ -8,7 +8,7 @@ public class AMF3Encoder
 {
     public static function encode (bytes :ByteArray, value :*) :void
     {
-        encodeValue(new Context(bytes), bytes, value);
+        encodeValue(new Context(bytes), value);
     }
 
     private static function encodeValue (context :Context, value :*) :void
@@ -56,7 +56,7 @@ public class AMF3Encoder
 
         } else if (value is Date) {
             // 0x08
-            throw new Error("Date support not supported");
+            throw new Error("Date serialization not supported");
 
         } else if (value is Array) {
             context.bytes.writeByte(0x09);
@@ -93,12 +93,14 @@ public class AMF3Encoder
             context.bytes.writeByte(0x80 | ((n >> 7) & 0x7F));
             context.bytes.writeByte(0x00 | (n & 0x7F));
 
-        } else {
+        } else if (n < 0x3FFFFFFF) {
             context.bytes.writeByte(0x80 | (n >> 21));
             context.bytes.writeByte(0x80 | ((n >> 14) & 0x7F));
             context.bytes.writeByte(0x80 | ((n >> 7) & 0x7F));
             context.bytes.writeByte(0x00 | (n & 0x7F));
 
+        } else {
+            throw new Error("Internal error - numerical overflow: " + n);
         }
     }
 
@@ -129,21 +131,27 @@ public class AMF3Encoder
             return;
         }
 
+        // arrays consist of a dense part (zero-based uninterrupted numerical indices)
+        // and an associate part; find the dense first --
         var denseEnd :int = 0;
         while (denseEnd < arr.size && arr[denseEnd] === undefined) {
             denseEnd ++;
         }
+        // and jot down in the bytestream how much of that there is
         encodeInteger(1 | (denseEnd << 1));
 
+        // then see if there's any associative bits
         for (var prop :Object in arr) {
             if ((prop is int || prop is uint) && prop >= 0 && prop < denseEnd) {
                 continue;
             }
+            // if so, just stream them out
             encodeString(String(prop));
             encodeValue(context, arr[prop]);
         }
         encodeString("");
 
+        // finally send the dense values
         for (var ii :int = 0; ii < denseEnd; ii ++) {
             encodeValue(context, arr[ii]);
         }
