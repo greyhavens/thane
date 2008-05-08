@@ -36,6 +36,9 @@ public class AMF3Encoder
             if (value is int) {
                 // signed integers must lie within -2^28 and 2^28-1
                 doublify = (value < -(1 << 28)) || (value >= (1 << 28));
+                if (value < 0) {
+                    value = (1 << 29) + value;
+                }
             } else if (value is uint) {
                 // unsigned between 0 and 2^29-1
                 doublify = (value >= (1 << 29));
