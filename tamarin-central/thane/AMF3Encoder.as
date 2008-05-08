@@ -1,7 +1,6 @@
 package {
 
 import avmplus.*;
-import flash.utils.getQualifiedClassName;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 
@@ -72,8 +71,7 @@ public class AMF3Encoder
             throw new Error("XML serialization not supported");
 
         } else {
-            var className :String = getQualifiedClassName(value);
-            if (className == "flash.utils.ByteArray") {
+            if (Domain.currentDomain.getClassName(value) == "flash.utils.ByteArray") {
                 _ctx.bytes.writeByte(0x0c);
                 encodeByteArray(value as ByteArray);
                 return;
@@ -192,7 +190,7 @@ public class AMF3Encoder
         encodeInteger(1 | 2 | (dynVars.length > 0 ? 8 : 0) | (vars.length << 4));
 
         // encode the class name
-        var alias :String = getClassAlias(className);
+        var alias :String = AMF3.getAliasByClassName(Domain.currentDomain.getClassName(object));
         encodeString(alias != null ? alias : "");
 
         // then send all the sealed member names
