@@ -19,16 +19,16 @@ public class AMF3Encoder
     private static function encodeValue (value :*) :void
     {
         if (value === undefined) {
-            _ctx.bytes.writeByte(0x00);
+            _ctx.bytes.writeByte(AMF3.MARK_UNDEFINED);
 
         } else if (value === null) {
-            _ctx.bytes.writeByte(0x01);
+            _ctx.bytes.writeByte(AMF3.MARK_NULL);
 
         } else if (value === false) {
-            _ctx.bytes.writeByte(0x02);
+            _ctx.bytes.writeByte(AMF3.MARK_FALSE);
 
         } else if (value === true) {
-            _ctx.bytes.writeByte(0x03);            
+            _ctx.bytes.writeByte(AMF3.MARK_TRUE);
 
         } else if (value is int || value is uint || value is Number) {
             // figure out if this number could be represented as an AMF3 int
@@ -48,41 +48,39 @@ public class AMF3Encoder
             }
 
             if (doublify) {
-                _ctx.bytes.writeByte(0x05);
+                _ctx.bytes.writeByte(AMF3.MARK_DOUBLE);
                 encodeDouble(value);
             } else {
-                _ctx.bytes.writeByte(0x04);
+                _ctx.bytes.writeByte(AMF3.MARK_INTEGER);
                 encodeInteger(uint(value));
             }
 
         } else if (value is String) {
-            _ctx.bytes.writeByte(0x06);
+            _ctx.bytes.writeByte(AMF3.MARK_STRING);
             encodeString(value as String);
 
         /* } else if (value is XMLNode) { ... } // we don't even define the legacy XML types */
 
         } else if (value is Date) {
-            // 0x08
             throw new Error("Date serialization not supported");
 
         } else if (value is Array) {
-            _ctx.bytes.writeByte(0x09);
+            _ctx.bytes.writeByte(AMF3.MARK_DATE);
             encodeArray(value as Array);
 
         } else if ((value is XML) || (value is XMLList)) {
-            // 0x0b
             throw new Error("XML serialization not supported");
 
         } else {
             if (Domain.currentDomain.getClassName(value) == "flash.utils.ByteArray") {
-                _ctx.bytes.writeByte(0x0c);
+                _ctx.bytes.writeByte(AMF3.MARK_BYTE_ARRAY);
                 encodeByteArray(value as ByteArray);
                 return;
             }
 
             // Tamarin/Thane doesn't even have an IExternalizable type to test for
 
-            _ctx.bytes.writeByte(0x0a);
+            _ctx.bytes.writeByte(AMF3.MARK_OBJECT);
             encodeObject(value as Object);
         }
     }
