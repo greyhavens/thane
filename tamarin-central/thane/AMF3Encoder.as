@@ -32,20 +32,15 @@ public class AMF3Encoder
 
         } else if (value is Number) {
             var className =  Domain.currentDomain.getClassName(value);
-            trace("test: " + className);
-
             var doublify :Boolean = false;
 
             if (className == "Number") {
-                trace("NUMBER: " + value);
                 doublify = true;
 
             } else if ((value < -(1 << 28)) || (value >= (1 << 28))) {
-                trace("Out of range: " + value);
                 doublify = true;
 
             } else if (value < 0) {
-                trace("Negative: " + value);
                 value = (1 << 29) + value;
 
             }
