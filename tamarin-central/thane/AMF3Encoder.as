@@ -205,9 +205,6 @@ public class AMF3Encoder
         // end with the dynamic keys
         for (ii = 0; ii < dynVars.length; ii ++) {
             encodeString(dynVars[ii]);
-        }
-        // and values
-        for (ii = 0; ii < dynVars.length; ii ++) {
             encodeValue(object[dynVars[ii]]);
         }
 
