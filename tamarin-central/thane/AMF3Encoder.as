@@ -99,10 +99,10 @@ public class AMF3Encoder
             _ctx.bytes.writeByte(0x00 | (n & 0x7F));
 
         } else if (n < 0x3FFFFFFF) {
-            _ctx.bytes.writeByte(0x80 | (n >> 21));
-            _ctx.bytes.writeByte(0x80 | ((n >> 14) & 0x7F));
-            _ctx.bytes.writeByte(0x80 | ((n >> 7) & 0x7F));
-            _ctx.bytes.writeByte(0x00 | (n & 0x7F));
+            _ctx.bytes.writeByte(0x80 | (n >> 22));
+            _ctx.bytes.writeByte(0x80 | ((n >> 15) & 0x7F));
+            _ctx.bytes.writeByte(0x80 | ((n >> 8) & 0x7F));
+            _ctx.bytes.writeByte(0x00 | (n & 0xFF));
 
         } else {
             throw new Error("Internal error - numerical overflow: " + n);
