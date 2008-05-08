@@ -1,5 +1,10 @@
 package {
 
+import avmplus.*;
+import flash.utils.getQualifiedClassName;
+import flash.utils.ByteArray;
+import flash.utils.Dictionary;
+
 /**
  * Partial AMF3 encoder, based on
  *      http://download.macromedia.com/pub/labs/amf/amf3_spec_121207.pdf
@@ -8,25 +13,27 @@ public class AMF3Encoder
 {
     public static function encode (bytes :ByteArray, value :*) :void
     {
-        encodeValue(new Context(bytes), value);
+        _ctx = new Context(bytes);
+        encodeValue(value);
     }
 
-    private static function encodeValue (context :Context, value :*) :void
+    private static function encodeValue (value :*) :void
     {
         if (value === undefined) {
-            context.bytes.writeByte(0x00);
+            _ctx.bytes.writeByte(0x00);
 
         } else if (value === null) {
-            context.bytes.writeByte(0x01);
+            _ctx.bytes.writeByte(0x01);
 
         } else if (value === false) {
-            context.bytes.writeByte(0x02);
+            _ctx.bytes.writeByte(0x02);
 
         } else if (value === true) {
-            context.bytes.writeByte(0x03);            
+            _ctx.bytes.writeByte(0x03);            
 
         } else if (value is int || value is uint || value is Number) {
             // figure out if this number could be represented as an AMF3 int
+            var doublify :Boolean;
             if (value is int) {
                 // signed integers must lie within -2^28 and 2^28-1
                 doublify = (value < -(1 << 28)) || (value >= (1 << 28));
@@ -39,65 +46,65 @@ public class AMF3Encoder
             }
 
             if (doublify) {
-                context.bytes.writeByte(0x05);
+                _ctx.bytes.writeByte(0x05);
                 encodeDouble(value);
             } else {
-                context.bytes.writeByte(0x04);
+                _ctx.bytes.writeByte(0x04);
                 encodeInteger(uint(value));
             }
 
         } else if (value is String) {
-            context.bytes.writeByte(0x06);
+            _ctx.bytes.writeByte(0x06);
             encodeString(value as String);
 
-        } else if ((value is XMLNode) || (value is XML) || (value is XMLList)) {
-            // 0x07 & 0x0b
-            throw new Error("XML serialization not supported");
+        /* } else if (value is XMLNode) { ... } // we don't even define the legacy XML types */
 
         } else if (value is Date) {
             // 0x08
             throw new Error("Date serialization not supported");
 
         } else if (value is Array) {
-            context.bytes.writeByte(0x09);
+            _ctx.bytes.writeByte(0x09);
             encodeArray(value as Array);
+
+        } else if ((value is XML) || (value is XMLList)) {
+            // 0x0b
+            throw new Error("XML serialization not supported");
 
         } else {
             var className :String = getQualifiedClassName(value);
             if (className == "flash.utils.ByteArray") {
-                context.bytes.writeByte(0x0c);
-                encodeByteArray(context, value as ByteArray);
+                _ctx.bytes.writeByte(0x0c);
+                encodeByteArray(value as ByteArray);
                 return;
             }
 
-            if (value is IExternalizable) {
-                throw new Error("IExternalizable serialization not supported");
-            }
+            // Tamarin/Thane doesn't even have an IExternalizable type to test for
 
-            context.bytes.writeByte(0x0a);
-            encodeObject(context, value as Object);
+            _ctx.bytes.writeByte(0x0a);
+            encodeObject(value as Object);
         }
     }
 
-    private static function encodeInteger (context :Context, n :uint) :void
+    private static function encodeInteger (n :uint) :void
     {
         if (n < 0x80) {
-            context.bytes.writeByte(0x00 | n);
+            _ctx.bytes.writeByte(0x00 | n);
 
         } else if (n < 0x4000) {
-            context.bytes.writeByte(0x80 | (n >> 7));
-            context.bytes.writeByte(0x00 | (n & 0x7F));
+            _ctx.bytes.writeByte(0x80 | (n >> 7));
+            _ctx.bytes.writeByte(0x00 | (n & 0x7F));
 
         } else if (n < 0x200000) {
-            context.bytes.writeByte(0x80 | (n >> 14));
-            context.bytes.writeByte(0x80 | ((n >> 7) & 0x7F));
-            context.bytes.writeByte(0x00 | (n & 0x7F));
+            _ctx.bytes.writeByte(0x80 | (n >> 14));
+            _ctx.bytes.writeByte(0x80 | ((n >> 7) & 0x7F));
+            _ctx.bytes.writeByte(0x00 | (n & 0x7F));
 
         } else if (n < 0x3FFFFFFF) {
-            context.bytes.writeByte(0x80 | (n >> 21));
-            context.bytes.writeByte(0x80 | ((n >> 14) & 0x7F));
-            context.bytes.writeByte(0x80 | ((n >> 7) & 0x7F));
-            context.bytes.writeByte(0x00 | (n & 0x7F));
+            _ctx.bytes.writeByte(0x80 | (n >> 21));
+            _ctx.bytes.writeByte(0x80 | ((n >> 14) & 0x7F));
+            _ctx.bytes.writeByte(0x80 | ((n >> 7) & 0x7F));
+            _ctx.bytes.writeByte(0x00 | (n & 0x7F));
 
         } else {
             throw new Error("Internal error - numerical overflow: " + n);
@@ -106,28 +113,28 @@ public class AMF3Encoder
 
     private static function encodeDouble (n :Number) :void
     {
-        context.bytes.writeDouble(n);
+        _ctx.bytes.writeDouble(n);
     }
 
-    private static function encodeString (context :Context, str :String) :void
+    private static function encodeString (str :String) :void
     {
-        if (context.sRef.table[str] !== undefined) {
-            encodeInteger(0 | ref.table[str] << 1);
+        if (_ctx.sRef.table[str] !== undefined) {
+            encodeInteger(0 | _ctx.sRef.table[str] << 1);
             return;
         }
 
         encodeInteger(1 | (str.length << 1));
         if (str.length > 0) {
-            context.bytes.writeUTFBytes(str);
+            _ctx.bytes.writeUTFBytes(str);
             // spec says we do not add the empty string to the reference table
-            context.sRef.table[str] = context.sRef.ix ++;
+            _ctx.sRef.table[str] = _ctx.sRef.ix ++;
         }
     }
 
-    private static function encodeArray (context :Context, arr :Array) :void
+    private static function encodeArray (arr :Array) :void
     {
-        if (context.oRef.table[value] !== undefined) {
-            encodeInteger(context.oRef.table[value] << 1);
+        if (_ctx.oRef.table[arr] !== undefined) {
+            encodeInteger(_ctx.oRef.table[arr] << 1);
             return;
         }
 
@@ -147,33 +154,35 @@ public class AMF3Encoder
             }
             // if so, just stream them out
             encodeString(String(prop));
-            encodeValue(context, arr[prop]);
+            encodeValue(arr[prop]);
         }
         encodeString("");
 
         // finally send the dense values
         for (var ii :int = 0; ii < denseEnd; ii ++) {
-            encodeValue(context, arr[ii]);
+            encodeValue(arr[ii]);
         }
 
-        context.oRef.table[value] = context.oRef.ix ++;
+        _ctx.oRef.table[arr] = _ctx.oRef.ix ++;
     }
 
-    private static function encodeObject (context :Context, object :Object) :void
+    private static function encodeObject (object :Object) :void
     {
-        if (context.oRef.table[object] !== undefined) {
-            encodeInteger(context.oRef.table[object] << 1);
+        if (_ctx.oRef.table[object] !== undefined) {
+            encodeInteger(_ctx.oRef.table[object] << 1);
             return;
         }
 
         // enumerate the sealed types
-        var vars :Array = Domain.currentDomain.getVariables(type);
+        var vars :Array = Domain.currentDomain.getVariables(object);
+        var varSet :Dictionary = new Dictionary();
         for (var ii :int = 0; ii < vars.length; ii ++) {
             varSet[vars[ii]] = true;
         }
 
         // then whatever's left, if anything, is dynamic
-        for (var prop :String in type) {
+        var dynVars :Array = [ ];
+        for (var prop :String in object) {
             if (varSet[prop] === undefined) {
                 dynVars.push(prop);
             }
@@ -192,7 +201,7 @@ public class AMF3Encoder
         }
         // and associated values
         for (ii = 0; ii < vars.length; ii ++) {
-            encodeValue(context, object[vars[ii]]);
+            encodeValue(object[vars[ii]]);
         }
 
         // end with the dynamic keys
@@ -201,7 +210,7 @@ public class AMF3Encoder
         }
         // and values
         for (ii = 0; ii < dynVars.length; ii ++) {
-            encodeValue(context, object[dynVars[ii]]);
+            encodeValue(object[dynVars[ii]]);
         }
 
         // if there were any dynamic variables (which we signaled with a bit above),
@@ -210,26 +219,31 @@ public class AMF3Encoder
             encodeString("");
         }
 
-        context.oRef.table[object] = context.oRef.ix ++;
+        _ctx.oRef.table[object] = _ctx.oRef.ix ++;
     }
 
 
-    private static function encodeByteArray (context :Context, bytes :ByteArray) :void
+    private static function encodeByteArray (bytes :ByteArray) :void
     {
-        if (context.oRef.table[object] !== undefined) {
-            encodeInteger(context.oRef.table[object] << 1);
+        if (_ctx.oRef.table[bytes] !== undefined) {
+            encodeInteger(_ctx.oRef.table[bytes] << 1);
             return;
         }
 
         // a byte array consists of a 1 bit, followed by the byte count
         encodeInteger(1 | (bytes.length << 1));
         // and then just... all the bytes
-        context.bytes.writeBytes(bytes);
+        _ctx.bytes.writeBytes(bytes);
 
-        context.oRef.table[object] = context.oRef.ix ++;
+        _ctx.oRef.table[bytes] = _ctx.oRef.ix ++;
     }
+
+    private static var _ctx :Context;
 }
 }
+
+import flash.utils.ByteArray;
+import flash.utils.Dictionary;
 
 class Context
 {
@@ -239,7 +253,7 @@ class Context
     public var sRef :References = new References();
     public var tRef :References = new References();
 
-    public function EncodingContext (bytes :ByteArray)
+    public function Context (bytes :ByteArray)
     {
         this.bytes = bytes;
     }
