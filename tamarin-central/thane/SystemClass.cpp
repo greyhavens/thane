@@ -48,6 +48,7 @@ namespace thane
 		NATIVE_METHOD(avmplus_System_debugger, SystemClass::debugger)
 		NATIVE_METHOD(avmplus_System_isDebugger, SystemClass::isDebugger)
 		NATIVE_METHOD(avmplus_System_getTimer, SystemClass::getTimer)
+		NATIVE_METHOD(avmplus_System_private_getArgv, SystemClass::getArgv)
 	END_NATIVE_MAP()
 					  
 	SystemClass::SystemClass(VTable *cvtable)
@@ -144,4 +145,20 @@ namespace thane
 #endif /* PERFORMANCE_GETTIMER */
 
     }
+
+	int SystemClass::user_argc;
+	char **SystemClass::user_argv;
+
+	ArrayObject * SystemClass::getArgv()
+	{
+		// get VTable for avmplus.System
+		Toplevel *toplevel = this->toplevel();
+		AvmCore *core = this->core();
+
+		ArrayObject *array = toplevel->arrayClass->newArray();
+		for(int i=0; i<user_argc;i++)
+			array->setUintProperty(i, core->newString(user_argv[i])->atom());
+
+		return array;
+	}
 }

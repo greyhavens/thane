@@ -44,6 +44,8 @@ package avmplus
 		public native static function debugger():void
 		public native static function isDebugger():Boolean
 		public native static function getTimer():int;
+		private native static function getArgv():Array
+		public static const argv:Array = getArgv();
 	}	
 	
 	public function debugger()

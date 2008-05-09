@@ -610,6 +610,8 @@ namespace thane
 
 			if(endFilenamePos == -1)
 				endFilenamePos = argc;
+			SystemClass::user_argc = argc-endFilenamePos-1; 
+			SystemClass::user_argv = &argv[endFilenamePos+1];
 		
 			// init toplevel internally
 			Toplevel* toplevel = initShellBuiltins();
