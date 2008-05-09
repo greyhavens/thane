@@ -59,7 +59,7 @@ public class AMF3Decoder
             return decodeObject();
 
         case AMF3.MARK_BYTE_ARRAY:
-//            return decodeByteArray();
+            return decodeByteArray();
 
         }
     }
