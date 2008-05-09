@@ -30,28 +30,16 @@ public class AMF3Encoder
         } else if (value === true) {
             _ctx.bytes.writeByte(AMF3.MARK_TRUE);
 
-        } else if (value is Number) {
-            var className =  Domain.currentDomain.getClassName(value);
-            var doublify :Boolean = false;
-
-            if (className == "Number") {
-                doublify = true;
-
-            } else if ((value < -(1 << 28)) || (value >= (1 << 28))) {
-                doublify = true;
-
-            } else if (value < 0) {
+        } else if (value is int && value >= -(1 << 28) && value < (1 << 28)) {
+            if (value < 0) {
                 value = (1 << 29) + value;
-
             }
+            _ctx.bytes.writeByte(AMF3.MARK_INTEGER);
+            encodeInteger(value);
 
-            if (doublify) {
-                _ctx.bytes.writeByte(AMF3.MARK_DOUBLE);
-                encodeDouble(value);
-            } else {
-                _ctx.bytes.writeByte(AMF3.MARK_INTEGER);
-                encodeInteger(value);
-            }
+        } else if (value is Number) {
+            _ctx.bytes.writeByte(AMF3.MARK_DOUBLE);
+            encodeDouble(value);
 
         } else if (value is String) {
             _ctx.bytes.writeByte(AMF3.MARK_STRING);
@@ -63,7 +51,7 @@ public class AMF3Encoder
             throw new Error("Date serialization not supported");
 
         } else if (value is Array) {
-            _ctx.bytes.writeByte(AMF3.MARK_DATE);
+            _ctx.bytes.writeByte(AMF3.MARK_ARRAY);
             encodeArray(value as Array);
 
         } else if ((value is XML) || (value is XMLList)) {
