@@ -202,6 +202,7 @@ public interface IDataInput
     function readBoolean() :Boolean;
     function readByte() :int;
     function readUnsignedByte() :uint;
+    function readObject () :*
     function readShort() :int;
     function readUnsignedShort() :uint;
     function readInt() :int;
@@ -220,6 +221,7 @@ public interface IDataOutput
     function writeBytes(bytes :ByteArray, offset :uint = 0, length :uint = 0) :void;
     function writeBoolean(value :Boolean) :void;
     function writeByte(value :int) :void;
+    function writeObject (object :*) :void 
     function writeShort(value :int) :void;
     function writeInt(value :int) :void;
     function writeUnsignedInt(value :uint) :void;
@@ -229,5 +231,41 @@ public interface IDataOutput
     function writeUTFBytes(value :String) :void;
     function get endian() :String;
     function set endian(type :String) :void;
+    function get objectEncoding () :uint;
+    function set objectEncoding (encoding :uint) :void;
+}
+
+public interface IExternalizable
+{
+    function readExternal (input: IDataInput) :void;
+    function writeExternal (output: IDataOutput) :void;
+}
+}
+
+package flash.net
+{
+
+import avmplus.Domain;
+
+public function getClassByAlias (aliasName :String) :Class
+{
+    var className :String = AMF3.getClassNameByAlias(aliasName);
+    if (className == null) {
+        throw new VerifyError("Alias not registered.");
+    }
+    return Domain.currentDomain.getClass(className);
+}
+
+public function registerClassAlias (aliasName :String, classObject :Class) :void
+{
+    // TODO: protect against user code
+    AMF3.registerClassAlias(aliasName, classObject);
+}
+
+public class ObjectEncoding
+{
+    public static const AMF0 :uint = 0;
+    public static const AMF3 :uint = 3;
+    public static const DEFAULT :uint = AMF3;
 }
 }

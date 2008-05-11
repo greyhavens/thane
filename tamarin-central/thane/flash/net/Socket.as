@@ -147,7 +147,9 @@ public class Socket extends EventDispatcher
 
     public function set objectEncoding (encoding :uint) :void
     {
-        throw new Error("not supported");
+        if (encoding != ObjectEncoding.AMF3) {
+            throw new Error("Only AMF3 supported");
+        }
     }
 
     public function get objectEncoding () :uint
@@ -265,6 +267,17 @@ public class Socket extends EventDispatcher
     public function writeUTFBytes(value :String) :void
     {
         _oBuf.writeUTFBytes(value);
+    }
+
+    // AMF3 bits
+    public function readObject () :*
+    {
+        return AMF3Decoder.decode(this);
+    }
+
+    public function writeObject (object :*) :void
+    {
+        AMF3Encoder.encode(this, object);
     }
 
     protected function massageBuffer (buffer :ByteArray) :ByteArray

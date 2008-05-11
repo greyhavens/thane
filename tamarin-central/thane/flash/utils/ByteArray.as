@@ -38,6 +38,8 @@
 package flash.utils
 {
 
+import flash.net.ObjectEncoding;
+
 //
 // ByteArray
 //
@@ -540,6 +542,28 @@ public class ByteArray
 
 	public native function get endian():String;
 	public native function set endian(type:String):void;
+
+    public function set objectEncoding (encoding :uint) :void
+    {
+        if (encoding != ObjectEncoding.AMF3) {
+            throw new Error("Only AMF3 supported");
+        }
+    }
+
+    public function get objectEncoding () :uint
+    {
+        return ObjectEncoding.AMF3;
+    }
+
+    public function readObject () :*
+    {
+        return AMF3Decoder.decode(this);
+    }
+
+    public function writeObject (object :*) :void
+    {
+        AMF3Encoder.encode(this, object);
+    }
 };
 
 
