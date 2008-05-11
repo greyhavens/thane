@@ -20,7 +20,7 @@ public class AMF3
     public static const MARK_XML :uint          = 0x0b;
     public static const MARK_BYTE_ARRAY :uint   = 0x0c;
 
-    public static function getClassNameByAlias (aliasName :String) :Class
+    public static function getClassNameByAlias (aliasName :String) :String
     {
         if (aliasName == null) {
             throw new TypeError("null argument to getClassNameByAlias");

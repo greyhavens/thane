@@ -152,7 +152,7 @@ public class AMF3Decoder
         } else if ((code & 0x04) == 0) {
             // it's a new trait, read class name & N sealed variable names
             var alias :String = decodeString();
-            var className = (alias.length > 0) ? AMF3.getClassNameByAlias(alias) : null;
+            var className :String = (alias.length > 0) ? AMF3.getClassNameByAlias(alias) : null;
             var N :uint = code >> 4;
             var vars :Array = new Array(N);
             for (var ii :int = 0; ii < N; ii ++) {
@@ -168,7 +168,8 @@ public class AMF3Decoder
         // instantiate the object
         var obj :Object;
         if (traits.className != null) {
-            obj = Domain.currentDomain.getClass(traits.className);
+            var classObject :Class = Domain.currentDomain.getClass(traits.className);
+            obj = new classObject();
         } else {
             obj = { };
         }
@@ -178,7 +179,7 @@ public class AMF3Decoder
 
         // read the sealed values
         for (var ii :int = 0; ii < traits.vars.length; ii ++) {
-            obj[vars[ii]] = decodeValue();
+            obj[traits.vars[ii]] = decodeValue();
         }
 
         // if this object was marked dynamic, read key/value pairs until ""
