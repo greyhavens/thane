@@ -173,18 +173,34 @@ public class AMF3Encoder
             }
         }
 
-        // bits 0 and 1 set, 2 clear, 3 determines dynamic or not
-        encodeInteger(1 | 2 | (dynVars.length > 0 ? 8 : 0) | (vars.length << 4));
+        // figure the class name
+        var className :String = Domain.currentDomain.getClassName(object);
 
-        // encode the class name
-        var alias :String = AMF3.getAliasByClassName(Domain.currentDomain.getClassName(object));
-        encodeString(alias != null ? alias : "");
+        // see if we've transmitted an instance of this class before
+        if (_ctx.tRef.table[className] !== undefined) {
+            // bit 0 set (not an instance ref), bit 1 clear (trait ref), rest is trait ref num
+            encodeInteger(1 | _ctx.tRef.table[className] << 2);
 
-        // then send all the sealed member names
-        for (ii = 0; ii < vars.length; ii ++) {
-            encodeString(vars[ii]);
+        } else {
+            // bits 0 and 1 set, 2 clear, 3 determines dynamic or not
+            // TODO: this is broken, dynamic is a property of the type, not whether or not
+            // TODO: somebody bothered to actually set some dynamic properties on the object
+            // TODO: but we need another introspection method to do it properly :/
+            encodeInteger(1 | 2 | (dynVars.length > 0 ? 8 : 0) | (vars.length << 4));
+
+            var alias :String = AMF3.getAliasByClassName(className);
+            encodeString(alias != null ? alias : "");
+
+            // then send all the sealed member names
+            for (ii = 0; ii < vars.length; ii ++) {
+                encodeString(vars[ii]);
+            }
+
+            // and store the refernce
+            _ctx.tRef.table[className] = _ctx.tRef.ix ++;
         }
-        // and associated values
+
+        // send the sealed member values
         for (ii = 0; ii < vars.length; ii ++) {
             encodeValue(object[vars[ii]]);
         }
