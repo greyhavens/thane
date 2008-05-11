@@ -100,9 +100,12 @@ public class AMF3Decoder
         }
 
         // if not, read N bytes
-        var str :String = _ctx.bytes.readUTFBytes(code >> 1);
-        _ctx.sRef.table[str] = _ctx.sRef.ix ++;
-        return str;
+        if ((code >> 1) > 0) {
+            var str :String = _ctx.bytes.readUTFBytes(code >> 1);
+            _ctx.sRef.push(str);
+            return str;
+        }
+        return "";
     }
 
     private static function decodeArray () :Array
@@ -116,7 +119,7 @@ public class AMF3Decoder
 
         // if not, create our array & note its reference
         var result :Array = [ ];
-        _ctx.oRef.table[result] = _ctx.oRef.ix ++;
+        _ctx.oRef.push(result);
 
         // then first read associative pairs
         var key :String;
@@ -149,14 +152,14 @@ public class AMF3Decoder
         } else if ((code & 0x04) == 0) {
             // it's a new trait, read class name & N sealed variable names
             var alias :String = decodeString();
-            var className = (alias.length > 0) ? AMF3.getClassNameByAlias(alias) : "";
+            var className = (alias.length > 0) ? AMF3.getClassNameByAlias(alias) : null;
             var N :uint = code >> 4;
             var vars :Array = new Array(N);
             for (var ii :int = 0; ii < N; ii ++) {
                 vars[ii] = decodeString();
             }
             traits = new Traits(className, (code & 0x08) != 0, vars);
-            _ctx.tRef.table[traits] = _ctx.tRef.ix ++;
+            _ctx.tRef.push(traits);
 
         } else {
             throw new Error("IExternalizable serialization not supported");
@@ -171,7 +174,7 @@ public class AMF3Decoder
         }
 
         // register the reference
-        _ctx.oRef.table[obj] = _ctx.oRef.ix ++;
+        _ctx.oRef.push(obj);
 
         // read the sealed values
         for (var ii :int = 0; ii < traits.vars.length; ii ++) {
@@ -200,7 +203,7 @@ public class AMF3Decoder
         var bytes :ByteArray = new ByteArray();
 
         // register
-        _ctx.oRef.table[bytes] = _ctx.oRef.ix ++;
+        _ctx.oRef.push(bytes);
 
         // and read the bytes
         _ctx.bytes.readBytes(bytes, 0, code >> 1);
@@ -219,20 +222,14 @@ class Context
 {
     public var bytes :ByteArray;
 
-    public var oRef :References = new References();
-    public var sRef :References = new References();
-    public var tRef :References = new References();
+    public var oRef :Array = new Array();
+    public var sRef :Array = new Array();
+    public var tRef :Array = new Array();
 
     public function Context (bytes :ByteArray)
     {
         this.bytes = bytes;
     }
-}
-
-class References
-{
-    public var table :Dictionary = new Dictionary();
-    public var ix :uint = 0;
 }
 
 class Traits
