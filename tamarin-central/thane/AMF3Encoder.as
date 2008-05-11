@@ -3,6 +3,7 @@ package {
 import avmplus.*;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
+import flash.utils.IDataOutput;
 
 /**
  * Partial AMF3 encoder, based on
@@ -10,7 +11,7 @@ import flash.utils.Dictionary;
  */
 public class AMF3Encoder
 {
-    public static function encode (bytes :ByteArray, value :*) :void
+    public static function encode (bytes :IDataOutput, value :*) :void
     {
         _ctx = new Context(bytes);
         encodeValue(value);
@@ -237,18 +238,18 @@ public class AMF3Encoder
 }
 }
 
-import flash.utils.ByteArray;
+import flash.utils.IDataOutput;
 import flash.utils.Dictionary;
 
 class Context
 {
-    public var bytes :ByteArray;
+    public var bytes :IDataOutput;
 
     public var oRef :References = new References();
     public var sRef :References = new References();
     public var tRef :References = new References();
 
-    public function Context (bytes :ByteArray)
+    public function Context (bytes :IDataOutput)
     {
         this.bytes = bytes;
     }
