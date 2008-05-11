@@ -8,7 +8,7 @@ fi
 
 ASC=$1
 ASC_CLASS=macromedia.asc.embedding.ScriptCompiler
-ASC_OPTS="-strict -abcfuture -AS3 -outdir ."
+ASC_OPTS="-strict -d -abcfuture -AS3 -outdir ."
 
 BUILTIN=../core/builtin.abc
 
