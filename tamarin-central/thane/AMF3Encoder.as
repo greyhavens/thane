@@ -58,7 +58,7 @@ public class AMF3Encoder
             throw new Error("XML serialization not supported");
 
         } else {
-            if (Domain.currentDomain.getClassName(value) == "flash.utils.ByteArray") {
+            if (Domain.currentDomain.getClassName(value) == "flash.utils::ByteArray") {
                 _ctx.bytes.writeByte(AMF3.MARK_BYTE_ARRAY);
                 encodeByteArray(value as ByteArray);
                 return;
