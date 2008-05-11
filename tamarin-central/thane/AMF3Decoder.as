@@ -66,25 +66,24 @@ public class AMF3Decoder
 
     private static function decodeInteger () :int
     {
-        var b :uint = _ctx.bytes.readByte();
+        var b :uint = _ctx.bytes.readUnsignedByte();
         var n :uint = (b & 0x7f);
         if ((b & 0x80) != 0) {
-            b = _ctx.bytes.readByte();
+            b = _ctx.bytes.readUnsignedByte();
             n = (n << 7) | (b & 0x7f);
 
             if ((b & 0x80) != 0) {
-                b = _ctx.bytes.readByte();
+                b = _ctx.bytes.readUnsignedByte();
                 n = (n << 7) | (b & 0x7f);
 
                 if ((b & 0x80) != 0) {
-                    b = _ctx.bytes.readByte();
+                    b = _ctx.bytes.readUnsignedByte();
                     n = (n << 8) | b;
 
                     if (n >= (1 << 28)) {
                         // adjust for the fact that the 29th bit was the sign bit
-                        return (1 << 29) - n;
+                        return n - (1 << 29);
                     }
-                    return n;
                 }
             }
         }
