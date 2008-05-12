@@ -131,7 +131,7 @@ public function describeType (c :Object) :XML
 
 public function getDefinitionByName (name :String) :Class
 {
-    return Domain.currentDomain.getClass(name);
+    return Domain.currentDomain.getClass(name.replace("::", "."));
 }
 
 public function getQualifiedClassName (c :*) :String
