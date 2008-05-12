@@ -1,6 +1,7 @@
 package {
 
 import avmplus.*;
+import flash.utils.getDefinitionByName;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.IDataInput;
@@ -169,7 +170,7 @@ public class AMF3Decoder
         // instantiate the object
         var obj :Object;
         if (traits.className != null) {
-            var classObject :Class = Domain.currentDomain.getClass(traits.className);
+            var classObject :Class = getDefinitionByName(traits.className);
             obj = new classObject();
         } else {
             obj = { };

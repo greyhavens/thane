@@ -3,6 +3,7 @@ package {
 import avmplus.*;
 
 import flash.utils.Dictionary;
+import flash.utils.getQualifiedClassName;
 
 public class AMF3
 {
@@ -42,7 +43,7 @@ public class AMF3
         if (aliasName == null || classObject == null) {
             throw new TypeError("null argument to registerClassAlias");
         }
-        var className :String = Domain.currentDomain.getClassName(classObject);
+        var className :String = getQualifiedClassName(classObject);
         _aliasToClass[aliasName] = className;
         _classToAlias[className] = aliasName;
     }
