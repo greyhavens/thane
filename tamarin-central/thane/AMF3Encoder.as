@@ -4,6 +4,7 @@ import avmplus.*;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.IDataOutput;
+import flash.utils.IExternalizable;
 
 /**
  * Partial AMF3 encoder, based on
@@ -59,13 +60,14 @@ public class AMF3Encoder
             throw new Error("XML serialization not supported");
 
         } else {
+            if (value is IExternalizable) {
+                throw new Error("IExternalizable not supported");
+            }
             if (Domain.currentDomain.getClassName(value) == "flash.utils::ByteArray") {
                 _ctx.bytes.writeByte(AMF3.MARK_BYTE_ARRAY);
                 encodeByteArray(value as ByteArray);
                 return;
             }
-
-            // Tamarin/Thane doesn't even have an IExternalizable type to test for
 
             _ctx.bytes.writeByte(AMF3.MARK_OBJECT);
             encodeObject(value as Object);
