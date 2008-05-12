@@ -48,6 +48,7 @@ namespace thane
         NATIVE_METHOD(avmplus_Domain_getVariables, DomainObject::getVariables)
 		NATIVE_METHOD(avmplus_Domain_getClassName, DomainObject::getClassName)
 		NATIVE_METHOD(avmplus_Domain_isAssignableAs, DomainObject::isAssignableAs)
+		NATIVE_METHOD(avmplus_Domain_isDynamic, DomainObject::isDynamic)
 	END_NATIVE_MAP()
 	
 	DomainObject::DomainObject(VTable *vtable, ScriptObject *delegate)
@@ -224,6 +225,12 @@ namespace thane
     {
         // Note: itraits guaranteed != NULL in ClassClosure
         return srcClass->traits()->itraits->containsInterface(asClass->traits()->itraits);
+    }
+
+    bool DomainObject::isDynamic (ClassClosure *testClass)
+    {
+        // Note: itraits guaranteed != NULL in ClassClosure
+        return testClass->traits()->itraits->needsHashtable;
     }
 
 	DomainClass::DomainClass(VTable *cvtable)

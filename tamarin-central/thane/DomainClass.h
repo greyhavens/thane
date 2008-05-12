@@ -53,6 +53,7 @@ namespace thane
         ArrayObject *getVariables (Atom a);
 		Stringp getClassName (Atom a);
         bool isAssignableAs (ClassClosure *asClass, ClassClosure *srcClass);
+        bool isDynamic (ClassClosure *testClass);
         Traits *getTraits (Atom a);
        
 		DWB(DomainEnv*) domainEnv;
