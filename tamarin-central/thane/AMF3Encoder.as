@@ -168,12 +168,17 @@ public class AMF3Encoder
             varSet[vars[ii]] = true;
         }
 
-        // then whatever's left, if anything, is dynamic
-        var dynVars :Array = [ ];
-        for (var prop :String in object) {
-            if (varSet[prop] === undefined) {
-                dynVars.push(prop);
+        var dynVars;
+        if (Domain.currentDomain.isDynamic(object)) {
+            dynVars = [ ];
+            for (var prop :String in object) {
+                if (varSet[prop] === undefined) {
+                    dynVars.push(prop);
+                }
             }
+
+        } else {
+            dynVars = null;
         }
 
         // figure the class name
@@ -186,10 +191,7 @@ public class AMF3Encoder
 
         } else {
             // bits 0 and 1 set, 2 clear, 3 determines dynamic or not
-            // TODO: this is broken, dynamic is a property of the type, not whether or not
-            // TODO: somebody bothered to actually set some dynamic properties on the object
-            // TODO: but we need another introspection method to do it properly :/
-            encodeInteger(1 | 2 | (dynVars.length > 0 ? 8 : 0) | (vars.length << 4));
+            encodeInteger(1 | 2 | (dynVars !== null ? 8 : 0) | (vars.length << 4));
 
             var alias :String = AMF3.getAliasByClassName(className);
             encodeString(alias != null ? alias : "");
@@ -208,17 +210,16 @@ public class AMF3Encoder
             encodeValue(object[vars[ii]]);
         }
 
-        // end with the dynamic keys
-        for (ii = 0; ii < dynVars.length; ii ++) {
-            encodeString(dynVars[ii]);
-            encodeValue(object[dynVars[ii]]);
-        }
-
-        // if there were any dynamic variables (which we signaled with a bit above),
-        // end it all with an empty string
-        if (dynVars.length > 0) {
+        if (dynVars !== null) {
+            // potentially do the dynamic keys
+            for (ii = 0; ii < dynVars.length; ii ++) {
+                encodeString(dynVars[ii]);
+                encodeValue(object[dynVars[ii]]);
+            }
+            // end with an empty string
             encodeString("");
         }
+
     }
 
 
