@@ -195,6 +195,24 @@ namespace thane
         return getTraits(a)->formatClassName();
     }
 
+    bool DomainObject::isAssignableAs (ClassClosure *asClass, Atom a)
+    {
+        Traits *traits = getTraits(a);
+        if (traits->itraits != NULL) {
+            traits = traits->itraits;
+        }
+        return traits->containsInterface(asClass->traits()->itraits);
+    }
+
+    bool DomainObject::isDynamic (Atom a)
+    {
+        Traits *traits = getTraits(a);
+        if (traits->itraits != NULL) {
+            traits = traits->itraits;
+        }
+        return traits->needsHashtable;
+    }
+
     Traits *DomainObject::getTraits (Atom a)
     {
         if (ISNULL(a)) {
@@ -220,18 +238,6 @@ namespace thane
         toplevel()->throwArgumentError(kNotImplementedError, core()->toErrorString("value")); 
         return core()->traits.void_itraits;
    }
-
-    bool DomainObject::isAssignableAs (ClassClosure *asClass, ClassClosure *srcClass)
-    {
-        // Note: itraits guaranteed != NULL in ClassClosure
-        return srcClass->traits()->itraits->containsInterface(asClass->traits()->itraits);
-    }
-
-    bool DomainObject::isDynamic (ClassClosure *testClass)
-    {
-        // Note: itraits guaranteed != NULL in ClassClosure
-        return testClass->traits()->itraits->needsHashtable;
-    }
 
 	DomainClass::DomainClass(VTable *cvtable)
 		: ClassClosure(cvtable)

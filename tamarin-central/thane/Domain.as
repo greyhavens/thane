@@ -47,8 +47,8 @@ public class Domain
 	public native function getClass(className:String):Class;
     public native function getVariables (value :*) :Array;
 	public native function getClassName(value :*): String;
-    public native function isAssignableAs (asClass :Class, srcClass :Class) :Boolean;
-    public native function isDynamic (testClass :Class) :Boolean;
+    public native function isAssignableAs (asClass :Class, value :*) :Boolean;
+    public native function isDynamic (value :*) :Boolean;
 
 	public native static function get currentDomain():Domain;
 
