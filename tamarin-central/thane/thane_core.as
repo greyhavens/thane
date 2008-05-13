@@ -5,6 +5,18 @@ package flash.errors {
 
 public class MemoryError extends Error
 {
+    public function MemoryError(message:String = "") 
+    {
+        super(message);
+    }
+}
+
+public class EOFError extends Error
+{
+    public function EOFError(message:String = "") 
+    {
+        super(message);
+    }
 }
 
 public class IllegalOperationError extends Error
@@ -23,6 +35,7 @@ public class Event
 {
     public static const CONNECT :String = "connect";
     public static const CLOSE :String = "close";
+    public static const COMPLETE:String = "complete";
 
     public function Event (type :String, bubbles :Boolean = false, cancelable :Boolean = false)
     {
@@ -48,6 +61,51 @@ public class Event
     }
 
     private var _type :String;
+}
+
+public class TextEvent extends Event
+{
+    public var text :String;
+
+    public function TextEvent (
+        type :String, bubbles :Boolean = false, cancelable :Boolean = false, text :String = "")
+    {
+        super(type, bubbles, cancelable);
+        this.text = text;
+    }
+}
+
+public class ErrorEvent extends TextEvent
+{
+    public static const ERROR :String = "error";
+
+    public function ErrorEvent (
+        type :String, bubbles :Boolean = false, cancelable :Boolean = false,
+        text :String = "", id :int = 0)
+    {
+        super(type, bubbles, cancelable, text);
+
+        _errorId = id;
+    }
+
+    public function get errorID () :int
+    {
+        return _errorId;
+    }
+
+    protected var _errorId :int;
+}
+
+public class SecurityErrorEvent extends ErrorEvent
+{
+    public static const SECURITY_ERROR :String = "securityError";
+
+    public function SecurityErrorEvent (
+        type :String, bubbles :Boolean = false, cancelable :Boolean = false,
+        text :String = "", id :int = 0)
+    {
+        super(type, bubbles, cancelable);
+    }
 }
 
 public class EventDispatcher
