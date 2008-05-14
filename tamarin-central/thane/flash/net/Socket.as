@@ -51,7 +51,7 @@ public class Socket extends EventDispatcher
         _port = port;
 
         _state = ST_WAITING;
-        trace("Socket:connect() switching to ST_WAITING...");
+//        trace("Socket:connect() switching to ST_WAITING...");
     }
 
     public function close () :void
@@ -80,7 +80,7 @@ public class Socket extends EventDispatcher
                 wrote = nb_write(_oBuf);
             }
             if (read > 0 || wrote > 0) {
-                trace("Socket:heartbeat() read " + read + ", wrote " + wrote);
+//                trace("Socket:heartbeat() read " + read + ", wrote " + wrote);
             }
 
             _iBuf = massageBuffer(_iBuf);
@@ -102,10 +102,10 @@ public class Socket extends EventDispatcher
                 _state = ST_VIRGIN;
                 break;
             case 0:
-                trace("Socket:heartbeat() trying to connect...");
+//                trace("Socket:heartbeat() trying to connect...");
                 break;
             case 1:
-                trace("Socket:heartbeat() connected!");
+//                trace("Socket:heartbeat() connected!");
                 _state = ST_CONNECTED;
                 dispatchEvent(new Event(Event.CONNECT));
                 break;
