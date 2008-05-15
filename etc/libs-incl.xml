@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!-- declares the libraries needed to build thane -->
+<project name="library-dependencies">
+  <fileset dir="${libs.dir}" id="thane.libs">
+    <include name="asc.jar"/>
+  </fileset>
+</project>

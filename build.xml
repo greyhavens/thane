@@ -1,0 +1,115 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- build configuration -->
+<project name="thane" default="dist" basedir=".">
+
+  <!-- import overriding properties -->
+  <property file="build.properties"/>
+
+  <!-- configuration parameters -->
+  <property name="lib.name"     value="thane"/>
+  <property name="deploy.dir"   value="dist"/>
+  <property name="savedoc.dir"  value="docs"/>
+  <property name="javadoc.home" value="${deploy.dir}/docs"/>
+  <property name="classes.dir"  value="${deploy.dir}/classes"/>
+  <property name="libs.dir"     value="extlibs/java"/>
+  <import file="etc/libs-incl.xml"/>
+
+  <property name="tamarin.dir"  value="${basedir}/tamarin-central"/>
+  <property name="tamdist.dir"  value="${tamarin.dir}/dist"/>
+  <property name="thane.dir"  value="${tamarin.dir}/thane"/>
+
+  <!-- import useful tasks -->
+  <import file="build/etc/build-support.xml"/>
+
+  <!-- declare our classpath business -->
+  <path id="classpath">
+    <fileset dir="${deploy.dir}/lib" includes="**/*.jar"/>
+  </path>
+
+  <!-- declare the files that will be deployed to the maven repositoy -->
+  <filelist dir="." id="deploy.filelist">
+    <file name="${deploy.dir}/thane.abc"/>
+    <file name="${deploy.dir}/tamarin-builtin.abc"/>
+  </filelist>
+
+  <!-- prepares the application directories -->
+  <target name="prepare">
+    <mkdir dir="${deploy.dir}"/>
+    <mkdir dir="${deploy.dir}/lib"/>
+    <mkdir dir="${tamdist.dir}"/>
+    <copy todir="${deploy.dir}/lib" flatten="true">
+      <fileset refid="${lib.name}.libs"/>
+    </copy>
+  </target>
+
+  <!-- builds our distribution files (war and jar) -->
+  <target name="dist" depends="prepare,abclib,make">
+    <copy tofile="${deploy.dir}/thane.abc" file="${thane.dir}/${lib.name}.abc"/>
+    <!-- TODO: we should actually build builtin.abc -->
+    <copy tofile="${deploy.dir}/tamarin-builtin.abc" file="${tamarin.dir}/core/builtin.abc"/>
+  </target>
+
+  <!-- checks whether our Flash library needs building -->
+  <target name="checkabclib">
+    <condition property="no_build_abclib">
+      <uptodate targetfile="${deploy.dir}/${lib.name}.abc">
+        <srcfiles dir="${thane.dir}" includes="**/*.as"/>
+        <srcfiles dir="${tamarin.dir}/core" includes="*.abc"/>
+      </uptodate>
+    </condition>
+  </target>
+
+  <!-- builds our Flash library -->
+  <target name="abclib" unless="no_build_abclib" depends="checkabclib">
+    <java classname="macromedia.asc.embedding.ScriptCompiler" fork="true" failonerror="true">
+      <classpath refid="classpath"/>
+      <arg value="-AS3"/>
+      <arg value="-strict"/>
+      <arg value="-import"/>
+      <arg value="${tamarin.dir}/core/builtin.abc"/>
+      <arg value="-outdir"/>
+      <arg value="${thane.dir}"/>
+      <arg value="-out"/>
+      <arg value="${lib.name}"/>
+
+      <!-- we really need to write an ant task for this -->
+      <arg value="${thane.dir}/AMF3.as"/>
+      <arg value="${thane.dir}/AMF3Decoder.as"/>
+      <arg value="${thane.dir}/AMF3Encoder.as"/>
+      <arg value="${thane.dir}/as3ds/Collection.as"/>
+      <arg value="${thane.dir}/as3ds/Heap.as"/>
+      <arg value="${thane.dir}/as3ds/Iterator.as"/>
+      <arg value="${thane.dir}/Domain.as"/>
+      <arg value="${thane.dir}/flash/geom/Point.as"/>
+      <arg value="${thane.dir}/flash/geom/Rectangle.as"/>
+      <arg value="${thane.dir}/flash/net/Socket.as"/>
+      <arg value="${thane.dir}/flash/utils/ByteArray.as"/>
+      <arg value="${thane.dir}/flash/utils/Endian.as"/>
+      <arg value="${thane.dir}/flash/utils/Timer.as"/>
+      <arg value="${thane.dir}/StringBuilder.as"/>
+      <arg value="${thane.dir}/Thane.as"/>
+      <arg value="${thane.dir}/thane_core.as"/>
+      <arg value="${thane.dir}/thane_net.as"/>
+      <arg value="${thane.dir}/toplevel.as"/>
+      <arg value="${tamarin.dir}/extensions/Dictionary.as"/>
+    </java>
+  </target>
+
+  <!-- build Tamarin -->
+  <condition property="isunix"><os family="unix"/></condition>
+  <target name="make" depends="prepare,abclib" if="isunix">
+    <echo level="info" message="Doing native compilation on ${os.name}..."/>
+    <exec dir="${tamdist.dir}" executable="python">
+       <arg line="${tamarin.dir}/configure.py --enable-shell --enable-debugger --enable-debug"/>
+    </exec>
+    <exec dir="${tamdist.dir}" executable="make">
+       <arg line="-j4"/>
+    </exec>
+  </target>
+
+  <!-- deploys our built libraries to maven -->
+  <target name="deploy" depends="dist">
+    <antcall target="maven-deploy"/>
+  </target>
+
+</project>
