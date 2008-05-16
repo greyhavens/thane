@@ -15,7 +15,6 @@ package org.httpclient {
   import org.httpclient.events.HttpListener;
   
   import org.httpclient.http.multipart.Multipart;
-  import org.httpclient.http.multipart.FilePart;
     
   [Event(name=Event.CLOSE, type="flash.events.Event")]
   [Event(name=Event.COMPLETE, type="flash.events.Event")]

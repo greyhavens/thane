@@ -5,7 +5,6 @@
 package org.httpclient {
   
   import com.adobe.net.URI;
-  import com.hurlant.crypto.tls.TLSSocket;
   
   import flash.net.Socket;
   import flash.utils.ByteArray;
@@ -69,8 +68,10 @@ package org.httpclient {
      * Create Socket or TLSSocket depending on URI scheme (http or https).
      */
     protected function createSocket(secure:Boolean = false):void {      
-      if (!secure) _socket = new Socket();
-      else _socket = new TLSSocket();
+        if (secure) {
+            throw new Error("secure sockets not supported");
+        }
+        _socket = new Socket();
       
       _socket.addEventListener(Event.CONNECT, onConnect);       
       _socket.addEventListener(Event.CLOSE, onClose);
