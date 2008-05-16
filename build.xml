@@ -32,6 +32,8 @@
     <file name="${deploy.dir}/tamarin-builtin.abc"/>
   </filelist>
 
+  <taskdef name="asclib" classname="flex.ant.AscLibTask" classpathref="classpath"/>
+
   <!-- prepares the application directories -->
   <target name="prepare">
     <mkdir dir="${deploy.dir}"/>
@@ -61,38 +63,15 @@
 
   <!-- builds our Flash library -->
   <target name="abclib" unless="no_build_abclib" depends="checkabclib">
-    <java classname="macromedia.asc.embedding.ScriptCompiler" fork="true" failonerror="true">
-      <classpath refid="classpath"/>
-      <arg value="-AS3"/>
-      <arg value="-strict"/>
-      <arg value="-import"/>
-      <arg value="${tamarin.dir}/core/builtin.abc"/>
-      <arg value="-outdir"/>
-      <arg value="${thane.dir}"/>
-      <arg value="-out"/>
-      <arg value="${lib.name}"/>
-
-      <!-- we really need to write an ant task for this -->
-      <arg value="${thane.dir}/AMF3.as"/>
-      <arg value="${thane.dir}/AMF3Decoder.as"/>
-      <arg value="${thane.dir}/AMF3Encoder.as"/>
-      <arg value="${thane.dir}/as3ds/Collection.as"/>
-      <arg value="${thane.dir}/as3ds/Heap.as"/>
-      <arg value="${thane.dir}/as3ds/Iterator.as"/>
-      <arg value="${thane.dir}/Domain.as"/>
-      <arg value="${thane.dir}/flash/geom/Point.as"/>
-      <arg value="${thane.dir}/flash/geom/Rectangle.as"/>
-      <arg value="${thane.dir}/flash/net/Socket.as"/>
-      <arg value="${thane.dir}/flash/utils/ByteArray.as"/>
-      <arg value="${thane.dir}/flash/utils/Endian.as"/>
-      <arg value="${thane.dir}/flash/utils/Timer.as"/>
-      <arg value="${thane.dir}/StringBuilder.as"/>
-      <arg value="${thane.dir}/Thane.as"/>
-      <arg value="${thane.dir}/thane_core.as"/>
-      <arg value="${thane.dir}/thane_net.as"/>
-      <arg value="${thane.dir}/toplevel.as"/>
-      <arg value="${tamarin.dir}/extensions/Dictionary.as"/>
-    </java>
+    <asclib as3="true" strict="true" classpathref="classpath">
+      <import dir="${tamarin.dir}">
+        <include name="core/builtin.abc"/>
+      </import>
+      <filespec dir="${tamarin.dir}">
+        <include name="thane/**/*.as"/>
+        <include name="extensions/Dictionary.as"/>
+      </filespec>
+    </asclib>
   </target>
 
   <!-- build Tamarin -->
