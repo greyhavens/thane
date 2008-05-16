@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<!--
+
+	ADOBE SYSTEMS INCORPORATED
+	Copyright 2006 Adobe Systems Incorporated
+	All Rights Reserved.
+
+	NOTICE: Adobe permits you to use, modify, and distribute this file
+	in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<project default="main" basedir=".">
+    <taskdef name="mxmlc" classpath="../build" classname="flex.ant.MxmlcTask" />
+
+    <target name="main">
+        <mxmlc file="Test.mxml" keep="true" verbose-stacktraces="true" compiler.some-thing="true">
+        </mxmlc>
+    </target>
+
+    <target name="testExec">
+        <exec executable="mxmlcc">
+            <arg value="-help" />
+        </exec>
+    </target>
+</project>

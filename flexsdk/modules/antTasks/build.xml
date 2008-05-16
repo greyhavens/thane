@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<!--
+
+    ADOBE SYSTEMS INCORPORATED
+    Copyright 2006-2007 Adobe Systems Incorporated
+    All Rights Reserved.
+
+    NOTICE: Adobe permits you to use, modify, and distribute this file
+    in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<project name="Ant Tasks" default="main" basedir="../..">
+
+    <!-- properties -->
+    <property file="${basedir}/build.properties"/>
+
+    <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="module.dir" value="${basedir}/modules/antTasks"/>
+    <property name="module.src" value="${module.dir}/src"/>
+    <property name="module.classes" value="${module.dir}/classes"/>
+    <property name="module.jar" value="${lib.dir}/flexTasks.jar" />
+
+    <target name="main" depends="clean, dev" />
+    <target name="dev" depends="jar" />
+
+    <target name="prepare">
+        <echo level="info">${ant.file}</echo>
+        <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${module.classes}"/>
+    </target>
+
+    <target name="jar" depends="compile">
+    <echo message="Building lib/flexTasks.jar"/>
+        <jar destfile="${module.jar}">
+            <fileset dir="${module.dir}"
+                     includes="flexTasks.tasks" />
+            <fileset dir="${module.classes}"
+                     includes="**/*.class"
+                     excludes="flex/ant/AscTask*.class" />
+            <fileset dir="${basedir}"
+                     includes="templates/html-templates/**"
+                     excludes="templates/html-templates/metadata/**" />
+        </jar>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <mkdir dir="${module.classes}" />
+        <javac source="1.5" target="1.5" debug="${src.debug}" srcdir="${module.src}" destdir="${module.classes}"/>
+    </target>
+
+    <!-- This installs the internal jar into your Ant lib directory, so that you don't -->
+    <!-- have to point to this jar each time you run Ant.                              -->
+    <target name="install" depends="jar">
+        <copy todir="${ant.home}/lib">
+            <fileset dir="${lib.dir}"
+                     includes="flexTasks.jar" />
+        </copy>
+    </target>
+
+    <target name="clean">
+        <delete dir="${module.classes}" />
+        <delete file="${module.jar}" />
+        <!-- Clean up VIM and Emacs backup files -->
+        <delete>
+            <fileset dir="${module.src}" includes="**/*~" defaultexcludes="false" />
+        </delete>
+    </target>
+
+    <target name="test" depends="test-clean">
+        <exec executable="ant">
+            <arg value="-lib"/>
+            <arg value="classes"/>
+            <arg value="-file"/>
+            <arg value="/home/preilly/PFServer/flex/sdk/modules/antTasks/tests/html-wrapper-build.xml"/>
+        </exec>
+    </target>
+
+    <target name="test-clean">
+        <exec executable="ant">
+            <arg value="-lib"/>
+            <arg value="classes"/>
+            <arg value="-file"/>
+            <arg value="/home/preilly/PFServer/flex/sdk/modules/antTasks/tests/html-wrapper-build.xml"/>
+            <arg value="clean"/>
+        </exec>
+    </target>
+</project>

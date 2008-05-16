@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<!--
+
+	ADOBE SYSTEMS INCORPORATED
+	Copyright 2006 Adobe Systems Incorporated
+	All Rights Reserved.
+
+	NOTICE: Adobe permits you to use, modify, and distribute this file
+	in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<project default="main">
+    <taskdef name="mxmlc" classpath="../../../build" classname="flex.ant.MxmlcTask" />
+
+    <target name="main">
+        <mxmlc file="Test.mxml">
+            <!-- <default-size width="800" height="600" /> -->
+            <!-- <default-size width="a" height="600" /> -->
+            <!-- <default-size width="800" height="a" /> -->
+            <!-- <default-size width="800" /> -->
+            <!-- <default-size height="600" /> -->
+
+            <!-- <default-script-limits max-recursion-depth="800" max-execution-time="600" /> -->
+            <!-- <default-script-limits max-recursion-depth="a" max-execution-time="600" /> -->
+            <!-- <default-script-limits max-recursion-depth="800" max-execution-time="a" /> -->
+            <!-- <default-script-limits max-recursion-depth="800" /> -->
+            <!-- <default-script-limits max-execution-time="600" /> -->
+        </mxmlc>
+    </target>
+
+</project>
