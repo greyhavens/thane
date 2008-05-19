@@ -32,6 +32,7 @@
     <file name="${deploy.dir}/tamarin-builtin.abc"/>
   </filelist>
 
+  <taskdef name="asc" classname="flex.ant.AscTask" classpathref="classpath"/>
   <taskdef name="asclib" classname="flex.ant.AscLibTask" classpathref="classpath"/>
 
   <!-- prepares the application directories -->
@@ -45,15 +46,12 @@
   </target>
 
   <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="prepare,abclib,make">
-    <copy tofile="${deploy.dir}/thane.abc" file="${thane.dir}/${lib.name}.abc"/>
-    <!-- TODO: we should actually build builtin.abc -->
-    <copy tofile="${deploy.dir}/tamarin-builtin.abc" file="${tamarin.dir}/core/builtin.abc"/>
+  <target name="dist" depends="prepare,thanelib,tamarin">
   </target>
 
   <!-- checks whether our Flash library needs building -->
-  <target name="checkabclib">
-    <condition property="no_build_abclib">
+  <target name="checkthanelib">
+    <condition property="no_build_thanelib">
       <uptodate targetfile="${deploy.dir}/${lib.name}.abc">
         <srcfiles dir="${thane.dir}" includes="**/*.as"/>
         <srcfiles dir="${tamarin.dir}/core" includes="*.abc"/>
@@ -61,8 +59,8 @@
     </condition>
   </target>
 
-  <!-- builds our Flash library -->
-  <target name="abclib" unless="no_build_abclib" depends="checkabclib">
+  <!-- builds the Thane library -->
+  <target name="thanelib" unless="no_build_thanelib" depends="checkthanelib">
     <asclib as3="true" strict="true" classpathref="classpath">
       <import dir="${tamarin.dir}">
         <include name="core/builtin.abc"/>
@@ -72,17 +70,51 @@
         <include name="extensions/Dictionary.as"/>
       </filespec>
     </asclib>
+    <copy tofile="${deploy.dir}/thane.abc" file="${thane.dir}/${lib.name}.abc"/>
+  </target>
+
+  <!-- builds the HTTP library -->
+  <target name="httplib" unless="no_build_httplib" depends="thanelib">
+    <asclib as3="true" strict="true" classpathref="classpath"
+            outdir="${deploy.dir}" out="http">
+      <import dir="${deploy.dir}">
+        <include name="tamarin-builtin.abc"/>
+        <include name="thane.abc"/>
+      </import>
+      <filespec dir="http/src">
+        <include name="**/*.as"/>
+      </filespec>
+    </asclib>
   </target>
 
   <!-- build Tamarin -->
   <condition property="isunix"><os family="unix"/></condition>
-  <target name="make" depends="prepare,abclib" if="isunix">
+  <target name="tamarin" depends="prepare,thanelib" if="isunix">
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
     <exec dir="${tamdist.dir}" executable="python">
        <arg line="${tamarin.dir}/configure.py --enable-shell --enable-debugger --enable-debug"/>
     </exec>
     <exec dir="${tamdist.dir}" executable="make">
        <arg line="-j4"/>
+    </exec>
+    <!-- TODO: we should actually build builtin.abc -->
+    <copy tofile="${deploy.dir}/tamarin-builtin.abc" file="${tamarin.dir}/core/builtin.abc"/>
+  </target>
+
+  <!-- tests the HTTP library -->
+  <target name="http-test" unless="no_build_httplib" depends="httplib">
+    <asc as3="true" strict="true" classpathref="classpath">
+      <import dir="${deploy.dir}">
+        <include name="tamarin-builtin.abc"/>
+        <include name="thane.abc"/>
+        <include name="http.abc"/>
+      </import>
+      <filespec dir="http/test">
+        <include name="**/*.as"/>
+      </filespec>
+    </asc>
+    <exec executable="${tamdist.dir}/thane/avmthane">
+      <arg line="${deploy.dir}/http.abc http/test/Test.abc -- http://www.whirled.com/status"/>
     </exec>
   </target>
 
