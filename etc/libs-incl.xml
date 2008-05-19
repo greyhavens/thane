@@ -3,5 +3,6 @@
 <project name="library-dependencies">
   <fileset dir="${libs.dir}" id="thane.libs">
     <include name="asc.jar"/>
+    <include name="flexTasks.jar"/>
   </fileset>
 </project>
