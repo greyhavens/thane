@@ -206,42 +206,8 @@ public abstract class FlexTask extends Java
      */
     public final void execute() throws BuildException
     {
-        String flexHomeProperty = getProject().getProperty("FLEX_HOME");
-
-        if (flexHomeProperty == null)
-        {
-            throw new BuildException("FLEX_HOME must be set to use the Flex Ant Tasks");
-        }
-
-        System.setProperty("FLEX_HOME", flexHomeProperty);
-
-        //FIXME: wrap paths in quotes in case they contains spaces (so cmdline parses correctly)
-        //
-        //     this is a poor solution -- the problem is that arguments are passed as Objects
-        //     directly to the compiler, and the compiler will concat them with other Strings.
-        //     So you get badly formatted strings like: "C:/sdk"/frameworks
-        //
-        //     If both entrypoints had different methods of config serialization, or shared
-        //     the same method (either pass objects, or a commandline string), this would be
-        //     okay. For now we solve it piecemeal.
-        //
-        //     Search for uses of 'fork' to track this hack.
-        {
-            final String tmpFlexHomeProperty
-                = fork
-                    // wrap in double-quotes in case path contains spaces
-                    ? ('"' + flexHomeProperty + "/frameworks\"")
-                    : (flexHomeProperty + "/frameworks");
-
-            cmdl.createArgument().setValue("+flexlib=" + tmpFlexHomeProperty);
-        }
         prepareCommandline();
-
-        if (fork)
-            executeOutProcess();
-        else
-            executeInProcess();
-
+        executeOutProcess();
     }
 
     /**
@@ -252,14 +218,9 @@ public abstract class FlexTask extends Java
     {
         try
         {
-            Class toolClass = resolveClass(toolClassName);
-            URL url = toolClass.getProtectionDomain().getCodeSource().getLocation();
-            String fileName = url.getFile();
-
             String[] temp = cmdl.getArguments();
 
             super.setClassname(toolClassName);
-            super.setClasspath(new Path(getProject(), fileName));
             StringBuffer stringBuffer = new StringBuffer();
 
             //converts arguments into a string for use by executeJava()

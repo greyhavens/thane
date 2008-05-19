@@ -75,7 +75,7 @@ public class FlexFileSet extends FileSet implements OptionSource
         }
         else if (spec != null)
         {
-            cmdl.createArgument().setValue("-" + spec.getFullName() + "=");
+            cmdl.createArgument().setValue("-" + spec.getFullName() + " ");
         }
     }
 
@@ -94,14 +94,9 @@ public class FlexFileSet extends FileSet implements OptionSource
         {
             for (int i = 0; i < files.length; i++)
             {
-                cmdl.createArgument().setValue("-" + spec.getFullName() + equalString() +
+                cmdl.createArgument().setValue("-" + spec.getFullName() + " " +
                                                utils.resolveFile(base, files[i]).getAbsolutePath());
             }
         }
-    }
-
-    private String equalString()
-    {
-        return append ? "+=" : "=";
     }
 } //End of FlexFileSet

@@ -34,7 +34,7 @@ public class ConfigAppendString extends ConfigString
 
         if ((value != null) && (value.length() > 0))
         {
-            cmdl.createArgument().setValue("+" + spec.getFullName() + "=" + value);
+            cmdl.createArgument().setValue("+" + spec.getFullName() + " " + value);
         }
     }
 }

@@ -46,11 +46,11 @@ public class ConfigString extends ConfigVariable
         {
             if (value.length() > 0)
             {
-                cmdl.createArgument().setValue("-" + spec.getFullName() + "=" + value);
+                cmdl.createArgument().setValue("-" + spec.getFullName() + " " + value);
             }
             else
             {
-                cmdl.createArgument().setValue("-" + spec.getFullName() + "=");
+                cmdl.createArgument().setValue("-" + spec.getFullName() + " ");
             }
         }
     }

@@ -51,8 +51,8 @@ public final class ConfigBoolean extends ConfigVariable
 
     public void addToCommandline(Commandline cmdl)
     {
-        if (isSet)
-            cmdl.createArgument(true).setValue("-" + spec.getFullName() + "=" + enabled);
+        if (isSet && enabled)
+            cmdl.createArgument(true).setValue("-" + spec.getFullName());
     }
 
     private boolean parseValue(String value)

@@ -107,7 +107,7 @@ public class NestedAttributeElement implements DynamicAttribute, OptionSource
                 }
             }
             
-            cmdl.createArgument().setValue("-" + spec.getFullName() + "=" + stringBuffer);
+            cmdl.createArgument().setValue("-" + spec.getFullName() + " " + stringBuffer);
         }
     }
 } //End of NestedAttributeElement

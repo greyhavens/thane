@@ -37,8 +37,7 @@
             <fileset dir="${module.dir}"
                      includes="flexTasks.tasks" />
             <fileset dir="${module.classes}"
-                     includes="**/*.class"
-                     excludes="flex/ant/AscTask*.class" />
+                     includes="**/*.class" />
             <fileset dir="${basedir}"
                      includes="templates/html-templates/**"
                      excludes="templates/html-templates/metadata/**" />

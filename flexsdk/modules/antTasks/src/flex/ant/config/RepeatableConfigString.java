@@ -38,7 +38,7 @@ public class RepeatableConfigString extends RepeatableConfigVariable
     public void addToCommandline(Commandline cmdl)
     {
        if (values.size() != 0)
-            cmdl.createArgument().setValue("-" + spec.getFullName() + "=" + makeArgString());
+            cmdl.createArgument().setValue("-" + spec.getFullName() + " " + makeArgString());
     }
 
     private String makeArgString()
