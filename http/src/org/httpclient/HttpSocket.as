@@ -20,7 +20,6 @@ package org.httpclient {
   
   import org.httpclient.io.HttpRequestBuffer;
   import org.httpclient.io.HttpResponseBuffer;
-  import org.httpclient.io.HttpBuffer;
   
   import org.httpclient.events.*;
       
