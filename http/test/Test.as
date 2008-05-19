@@ -23,7 +23,15 @@ function event (evt :Event) :void
 
 function dataEvent (evt :HttpDataEvent) :void
 {
-    trace("Got data: " + evt.readUTFBytes());
+    trace("Got data: loading...");
+    var dom :Domain = Domain.currentDomain.loadBytes(evt.bytes);
+    trace("Bytecode successfully loaded!");
+    var tinyClass :Class = Domain.currentDomain.getClass("Tiny");
+    trace("Class 'Tiny' located: " + tinyClass);
+    if (tinyClass != null) {
+        var tiny :Object = new tinyClass();
+        tiny.probe();
+    }
 }
 
 client.request(new URI(System.argv[0]), new Get());

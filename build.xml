@@ -61,7 +61,8 @@
 
   <!-- builds the Thane library -->
   <target name="thanelib" unless="no_build_thanelib" depends="checkthanelib">
-    <asclib as3="true" strict="true" classpathref="classpath">
+    <asclib as3="true" strict="true" classpathref="classpath"
+            outdir="${tamarin.dir}/thane" out="thane">
       <import dir="${tamarin.dir}">
         <include name="core/builtin.abc"/>
       </import>
@@ -109,12 +110,10 @@
         <include name="thane.abc"/>
         <include name="http.abc"/>
       </import>
-      <filespec dir="http/test">
-        <include name="**/*.as"/>
-      </filespec>
+      <filespec dir="http/test" includes="Test.as"/>
     </asc>
     <exec executable="${tamdist.dir}/thane/avmthane">
-      <arg line="${deploy.dir}/http.abc http/test/Test.abc -- http://www.whirled.com/status"/>
+      <arg line="${deploy.dir}/http.abc http/test/Test.abc -- http://www.alyx.com/zell/tiny.abc"/>
     </exec>
   </target>
 
