@@ -19,9 +19,20 @@ try {
     trace("TINY.AS:: Tiny class NOT found within its own execution Domain: " + e);
 }
 
+var timClass :Class
 try {
-    var timClass :Class = Domain.currentDomain.getClass("Tim");
-    trace("TINY.AS:: Tim class successfully located from the Tiny domain.");
+    timClass = Domain.currentDomain.getClass("Tim");
+    trace("TINY.AS:: Tim class successfully located from the Tiny domain: " + timClass);
 } catch (e: Error) {
-    trace("TIY.AS:: Tim class NOT found from the Tiny domain: " + e);
+    trace("TINY.AS:: Tim class NOT found from the Tiny domain: " + e);
+}
+
+if (timClass != null) {
+    try {
+        trace("TINY.AS:: Calling static probe() in Tim...");
+        timClass.probe.apply();
+        trace("TINY.AS:: Success! Wait, that's bad.");
+    } catch (e: Error) {
+        trace("TINY.AS:: Hurray, error executing the call: " + e);
+    }
 }
