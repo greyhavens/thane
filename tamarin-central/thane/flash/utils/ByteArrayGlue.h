@@ -149,8 +149,6 @@ namespace thane
 		ByteArray& GetByteArray() { return m_byteArray; }
 		ByteArrayFile& GetByteArrayFile() { return m_byteArray; }
 
-		void writeFile(Stringp filename);
-
 	private:
 		MMgc::Cleaner c;
 		ByteArrayFile m_byteArray;
@@ -166,8 +164,6 @@ namespace thane
 		ByteArrayClass(VTable *vtable);
 
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
-
-		ByteArrayObject *readFile(Stringp filename);
 
 		DECLARE_NATIVE_MAP(ByteArrayClass)
     };

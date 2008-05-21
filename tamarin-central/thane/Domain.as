@@ -51,11 +51,6 @@ public class Domain
     public native function isDynamic (value :*) :Boolean;
 
 	public native static function get currentDomain():Domain;
-
-	public function load(filename:String)
-	{
-		return loadBytes(ByteArray.readFile(filename))
-	}
 }
 
 }

@@ -79,9 +79,6 @@ namespace thane
 		NATIVE_METHOD(flash_utils_ByteArray_uncompress,        ByteArrayObject::zlib_uncompress)
 		NATIVE_METHOD(flash_utils_ByteArray_endian_get,    ByteArrayObject::get_endian)
 		NATIVE_METHOD(flash_utils_ByteArray_endian_set,              ByteArrayObject::set_endian)
-		NATIVE_METHOD(flash_utils_ByteArray_writeFile,	ByteArrayObject::writeFile)
-
-		NATIVE_METHOD(flash_utils_ByteArray_readFile, ByteArrayClass::readFile)
 	END_NATIVE_MAP()
 		
 	//
@@ -616,47 +613,6 @@ namespace thane
         return new (core()->GetGC(), ivtable->getExtraSize()) ByteArrayObject(ivtable, prototype);
     }
 
-
-	ByteArrayObject * ByteArrayClass::readFile(Stringp filename)
-	{
-		Toplevel* toplevel = this->toplevel();
-		if (!filename) {
-			toplevel->throwArgumentError(kNullArgumentError, "filename");
-		}
-		UTF8String* filenameUTF8 = filename->toUTF8String();
-		FILE *fp = fopen(filenameUTF8->c_str(), "rb");
-		if (fp == NULL) {
-			toplevel->throwError(kFileOpenError, filename);
-		}
-		fseek(fp, 0L, SEEK_END);
-		long len = ftell(fp);
-		rewind(fp);
-
-		unsigned char *c = new unsigned char[len+1];
-
-		Atom args[1] = {nullObjectAtom};
-		ByteArrayObject *b = (ByteArrayObject*)AvmCore::atomToScriptObject(construct(0,args));
-		b->setLength(0);
-
-		while (len > 0)
-		{
-			int actual = (int)fread(c, 1, len, fp);
-			if (actual > 0)
-			{
-				b->fill(c, actual);
-				len -= actual;
-			}
-			else
-			{
-				break;
-			}
-		}
-		b->seek(0);
-
-		delete [] c;
-		return b;
-	}
-
 	Stringp ByteArrayObject::get_endian()
 	{
 		return (m_byteArray.GetEndian() == kBigEndian) ? core()->constantString("bigEndian") : core()->constantString("littleEndian");
@@ -679,24 +635,6 @@ namespace thane
 			toplevel()->throwArgumentError(kInvalidArgumentError, "type");
 		}
 	}
-
-	void ByteArrayObject::writeFile(Stringp filename)
-	{
-		Toplevel* toplevel = this->toplevel();
-		if (!filename) {
-			toplevel->throwArgumentError(kNullArgumentError, "filename");
-		}
-
-		UTF8String* filenameUTF8 = filename->toUTF8String();
-		FILE *fp = fopen(filenameUTF8->c_str(), "wb");
-		if (fp == NULL) {
-			toplevel->throwError(kFileWriteError, filename);
-		}
-
-		fwrite(&(this->GetByteArray())[0], this->get_length(), 1, fp);
-		fclose(fp);
-	}
-
 }	
 
 

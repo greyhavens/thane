@@ -87,9 +87,6 @@ import flash.net.ObjectEncoding;
 public class ByteArray
     implements flash.utils.IDataOutput, flash.utils.IDataInput
 {
-	public native static function readFile(filename:String):ByteArray;
-	public native function writeFile(filename:String):void;
-
 	/**
 	 * Reads <code>length</code> bytes of data from the byte stream.
 	 * The bytes are read into the <code>ByteArray</code> object specified
