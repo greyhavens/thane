@@ -37,12 +37,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 {
-    var total_frontend = 0;
-    var total_backend = 0;
+    let total_frontend = 0;
+    let total_backend = 0;
 
-    var before = new Date();
+    let before = new Date();
 
-    var argv = ESC::commandLineArguments();
+    let argv = ESC::commandLineArguments();
     for ( let i=0, limit=argv.length ; i < limit ; i++ ) {
         let fname = argv[i];
         let [parse,cogen] = ESC::compileFile(fname);
@@ -53,7 +53,7 @@
         print ("  Cogen:       " + cogen + " ms");
     }
 
-    var after = new Date();
+    let after = new Date();
 
     if (argv.length > 1) {
         print("");

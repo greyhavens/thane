@@ -144,6 +144,18 @@ namespace MMgc
 	 *
 	 * If executableFlag is false, the memory is made non-executable and
 	 * read-write.
+	 *
+	 * [rickr] bug #182323  The codegen can bail in the middle of generating 
+	 * code for any number of reasons.  When this occurs we need to ensure 
+	 * that any code that was previously on the page still executes, so we 
+	 * leave the page as PAGE_EXECUTE_READWRITE rather than PAGE_READWRITE.  
+	 * Ideally we'd use PAGE_READWRITE and then on failure revert it back to 
+	 * read/execute but this is a little tricker and doesn't add too much 
+	 * protection since only a single page is 'exposed' with this technique.
+	 *
+	 * [leon.sha] from above discription, if you want to change the excuatable
+	 * status of one pice of memory, you changed the whole page's status. So
+	 * just ignore the executableFlag.
 	 */
 	void GCHeap::SetExecuteBit(void *address,
 							   size_t size,
@@ -162,8 +174,7 @@ namespace MMgc
 #ifdef DEBUG
 		int retval =
 #endif
-		  mprotect((maddr_ptr)beginPage, sizePaged,
-			   executableFlag ? (PROT_READ|PROT_WRITE|PROT_EXEC) : (PROT_READ|PROT_WRITE));
+		  mprotect((maddr_ptr)beginPage, sizePaged, (PROT_READ|PROT_WRITE|PROT_EXEC));
 
 		GCAssert(retval == 0);
 	}

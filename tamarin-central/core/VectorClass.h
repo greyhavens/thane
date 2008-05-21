@@ -302,6 +302,23 @@ namespace avmplus
 
 		DWB(T *) m_array;
 
+		// Helper method to init the vector with another object
+		void initWithObj(Atom obj) 
+		{
+			ScriptObject* so_args = (obj&7)==kObjectType ?  AvmCore::atomToScriptObject(obj) : 0;
+			if( so_args )
+			{
+				uint32 len = toplevel()->arrayClass->getLengthHelper(so_args);
+				for( uint32 i = 0; i < len; ++i )
+				{
+					this->setUintProperty(i, so_args->getUintProperty(i));
+				}
+				return;
+			}
+			toplevel()->throwTypeError(kCheckTypeFailedError, core()->atomToErrorString(obj), core()->toErrorString(this->traits()));
+			return;
+		}
+
 	protected:
 
 		enum { kGrowthIncr = 4096 };
@@ -512,6 +529,8 @@ namespace avmplus
 
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
 
+		Atom call(int argc, Atom* argv);
+
 		IntVectorObject* newVector(uint32 length = 0);
 
 		DECLARE_NATIVE_MAP(IntVectorClass)
@@ -524,6 +543,8 @@ namespace avmplus
 
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
 
+		Atom call(int argc, Atom* argv);
+
 		UIntVectorObject* newVector(uint32 length = 0);
 
 		DECLARE_NATIVE_MAP(UIntVectorClass)
@@ -535,6 +556,8 @@ namespace avmplus
 		DoubleVectorClass(VTable *vtable);
 
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
+
+		Atom call(int argc, Atom* argv);
 
 		DoubleVectorObject* newVector(uint32 length = 0);
 
@@ -566,12 +589,17 @@ namespace avmplus
 
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
 
+		Atom call(int argc, Atom* argv);
+
 		ObjectVectorObject* newVector(ClassClosure* type, uint32 length = 0);
+
+		void set_gen_proto(Atom func);
 
 		DECLARE_NATIVE_MAP(ObjectVectorClass)
 	
 	private:
 		DRCWB(ClassClosure*) index_type;
+		ATOM_WB gen_proto_method;
 	};
 
 }	

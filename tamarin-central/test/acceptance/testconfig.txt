@@ -57,6 +57,3 @@ ecma3/TypeConversion/e9_3_1_3_rt:parseInt\("123456789012345678"\) ,   .*lnx-tvm-
 ecma3/Math/e15_8_2_6:Infinity/Math.ceil\(-Number.MIN_VALUE\)    ,   x86-mac10.5-tvm.*     ,   expectedfail   ,   bug https://bugzilla.mozilla.org/show_bug.cgi?id=408057
 ecma3/Math/e15_8_2_6:Infinity/Math.ceil\(-0.9\)                 ,   x86-mac10.5-tvm.*     ,   expectedfail   ,   bug https://bugzilla.mozilla.org/show_bug.cgi?id=408057
 
-# Failures on 64bit windows in release bug https://bugzilla.mozilla.org/show_bug.cgi?id=429477
-as3/Definitions/const/ConstVarInsideGlobalFunction2             ,   x86-win64-tvm-release ,   expectedfail   ,   bug https://bugzilla.mozilla.org/show_bug.cgi?id=429477
-as3/Definitions/const/ConstVarInsideGlobalFunction4             ,   x86-win64-tvm-release ,   expectedfail   ,   bug https://bugzilla.mozilla.org/show_bug.cgi?id=429477

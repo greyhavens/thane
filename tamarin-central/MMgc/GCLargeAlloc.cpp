@@ -92,7 +92,7 @@ namespace MMgc
 	}
 
 	
-	void GCLargeAlloc::Free(void *item)
+	void GCLargeAlloc::Free(const void *item)
 	{
 		LargeBlock *b = GetBlockHeader(item);
 

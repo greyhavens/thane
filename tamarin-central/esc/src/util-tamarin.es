@@ -36,44 +36,40 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* internal */ namespace FLASH_UTILS = "flash.utils";
-
-{
-    use namespace FLASH_UTILS;
+use namespace "flash.utils";
     
-    // Placeholder until we have decimal support.
+// Placeholder until we have decimal support.
 
-    public class decimal {
-        const value;
+class decimal {
+    const value;
 
-        // s must be a valid floating point literal optionally prefixed
-        // by + or -, no spaces on either side.
-        public function decimal(s) 
-            : value=s 
-        {
-        }
-
-        public function toString()
-            value;
-
-        public function asDouble()
-            parseFloat(value);
+    // s must be a valid floating point literal optionally prefixed
+    // by + or -, no spaces on either side.
+    function decimal(s) 
+        : value=s 
+    {
     }
 
-    public function writeFile(s:String, filename:String) {
-        var b = new ByteArray();
-        b.writeUTFBytes(s);
-        b.writeFile(filename);
-    }
+    function toString()
+        value;
+
+    function asDouble()
+        parseFloat(value);
+}
+
+function writeFile(s:String, filename:String) {
+    var b = new ByteArray();
+    b.writeUTFBytes(s);
+    b.writeFile(filename);
+}
     
-    public function readFile(filename:String) {
-        var b = ByteArray.readFile(filename);
-        return b.readUTFBytes(b.length);
-    }
+function readFile(filename:String) {
+    var b = ByteArray.readFile(filename);
+    return b.readUTFBytes(b.length);
+}
 
-    public function dumpABCFile(abcfile, filename) {
-        var bytes = abcfile.getBytes();
-        bytes.writeFile(filename);
-        return bytes.length;
-    }
+function dumpABCFile(abcfile, filename) {
+    var bytes = abcfile.getBytes();
+    bytes.writeFile(filename);
+    return bytes.length;
 }

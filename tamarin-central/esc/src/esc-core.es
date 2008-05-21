@@ -36,81 +36,75 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* internal */ namespace AVMPLUS = "avmplus";
+use default namespace ESC,
+    namespace ESC;
 
-{
-    use default namespace ESC;
+const version = { major: 0, minor: 1, nick: "That depends on what the meaning of 'is' is" };
 
-    function readFile(fn) {
-        use namespace AVMPLUS;
-        return File.read (fn);
-    }
-
-    function loadBytes(bytes) {
-        use namespace AVMPLUS;
-        Domain.currentDomain.loadBytes(bytes);
-    }
-
-    function commandLineArguments() {
-        use namespace AVMPLUS;
-        return System.argv;
-    }
-	
-    function getTopFixtures()
-        ESC::bootstrap_namespaces;    // in esc-env.es
-
-    function compile(consume, produce, context) {
-        use namespace Parse;
-
-        var t1 = new Date;
-
-        var input = consume()
-        var parser = new Parser( input, getTopFixtures(), context );
-        var prog = parser.program();
-
-        var t2 = new Date;
-
-        produce( Gen::cg(prog) );
-
-        var t3 = new Date;
-
-        return [t2-t1, t3-t2];
-    }
-
-    // Compilation entry points
-
-    function compileFile(fname)
-        compile( function () { return ESC::readFile(fname) },
-                 function (abc) { return dumpABCFile(abc, fname + ".abc") },
-                 fname );
-
-    
-    function compileAndLoadFile(fname)
-        compile( function () { return ESC::readFile(fname) },
-                 function (abc) { return ESC::loadBytes(abc.getBytes()) },
-                 fname );
-
-    function compileAndLoadString(input, context)
-        compile( function () { return input },
-                 function (abc) { return ESC::loadBytes(abc.getBytes()) },
-                 context );
-
-    // AST encoding and decoding entry points
-
-    function parseFromStringAndEncodeAst(input, context="string input"): String {
-        use namespace Parse;
-
-        var parser = new Parser( input, getTopFixtures(), context );
-        var program = parser.program();
-        return (new Ast::Serializer()).serialize(program);
-    }
-
-    function parseFromFileAndEncodeAst(fname)
-        parseFromStringAndEncodeAst(ESC::readFile(fname), fname);
-
-    function decodeAstFromString(input): Ast::Program
-        (new Ast::Unserializer()).unserializeText(input);
-
-    function decodeAstFromFile(fname)
-        decodeAstFromString(ESC::readFile(fname));
+function readFile(fn) {
+    use namespace "avmplus";
+    return File.read (fn);
 }
+
+function loadBytes(bytes) {
+    use namespace "avmplus";
+    Domain.currentDomain.loadBytes(bytes);
+}
+
+function commandLineArguments() {
+    use namespace "avmplus";
+    return System.argv;
+}
+	
+function getTopFixtures()
+    ESC::bootstrap_namespaces;    // in esc-env.es
+
+function compile(consume, produce, context) {
+    var t1 = new Date;
+
+    var input = consume();
+    var parser = new Parse::Parser( input, getTopFixtures(), context );
+    var prog = parser.program();
+
+    var t2 = new Date;
+
+    produce( Gen::cg(prog) );
+
+    var t3 = new Date;
+
+    return [t2-t1, t3-t2];
+}
+
+// Compilation entry points
+
+function compileFile(fname)
+    compile( function () { return ESC::readFile(fname) },
+             function (abc) { return dumpABCFile(abc, fname + ".abc") },
+             fname );
+
+function compileAndLoadFile(fname)
+    compile( function () { return ESC::readFile(fname) },
+             function (abc) { return ESC::loadBytes(abc.getBytes()) },
+             fname );
+
+function compileAndLoadString(input, context)
+    compile( function () { return input },
+             function (abc) { return ESC::loadBytes(abc.getBytes()) },
+             context );
+
+// AST encoding and decoding entry points
+
+function parseFromStringAndEncodeAst(input, context="string input"): String {
+    var parser = new Parse::Parser( input, getTopFixtures(), context );
+    var program = parser.program();
+    return (new Ast::Serializer()).serialize(program);
+}
+
+function parseFromFileAndEncodeAst(fname)
+    parseFromStringAndEncodeAst(ESC::readFile(fname), fname);
+
+function decodeAstFromString(input): Ast::Program
+    (new Ast::Unserializer()).unserializeText(input);
+
+function decodeAstFromFile(fname)
+    decodeAstFromString(ESC::readFile(fname));

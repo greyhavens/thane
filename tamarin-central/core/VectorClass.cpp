@@ -241,6 +241,22 @@ namespace avmplus
         return new (core()->GetGC(), ivtable->getExtraSize()) IntVectorObject(ivtable, prototype);
     }
 
+	Atom IntVectorClass::call(int argc, Atom* argv) 
+	{
+		if (argc != 1)
+		{
+			toplevel()->throwArgumentError(kCoerceArgumentCountError, toplevel()->core()->toErrorString(argc));
+		}
+		if( core()->istype(argv[1], ivtable()->traits ) )
+			return argv[1];
+
+		IntVectorObject* v = (IntVectorObject*)createInstance(ivtable(), prototype);
+
+		v->initWithObj(argv[1]);
+
+		return v->atom();
+	}
+
 	IntVectorObject* IntVectorClass::newVector(uint32 length)
 	{
 		VTable* ivtable = this->ivtable();
@@ -249,6 +265,7 @@ namespace avmplus
 		v->set_length(length);
 		return v;
 	}
+
 
 	VectorBaseObject* IntVectorObject::newVector(uint32 length)
 	{
@@ -289,6 +306,23 @@ namespace avmplus
     {
         return new (core()->GetGC(), ivtable->getExtraSize()) UIntVectorObject(ivtable, prototype);
     }
+
+	Atom UIntVectorClass::call(int argc, Atom* argv) 
+	{
+		if (argc != 1)
+		{
+			toplevel()->throwArgumentError(kCoerceArgumentCountError, toplevel()->core()->toErrorString(argc));
+		}
+
+		if( core()->istype(argv[1], ivtable()->traits ) )
+			return argv[1];
+
+		UIntVectorObject* v = (UIntVectorObject*)createInstance(ivtable(), prototype);
+
+		v->initWithObj(argv[1]);
+
+		return v->atom();
+	}
 
 	UIntVectorObject* UIntVectorClass::newVector(uint32 length)
 	{
@@ -338,6 +372,23 @@ namespace avmplus
     {
         return new (core()->GetGC(), ivtable->getExtraSize()) DoubleVectorObject(ivtable, prototype);
     }
+
+	Atom DoubleVectorClass::call(int argc, Atom* argv) 
+	{
+		if (argc != 1)
+		{
+			toplevel()->throwArgumentError(kCoerceArgumentCountError, toplevel()->core()->toErrorString(argc));
+		}
+
+		if( core()->istype(argv[1], ivtable()->traits ) )
+			return argv[1];
+
+		DoubleVectorObject* v = (DoubleVectorObject*)createInstance(ivtable(), prototype);
+
+		v->initWithObj(argv[1]);
+
+		return v->atom();
+	}
 
 	DoubleVectorObject* DoubleVectorClass::newVector(uint32 length)
 	{
@@ -441,17 +492,40 @@ namespace avmplus
 			new_type->index_type = (ClassClosure*)AvmCore::atomToScriptObject(type);
 
 			// Is this right?  Should each instantiation get its own prototype?
-			new_type->prototype = toplevel()->objectVectorClass->prototype;
+			//new_type->prototype = toplevel()->objectVectorClass->prototype;
+
+			Atom args[1] = { toplevel()->objectVectorClass->atom() };
+			Atom proto = AvmCore::atomToScriptObject(toplevel()->objectVectorClass->gen_proto_method)->call(0, args);
+			new_type->prototype = AvmCore::atomToScriptObject(proto);
+
 			instantiated_types->put(fullname->atom(), new_type->atom());
 		}
 		return (Atom)instantiated_types->get(fullname->atom());
 	}
 
+
 	ScriptObject* VectorClass::createInstance(VTable * /*ivtable*/,
 		ScriptObject * /*prototype*/)
 	{
-		// TODO: throw?
-		return NULL;
+		toplevel()->throwTypeError(kConstructOfNonFunctionError);
+		return 0;
+	}
+
+	Atom ObjectVectorClass::call(int argc, Atom* argv) 
+	{
+		if (argc != 1)
+		{
+			toplevel()->throwArgumentError(kCoerceArgumentCountError, toplevel()->core()->toErrorString(argc));
+		}
+
+		if( core()->istype(argv[1], ivtable()->traits ) )
+			return argv[1];
+
+		ObjectVectorObject* v = (ObjectVectorObject*)createInstance(ivtable(), prototype);
+
+		v->initWithObj(argv[1]);
+
+		return v->atom();
 	}
 
 	ObjectVectorObject* VectorClass::newVector(ClassClosure* /*type*/, uint32 /*length*/)
@@ -489,6 +563,7 @@ namespace avmplus
 		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private__map,		ObjectVectorObject::map, 0)
 		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private__filter,		ObjectVectorObject::filter, 0)
 		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_AS3_unshift,		ObjectVectorObject::unshift, 0)
+		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private_genPrototype_set,		ObjectVectorClass::set_gen_proto, 0)
 	END_NATIVE_MAP()
 
 	ObjectVectorClass::ObjectVectorClass(VTable *vtable)
@@ -506,6 +581,11 @@ namespace avmplus
 		v->set_type(index_type->atom());
         return v;
     }
+
+	void ObjectVectorClass::set_gen_proto(Atom func)
+	{
+		gen_proto_method = func;
+	}
 
 	ObjectVectorObject* ObjectVectorClass::newVector(ClassClosure* type, uint32 length)
 	{

@@ -41,49 +41,50 @@
  * after processing.  Otherwise, read input from the console.
  */
 
-/* internal */ namespace AVMPLUS = "avmplus";
-/* internal */ namespace FLASH_UTILS = "flash.utils";
+use default namespace internal;
 
-{
-    use namespace AVMPLUS;
-    use namespace FLASH_UTILS;
+use namespace "avmplus";
+use namespace "flash.utils";
 
-    var argv = ESC::commandLineArguments();
-    if (argv.length == 0)
-        repl();
-    else {
-        for ( let i=0 ; i < argv.length ; i++ )
-            ESC::compileAndLoadFile(argv[i]);
-    }
-    System.exit(0);
+var argv = ESC::commandLineArguments();
+if (argv.length == 0) {
+    //let v = ESC::version;
+    //print("ESC v" + v.major + "." + v.minor + " (\"" + v.nick + "\")");
+    repl();
+}
+else {
+    for ( let i=0 ; i < argv.length ; i++ )
+        ESC::compileAndLoadFile(argv[i]);
+}
+System.exit(0);
 
-    // "eval" really belongs in the builtins, but OK here for the moment.
-    public function eval(...args)
-        ESC::evaluateInScopeArray(args, [], "");
+// "eval" really belongs in the builtins, but OK here for the moment.
+public function eval(...args)
+    ESC::evaluateInScopeArray(args, [], "");
 
-    function repl() {
-        while( true )             {
-            let s = "";
-            System.write("es> ");
-            while( true ) {
-                try {
-                    s += System.readLine();
-                    ESC::compileAndLoadString(s, "(repl)");
-                    break; // worked - this command is complete.
-                } catch (x) {
-                    // If it is a premature-EOF error, read another line
-                    if (x.message.indexOf("found EOS") == -1) {
-                        let msg = x.getStackTrace();
-                        if (!msg) { // probably a non *_Debugger build
-                            msg = x;
-                        }
-                        print(msg);
-                        break;
+function repl() {
+    while( true ) {
+        let s = "";
+        System.write("es> ");
+        while( true ) {
+            try {
+                s += System.readLine();
+                ESC::compileAndLoadString(s, "(repl)");
+                break; // worked - this command is complete.
+            } catch (x) {
+                // If it is a premature-EOF error, read another line
+                if (x.message.indexOf("found EOS") == -1) {
+                    let msg = x.getStackTrace();
+                    if (!msg) { // probably a non *_Debugger build
+                        msg = x;
                     }
-                    // else fall through and read another line
+                    print(msg);
+                    break;
                 }
+                // else fall through and read another line
             }
         }
     }
 }
+
 

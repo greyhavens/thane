@@ -568,16 +568,16 @@ class Scene {
 	var view;
 
 	function Scene() {
-		this.lights = new Vector(0);
-		this.objects = new Vector(0);
+		this.lights = new Array();
+		this.objects = new Array();
 	}
 
 	function addLight(l) {
-		this.lights.addElement(l);
+		this.lights.push(l);
 	}
 
 	function addObject(object) {
-		this.objects.addElement(object);
+		this.objects.push(object);
 	}
 
 	function setView(view) {
@@ -589,24 +589,24 @@ class Scene {
 	}
 
 	function getLight(number) {
-		return  this.lights.getElementAt(number);
+		return  this.lights[number];
 	}
 
 	function getObject( number) {
-		return objects.getElementAt(number);
+		return objects[number];
 	}
 
 	function getLights() {
 		//print("start getLights");
-		return this.lights.getSize();
+		return this.lights.length;
 	}
 
 	function getObjects() {
-		return this.objects.getSize();
+		return this.objects.length;
 	}
 
 	function setObject(object, pos) {
-		this.objects.setElementAt(object, pos);
+		this.objects[pos] = object;
 	}
 }
 class Sphere  extends Primitive {
@@ -876,17 +876,20 @@ class View {
 //http://sourceforge.net/projects/jsvector/
 // Vector Constructor -- constructs the object
 // Vector Constructor -- constructs the object
+
+// Vector is now a builtin class - using that instead
+/*
 function Vector(inc) {
 	if (inc == 0) {
 		inc = 100;
 	}
 	
-	/* Properties */
+	// Properties
 	this.data = new Array(inc);
 	this.increment = inc;
 	this.size = 0;
 	
-	/* Methods */
+	// Methods 
 	this.getCapacity = getCapacity;
 	this.getSize = getSize;
 	this.isEmpty = isEmpty;
@@ -1101,4 +1104,5 @@ function toString() {
 function overwriteElementAt(obj, index) {
 	this.data[index] = obj;
 }
+*/
 /*****************End Vector class*******************/

@@ -42,17 +42,17 @@ ESC var bootstrap_namespaces =
     ["Abc",
      "Asm",
      "Ast",
-     "AstEncode",
-     "AstDecode",
-     "Debug", 
-     "Decode", 
+     "Char",
+     "Debug",
+     "Decode",  // should get rid of this
      "Emit",
-     "Encode", 
+     "Encode",  // should get rid of this
      "ESC", 
      "Gen",
      "Lex",
      "Parse", 
      "Release", 
+     "Token", 
      "Util"].map(function (id) {
-                     return [new Ast::PropName(new Ast::Name(Ast::noNS, id)),
-                             new Ast::NamespaceFixture(new Ast::AnonymousNamespace(id))]; });
+                     return new Ast::Fixture(new Ast::PropName(new Ast::Name(Ast::publicNS, id)),
+                                             new Ast::NamespaceFixture(new Ast::UnforgeableNamespace(id))); });

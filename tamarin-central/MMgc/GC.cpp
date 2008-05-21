@@ -763,7 +763,7 @@ namespace MMgc
 		return Alloc(num * elsize, flags, skip);
 	}
 
-	void GC::Free(void *item)
+	void GC::Free(const void *item)
 	{
 #ifdef MMGC_THREADSAFE
 		GCAutoLock _lock(m_lock);

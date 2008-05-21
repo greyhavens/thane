@@ -194,7 +194,7 @@ namespace MMgc
 	/** 
 	* Given a pointer to user memory do debug checks and return pointer to real memory
 	*/
-	void *DebugFree(void *item, int poison, int skip);		
+	void *DebugFree(const void *item, int poison, int skip);		
 
 	/**
 	* Given a pointer to real memory do debug checks and return pointer to user memory

@@ -83,7 +83,7 @@ namespace MMgc
 		~GCAlloc();
 		
 		void* Alloc(size_t size, int flags);
-		static void Free(void *ptr);
+		static void Free(const void *ptr);
 		void Finalize();
 		uint32 GetItemSize() { return m_itemSize; }
 		void ClearMarks();
@@ -244,7 +244,7 @@ namespace MMgc
 				return bits;
 			}
 			
-			void FreeItem(void *item, int index);
+			void FreeItem(const void *item, int index);
 
 			bool IsFull() const
 			{

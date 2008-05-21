@@ -40,23 +40,48 @@ from os.path import *
 from os import environ,walk,remove
 from sys import argv
 from glob import glob
+from getopt import getopt
 from datetime import datetime
 import sys, string, time
 import pexpect
 
-globs = { 'avm':'', 'asc':'', 'globalabc':''}
-if 'AVM' in environ:
-    globs['avm'] = environ['AVM'].strip()
+
+globs = { 'asc':'', 'globalabc':''}
 if 'ASC' in environ:
     globs['asc'] = environ['ASC'].strip()
 if 'GLOBALABC' in environ:
 	globs['globalabc'] = environ['GLOBALABC'].strip()
-if 'JAVA_HOME' in environ:
-    globs['java_home'] = environ['JAVA_HOME'].strip()
 
-args = argv[1:]
-if len(args)==0:
-	args.append(".")
+def usage(c):
+	print 'usage: %s [options] ' % basename(argv[0])
+	print ' -a --asc           compiler to use'
+	print ' -g --globalabc     location of global.abc'
+	print ' -h --help          display help and exit'
+	print ''
+	exit(c)
+
+try:
+	opts, args = getopt(argv[1:], 'a:g:h', ['asc=','globalabc=','help'])
+except:
+	opts = [('', '')]
+	args = ['.']
+
+if not args:
+  args = ['.']
+for o, v in opts:
+	if o in ('-h', '--help'):
+		usage(0)
+	elif o in ('-a', '--asc'):
+		globs['asc'] = v
+	elif o in ('-g', '--globalabc'):
+		globs['globalabc'] = v
+     
+
+if not isfile(globs['asc']):
+	usage('ERROR: cannot build %s, ASC environment variable or --asc must be set to asc.jar' % globs['asc'])
+	
+if not isfile(globs['globalabc']):
+	usage('ERROR: global.abc %s does not exist, GLOBALABC environment variable or --globalabc must be set to builtin.abc' % globs['globalabc'])
 
 def istest(f):
 	return f.endswith(".as") and basename(f) != "shell.as" and not f.endswith("Util.as")

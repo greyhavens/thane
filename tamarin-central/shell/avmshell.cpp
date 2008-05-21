@@ -44,6 +44,7 @@
 #endif
 
 #if defined(SOLARIS)
+#include <signal.h>
 #include <ucontext.h>
 extern "C" greg_t _getsp(void);
 #endif

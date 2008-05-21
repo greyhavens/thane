@@ -36,21 +36,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-public namespace Debug;
-public namespace Release;
-
 Debug function trace (s) {
     print (s);
 }
 
-var nesting = 0;
+internal var nesting = 0;
 
-function arrows (c)
-    : string {
+function arrows (c) : string {
     let str = "";
-    for ( var n = nesting; n > 0; n = n - 1 ) {
+    for ( var n = nesting; n > 0; n = n - 1 )
         str = str + c;
-    }
     return nesting + " " + str+" ";
 }
 

@@ -329,8 +329,6 @@ namespace MMgc
 #endif
 	};
 
-	class MMGC_API RCFinalizedObject : public RCObject{};
-	
 	template<class T> 
 	class ZeroPtr
 	{
@@ -411,7 +409,6 @@ namespace MMgc
 #define DRC(_type) _type
 
 class RCObject : public GCObject {};
-class RCFinalizedObject : public GCFinalizedObject {};
 
 #endif
 }

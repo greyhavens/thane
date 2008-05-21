@@ -36,182 +36,285 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-namespace Util
+use default namespace Util,
+    namespace Util;
 
+function assert(cond) {
+    if (!cond)
+        throw new Error("Assertion failed!");
+}
+
+// Together these two ensure that all compiler errors are thrown as SyntaxErrors.
+// This is for the benefit of ActionMonkey, we can clean it up later.
+
+internal function formatMsg(file, line, msg) {
+    if (line || file)
+        msg = " " + msg;
+    if (line)
+        msg = line + ":" + msg;
+    if (file)
+        msg = file + ":" + msg;
+    return msg;
+}
+
+function syntaxError(file, line, msg) {
+    msg = formatMsg(file, line, msg);
+    var obj = new SyntaxError(msg);
+    if (line)
+        obj.line = line;
+    if (file)
+        obj.file = file;
+    throw obj;
+}
+
+function internalError(file, line, msg) {
+    Util::syntaxError(file, line, "Internal: " + msg);
+}
+
+function warning(file, line, msg) {
+    print(formatMsg(file, line, "Warning: " + msg));
+}
+    
+function map(fn, a) {
+    var b = [];
+    for ( var i=0 ; i < a.length ; i++ )
+        if (i in a)
+            b[i] = fn(a[i]);
+    return b;
+}
+
+function forEach(fn, a) {
+    for ( var i=0 ; i < a.length ; i++ )
+        if (i in a)
+            fn(a[i]);
+}
+
+function memberOf(x, ys) {
+    for ( var i=0 ; i < ys.length ; i++ ) {
+        if (ys[i] === x)
+            return true;
+    }
+    return false;
+}
+
+function copyArray(c) {
+    var a = new Array;
+    for ( var i=0 ; i < c.length ; i++ )
+        a[i] = c[i];
+    return a;
+}
+
+// push elements of a2 onto a1
+function pushOnto(a1, a2) {
+    for ( let i=0, limit=a2.length ; i < limit ; i++ )
+        a1.push(a2[i]);
+    return a1;
+}
+
+function toUint(x)
+    uint(x);
+
+function hash_number(n) {
+    return uint(n);                       // Fairly arbitrary
+}
+
+function hash_string(s) {
+    // See http://www.cse.yorku.ca/~oz/hash.html; this is the djb2 algorithm
+    var h = 5381;
+    for ( var i=0, limit=s.length ; i < limit ; i++ )
+        h = ((h << 5) + h) + s.charCodeAt(i);
+    return uint(h);
+}
+
+class Hashnode {
+    var key = null;
+    var value = null;
+    var hashval = null;
+    var link = null;
+
+    function Hashnode(key, value, hashval) 
+        : key     = key
+        , value   = value
+        , hashval = hashval
+    {
+    }
+}
+
+class Hashtable {
+    var size = 10;
+    var population = 0;
+    var must_rehash = false;
+    var tbl;
+    var hashfn;
+    var eqfn;
+    var notfound;
+    var debug;
+
+    function Hashtable(hashfn, eqfn, notfound, debug=false)
+        : hashfn   = hashfn
+        , eqfn     = eqfn
+        , notfound = notfound
+        , debug    = debug
+    {
+        tbl = makeTable(size);
+    }
+
+    // Should be called "get" but ESC is not up to it
+    function read(key) {
+        var h = hashfn(key);
+        assert( h >= 0 );
+        var bucket = tbl[h % size];
+        while (bucket != null) {
+            if (bucket.hashval == h && eqfn(bucket.key, key))
+                return bucket.value;
+            bucket = bucket.link;
+        }
+        return notfound;
+    }
+
+    // Should be called "put" but called "write" to match the one above
+    function write(key, value) {
+        if (must_rehash)
+            rehash();
+
+        var h = hashfn(key);
+        assert( h >= 0 );
+        var b = h % size;
+        var bucket = tbl[b];
+        while (bucket != null) {
+            if (bucket.hashval == h && eqfn(bucket.key, key)) {
+                bucket.value = value;
+                return;
+            }
+            bucket = bucket.link;
+        }
+        var node = new Hashnode(key, value, h);
+        bucket = tbl[b];
+        node.link = bucket;
+        tbl[b] = node;
+
+        ++population;
+        if (population >= size)
+            must_rehash = true;
+    }
+
+    function rehash() {
+        if (debug)
+            dump("BEFORE");
+        var newsize = size*2;
+        var newtbl = makeTable(newsize);
+        for ( var i=0 ; i < size ; i++ ) {
+            var bucket = tbl[i];
+            while (bucket != null) {
+                var node = bucket;
+                bucket = bucket.link;
+                var b = node.hashval % newsize;
+                node.link = newtbl[b];
+                newtbl[b] = node;
+            }
+        }
+        size = newsize;
+        tbl = newtbl;
+        if (debug)
+            dump("AFTER");
+        must_rehash = false;
+    }
+
+    function toString()
+        dumpToString("/*Hashtable*/", false);
+
+    function dump(tag, withval=true) 
+        print(dumpToString(tag, withval));
+
+    function dumpToString(tag, withval=true) {
+        s = tag + " [";
+        for ( let i=0 ; i < size ; i++ ) {
+            s += "[";
+            let b = tbl[i];
+            while (b != null) {
+                s += "{key:" + b.key + ", value:" + b.value + (withval ? ", hashval:" + b.hashval : "") + "} ";
+                b = b.link;
+            }
+            s += "] ";
+        }
+        s += "]";
+        return s;
+    }
+
+    function makeTable(size) {
+        var tbl = new Array(size);
+        for ( var i=0 ; i < size ; i++ )
+            tbl[i] = null;
+        return tbl;
+    }
+}
+
+class ENUM!
 {
-    use default namespace Util;
-
-    function assert(cond) {
-        if (!cond)
-            throw "Assertion failed!";
+    const s;
+    function ENUM(s) : s=s {}
+    
+    function toString() {
+        return s;
     }
+}
 
-    // Together these two ensure that all compiler errors are thrown as SyntaxErrors.
-    // This is for the benefit of ActionMonkey, we can clean it up later.
+// FIXME! The one in ast.es is more reliable.
 
-    function syntaxError(file, line, msg) {
-        if (line || file)
-            msg = " " + msg;
-        if (line)
-            msg = line + ":" + msg;
-        if (file)
-            msg = file + ":" + msg;
-        var obj = new SyntaxError(msg);
-        if (line)
-            obj.line = line;
-        if (file)
-            obj.file = file;
-        throw obj;
+function eq_namespaces(n1, n2) {
+    if( n1 === n2 )
+        return true;
+    return n1.hash() == n2.hash();
+}
+
+// FIXME!  Does not belong in this file, probably.
+    
+internal function printName() 
+    "(" + this.ns + " :: " + this.val + ")";
+
+class Names
+{
+    // Hashtable
+    // Name -> [{namespace, val}]]
+    // should it be to another hashtable?
+    // What about get/set to different slots?
+    const table;
+
+    function Names() {
+        table = new Hashtable(hash_string, (function (a,b) a === b), null);
     }
+        
+    function toString()
+        table.toString();
 
-    function internalError(file, line, msg) {
-        Util::syntaxError(file, line, "Internal: " + msg);
-    }
-
-    function map(fn, a) {
-        var b = [];
-        for ( var i=0 ; i < a.length ; i++ )
-            if (i in a)
-                b[i] = fn(a[i]);
-        return b;
-    }
-
-    function forEach(fn, a) {
-        for ( var i=0 ; i < a.length ; i++ )
-            if (i in a)
-                fn(a[i]);
-    }
-
-    function memberOf(x, ys) {
-        for ( var i=0 ; i < ys.length ; i++ ) {
-            if (ys[i] === x)
-                return true;
+    function getBinding(name: Ast::IDENT, ns: Ast::Namespace) {
+        let o = table.read(name);
+        let ret = null;
+            
+        if(o) {
+            for( let i=0, limit=o.length; i<limit; ++i) {
+                let entry = o[i];
+                if(eq_namespaces(entry.namespace, ns))
+                    ret = entry.val;
+            } 
         }
-        return false;
+        
+        return ret;            
     }
-
-    function copyArray(c) {
-        var a = new Array;
-        for ( var i=0 ; i < c.length ; i++ )
-            a[i] = c[i];
-        return a;
-    }
-
-    // push elements of a2 onto a1
-    function pushOnto(a1, a2) {
-        for ( let i=0, limit=a2.length ; i < limit ; i++ )
-            a1.push(a2[i]);
-        return a1;
-    }
-
-    function toUint(x)
-        uint(x);
-
-    function hash_number(n) { 
-        return uint(n);                       // Fairly arbitrary
-    }
-
-    function hash_string(s) {
-        // See http://www.cse.yorku.ca/~oz/hash.html; this is the djb2 algorithm
-        var h = 5381;
-        for ( var i=0, limit=s.length ; i < limit ; i++ )
-            h = ((h << 5) +h) + s.charCodeAt(i);
-        return uint(h);
-    }
-
-
-    class Hashnode {
-        var key = null;
-        var value = null;
-        var hashval = null;
-        var link = null;
-
-        function Hashnode(key, value, hashval) 
-            : key     = key
-            , value   = value
-            , hashval = hashval
-        {
+        
+    function putBinding(name, ns, value) {
+        let o = table.read(name);
+        if( o == null ) {
+            o = [];
+            table.write(name, o);
         }
-    }
-
-    class Hashtable {
-        var size = 10;
-        var population = 0;
-        var must_rehash = false;
-        var tbl;
-        var hashfn;
-        var eqfn;
-        var notfound;
-
-        function Hashtable(hashfn, eqfn, notfound) 
-            : hashfn   = hashfn
-            , eqfn     = eqfn
-            , notfound = notfound
-        {
-            tbl = makeTable(size);
-        }
-
-        // Should be called "get" but ESC is not up to it
-        function read(key) {
-            var h = hashfn(key);
-            var bucket = tbl[h % size];
-            while (bucket != null) {
-                if (bucket.hashval == h && eqfn(bucket.key, key))
-                    return bucket.value;
-                bucket = bucket.link;
+        let index = 0;
+        for( let i = 0, limit=o.length; i < limit; ++i ) {
+            if( eq_namespaces(o[i].namespace, ns) ) {
+                index = i;
+                break;
             }
-            return notfound;
         }
-
-        // Should be called "put" but called "write" to match the one above
-        function write(key, value) {
-            if (must_rehash)
-                rehash();
-
-            var h = hashfn(key);
-            var b = h % size;
-            var bucket = tbl[b];
-            while (bucket != null) {
-                if (bucket.hashval == h && eqfn(bucket.key, key)) {
-                    bucket.value = value;
-                    return;
-                }
-                bucket = bucket.link;
-            }
-            var node = new Hashnode(key, value, h);
-            bucket = tbl[b];
-            node.link = bucket;
-            tbl[b] = node;
-
-            ++population;
-            if (population >= size)
-                must_rehash = true;
-        }
-
-        function rehash() {
-            var newsize = size*2;
-            var newtbl = makeTable(newsize);
-            for ( var i=0 ; i < size ; i++ ) {
-                var bucket = tbl[i];
-                while (bucket != null) {
-                    var node = bucket;
-                    bucket = bucket.link;
-                    var b = node.hashval % newsize;
-                    node.link = newtbl[b];
-                    newtbl[b] = node;
-                }
-            }
-            size = newsize;
-            tbl = newtbl;
-            must_rehash = false;
-        }
-
-        function makeTable(size) {
-            var tbl = new Array(size);
-            for ( var i=0 ; i < size ; i++ )
-                tbl[i] = null;
-            return tbl;
-        }
+        o[index] = {namespace:ns, val:value, toString: printName};
     }
-
 }

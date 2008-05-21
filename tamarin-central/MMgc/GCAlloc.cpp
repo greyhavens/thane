@@ -340,7 +340,7 @@ start:
 	}
 
 	/* static */
-	void GCAlloc::Free(void *item)
+	void GCAlloc::Free(const void *item)
 	{
 		GCBlock *b = (GCBlock*) ((uintptr) item & ~0xFFF);
 		GCAlloc *a = b->alloc;
@@ -444,7 +444,6 @@ start:
 						GCFinalizable *obj = (GCFinalizedObject*)GetUserPointer(item);
 						GCAssert(*(int*)obj != 0);
 						obj->~GCFinalizable();
-
 						bits[i] &= ~(kFinalize<<(j*4));
 
 #if defined(_DEBUG) && defined(MMGC_DRC)
@@ -674,7 +673,7 @@ start:
 		muli = (uint16) m;
 	}
 
-	void GCAlloc::GCBlock::FreeItem(void *item, int index)
+	void GCAlloc::GCBlock::FreeItem(const void *item, int index)
 	{
 		GCAssert(alloc->m_numAlloc != 0);
 
@@ -688,7 +687,7 @@ start:
 #endif
 
 		void *oldFree = firstFree;
-		firstFree = item;
+		firstFree = (void*)item;
 #ifdef MEMORY_INFO
 		alloc->m_numAlloc--;
 #endif

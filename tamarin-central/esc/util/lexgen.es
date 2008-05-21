@@ -1,83 +1,53 @@
 /* Generate a mega-switch for keyword recognition */
+/* Based on the 2008-04-29 grammar draft */
 
-var keywords = [// always reserved
-                [ "break", "Token::Break"],
+var keywords = [[ "break", "Token::Break"],
                 [ "case", "Token::Case"],
+                [ "cast", "Token::Cast"],
                 [ "catch", "Token::Catch"],
                 [ "class", "Token::Class"],
+                [ "const", "Token::Const"],
                 [ "continue", "Token::Continue"],
+                /*[ "debugger", "Token::Debugger"],*/  // language misfeature, not supported
                 [ "default", "Token::Default"],
                 [ "delete", "Token::Delete"],
                 [ "do", "Token::Do"],
+                [ "dynamic", "Token::Dynamic"],
                 [ "else", "Token::Else"],
-                [ "enum", "Token::Enum"],
-                [ "extends", "Token::Extends"],
                 [ "false", "Token::False"],
+                [ "final", "Token::Final"],
                 [ "finally", "Token::Finally"],
                 [ "for", "Token::For"],
                 [ "function", "Token::Function"],
                 [ "if", "Token::If"],
                 [ "in", "Token::In"],
                 [ "instanceof", "Token::InstanceOf"],
+                [ "interface", "Token::Interface"],
+                [ "is", "Token::Is"],
+                [ "let", "Token::Let"],
+                [ "namespace", "Token::Namespace"],
+                [ "native", "Token::Native"],
                 [ "new", "Token::New"],
                 [ "null", "Token::Null"],
+                [ "override", "Token::Override"],
+                /*[ "prototype", "Token::Prototype"],*/  // grammar bug
                 [ "return", "Token::Return"],
+                [ "static", "Token::Static"],
                 [ "super", "Token::Super"],
                 [ "switch", "Token::Switch"],
                 [ "this", "Token::This"],
                 [ "throw", "Token::Throw"],
                 [ "true", "Token::True"],
                 [ "try", "Token::Try"],
+                [ "type", "Token::Type"],
                 [ "typeof", "Token::TypeOf"],
+                [ "use", "Token::Use"],
                 [ "var", "Token::Var"],
                 [ "void", "Token::Void"],
                 [ "while", "Token::While"],
                 [ "with", "Token::With"],
-                // contextually reserved
-                [ "call", "Token::Call"],
-                [ "cast", "Token::Cast"],
-                [ "const", "Token::Const"],
-                [ "decimal", "Token::Decimal"],
-                [ "double", "Token::Double"],
-                [ "dynamic", "Token::Dynamic"],
-                [ "each", "Token::Each"],
-                [ "eval", "Token::Eval"],
-                [ "final", "Token::Final"],
-                [ "get", "Token::Get"],
-                [ "has", "Token::Has"],
-                [ "implements", "Token::Implements"],
-                [ "import", "Token::Import"],
-                [ "int", "Token::Int"],
-                [ "interface", "Token::Interface"],
-                [ "internal", "Token::Internal"],
-                [ "intrinsic", "Token::Intrinsic"],
-                [ "is", "Token::Is"],
-                [ "let", "Token::Let"],
-                [ "namespace", "Token::Namespace"],
-                [ "native", "Token::Native"],
-                [ "override", "Token::Override"],
-                [ "package", "Token::Package"],
-                [ "precision", "Token::Precision"],
-                [ "private", "Token::Private"],
-                [ "protected", "Token::Protected"],
-                [ "prototype", "Token::Prototype"],
-                [ "public", "Token::Public"],
-                [ "rounding", "Token::Rounding"],
-                [ "standard", "Token::Standard"],
-                [ "strict", "Token::Strict"],
-                [ "to", "Token::To"],
-                [ "set", "Token::Set"],
-                [ "static", "Token::Static"],
-                [ "to", "Token::To"],
-                [ "type", "Token::Type"],
-                [ "uint", "Token::UInt"],
-                [ "undefined", "Token::Undefined"],
-                [ "use", "Token::Use"],
-                [ "unit", "Token::Unit"],
-                [ "xml", "Token::Xml"],
-                [ "yield", "Token::Yield"]];
-
-//keywords = [["case", "CASE"], ["call","CALL"],["ca","CA"]];
+                [ "yield", "Token::Yield"],
+                [ "__proto__", "Token::Proto"]];
 
 keywords.sort(function (a, b) {  return a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0 });
 print(generate( keywords, 0 ));
@@ -93,12 +63,13 @@ print(generate( keywords, 0 ));
 // non-identifier-constituent Unicode character terminating a keyword.
 
 function generate(tbl, pos) {
-    var a = "a".charCodeAt(0);
-    var buckets = new Array(26);
+    var a = "_".charCodeAt(0);
+    var n = "z".charCodeAt(0) - "_".charCodeAt(0) + 1;
+    var buckets = new Array(n);
     var newDefault = false;
     var count = 0;
 
-    for ( var i=0 ; i < 26 ; i++ )
+    for ( var i=0 ; i < n ; i++ )
         buckets[i] = new Array();
 
     var tblItem; // used below if there's only one
@@ -119,17 +90,17 @@ function generate(tbl, pos) {
         var name = tblItem[0];
         s += "if (";
         for ( var i=pos ; i < name.length ; i++ )
-            s += "src.charPosAt(curIndex+" + (i-1) + ") == " + name.charCodeAt(i) + " /* Char::" + name.charAt(i) + " */ &&\n";
-        s += "notPartOfIdent[src.charPosAt(curIndex+" + (name.length-1) + ")]) {\n"
+            s += "src.charCodeAt(curIndex+" + (i-1) + ") == " + name.charCodeAt(i) + " /* Char::" + name.charAt(i) + " */ &&\n";
+        s += "notPartOfIdent[src.charCodeAt(curIndex+" + (name.length-1) + ")]) {\n"
         s += "curIndex += " + (name.length-1) + ";\n";
         s += "return " + tblItem[1] + ";\n";
         s += "}\n";
     }
     if (count > 1) {
         if (pos > 0)
-            s += "switch(str.charCodeAt(curIndex+" + (pos - 1) + ")) {\n";
+            s += "switch(src.charCodeAt(curIndex+" + (pos - 1) + ")) {\n";
     
-        for ( var i=0 ; i < 26 ; i++ ) {
+        for ( var i=0 ; i < n ; i++ ) {
             if (buckets[i].length > 0) {
                 s += ("case " + (a + i) + ": /* Char::" + String.fromCharCode(a + i) + " */\n" + 
                       generate(buckets[i], pos+1));
@@ -139,7 +110,7 @@ function generate(tbl, pos) {
     }
 
     if (newDefault) {
-        s += "if (!(notPartOfIdent[src.charPosAt(curIndex+" + (newDefault[0].length - 1)+ ")])) \n";
+        s += "if (!(notPartOfIdent[src.charCodeAt(curIndex+" + (newDefault[0].length - 1)+ ")])) \n";
         s += "break bigswitch;\n";
         s += "curIndex += " + (newDefault[0].length - 1) + ";\n";
         s += "return " + newDefault[1] + ";\n";

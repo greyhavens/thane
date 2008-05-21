@@ -6,7 +6,9 @@ function f() {
 
 class C {
     static var v;
-    v = f();  // class initializer, "static { ... }" in Java
+    static {
+        v = f();  // class initializer, "static { ... }" in Java
+    }
     
     var w;
 

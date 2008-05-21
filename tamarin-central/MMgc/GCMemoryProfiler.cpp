@@ -419,7 +419,7 @@ namespace MMgc
 		return ret;
 	}
 
-	void DebugFreeHelper(void *item, int poison, int skip)
+	void DebugFreeHelper(const void *item, int poison, int skip)
 	{
 		int *ip = (int*) item;
 		int size = *ip;
@@ -470,11 +470,11 @@ namespace MMgc
 		*ip = traceIndex;
 	}
 
-	void *DebugFree(void *item, int poison, int skip)
+	void *DebugFree(const void *item, int poison, int skip)
 	{
 		item = (int*) item - 2;
 		DebugFreeHelper(item, poison, skip);
-		return item;
+		return (void*)item;
 	}
 
 	void *DebugFreeReverse(void *item, int poison, int skip)

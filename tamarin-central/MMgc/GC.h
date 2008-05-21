@@ -651,7 +651,7 @@ namespace MMgc
 		 *
 		 * @access Requires(request)
 		 */
-		void Free(void *ptr);
+		void Free(const void *ptr);
 
 		/**
 		 * return the size of a piece of memory, may be bigger than what was asked for
@@ -827,12 +827,14 @@ namespace MMgc
 		/** @access Requires(request) */
 		void writeBarrier(const void *container, const void *address, const void *value)
 		{
-			GCAssert(IsPointerToGCPage(container));
+			GCAssert(!container || IsPointerToGCPage(container));
 			GCAssert(((uintptr)address & 3) == 0);
-			GCAssert(address >= container);
-			GCAssert(address < (char*)container + Size(container));
 
-			WriteBarrierNoSubstitute(container, value);
+			if (container) {
+				GCAssert(address >= container);
+				GCAssert(address < (char*)container + Size(container));
+				WriteBarrierNoSubstitute(container, value);
+			}
 			WriteBarrierWrite(address, value);
 		}
 
@@ -891,8 +893,9 @@ namespace MMgc
 		void *FindBeginning(const void *gcItem)
 		{
 			GCAssert(gcItem != NULL);
-			GCAssert(GetPageMapValue((uintptr)gcItem) != 0);
 			void *realItem = NULL;
+			if((uintptr)gcItem < memStart || (uintptr)gcItem >= memEnd)
+				return NULL;
 			int bits = GetPageMapValue((uintptr)gcItem);
 			switch(bits)
 			{
@@ -910,6 +913,8 @@ namespace MMgc
 				}
 				realItem = GCLargeAlloc::FindBeginning(gcItem);
 				break;
+			default:
+				return NULL;
 			}		
 #ifdef MEMORY_INFO
 			realItem = GetUserPointer(realItem);

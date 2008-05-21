@@ -62,7 +62,7 @@ namespace MMgc
 		~GCLargeAlloc();
 
 		void* Alloc(size_t size, int flags);
-		void Free(void *ptr);
+		void Free(const void *ptr);
 		void Finalize();
 		void ClearMarks();
 

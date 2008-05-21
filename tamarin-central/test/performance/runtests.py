@@ -224,7 +224,7 @@ else:
     except:
 	    nop = True
 
-OS_name = {'CYGWIN_NT-5.1':'WIN','CYGWIN_NT-5.2':'WIN','CYGWIN_NT-6.0-WOW64':'WIN','Windows':'WIN','Darwin':'MAC','Linux':'LNX','Solaris':'SOL',}[system()]
+OS_name = {'CYGWIN_NT-5.1':'WIN','CYGWIN_NT-5.2':'WIN','CYGWIN_NT-6.0-WOW64':'WIN','Windows':'WIN','Darwin':'MAC','Linux':'LNX','SunOS':'SOL',}[system()]
 VM_reporting = '%s %s %s' % (VM_name,OS_name,VM_version)
 # ================================================
 # Prepare the data to be sent through a socket to 
