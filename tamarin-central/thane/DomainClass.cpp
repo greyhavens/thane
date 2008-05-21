@@ -73,13 +73,15 @@ namespace thane
 		
 		Domain* domain = new (core->GetGC()) Domain(core, baseDomain);
 
+        DomainEnv *baseEnv;
 		if (parentDomain) {
 			domainToplevel = parentDomain->domainToplevel;
+            baseEnv = parentDomain->domainEnv;
 		} else {
 			domainToplevel = core->initShellBuiltins();
+            baseEnv = domainToplevel->domainEnv();
 		}
-		
-		domainEnv = new (core->GetGC()) DomainEnv(core, domain, parentDomain->domainEnv);
+        domainEnv = new (core->GetGC()) DomainEnv(core, domain, baseEnv);
 	}
 
 	Atom DomainObject::loadBytes(ByteArrayObject *b)
