@@ -21,8 +21,9 @@ public class EOFError extends Error
 
 public class IllegalOperationError extends Error
 {
-    public function IllegalOperationError (str :String = null)
+    public function IllegalOperationError (message :String = null)
     {
+        super(message);
     }
 }
 }
