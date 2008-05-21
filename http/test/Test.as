@@ -1,3 +1,7 @@
+package {
+    public class Tim { }
+}
+
 import avmplus.*;
 
 import flash.events.Event;
@@ -23,12 +27,22 @@ function event (evt :Event) :void
 
 function dataEvent (evt :HttpDataEvent) :void
 {
-    trace("Got data: loading...");
-    var dom :Domain = Domain.currentDomain.loadBytes(evt.bytes);
-    trace("Bytecode successfully loaded!");
-    var tinyClass :Class = Domain.currentDomain.getClass("Tiny");
-    trace("Class 'Tiny' located: " + tinyClass);
+    trace("Got data: creating new Domain...");
+    var newDomain :Domain = new Domain(Domain.currentDomain);
+    trace("Compiling bytecode into new Domain...");
+    newDomain.loadBytes(evt.bytes);
+    trace("Successfully loaded! Testing...");
+    var tinyClass :Class;
+    try {
+        tinyClass = Domain.currentDomain.getClass("Tiny");
+    } catch (e :Error) { }
+    trace("Class 'Tiny' in original domain (should be null): " + tinyClass);
+
+        tinyClass = newDomain.getClass("Tiny");
+
+    trace("Class 'Tiny' in new domain (should be non-null): " + tinyClass);
     if (tinyClass != null) {
+        trace("Instantiating and calling Tiny...");
         var tiny :Object = new tinyClass();
         tiny.probe();
     }
