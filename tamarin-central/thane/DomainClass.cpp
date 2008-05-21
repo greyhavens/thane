@@ -154,9 +154,7 @@ namespace thane
 
 		Multiname multiname(ns, className);
 
-		ShellCodeContext* codeContext = (ShellCodeContext*)core->codeContext();
-		
-		ScriptObject *container = finddef(&multiname, codeContext->domainEnv());
+		ScriptObject *container = finddef(&multiname, domainEnv);
 		if (!container) {
 			toplevel()->throwTypeError(kClassNotFoundError, core->toErrorString(&multiname));
 		}
