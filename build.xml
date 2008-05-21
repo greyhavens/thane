@@ -32,9 +32,6 @@
     <file name="${deploy.dir}/tamarin-builtin.abc"/>
   </filelist>
 
-  <taskdef name="asc" classname="flex.ant.AscTask" classpathref="classpath"/>
-  <taskdef name="asclib" classname="flex.ant.AscLibTask" classpathref="classpath"/>
-
   <!-- prepares the application directories -->
   <target name="prepare">
     <mkdir dir="${deploy.dir}"/>
@@ -61,6 +58,7 @@
 
   <!-- builds the Thane library -->
   <target name="thanelib" unless="no_build_thanelib" depends="checkthanelib">
+    <taskdef name="asclib" classname="flex.ant.AscLibTask" classpathref="classpath"/>
     <asclib as3="true" strict="true" classpathref="classpath"
             outdir="${tamarin.dir}/thane" out="thane">
       <import dir="${tamarin.dir}">
@@ -76,6 +74,7 @@
 
   <!-- builds the HTTP library -->
   <target name="httplib" unless="no_build_httplib" depends="thanelib">
+    <taskdef name="asclib" classname="flex.ant.AscLibTask" classpathref="classpath"/>
     <asclib as3="true" strict="true" classpathref="classpath"
             outdir="${deploy.dir}" out="http">
       <import dir="${deploy.dir}">
@@ -104,6 +103,7 @@
 
   <!-- tests the HTTP library -->
   <target name="http-test" unless="no_build_httplib" depends="httplib">
+    <taskdef name="asc" classname="flex.ant.AscTask" classpathref="classpath"/>
     <asc as3="true" strict="true" classpathref="classpath">
       <import dir="${deploy.dir}">
         <include name="tamarin-builtin.abc"/>
