@@ -5,6 +5,7 @@ public class Event
     public static const CONNECT :String = "connect";
     public static const CLOSE :String = "close";
     public static const COMPLETE:String = "complete";
+    public static const UNLOAD:String = "unload";
 
     public function Event (type :String, bubbles :Boolean = false, cancelable :Boolean = false)
     {
