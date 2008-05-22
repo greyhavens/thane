@@ -2,7 +2,7 @@ package flash.events {
 
 import flash.utils.Dictionary;
 
-public class EventDispatcher
+public class EventDispatcher implements IEventDispatcher
 {
     public function addEventListener (
         type :String, listener :Function, useCapture :Boolean = false,
@@ -50,10 +50,11 @@ public class EventDispatcher
             } catch (err :Error) {
                 trace("Event[" + event + "] dispatch error: " + err);
             }
+            if (event.isPropagationStopped(true)) {
+                break;
+            }
         }
-        // TODO: "A value of true unless preventDefault() is called on the event,
-        //        in which case it returns false. "
-        return true;
+        return !event.isDefaultPrevented();
     }
 
     private var _listenerMap :Dictionary = new Dictionary();
