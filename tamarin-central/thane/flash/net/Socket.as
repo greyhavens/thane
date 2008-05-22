@@ -61,6 +61,7 @@ public class Socket extends EventDispatcher
         }
         // it's safe to call nb_disconnect() regardless of the low-level state
         nb_disconnect();
+        _state = ST_VIRGIN;
         dispatchEvent(new Event(Event.CLOSE));
     }
 
@@ -137,6 +138,11 @@ public class Socket extends EventDispatcher
     public function flush () :void
     {
         // TODO: we should probably respect flush somehow...
+    }
+
+    public function get connected () :Boolean
+    {
+        return _state == ST_CONNECTED;
     }
 
 	public function get endian(): String
