@@ -53,6 +53,9 @@ function runTest (bytes :ByteArray, domain :Domain)
     tinyClass = domain.getClass("Tiny");
     trace("Class 'Tiny' in new domain (should be non-null): " + tinyClass);
     if (tinyClass != null) {
+        trace("Setting Tiny's lifeline...");
+        tinyClass.lifeline = lifelineEndpoint;
+
         trace("Instantiating and calling Tiny...");
         var tiny :Object = new tinyClass();
         tiny.probe();
@@ -60,3 +63,8 @@ function runTest (bytes :ByteArray, domain :Domain)
 }
 
 client.request(new URI(System.argv[0]), new Get());
+
+function lifelineEndpoint () :void
+{
+    trace("TEST.AS:: Executing lifeline endpoint!");
+}

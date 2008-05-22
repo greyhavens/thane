@@ -102,7 +102,7 @@
   </target>
 
   <!-- tests the HTTP library -->
-  <target name="http-test" unless="no_build_httplib" depends="httplib">
+  <target name="http-test" unless="no_build_httplib" depends="tamarin,httplib">
     <taskdef name="asc" classname="flex.ant.AscTask" classpathref="classpath"/>
     <asc as3="true" strict="true" classpathref="classpath">
       <import dir="${deploy.dir}">
@@ -110,10 +110,10 @@
         <include name="thane.abc"/>
         <include name="http.abc"/>
       </import>
-      <filespec dir="http/test" includes="Test.as"/>
+      <filespec dir="http/test" includes="GameTest.as"/>
     </asc>
     <exec executable="${tamdist.dir}/thane/avmthane">
-      <arg line="${deploy.dir}/http.abc http/test/Test.abc -- http://www.alyx.com/zell/tiny.abc"/>
+      <arg line="${deploy.dir}/http.abc http/test/GameTest.abc -- http://www.alyx.com/zell/gameserver.abc"/>
     </exec>
   </target>
 

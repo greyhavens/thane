@@ -2,9 +2,12 @@ package {
 
 public class Tiny
 {
+    public static var lifeline :Function;
+
     public function probe () :void
     {
-        trace ("TINY.AS:: This is probe() executing in an instance of Tiny: " + this);
+        trace ("TINY.AS:: This is probe() calling my lifeline...");
+        lifeline();
     }
 }
 }
