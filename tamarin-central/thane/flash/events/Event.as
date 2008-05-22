@@ -9,8 +9,11 @@ public class Event
 
     public function Event (type :String, bubbles :Boolean = false, cancelable :Boolean = false)
     {
-        if (bubbles || cancelable) {
+        if (cancelable) {
             throw new Error("Not implemented");
+        }
+        if (bubbles) {
+            // I don't think this means anything without a display hierarchy?
         }
         _type = type;
     }

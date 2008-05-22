@@ -8,8 +8,12 @@ public class EventDispatcher
         type :String, listener :Function, useCapture :Boolean = false,
         priority :int = 0, useWeakReference :Boolean = false) :void
     {
-        if (useCapture || priority != 0 || useWeakReference) {
+        if (useCapture || priority != 0) {
             throw new Error("Fancy addEventListener not implemented");            
+        }
+
+        if (useWeakReference) {
+            // we can't do this properly with our current data structure, just ignore for now
         }
 
         var listeners :Array = _listenerMap[type] as Array;
