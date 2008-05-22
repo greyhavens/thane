@@ -59,7 +59,9 @@ public class Socket extends EventDispatcher
         if (_state != ST_CONNECTED) {
             throw new IOError("Socket was not open");
         }
+        // it's safe to call nb_disconnect() regardless of the low-level state
         nb_disconnect();
+        dispatchEvent(new Event(Event.CLOSE));
     }
 
     protected function heartbeat () :void
@@ -76,6 +78,14 @@ public class Socket extends EventDispatcher
             var wrote :int = 0;
 
             var read :int = nb_read(_iBuf);
+            if (read < 0) {
+                if (read == -1) {
+                    dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+                }
+                // if read == -2, the other end disconnect
+                close();
+                return;
+            }
             if (_oPos < _oBuf.length) {
                 wrote = nb_write(_oBuf);
             }

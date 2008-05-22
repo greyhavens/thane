@@ -106,12 +106,15 @@ namespace thane
 
         while (true) {
             int size = ::read(m_descriptor, m_buffer, SOCK_BUF_SZ);
+            if (size == 0) {
+                // size 0 from non-blocking socket means a closed connection
+                return -2;
+            }
             if (size == -1) {
                 if (errno != EAGAIN) {
-                    // TODO: throw an error
                     return -1;
                 }
-                // EOF in non-blocking just means there was nothing to read
+                // "try again" in non-blocking just means there was nothing to read
                 size = 0;
             }
 
