@@ -42,10 +42,6 @@
     </copy>
   </target>
 
-  <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="prepare,thanelib,tamarin">
-  </target>
-
   <!-- checks whether our Flash library needs building -->
   <target name="checkthanelib">
     <condition property="no_build_thanelib">
@@ -115,6 +111,20 @@
     <exec executable="${tamdist.dir}/thane/avmthane">
       <arg line="${deploy.dir}/http.abc http/test/GameTest.abc -- http://www.alyx.com/zell/gameserver.abc"/>
     </exec>
+  </target>
+
+  <!-- cleans up our build artifacts -->
+  <target name="clean">
+    <!-- TODO -->
+  </target>
+
+  <!-- wipes out our build directory and deletes all non-version-controlled files -->
+  <target name="distclean">
+    <delete dir="${deploy.dir}"/>
+  </target>
+
+  <!-- builds our distribution files (war and jar) -->
+  <target name="dist" depends="prepare,thanelib,tamarin">
   </target>
 
   <!-- deploys our built libraries to maven -->
