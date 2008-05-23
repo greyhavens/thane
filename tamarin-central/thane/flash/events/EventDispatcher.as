@@ -57,6 +57,14 @@ public class EventDispatcher implements IEventDispatcher
         return !event.isDefaultPrevented();
     }
 
+    public function hasEventListener (type :String) :Boolean
+    {
+        if (type in _listenerMap) {
+            return _listenerMap[type].length > 0;
+        }
+        return false;
+    }
+
     private var _listenerMap :Dictionary = new Dictionary();
 }
 
