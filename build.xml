@@ -87,10 +87,10 @@
   <condition property="isunix"><os family="unix"/></condition>
   <target name="tamarin" depends="prepare,thanelib" if="isunix">
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
-    <exec dir="${tamdist.dir}" executable="python">
+    <exec dir="${tamdist.dir}" executable="python" failonerror="true">
        <arg line="${tamarin.dir}/configure.py --enable-shell --enable-debugger --enable-debug"/>
     </exec>
-    <exec dir="${tamdist.dir}" executable="make">
+    <exec dir="${tamdist.dir}" executable="make" failonerror="true">
        <arg line="-j4"/>
     </exec>
     <!-- TODO: we should actually build builtin.abc -->
