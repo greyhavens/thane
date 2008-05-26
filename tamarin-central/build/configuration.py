@@ -75,6 +75,8 @@ def _configSub(ostest, cputest):
         os = 'darwin'
     elif ostest.startswith('linux') or ostest.startswith('pc-linux'):
         os = 'linux'
+    elif ostest.startswith('freebsd'):
+        os = 'freebsd'
     elif ostest.startswith('sunos'):
         os = 'sunos'
     else:
@@ -232,7 +234,7 @@ class Configuration:
             else:
                 raise Exception("Unexpected Darwin processor.")
 
-        elif self._target[0] == 'linux':
+        elif self._target[0] == 'linux' or self._target[0] == 'freebsd':
             self._acvars.update({
                 'CPPFLAGS'     : os.environ.get('CPPFLAGS', ''),
                 'CXX'          : os.environ.get('CXX', 'g++'),

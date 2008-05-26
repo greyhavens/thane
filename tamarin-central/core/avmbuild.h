@@ -51,6 +51,17 @@
   #endif
 #endif
 
+#ifdef AVMPLUS_LINUX
+  #if (__x86_64__)
+    #ifndef AVMPLUS_AMD64
+      #define AVMPLUS_AMD64
+    #endif
+    #ifndef AVMPLUS_64BIT
+      #define AVMPLUS_64BIT
+    #endif
+  #endif
+#endif
+
 #ifdef AVMPLUS_MAC
   // Are we PowerPC or i386 (Macintel) or x86_64 (64-bit)?
   #if __i386__
