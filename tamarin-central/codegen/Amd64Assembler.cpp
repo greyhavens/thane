@@ -999,6 +999,9 @@ namespace avmplus
 			return;
 		}
 
+//        core->console << "emitNativeThunk(" << info << "), # " << info->param_count << " @ ";
+//        core->console.format("0x%A\n", code);
+
 #ifdef FEATURE_BUFFER_GUARD
 		GrowthGuard guard(pool->codeBuffer);
 #else
@@ -1306,7 +1309,6 @@ namespace avmplus
 		// depending on registers left over
 		if (need_rest)
 		{
-          AvmAssert(0); // ZELL TODO ZELL
 			// rest_count = argc-param_count
 			CMP (RAX, info->param_count);
 
@@ -1321,6 +1323,7 @@ namespace avmplus
 			}
 			else
 			{
+                AvmAssert(0); // ZELL TODO ZELL
 				MOV (push_count, RSP, 0);
 			}
 			if ((intCount + 1) < INT_REGCOUNT)
@@ -1329,6 +1332,7 @@ namespace avmplus
 			}
 			else
 			{
+                AvmAssert(0); // ZELL TODO ZELL
 				MOV (push_count + 8, RSP, 0);
 			}	
 				
@@ -1343,12 +1347,15 @@ namespace avmplus
 			}
 			else
 			{
+                AvmAssert(0); // ZELL TODO ZELL
 				LEA(R10, arg_offset, R10); // callstack location
 				MOV (push_count, RSP, R10);
 				push_count += 8;
 			}	
 
-			SUB (RAX, info->param_count);
+            if (info->param_count > 0) {
+                SUB (RAX, info->param_count);
+            }
 			if (intCount < INT_REGCOUNT)
 			{
 				MOV (intRegUsage[intCount++], RAX);
@@ -1356,6 +1363,7 @@ namespace avmplus
 			}
 			else
 			{
+                AvmAssert(0); // ZELL TODO ZELL
 				MOV (push_count, RSP, RAX);
 				push_count += 8;
 			}	
@@ -1489,6 +1497,11 @@ namespace avmplus
 		//		R9 = iid
 		//		0(ap) = ScriptObject (concrete instance of class)
 		
+# ifdef AVMPLUS_WIN32
+		const Register intRegUsage[] = {RCX, RDX, R8, R9};
+# else
+		const Register intRegUsage[] = {RDI, RSI, RDX, RCX, R8, R9};
+# endif
 
 		// Just use R10-R11, since we don't want to mess with other things
 
@@ -1500,7 +1513,7 @@ namespace avmplus
 #endif
 
 		// ap currently in R8
-		MOV (R10, 0, R8);			// obj
+		MOV (R10, 0, intRegUsage[2]);			// obj
 		MOV (R10, offsetof(ScriptObject, vtable), R10); // vtable
 
 		AvmAssert(e->next != NULL); // must have 2 or more entries
@@ -1517,14 +1530,15 @@ namespace avmplus
 			#endif
 
 			// Compare iid with the passed in iid
-			CMP (R9, e->virt->iid());
+            MOV (R11, e->virt->iid());
+			CMP (intRegUsage[3], R11);
 			JNE (1);
 
 			byte* patchip = mip;
 			// Load vmethod addr into RAX
-			MOV (RCX, offsetof(VTable,methods)+8*e->disp_id, R10); // load concrete env
+			MOV (intRegUsage[0], offsetof(VTable,methods)+8*e->disp_id, R10); // load concrete env
 			//MOV (_env, RSP, RAX);  // replace env before call
-			JMP (offsetof(MethodEnv, impl32), RCX); // invoke real method indirectly
+			JMP (offsetof(MethodEnv, impl32), intRegUsage[0]); // invoke real method indirectly
 			patchip[-1] = (byte)(mip-patchip);
 
 			pool->core->GetGC()->Free(e);
@@ -1538,9 +1552,9 @@ namespace avmplus
 			core->console << "              disp_id="<< e->disp_id << " " << e->virt << "\n";
 		}
 		#endif
-		MOV (RCX, offsetof(VTable,methods)+8*e->disp_id, R10); // load concrete env
+		MOV (intRegUsage[0], offsetof(VTable,methods)+8*e->disp_id, R10); // load concrete env
 		//MOV (_env, RSP, RAX);  // replace env before call
-		JMP (offsetof(MethodEnv, impl32), RCX); // invoke real method indirectly
+		JMP (offsetof(MethodEnv, impl32), intRegUsage[0]); // invoke real method indirectly
 
 #ifdef AVMPLUS_JIT_READONLY
 		makeCodeExecutable();
