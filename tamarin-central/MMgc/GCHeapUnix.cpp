@@ -329,11 +329,11 @@ namespace MMgc
 	}	
 #endif
 
-
 #ifdef MEMORY_INFO  
 	void GetInfoFromPC(int pc, char *buff, int buffSize) 
 	{
-#ifdef AVMPLUS_UNIX
+		// Zell: None of the stacktrace / memory profiling code is 64-bit adapted.
+#if defined(AVMPLUS_UNIX) && false
 		Dl_info dlip;
 		dladdr((void *const)pc, &dlip);
 		sprintf(buff, "0x%08x:%s", pc, dlip.dli_sname);
