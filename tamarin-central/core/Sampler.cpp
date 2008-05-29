@@ -118,7 +118,11 @@ namespace avmplus
 			write(p, depth);
 			while(csn)
 			{
+# ifdef AVMPLUS_64BIT
+                AvmAssert(0);
+# else
 				write(p, (uint32)csn->info);
+# endif
 				// FIXME: can filename can be stored in the AbstractInfo?
 				write(p, csn->filename);
 				write(p, csn->linenum);

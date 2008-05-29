@@ -104,8 +104,8 @@ namespace avmplus
 	class NativeMethodV : public AbstractFunction
 	{
 	public:
-		typedef int (ScriptObject::*Handler32)(Atom *argv, int argc);
-		typedef int (ScriptObject::*CookieHandler32)(int cookie, Atom *argv, int argc);		
+		typedef sintptr (ScriptObject::*Handler32)(Atom *argv, int argc);
+		typedef sintptr (ScriptObject::*CookieHandler32)(int cookie, Atom *argv, int argc);		
 		typedef double (ScriptObject::*HandlerN)(Atom *argv, int argc);
 		typedef double (ScriptObject::*CookieHandlerN)(int cookie, Atom *argv, int argc);		
 

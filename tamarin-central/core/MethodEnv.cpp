@@ -127,17 +127,17 @@ namespace avmplus
 
 				if (t == NUMBER_TYPE) 
 				{
+					#ifdef AVMPLUS_64BIT
+					AvmAssert(sizeof(Atom) == sizeof(double));
+					*(double *) args = core->number(in[i]);
+					args++;
+					#else
+					AvmAssert(sizeof(Atom) * 2 == sizeof(double));
 					union {
 						double d;
 						uint32 l[2];
 					};
 					d = core->number(in[i]);
-					#ifdef AVMPLUS_64BIT
-					AvmAssert(sizeof(Atom) == sizeof(double));
-					*(double *) args = d;
-					args++;
-					#else
-					AvmAssert(sizeof(Atom) * 2 == sizeof(double));
 					*args++ = l[0];
 					*args++ = l[1];
 					#endif

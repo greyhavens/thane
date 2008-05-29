@@ -6162,9 +6162,9 @@ namespace avmplus
 			{
 				pool->stackOverflowHandler = (sintptr)mip;
 
-				#ifdef AVMPLUS_64BIT
+		#ifdef AVMPLUS_64BIT
 				AvmAssertMsg (true, "need 64-bit implementation\n");
-				#elif defined(_MAC)
+		#elif defined(_MAC)
 				// Stack must be aligned at 16-byte boundary for MacOS X ABI.
 				// The method did a CALL to stackOverflowHandler, so we're already
 				// 4 bytes pushed from the original 16-byte stack alignment.
@@ -7706,7 +7706,7 @@ namespace avmplus
 		int at = 0;
 		#endif
 		
-		#if defined(AVMPLUS_AMD64) && defined(_WIN64)
+		#if defined(AVMPLUS_AMD64)
 
 		#ifdef _DEBUG
 		for (uint32 k=0; k < activation.temps.size(); k++)
@@ -7724,9 +7724,15 @@ namespace avmplus
 
 		// First 4 args into RCX, RDX, R8, R9, then the rest on
 		// the stack
-		const int REGCOUNT = 4;
+# ifdef AVMPLUS_WIN32
+		const int INT_REGCOUNT = 4;
 		const Register intRegUsage[] = {RCX, RDX, R8, R9};
 		const Register floatRegUsage[] = {XMM0, XMM1, XMM2, XMM3};
+# else
+		const int INT_REGCOUNT = 6;
+		const Register intRegUsage[] = {RDI, RSI, RDX, RCX, R8, R9};
+		const Register floatRegUsage[] = {XMM0, XMM1, XMM2, XMM3, XMM4, XMM5, XMM6, XMM7};
+# endif
 
 		// Need to make room on stack for ALL params (even the ones in registers)
 		int at = -((((int32)(8*argc))+(15))&~(15));
@@ -7751,10 +7757,10 @@ namespace avmplus
 			else 
 			{
 				// Value might already be in the correct register
-				if (argVal->reg != ((GPRIndex >= REGCOUNT) ? R11 : (Register)intRegUsage[GPRIndex]))
+				if (argVal->reg != ((GPRIndex >= INT_REGCOUNT) ? R11 : (Register)intRegUsage[GPRIndex]))
 				{
 					// Note: R11 is used as the temp for a stack-based argument
-					if (GPRIndex >= REGCOUNT)
+					if (GPRIndex >= INT_REGCOUNT)
 						r = R11; //registerAllocSpecific(gpregs, R11);
 					else
 					{
@@ -7833,9 +7839,6 @@ namespace avmplus
 			if (r!=R11)
 				argRegs->addFree(r);
 		}
-		#elif defined(AVMPLUS_AMD64)
-		// AMD64: FIXME!
-		int at = 0;
 		#endif // AVMPLUS_AMD64
 
 		#if defined (AVMPLUS_IA32)
@@ -8343,6 +8346,7 @@ namespace avmplus
 
 		f->impl32 = *(AtomMethodProc*) &mipStart;
 #endif
+
 		// lock in the next available location in the buffer (16B aligned)
 		PoolObject* pool = f->pool;
 		byte* nextMethodStart = (byte*) BIT_ROUND_UP((size_t)mip, 16);
@@ -11337,7 +11341,7 @@ namespace avmplus
 #ifdef AVMPLUS_VERBOSE
 	bool CodegenMIR::verbose() 
 	{
-		return state && state->verifier->verbose || pool->verbose;
+        return state && state->verifier->verbose || pool->verbose;
 	}
 #endif
 

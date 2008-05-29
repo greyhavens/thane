@@ -344,7 +344,7 @@ def build_incfiles(as):
 # {CPU_ARCH}-{OS}-{VM}-{VERSION}-{VMSWITCH}
 # ================================================
 ostype={'CYGWIN_NT-5.1':'win','CYGWIN_NT-5.2':'win','CYGWIN_NT-5.2-WOW64':'win','CYGWIN_NT-6.0-WOW64':'win','Windows':'win','Darwin':'mac','Linux':'lnx','SunOS':'sol',}[platform.system()]
-cputype={'i386':'x86','i686':'x86','i86pc':'x86','Power Macintosh':'ppc','sun4u':'x86'}[platform.machine()]
+cputype={'x86_64':'x86_64','i386':'x86','i686':'x86','i86pc':'x86','Power Macintosh':'ppc','sun4u':'x86'}[platform.machine()]
 
 if globs['config'] == '':
   if not runSource:

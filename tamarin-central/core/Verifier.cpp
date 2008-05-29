@@ -2279,11 +2279,12 @@ namespace avmplus
 					verifyFailed(kIllegalOpcodeError, core->toErrorString(info), core->toErrorString(OP_abs_jump), core->toErrorString((int)(pc-code_pos)));
 				}
 
-				const byte* new_pc = (const byte*) imm30;
+				const byte* new_pc;
 				#ifdef AVMPLUS_64BIT
-				new_pc = (const byte *) (uintptr(new_pc) | (((uintptr) imm30b) << 32));
+				new_pc = (const byte *) (uintptr(imm30) | (((uintptr) imm30b) << 32));
 				const byte* new_code_end = new_pc + AvmCore::readU30 (nextpc);
 				#else
+				new_pc = (const byte *) (uintptr(imm30));
 				const byte* new_code_end = new_pc + imm30b;
 				#endif
 

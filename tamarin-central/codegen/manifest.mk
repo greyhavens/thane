@@ -40,6 +40,10 @@ ifeq (i686,$(TARGET_CPU))
 codegen_cpu_cxxsrc := Ia32Assembler.cpp
 endif
 
+ifeq (x86_64,$(TARGET_CPU))
+codegen_cpu_cxxsrc := Amd64Assembler.cpp
+endif
+
 ifeq (powerpc,$(TARGET_CPU))
 codegen_cpu_cxxsrc := PpcAssembler.cpp
 endif

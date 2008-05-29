@@ -319,7 +319,7 @@ namespace avmplus
 		#ifdef AVMPLUS_VERBOSE
 		if (verbose())
 		{
-			char *opstr="?";
+			const char *opstr="?";
 			switch(op) {
 			case 0x2d: opstr = "sub  "; break;
 			case 0x05: opstr = "add  "; break;
@@ -369,6 +369,7 @@ namespace avmplus
 		{
 			switch(op) {
 			case 0x03: core->console.format("    %A  add   %R, %R\n", mip, r, rhs); break;
+			case 0x23: core->console.format("    %A  and   %R, %R\n", mip, r, rhs); break;
 			case 0x87: core->console.format("    %A  xchg  %R, %R\n", mip, r, rhs); break;
 			case 0x8b: core->console.format("    %A  mov   %R, %R\n", mip, r, rhs); break;
 			}
@@ -618,7 +619,7 @@ namespace avmplus
 		#ifdef AVMPLUS_VERBOSE
 		if (verbose())
 		{
-			char *opstr = "?";
+			const char *opstr = "?";
 			switch (op) {
 			case 7: opstr = "sar  "; break;
 			case 5: opstr = "shr  "; break;
@@ -698,7 +699,7 @@ namespace avmplus
 		#ifdef AVMPLUS_VERBOSE
 		if (verbose())
 		{
-			char *opstr="?";
+			const char *opstr="?";
 			switch(op) {
 			case 0x02: opstr = "jb   "; break;
 			case 0x03: opstr = "jnb  "; break;
@@ -784,7 +785,7 @@ namespace avmplus
 		#ifdef AVMPLUS_VERBOSE
 		if (verbose())
 		{
-			char *opstr="?";
+			const char *opstr="?";
 			switch(op) {
 			case 0xddd8: opstr = "fstp "; x87Top++; break;
 			case 0xddc0: opstr = "ffree"; x87Top++; break;
@@ -807,7 +808,7 @@ namespace avmplus
 		#ifdef AVMPLUS_VERBOSE
 		if (verbose())
 		{
-			char *opstr="?";
+			const char *opstr="?";
 			switch(op) {
 			case 0xdc02: opstr = "fcom "; break;
 			case 0xdd03: opstr = "fstpq"; x87Top++; break;
@@ -835,7 +836,7 @@ namespace avmplus
 		#ifdef AVMPLUS_VERBOSE
 		if (verbose())
 		{
-			char *opstr="?";
+			const char *opstr="?";
 			switch(op) {
 			case 0xdde9: opstr = "fucomp"; x87Top++; break;
 			case 0xd9e0: opstr = "fchs "; break;
@@ -1018,18 +1019,27 @@ namespace avmplus
 		// on type. HOWEVER, they are really viewed as just 4 arguments registers,
 		// so if the first integer arg goes in RCX, then the second arg would either go
 		// in RDX or XMM1 (NOT XMM0). Crazy.
-		const int REGCOUNT = 4;
+# ifdef AVMPLUS_WIN32
+		const int INT_REGCOUNT = 4;
 		const Register intRegUsage[] = {RCX, RDX, R8, R9};
+		const int FLOAT_REGCOUNT = 4;
 		const Register floatRegUsage[] = {XMM0, XMM1, XMM2, XMM3};
+# else
+		const int INT_REGCOUNT = 6;
+		const Register intRegUsage[] = {RDI, RSI, RDX, RCX, R8, R9};
+		const int FLOAT_REGCOUNT = 8;
+		const Register floatRegUsage[] = {XMM0, XMM1, XMM2, XMM3, XMM4, XMM5, XMM6, XMM7};
+# endif
 
-		int parameterCount = 0;
+        int intCount = 0;
+        int floatCount = 0;
 		//int stackAdjust = 0;
 
 #ifdef DEBUGGER
 		// There is already space on the stack for these
-		MOV(8, RSP, RCX);	// env
-		MOV(16, RSP, RDX);	// argc
-		MOV(24, RSP, R8);	// ap
+		MOV(8, RSP, intRegUsage[0]);	// env
+		MOV(16, RSP, intRegUsage[1]);	// argc
+		MOV(24, RSP, intRegUsage[2]);	// ap
 
 		// Make room for CallStackNode
 		// We stick 8 on the end to 16-byte align the stack, which is
@@ -1041,8 +1051,8 @@ namespace avmplus
 
 		int frame_size = stack_adjust + param_space;
  		
-		SUB(RSP,  frame_size); // make room for callstack
-		byte *patch_frame_size = mip - 1;
+        //		SUB(RSP,  frame_size); // make room for callstack
+        //		byte *patch_frame_size = mip - 1;
 
 		//debugEnter: 
 		// RCX: env (same as func entry)
@@ -1077,8 +1087,8 @@ namespace avmplus
 		int stack_adjust = 8;
 		int frame_size = stack_adjust + param_space;
 
-		SUB(RSP,  frame_size); // make room for callstack
-		byte *patch_frame_size = mip - 1;
+        //		SUB(RSP,  frame_size); // make room for callstack
+        //		byte *patch_frame_size = mip - 1;
 
 #endif // DEBUGGER
 
@@ -1090,25 +1100,24 @@ namespace avmplus
 				
 		// rax, r11, r10 are scratch registers
 		// !!@ emit these only when needed?
-		MOV (R10, R8); // AP
-		MOV (RAX, RDX); // ARGC
+		MOV (R10, intRegUsage[2]); // AP
+		MOV (RAX, intRegUsage[1]); // ARGC
 
 		// place our 'this' pointer in the first reg slot (RCX)
-		MOV (intRegUsage[parameterCount++], 0, R8);
+		MOV (intRegUsage[intCount++], 0, intRegUsage[2]);
 		if (info->flags & AbstractFunction::UNBOX_THIS)
 		{
 			//AvmAssert(0); // needs testing
 
 			// void AND(Register reg, sintptr imm) { ALU(0x25, reg, imm); }
 			MOV(R11, ~7);
-			ALU(0x23,RCX,R11); // clear batom tag
+			ALU64(0x23, intRegUsage[0], R11); // clear atom tag
 		}
 
-		
 		// Used for something like Date.getDate
 		if (info->flags & AbstractFunction::NATIVE_COOKIE)
 		{
-			MOV (intRegUsage[parameterCount++], info->m_cookie);
+			MOV (intRegUsage[intCount++], info->m_cookie);
 		}
 		
 		// In the Win64 ABI, there needs to be a stack slot allocated for
@@ -1142,12 +1151,13 @@ namespace avmplus
 
 				if (!type || type == OBJECT_TYPE)
 				{
-					if (parameterCount < REGCOUNT)
+					if (intCount < INT_REGCOUNT)
 					{
-						MOV (intRegUsage[parameterCount], arg);
+						MOV (intRegUsage[intCount], arg);
 					}
 					else
 					{
+                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, arg); 
 					}				
 				}
@@ -1155,36 +1165,39 @@ namespace avmplus
 				{
 					// push bool
 					int b = (int)arg>>3;
-					if (parameterCount < REGCOUNT)
+					if (intCount < INT_REGCOUNT)
 					{
-						MOV (intRegUsage[parameterCount], b);
+						MOV (intRegUsage[intCount], b);
 					}
 					else
 					{
+                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, b);
 					}	
 				}
 				else if (type == INT_TYPE)
 				{
 					int v = (int)AvmCore::integer_i(arg);
-					if (parameterCount < REGCOUNT)
+					if (intCount < INT_REGCOUNT)
 					{
-						MOV (intRegUsage[parameterCount], v);
+						MOV (intRegUsage[intCount], v);
 					}
 					else
 					{
+                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, v);
 					}	
 				}
 				else if (type == UINT_TYPE)
 				{
 					uint32 v = AvmCore::integer_u(arg);
-					if (parameterCount < REGCOUNT)
+					if (intCount < INT_REGCOUNT)
 					{
-						MOV (intRegUsage[parameterCount], (int32)v);
+						MOV (intRegUsage[intCount], (int32)v);
 					}
 					else
 					{
+                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, (int32)v);
 					}	
 
@@ -1197,15 +1210,16 @@ namespace avmplus
 					// but performance is better if they are.
 					double d = AvmCore::number_d(arg);
 					int64 dp = *(int64*)&d;
-					if (parameterCount < REGCOUNT)
+					if (floatCount < FLOAT_REGCOUNT)
 					{
 						// !!@ better way to do this?
 						MOV (R11, dp);
 						MOV (-8, RSP, R11);
-						MOVSD (floatRegUsage[parameterCount], -8, RSP);
+						MOVSD (floatRegUsage[floatCount], -8, RSP);
 					}
 					else
 					{
+                        AvmAssert(0); // TODO ZELL TODO
 						MOV (R11, dp);
 						MOV (push_count, RSP, R11);
 					}
@@ -1217,12 +1231,13 @@ namespace avmplus
 					// default could be null, but won't be undefined
 					AvmAssert(arg != undefinedAtom);
 					uint64 p = arg & ~7;
-					if (parameterCount < REGCOUNT)
+					if (intCount < INT_REGCOUNT)
 					{
-						MOV (intRegUsage[parameterCount], p);
+						MOV (intRegUsage[intCount], p);
 					}
 					else
 					{
+                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, p);
 					}	
 				}
@@ -1242,30 +1257,38 @@ namespace avmplus
 			if (type == NUMBER_TYPE)
 			{
 				// Put float value into register
-				if (parameterCount < REGCOUNT)
+				if (floatCount < FLOAT_REGCOUNT)
 				{
-					MOVSD (floatRegUsage[parameterCount++], arg_offset, R10);
+					MOVSD (floatRegUsage[floatCount++], arg_offset, R10);
+# ifdef AVMPLUS_WIN32
+                    intCount ++;
+# endif
 				}
 				else
 				{
+                    AvmAssert(0); // TODO ZELL TODO
 					MOV (R11, arg_offset, R10);
 					MOV (push_count, RSP, R11);
+					push_count += 8;
 				}
-				push_count += 8;
 			}
 			else
 			{
 				// Put int/ptr value into register
-				if (parameterCount < REGCOUNT)
+				if (intCount < INT_REGCOUNT)
 				{
-					MOV (intRegUsage[parameterCount++], arg_offset, R10);
+					MOV (intRegUsage[intCount++], arg_offset, R10);
+# ifdef AVMPLUS_WIN32
+                    floatCount ++;
+# endif
 				}
 				else
 				{
+                    AvmAssert(0); // TODO ZELL TODO
 					MOV (R11, arg_offset, R10);
 					MOV (push_count, RSP, R11);
+					push_count += 8;
 				}
-				push_count += 8;
 			}
 
 			arg_offset += 8;
@@ -1283,6 +1306,7 @@ namespace avmplus
 		// depending on registers left over
 		if (need_rest)
 		{
+          AvmAssert(0); // ZELL TODO ZELL
 			// rest_count = argc-param_count
 			CMP (RAX, info->param_count);
 
@@ -1291,17 +1315,17 @@ namespace avmplus
 			byte* patch_ip = mip;
 
 			// rest_count<0, push argc=0, argv=NULL
-			if (parameterCount < REGCOUNT)
+			if (intCount < INT_REGCOUNT)
 			{
-				MOV(intRegUsage[parameterCount], 0);
+				MOV(intRegUsage[intCount], 0);
 			}
 			else
 			{
 				MOV (push_count, RSP, 0);
 			}
-			if ((parameterCount + 1) < REGCOUNT)
+			if ((intCount + 1) < INT_REGCOUNT)
 			{
-				MOV(intRegUsage[parameterCount + 1], 0);
+				MOV(intRegUsage[intCount + 1], 0);
 			}
 			else
 			{
@@ -1312,9 +1336,9 @@ namespace avmplus
 
 			patch_ip[-1] = (byte)(mip-patch_ip);
 			patch_ip = mip;
-			if (parameterCount < REGCOUNT)
+			if (intCount < INT_REGCOUNT)
 			{
-				LEA(intRegUsage[parameterCount++], arg_offset, R10); // callstack location
+				LEA(intRegUsage[intCount++], arg_offset, R10); // callstack location
 				push_count += 8;
 			}
 			else
@@ -1325,9 +1349,9 @@ namespace avmplus
 			}	
 
 			SUB (RAX, info->param_count);
-			if (parameterCount < REGCOUNT)
+			if (intCount < INT_REGCOUNT)
 			{
-				MOV (intRegUsage[parameterCount++], RAX);
+				MOV (intRegUsage[intCount++], RAX);
 				push_count += 8;
 			}
 			else
@@ -1363,7 +1387,9 @@ namespace avmplus
 			if (!(frame_size & 0x8))
 				frame_size += 8;
 
-			*patch_frame_size = (byte)frame_size;
+            //			*patch_frame_size = (byte)frame_size;
+            //			core->console << "Frame size patched from: " << cur_frame_size <<
+            //			  " to "<< frame_size << "\n";
 		}
 
 
@@ -1371,9 +1397,9 @@ namespace avmplus
 #ifdef DEBUGGER
 
 	// rdi - get ENV back off the stack
-	MOV(RCX, frame_size+8, RSP);  
+	MOV(intRegUsage[0], frame_size+8, RSP);  
 	// rdx - callstack pointer
-	LEA(RDX, param_space, RSP); // callstack location
+	LEA(intRegUsage[1], param_space, RSP); // callstack location
 
 	// store the return value on the stack if not a double.	
 	if (type != NUMBER_TYPE)
@@ -1410,18 +1436,15 @@ namespace avmplus
 			{
 				// return value already in RAX
 				// in VC++ bool is just a byte, so mask it off
+# ifdef AVMPLUS_WIN32
 				MOVZX_r8 (RAX, RAX);
+# endif
 			}
 			else if (type == INT_TYPE)
-
 			{
-
 				// sign extend EAX to RAX
-
 				REX (RAX, RAX, true);
-
  				*mip++ = (MDInstruction)(0x98); // CDQE instruction
-
 			}
 
 			else if (type == VOID_TYPE)
@@ -1431,9 +1454,8 @@ namespace avmplus
 		}
 		// else, result in SSE register XMM0??
 	
-		// Cleanup stack
-		ADD(RSP, frame_size);
-
+        //		ADD(RSP, frame_size);
+		
 		RET  ();
 
 		bindMethod(info);

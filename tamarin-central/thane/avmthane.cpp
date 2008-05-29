@@ -186,13 +186,15 @@ namespace thane
 	void Shell::computeStackBase()
 	{
 		const int kMaxAvmPlusStack = 512*1024;
-		int sp;
+		uintptr sp;
 		#ifdef AVMPLUS_PPC
 		asm("mr %0,r1" : "=r" (sp));
         #elif defined(AVMPLUS_ARM)
 		asm("mov %0,sp" : "=r" (sp));
 		#elif defined SOLARIS
 		sp = _getsp();
+        #elif defined (AVMPLUS_AMD64)
+		asm("movq %%rsp,%0" : "=r" (sp));
 		#else
 		asm("movl %%esp,%0" : "=r" (sp));
 		#endif
