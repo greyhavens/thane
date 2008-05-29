@@ -999,8 +999,8 @@ namespace avmplus
 			return;
 		}
 
-        core->console << "emitNativeThunk(" << info << "), # " << info->param_count << " @ ";
-        core->console.format("0x%A\n", code);
+        //        core->console << "emitNativeThunk(" << info << "), # " << info->param_count << " @ ";
+        //        core->console.format("0x%A\n", code);
 
 #ifdef FEATURE_BUFFER_GUARD
 		GrowthGuard guard(pool->codeBuffer);
@@ -1156,7 +1156,6 @@ namespace avmplus
 					}
 					else
 					{
-                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, arg); 
 					}				
 				}
@@ -1170,7 +1169,6 @@ namespace avmplus
 					}
 					else
 					{
-                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, b);
 					}	
 				}
@@ -1183,7 +1181,6 @@ namespace avmplus
 					}
 					else
 					{
-                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, v);
 					}	
 				}
@@ -1196,7 +1193,6 @@ namespace avmplus
 					}
 					else
 					{
-                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, (int32)v);
 					}	
 
@@ -1218,7 +1214,6 @@ namespace avmplus
 					}
 					else
 					{
-                        AvmAssert(0); // TODO ZELL TODO
 						MOV (R11, dp);
 						MOV (push_count, RSP, R11);
 					}
@@ -1236,7 +1231,6 @@ namespace avmplus
 					}
 					else
 					{
-                        AvmAssert(0); // TODO ZELL TODO
 						MOV (push_count, RSP, p);
 					}	
 				}
@@ -1265,7 +1259,6 @@ namespace avmplus
 				}
 				else
 				{
-                    AvmAssert(0); // TODO ZELL TODO
 					MOV (R11, arg_offset, R10);
 					MOV (push_count, RSP, R11);
 					push_count += 8;
@@ -1283,7 +1276,6 @@ namespace avmplus
 				}
 				else
 				{
-                    AvmAssert(0); // TODO ZELL TODO
 					MOV (R11, arg_offset, R10);
 					MOV (push_count, RSP, R11);
 					push_count += 8;
@@ -1319,7 +1311,6 @@ namespace avmplus
 			}
 			else
 			{
-                AvmAssert(0); // ZELL TODO ZELL
 				MOV (push_count, RSP, 0);
 			}
 			if ((intCount + 1) < INT_REGCOUNT)
@@ -1328,7 +1319,6 @@ namespace avmplus
 			}
 			else
 			{
-                AvmAssert(0); // ZELL TODO ZELL
 				MOV (push_count + 8, RSP, 0);
 			}	
 				
@@ -1343,7 +1333,6 @@ namespace avmplus
 			}
 			else
 			{
-                AvmAssert(0); // ZELL TODO ZELL
 				LEA(R10, arg_offset, R10); // callstack location
 				MOV (push_count, RSP, R10);
 				push_count += 8;
@@ -1359,7 +1348,6 @@ namespace avmplus
 			}
 			else
 			{
-                AvmAssert(0); // ZELL TODO ZELL
 				MOV (push_count, RSP, RAX);
 				push_count += 8;
 			}	
