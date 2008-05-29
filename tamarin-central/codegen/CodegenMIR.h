@@ -1558,11 +1558,11 @@ namespace avmplus
 		void ALU(int op, Register r, sintptr disp, Register base);
 
 		void TEST(sintptr disp, Register base, Register r)	{ ALU(0x85, r, disp, base); }
-		void LEA(Register r, sintptr disp, Register base)	{ ALU(0x8d, r, disp, base); }
 		void CALL(sintptr disp, Register base)				{ ALU(0xff, (Register)2, disp, base); }
 		void JMP(sintptr disp, Register base)				{ ALU(0xff, (Register)4, disp, base); }
 		void PUSH(sintptr disp, Register base)				{ ALU(0xff, (Register)6, disp, base); }
 		#ifndef AVMPLUS_AMD64
+		void LEA(Register r, sintptr disp, Register base)	{ ALU(0x8d, r, disp, base); }
 		void MOV (sintptr disp, Register base, Register r)  { ALU(0x89, r, disp, base); }
 		void MOV (Register r, sintptr disp, Register base)  { ALU(0x8b, r, disp, base); }
 		#endif
@@ -1574,6 +1574,9 @@ namespace avmplus
 		void ADD64(Register lhs, Register rhs)	{ ALU64(0x03, lhs, rhs); }
 
 		void XCHG(Register rA, Register rB)		{ ALU64(0x87, rA, rB); }
+
+		void LEA(Register r, sintptr disp, Register base)	{ ALU64(0x8d, r, disp, base); }
+
 		void MOV (Register dest, Register src)	{ ALU64(0x8b, dest, src); }
 
 		void MOV (sintptr disp, Register base, Register r)  { ALU64(0x89, r, disp, base); }
