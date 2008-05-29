@@ -334,7 +334,7 @@ namespace avmplus
 		#endif
 
 		// REX is odd here, because the Register is in ModRM r/m, not reg
-		REX(Unknown, reg, false);
+		REX(Unknown, reg, true);
 		reg = (Register)(int(reg) & 0x7);
 				
  		if (is8bit((int)imm)) {
@@ -408,7 +408,7 @@ namespace avmplus
 		// SHR/SAR and SAL/SHL need to mask the shift operand to 
 		// 5 bits, to make a 31-bit shift maximum
 		// shift op is always in RCX
-			REX(r, rhs, false);
+        REX(r, rhs, true);
 
 		*mip++ = (MDInstruction)op; 
 		MODRM(r, rhs);
@@ -999,8 +999,8 @@ namespace avmplus
 			return;
 		}
 
-//        core->console << "emitNativeThunk(" << info << "), # " << info->param_count << " @ ";
-//        core->console.format("0x%A\n", code);
+        core->console << "emitNativeThunk(" << info << "), # " << info->param_count << " @ ";
+        core->console.format("0x%A\n", code);
 
 #ifdef FEATURE_BUFFER_GUARD
 		GrowthGuard guard(pool->codeBuffer);
@@ -1086,12 +1086,8 @@ namespace avmplus
 
 #else
 		// Make room for first 4 params, patch later if needed
-		const int param_space = 32;
-		int stack_adjust = 8;
-		int frame_size = stack_adjust + param_space;
-
-        //		SUB(RSP,  frame_size); // make room for callstack
-        //		byte *patch_frame_size = mip - 1;
+        SUB(RSP,  0); // make room for callstack
+        byte *patch_frame_size = mip - 1;
 
 #endif // DEBUGGER
 
@@ -1127,7 +1123,7 @@ namespace avmplus
 		// ALL parameters, including the first 4 (RCX,RDX,R8,R9). So we need
 		// to make space for every parameter
 
-		int push_count = 8;	
+		int push_count = 0;
 		int first_optional = 1 + info->param_count - info->optional_count;
 		int arg_offset = 8; // skip our first arg
 
@@ -1388,18 +1384,23 @@ namespace avmplus
 
 		// need to patch the frame size (maybe) depending
 		// on the parameter count
-		//byte cur_frame_size = *patch_frame_size;
-		if (push_count>frame_size)
-		{
-			frame_size = stack_adjust + push_count;
-			if (!(frame_size & 0x8))
-				frame_size += 8;
+		byte cur_frame_size = *patch_frame_size;
 
-            //			*patch_frame_size = (byte)frame_size;
-            //			core->console << "Frame size patched from: " << cur_frame_size <<
-            //			  " to "<< frame_size << "\n";
-		}
+        int frame_size = push_count;
+        // Zell: SYSV ABI requires 16-byte alignment, Win64 requires the precise opposite?
+# ifdef AVMPLUS_WIN32
+        if ((frame_size & 0x8) == 0) {
+# else
+        if ((frame_size & 0x8) != 0) {
+# endif
+            frame_size += 8;
+        }
 
+        if (cur_frame_size != frame_size) {
+            *patch_frame_size = (byte)frame_size;
+            core->console << "Frame size patched from: " << cur_frame_size <<
+                             " to "<< frame_size << "\n";
+        }
 
 // debugExit logic
 #ifdef DEBUGGER
@@ -1462,7 +1463,7 @@ namespace avmplus
 		}
 		// else, result in SSE register XMM0??
 	
-        //		ADD(RSP, frame_size);
+        ADD(RSP, frame_size);
 		
 		RET  ();
 
