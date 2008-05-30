@@ -265,14 +265,16 @@ namespace avmplus
 	void MethodEnv::sendEnter(int /*argc*/, uint32 * /*ap*/)
 	{
 		Profiler *profiler = core()->profiler;
-		if (profiler->profilingDataWanted && !core()->sampler()->sampling)
+		if (profiler != NULL &&
+            profiler->profilingDataWanted && !core()->sampler()->sampling)
 			profiler->sendFunctionEnter(method);
 	}
 
 	void MethodEnv::sendExit()
 	{
 		Profiler *profiler = core()->profiler;
-		if (profiler->profilingDataWanted && !core()->sampler()->sampling)
+		if (profiler != NULL &&
+            profiler->profilingDataWanted && !core()->sampler()->sampling)
 			profiler->sendFunctionExit();
 	}
 #endif
