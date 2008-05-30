@@ -1828,7 +1828,6 @@ return the result of the comparison ToPrimitive(x) == y.
 	}
 #endif
 
-
 	void AvmCore::setConsoleStream(OutputStream *stream)
 	{
 		console.setOutputStream(stream);

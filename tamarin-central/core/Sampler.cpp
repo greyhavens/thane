@@ -183,7 +183,7 @@ namespace avmplus
 
 		if(typeOrVTable < 7 && core->codeContext() && core->codeContext()->domainEnv()) {
 			// and in toplevel
-			typeOrVTable |= (uint32)core->codeContext()->domainEnv()->toplevel();
+			typeOrVTable |= (uintptr)core->codeContext()->domainEnv()->toplevel();
 		}
 
 		writeRawSample(NEW_OBJECT_SAMPLE);
