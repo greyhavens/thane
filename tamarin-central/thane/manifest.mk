@@ -22,5 +22,5 @@ shell_CXXSRCS := $(shell_CXXSRCS) \
   $(curdir)/SystemClass.cpp \
   $(curdir)/flash/net/SocketGlue.cpp \
   $(curdir)/flash/utils/ByteArrayGlue.cpp \
-  $(curdir)/../extensions/DictionaryGlue.cpp \
+  $(curdir)/flash/utils/DictionaryGlue.cpp \
   $(NULL)

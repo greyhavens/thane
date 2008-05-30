@@ -62,7 +62,6 @@
       </import>
       <filespec dir="${tamarin.dir}">
         <include name="thane/**/*.as"/>
-        <include name="extensions/Dictionary.as"/>
       </filespec>
     </asclib>
     <copy tofile="${deploy.dir}/thane.abc" file="${thane.dir}/${lib.name}.abc"/>
@@ -115,7 +114,7 @@
       <filespec dir="http/test" includes="GameTest.as"/>
     </asc>
     <exec executable="${tamdist.dir}/thane/avmthane">
-      <arg line="${deploy.dir}/http.abc http/test/GameTest.abc -- http://www.alyx.com/zell/gameserver.abc"/>
+      <arg line="-Dinterp ${deploy.dir}/http.abc http/test/GameTest.abc -- http://www.alyx.com/zell/gameserver.abc"/>
     </exec>
   </target>
 
