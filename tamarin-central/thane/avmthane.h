@@ -71,6 +71,7 @@ namespace avmplus
 #include "SystemClass.h"
 #include "StringBuilderClass.h"
 #include "DomainClass.h"
+#include "Profiler.h"
 #include "DataIO.h"
 #include "flash/utils/ByteArrayGlue.h"
 #include "flash/net/SocketGlue.h"

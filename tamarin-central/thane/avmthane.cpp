@@ -564,6 +564,11 @@ namespace thane
 				verbose = true;
 #endif
 
+#ifdef DEBUGGER
+			// Create the profiler
+            profiler = new (GetGC()) avmshell::Profiler(this);
+#endif
+
 			// start the 15 second timeout if applicable
 			if (interrupts) {
 				#ifdef WIN32
@@ -612,6 +617,9 @@ namespace thane
                 bool isValid = f.valid();
                 if (!isValid) {
                     fprintf(stderr, "cannot open file: %s\n", filename);
+#ifdef DEBUGGER
+                    delete profiler;
+#endif
                     return(1);
                 }
 
@@ -648,6 +656,9 @@ namespace thane
                 usleep(50000);
             }
 
+#ifdef DEBUGGER
+            delete profiler;
+#endif
 		}
 		CATCH(Exception *exception)
 		{
@@ -659,6 +670,9 @@ namespace thane
 			if (exception->getStackTrace()) {
 				console << exception->getStackTrace()->format(this) << '\n';
 			}
+#ifdef DEBUGGER
+                    delete profiler;
+#endif
 			#else
 			// [ed] always show error, even in release mode,
 			// see bug #121382
