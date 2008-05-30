@@ -85,15 +85,7 @@ namespace thane
 		void write(Stringp s);
 
 		
-		/**
-		 * @name Debugging Extensions
-		 */
-		/*@{*/
-		void debugger();
-		bool isDebugger();
-		/*@}*/
-
-				/**
+        /**
 		 * @name ActionScript Extensions
 		 * ActionScript extensions to ECMAScript
 		 */

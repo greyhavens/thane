@@ -41,17 +41,10 @@ package avmplus
 	{
 		public native static function getAvmplusVersion():String
 		public native static function trace(a:Array):void
-		public native static function debugger():void
-		public native static function isDebugger():Boolean
 		public native static function getTimer():int;
 		private native static function getArgv():Array
 		public static const argv:Array = getArgv();
 	}	
-	
-	public function debugger()
-	{
-		System.debugger()
-	}
 }
 
 // The flash.system package is present so identical ATS test media can be used
@@ -63,7 +56,6 @@ package flash.system
 	public final class Capabilities
 	{
 		public static function get playerType():String { return "AVMPlus"; }
-		public static function get isDebugger():Boolean { return System.isDebugger(); }
 	}
 }
 		

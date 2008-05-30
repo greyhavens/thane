@@ -16,7 +16,6 @@ shell_CXXSRCS := $(shell_CXXSRCS) \
   $(curdir)/avmthane.cpp \
   $(curdir)/ConsoleOutputStream.cpp \
   $(curdir)/DataIO.cpp \
-  $(curdir)/DebugCLI.cpp \
   $(curdir)/DomainClass.cpp \
   $(curdir)/FileInputStream.cpp \
   $(curdir)/StringBuilderClass.cpp \

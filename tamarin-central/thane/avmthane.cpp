@@ -375,10 +375,6 @@ namespace thane
 	
 	Shell::Shell(MMgc::GC *gc) : AvmCore(gc)
 	{
-		#ifdef DEBUGGER
-		debugCLI = NULL;
-		#endif
-
 		systemClass = NULL;
 		
 		gracePeriod = false;
@@ -414,9 +410,6 @@ namespace thane
 			int endFilenamePos = -1;
 			char *filename = NULL;
 			bool do_log = false;
-#ifdef DEBUGGER
-			bool do_debugger = false;
-#endif
 #ifdef AVMPLUS_VERBOSE
 			bool do_verbose = false;
 #endif
@@ -533,12 +526,6 @@ namespace thane
 					}
 #endif /* AVMPLUS_WITH_JNI */
                                     
-	                #ifdef DEBUGGER
-					else if (!strcmp(arg, "-d")) {
-						do_debugger = true;
-					}
-		            #endif /* DEBUGGER */
-
 					else if(arg[1] == '-' && arg[2] == 0) {
 						endFilenamePos = i;
 					}
@@ -576,23 +563,6 @@ namespace thane
 			if (do_verbose)
 				verbose = true;
 #endif
-
-			#ifdef DEBUGGER
-			// Create the debugger
-			debugCLI = new (GetGC()) DebugCLI(this);
-			debugger = debugCLI;
-
-			// Create the profiler
-			profiler = new (GetGC()) Profiler(this);
-
-			if (do_debugger)
-			{
-				// Activate the debug CLI and stop at
-				// start of program
-				debugCLI->activate();
-				debugCLI->stepInto();
-			}
-			#endif
 
 			// start the 15 second timeout if applicable
 			if (interrupts) {
@@ -642,9 +612,6 @@ namespace thane
                 bool isValid = f.valid();
                 if (!isValid) {
                     fprintf(stderr, "cannot open file: %s\n", filename);
-#ifdef DEBUGGER
-                    delete profiler;
-#endif
                     return(1);
                 }
 
@@ -681,9 +648,6 @@ namespace thane
                 usleep(50000);
             }
 
-			#ifdef DEBUGGER
-			delete profiler;
-			#endif
 		}
 		CATCH(Exception *exception)
 		{
@@ -695,7 +659,6 @@ namespace thane
 			if (exception->getStackTrace()) {
 				console << exception->getStackTrace()->format(this) << '\n';
 			}
-			delete profiler;
 			#else
 			// [ed] always show error, even in release mode,
 			// see bug #121382

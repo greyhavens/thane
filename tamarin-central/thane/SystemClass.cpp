@@ -45,8 +45,6 @@ namespace thane
 	BEGIN_NATIVE_MAP(SystemClass)
 		NATIVE_METHOD(avmplus_System_getAvmplusVersion, SystemClass::getAvmplusVersion)
 		NATIVE_METHOD(avmplus_System_trace, SystemClass::trace)
-		NATIVE_METHOD(avmplus_System_debugger, SystemClass::debugger)
-		NATIVE_METHOD(avmplus_System_isDebugger, SystemClass::isDebugger)
 		NATIVE_METHOD(avmplus_System_getTimer, SystemClass::getTimer)
 		NATIVE_METHOD(avmplus_System_private_getArgv, SystemClass::getArgv)
 	END_NATIVE_MAP()
@@ -116,22 +114,6 @@ namespace thane
 			}
 		}
 		console << '\n';
-	}
-
-	void SystemClass::debugger()
-	{
-		#ifdef DEBUGGER
-		core()->debugger->enterDebugger();
-		#endif
-	}
-
-	bool SystemClass::isDebugger()
-	{
-		#ifdef DEBUGGER
-		return true;
-		#else
-		return false;
-		#endif
 	}
 
 	unsigned SystemClass::getTimer()

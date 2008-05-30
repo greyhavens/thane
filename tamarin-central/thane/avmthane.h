@@ -71,8 +71,6 @@ namespace avmplus
 #include "SystemClass.h"
 #include "StringBuilderClass.h"
 #include "DomainClass.h"
-#include "DebugCLI.h"
-#include "Profiler.h"
 #include "DataIO.h"
 #include "flash/utils/ByteArrayGlue.h"
 #include "flash/net/SocketGlue.h"
@@ -132,10 +130,6 @@ namespace thane
 
 		void computeStackBase();
 		
-		#ifdef DEBUGGER
-		DebugCLI *debugCLI;
-		#endif
-
 		// for interactive
 		#ifdef AVMPLUS_INTERACTIVE
 		int addToImports(char* imports, char* addition);
