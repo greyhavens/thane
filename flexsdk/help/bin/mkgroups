@@ -7,7 +7,8 @@ patQClass = '(?P<class>[a-zA-Z0-9_.]+)' # with dots
 
 reImport = re.compile(r'''\s*import %s;?''' % patQClass)
 reExtends = re.compile(r'''\bextends\s+%s''' % patClass)
-reStaticRef = re.compile(r'''static.*\b%s\.''' % patClass)
+reStaticRef1 = re.compile(r'''static.*\b%s\.''' % patClass)
+reStaticRef2 = re.compile(r'''static.*\bnew %s\s*\(''' % patClass)
 reImplements = re.compile(r'''\bimplements\s+%s''' % patClass)
 reMoreImplements = re.compile(r''',\s*%s''' % patClass)
 root = "src/as"
@@ -33,7 +34,9 @@ class File:
             if m: self.imports[m.group('class')] = True
             m = reExtends.search(line)
             if m: self.extends[m.group('class')] = True
-            m = reStaticRef.search(line)
+            m = reStaticRef1.search(line)
+            if m: self.refers[m.group('class')] = True
+            m = reStaticRef2.search(line)
             if m: self.refers[m.group('class')] = True
         #print "imports for %s are %s" % (path, ", ".join(self.imports.keys()))
         #print "extends for %s are %s" % (path, ", ".join(self.extends.keys()))
