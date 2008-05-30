@@ -93,7 +93,7 @@
   <target name="tamarin" depends="prepare,thanelib" if="isunix">
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
     <exec dir="${tamdist.dir}" executable="python" failonerror="true">
-       <arg line="${tamarin.dir}/configure.py --enable-shell ${tamarin-debugger} --enable-debug"/>
+       <arg line="${tamarin.dir}/configure.py --enable-thane ${tamarin-debugger} --enable-debug"/>
     </exec>
     <exec dir="${tamdist.dir}" executable="${make}" failonerror="true">
        <arg line="-j4"/>

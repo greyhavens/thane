@@ -63,6 +63,9 @@ if buildTamarin:
 buildShell = o.getBoolArg("shell", False)
 if (buildShell):
     config.subst("ENABLE_SHELL", 1)
+buildThane = o.getBoolArg("thane", False)
+if (buildThane):
+    config.subst("ENABLE_THANE", 1)
 
 # Get CPP, CC, etc
 config.getCompiler(static_crt=o.getBoolArg('static-crt'))

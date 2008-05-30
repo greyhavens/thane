@@ -37,7 +37,7 @@
 
 
 #ifdef AVMPLUS_SHELL
-#include "avmthane.h"
+#include "avmshell.h"
 #else
 // player
 #include "platformbuild.h"

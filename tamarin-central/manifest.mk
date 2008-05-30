@@ -64,7 +64,12 @@ $(call RECURSE_DIRS,platform/unix)
 endif
 endif
 
+ifdef ENABLE_SHELL
+$(call RECURSE_DIRS,shell)
+endif
+ifdef ENABLE_THANE
 $(call RECURSE_DIRS,thane)
+endif
 
 echo:
 	@echo avmplus_CXXFLAGS = $(avmplus_CXXFLAGS)

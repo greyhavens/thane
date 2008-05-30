@@ -46,22 +46,25 @@ import sys, string, time
 import pexpect
 
 
-globs = { 'asc':'', 'globalabc':''}
+globs = { 'asc':'', 'globalabc':'', 'thaneabc':''}
 if 'ASC' in environ:
     globs['asc'] = environ['ASC'].strip()
 if 'GLOBALABC' in environ:
 	globs['globalabc'] = environ['GLOBALABC'].strip()
+if 'THANEABC' in environ:
+	globs['thaneabc'] = environ['THANEABC'].strip()
 
 def usage(c):
 	print 'usage: %s [options] ' % basename(argv[0])
 	print ' -a --asc           compiler to use'
 	print ' -g --globalabc     location of global.abc'
+	print ' -t --thaneabc      location of thane.abc'
 	print ' -h --help          display help and exit'
 	print ''
 	exit(c)
 
 try:
-	opts, args = getopt(argv[1:], 'a:g:h', ['asc=','globalabc=','help'])
+	opts, args = getopt(argv[1:], 'a:g:t:h', ['asc=','globalabc=','thaneabc=','help'])
 except:
 	opts = [('', '')]
 	args = ['.']
@@ -75,6 +78,8 @@ for o, v in opts:
 		globs['asc'] = v
 	elif o in ('-g', '--globalabc'):
 		globs['globalabc'] = v
+	elif o in ('-t', '--thaneabc'):
+		globs['thaneabc'] = v
      
 
 if not isfile(globs['asc']):
@@ -82,6 +87,9 @@ if not isfile(globs['asc']):
 	
 if not isfile(globs['globalabc']):
 	usage('ERROR: global.abc %s does not exist, GLOBALABC environment variable or --globalabc must be set to builtin.abc' % globs['globalabc'])
+
+if not isfile(globs['thaneabc']):
+	usage('ERROR: thane.abc %s does not exist, GLOBALABC environment variable or --thaneabc must be set to thane.abc' % globs['thaneabc'])
 
 def istest(f):
 	return f.endswith(".as") and basename(f) != "shell.as" and not f.endswith("Util.as")
@@ -110,7 +118,7 @@ print("starting compile of %d tests at %s" % (len(tests),start_time))
 total=len(tests)
 counter=0
 for test in tests:
-	cmd = "asc -import " + globs['globalabc']
+	cmd = "asc -import " + globs['globalabc'] + " -import " + globs['thaneabc']
 	(dir, file) = split(test)
 	#print("   compiling %s" % file)
 	for p in parents(dir):
