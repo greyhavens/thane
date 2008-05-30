@@ -999,8 +999,10 @@ namespace avmplus
 			return;
 		}
 
-        //        core->console << "emitNativeThunk(" << info << "), # " << info->param_count << " @ ";
-        //        core->console.format("0x%A\n", code);
+        if (core->verbose) {
+            core->console << "emitNativeThunk(" << info << "), # " << info->param_count << " @ ";
+            core->console.format("0x%A\n", code);
+        }
 
 #ifdef FEATURE_BUFFER_GUARD
 		GrowthGuard guard(pool->codeBuffer);
@@ -1039,6 +1041,7 @@ namespace avmplus
 		//int stackAdjust = 0;
 
 #ifdef DEBUGGER
+# ifdef AVMPLUS_WIN32
 		// There is already space on the stack for these
 		MOV(8, RSP, intRegUsage[0]);	// env
 		MOV(16, RSP, intRegUsage[1]);	// argc
@@ -1053,11 +1056,11 @@ namespace avmplus
 		const int param_space = 64;
 
 		int frame_size = stack_adjust + param_space;
- 		
-        //		SUB(RSP,  frame_size); // make room for callstack
-        //		byte *patch_frame_size = mip - 1;
 
-		//debugEnter: 
+        SUB(RSP,  frame_size); // make room for callstack
+        byte *patch_frame_size = mip - 1;
+
+		//debugEnter (WIN64):
 		// RCX: env (same as func entry)
 		// RDX: int argc, (same as func entry)
 		// R8: uint32 *ap, (same as func entry)
@@ -1066,25 +1069,77 @@ namespace avmplus
 		// stack: CallStackNode* callstack, 
 		// stack: Atom* framep, 
 		// stack: volatile int *eip
+		// stack: volatile int *eip
 
-		XOR(R9, R9);			// Traits**
-		MOV(32, RSP, R9);		// localCount (0)
+		XOR(intRegUsage[3], intRegUsage[3]);			// Traits**
+		MOV(32, RSP, intRegUsage[3]);		// localCount (0)
 
 		LEA(R10, 64, RSP); // callstack location
 		MOV(40, RSP, R10);
 
-		MOV(48, RSP, R9); // framep - R8 is just a convenient zero value
-		MOV(56, RSP, R9); // eip - R8 is just a convenient zero value
+		MOV(48, RSP, intRegUsage[3]); // framep - reg is just a convenient zero value
+		MOV(56, RSP, intRegUsage[3]); // eip - reg is just a convenient zero value
 
 		thincall(ENVADDR(MethodEnv::debugEnter));
 
 		// reload AP, ARGC.   Leave ENV on stack
-		MOV(R8, frame_size+24, RSP);	// AP
-		MOV(RDX, frame_size+16, RSP);	// ARGC
+		MOV(intRegUsage[2], frame_size+24, RSP);	// AP
+		MOV(intRegUsage[1], frame_size+16, RSP);	// ARGC
 
 		//stackAdjust = 8; // ENV is still on stack
+# else
+		// Make room for CallStackNode
+		// We stick 8 on the end to 16-byte align the stack, which is
+		// unaligned when we enter the function
+		const int stack_adjust = BIT_ROUND_UP(sizeof(CallStackNode), 16);
 
+        // we have to make 24 extra bytes of space in the SYSV version
+        const int param_space = 48; // env/argc/ap save, + framep & epi args
+
+		int frame_size = stack_adjust + param_space;
+
+        SUB(RSP, frame_size); // make room for callstack
+        byte *patch_frame_size = mip - (is8bit(frame_size) ? 1 : 4);
+
+		MOV(24, RSP, intRegUsage[0]);	// env
+		MOV(32, RSP, intRegUsage[1]);	// argc
+		MOV(40, RSP, intRegUsage[2]);	// ap
+
+		//debugEnter (UNIX)
+		// RDI: env (same as func entry)
+		// RSI: int argc, (same as func entry)
+		// RDX: uint32 *ap, (same as func entry)
+		// RCX: Traits**frameTraits, 
+		// R8: int localCount, 
+		// R9: CallStackNode* callstack, 
+		// stack: Atom* framep, 
+		// stack: volatile int *eip
+
+		XOR(intRegUsage[3], intRegUsage[3]);			// Traits**
+		MOV(intRegUsage[4], intRegUsage[3]);		// localCount (0)
+
+		LEA(intRegUsage[5], param_space, RSP); // callstack location
+
+		MOV(8, RSP, intRegUsage[3]); // framep - reg is just a convenient zero value
+		MOV(16, RSP, intRegUsage[3]); // eip - reg is just a convenient zero value
+
+		thincall(ENVADDR(MethodEnv::debugEnter));
+
+		// reload AP, ARG, ignore ENV for now
+		MOV(intRegUsage[1], 32, RSP);	// ARGC
+		MOV(intRegUsage[2], 40, RSP);	// AP
+
+# endif // WIN64
 #else
+
+# ifdef AVMPLUS_WIN32
+		const int param_space = 32;
+		int stack_adjust = 8;
+# else
+		const int param_space = 0;
+		int stack_adjust = 0;
+# endif
+		int frame_size = stack_adjust + param_space;
 		// Make room for first 4 params, patch later if needed
         SUB(RSP,  0); // make room for callstack
         byte *patch_frame_size = mip - 1;
@@ -1374,7 +1429,7 @@ namespace avmplus
 		// on the parameter count
 		byte cur_frame_size = *patch_frame_size;
 
-        int frame_size = push_count;
+        frame_size = stack_adjust + push_count;
         // Zell: SYSV ABI requires 16-byte alignment, Win64 requires the precise opposite?
 # ifdef AVMPLUS_WIN32
         if ((frame_size & 0x8) == 0) {
@@ -1384,17 +1439,21 @@ namespace avmplus
             frame_size += 8;
         }
 
-        if (cur_frame_size != frame_size) {
+        if (frame_size > cur_frame_size) {
             *patch_frame_size = (byte)frame_size;
-            core->console << "Frame size patched from: " << cur_frame_size <<
+            if (core->verbose) {
+                core->console << "Frame size patched from: " << cur_frame_size <<
                              " to "<< frame_size << "\n";
+            }
+        } else {
+          frame_size = cur_frame_size;
         }
 
 // debugExit logic
 #ifdef DEBUGGER
 
 	// rdi - get ENV back off the stack
-	MOV(intRegUsage[0], frame_size+8, RSP);  
+	MOV(intRegUsage[0], 24, RSP);  
 	// rdx - callstack pointer
 	LEA(intRegUsage[1], param_space, RSP); // callstack location
 
@@ -1402,9 +1461,9 @@ namespace avmplus
 	if (type != NUMBER_TYPE)
 	{
 		// Just use a spot on the stack
-		MOV(40, RSP, RAX);
+        //		MOV(40, RSP, RAX);
 		//SUB (RSP, 8); // 16-byte stack alignment required
-		//PUSH (RAX);
+		PUSH (RAX);
 	}
 
 	// call debugExit
@@ -1412,8 +1471,8 @@ namespace avmplus
 	
 	if (type != NUMBER_TYPE)
 	{
-		MOV(RAX, 40, RSP);
-		//POP (RAX);
+        //		MOV(RAX, 40, RSP);
+		POP (RAX);
 		// patch up our stack - get rid of callstack allocation	
 		//ADD(RSP, stack_adjust + 8);
 	}
