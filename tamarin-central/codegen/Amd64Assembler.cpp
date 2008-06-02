@@ -70,7 +70,6 @@ namespace avmplus
 		"r13",
 		"r14",
 		"r15"		
-		
 	};
 
 	const char *CodegenMIR::xmmregNames[] = {
@@ -1088,22 +1087,20 @@ namespace avmplus
 
 		//stackAdjust = 8; // ENV is still on stack
 # else
-		// Make room for CallStackNode
-		// We stick 8 on the end to 16-byte align the stack, which is
-		// unaligned when we enter the function
-		const int stack_adjust = BIT_ROUND_UP(sizeof(CallStackNode), 16);
+		// Make room for CallStackNode + the ENV argument
+		const int stack_adjust = BIT_ROUND_UP(sizeof(CallStackNode), 16) + 8;
 
         // we have to make 24 extra bytes of space in the SYSV version
-        const int param_space = 48; // env/argc/ap save, + framep & epi args
+        const int param_space = 40; // argc/ap save, + framep & epi args
 
 		int frame_size = stack_adjust + param_space;
 
         SUB(RSP, frame_size); // make room for callstack
         byte *patch_frame_size = mip - (is8bit(frame_size) ? 1 : 4);
 
-		MOV(24, RSP, intRegUsage[0]);	// env
+		MOV(40, RSP, intRegUsage[0]);	// env
 		MOV(32, RSP, intRegUsage[1]);	// argc
-		MOV(40, RSP, intRegUsage[2]);	// ap
+		MOV(24, RSP, intRegUsage[2]);	// ap
 
 		//debugEnter (UNIX)
 		// RDI: env (same as func entry)
@@ -1118,7 +1115,7 @@ namespace avmplus
 		XOR(intRegUsage[3], intRegUsage[3]);			// Traits**
 		MOV(intRegUsage[4], intRegUsage[3]);		// localCount (0)
 
-		LEA(intRegUsage[5], param_space, RSP); // callstack location
+		LEA(intRegUsage[5], param_space + 8, RSP); // callstack location
 
 		MOV(8, RSP, intRegUsage[3]); // framep - reg is just a convenient zero value
 		MOV(16, RSP, intRegUsage[3]); // eip - reg is just a convenient zero value
@@ -1127,7 +1124,7 @@ namespace avmplus
 
 		// reload AP, ARG, ignore ENV for now
 		MOV(intRegUsage[1], 32, RSP);	// ARGC
-		MOV(intRegUsage[2], 40, RSP);	// AP
+		MOV(intRegUsage[2], 24, RSP);	// AP
 
 # endif // WIN64
 #else
@@ -1453,9 +1450,9 @@ namespace avmplus
 #ifdef DEBUGGER
 
 	// rdi - get ENV back off the stack
-	MOV(intRegUsage[0], 24, RSP);  
+	MOV(intRegUsage[0], 40, RSP);  
 	// rdx - callstack pointer
-	LEA(intRegUsage[1], param_space, RSP); // callstack location
+	LEA(intRegUsage[1], param_space + 8, RSP); // callstack location
 
 	// store the return value on the stack if not a double.	
 	if (type != NUMBER_TYPE)
