@@ -8,7 +8,7 @@ shell_DIR := $(curdir)/
 shell_EXTRA_CPPFLAGS := $(AVMSHELL_CPPFLAGS)
 shell_EXTRA_LDFLAGS := $(AVMSHELL_LDFLAGS)
 
-ifdef ENABLE_SHELL
+ifdef ENABLE_THANE
 shell_BUILD_ALL = 1
 endif
 
