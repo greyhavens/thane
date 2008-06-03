@@ -39,26 +39,23 @@
 package avmplus {
 
 import flash.utils.ByteArray
+import flash.events.EventDispatcher;
 
 public class Domain
 {
-    public static function spawnDomain (domainId :String, base :Domain = null) :Domain
+    public static function spawnDomain (domainId :String, bridge :EventDispatcher) :Domain
     {
-        var dom :Domain = new Domain(base);
+        var dom :Domain = new Domain();
 
-        // TODO: Abstract this & the LoaderInfo stuff into one place, maybe clean it up
-        var tracer :Class = dom.getClass("Tracer");
-        if (tracer == null) {
-            throw new Error ("Could not locate Tracer in new Domain");
-        }
-        tracer["setDomainId"].apply(null, [ domainId ]);
-        
         var thane :Class = dom.getClass("Thane");
         if (thane == null) {
             throw new Error ("Could not locate Thane in new Domain");
         }
-        thane["connectToMainDomain"].apply(null, [ Thane.requestHeartbeat ]);
-        
+        var initFun :Function = thane["initializeDomain"];
+        if (initFun == null) {
+            throw new Error("Could not locate initializeDomain() on foreign Thane class");
+        }
+        initFun(domainId, bridge, Thane.requestHeartbeat);
         return dom;
     }
 

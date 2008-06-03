@@ -71,7 +71,7 @@ package {
 	// nonstandard Flash Player extensions
 	public function trace(s :String) :void
 	{
-		System.trace([ "Domain[" + Tracer.getDomainId() + "]: " + s ]);
+		System.trace([ "Domain[" + Thane.getDomainId() + "]: " + s ]);
 	}
 
     public class Tracer

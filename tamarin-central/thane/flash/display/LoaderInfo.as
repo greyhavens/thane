@@ -10,21 +10,17 @@ import flash.errors.IllegalOperationError;
 
 public class LoaderInfo extends EventDispatcher
 {
-    public static var __currentBridge :EventDispatcher = null;
-
     static function maybeCreateLoaderInfo () :LoaderInfo
     {
-        if (__currentBridge == null) {
-            return null;
+        if (Thane.getDomainBridge() != null) {
+            return new LoaderInfo();
         }
-        var info :LoaderInfo = new LoaderInfo();
-        info._bridge = __currentBridge;
-        return info;
+        return null;
     }
 
     public function get sharedEvents () :EventDispatcher
     {
-        return _bridge;
+        return Thane.getDomainBridge();
     }
 
     override public function dispatchEvent (event :Event) :Boolean
@@ -32,7 +28,6 @@ public class LoaderInfo extends EventDispatcher
         throw new IllegalOperationError("calls to dispatchEvent() on LoaderInfo are not allowed");
     }
 
-    protected var _bridge :EventDispatcher;
 }
 
 }

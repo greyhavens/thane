@@ -3,21 +3,40 @@
 
 package {
 
+import flash.events.EventDispatcher;
+
 public class Thane
 {
+    public static function getDomainId () :String
+    {
+        return _domainId;
+    }
+
+    public static function getDomainBridge () :EventDispatcher
+    {
+        return _bridge;
+    }
+
+    public static function initializeDomain (
+        domainId :String, bridge :EventDispatcher, foreignHeart :Function) :void
+    {
+        if (_initialized) {
+            throw new Error("This domain has already been initialized");
+        }
+        _initialized = true;
+        _domainId = domainId;
+        _bridge = bridge;
+
+        if (foreignHeart != null) {
+            foreignHeart(heartbeat);
+        }
+    }
+
     public static function requestHeartbeat (heart :Function) :void
     {
         if (-1 == _hearts.indexOf(heart)) {
             _hearts.push(heart);
         }
-    }
-
-    // TODO: This must be secured somehow.
-    public static function connectToMainDomain (requestFun :Function) :void
-    {
-        requestFun(function () :void {
-            heartbeat();
-        });
     }
 
     private static function heartbeat () :void
@@ -31,6 +50,9 @@ public class Thane
         }
     }
 
+    private static var _initialized :Boolean;
+    private static var _domainId :String = "System"; // TODO: distinguish from anonymous domains?
+    private static var _bridge :EventDispatcher;
     private static var _hearts :Array = new Array();
 }
 }

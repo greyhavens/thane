@@ -46,7 +46,7 @@ public final class AscTask extends FlexTask implements DynamicAttribute
     {
         ASC_VARIABLES = new ConfigVariable[] {
             //Boolean Variables
-            new ConfigBoolean(new OptionSpec("as3")),
+            new ConfigBoolean(new OptionSpec(null, "AS3", "as3")),
             new ConfigBoolean(new OptionSpec("es")),
             new ConfigBoolean(new OptionSpec("d")),
             new ConfigBoolean(new OptionSpec("f")),
@@ -59,6 +59,7 @@ public final class AscTask extends FlexTask implements DynamicAttribute
             new ConfigBoolean(new OptionSpec("sanity")),
             new ConfigBoolean(new OptionSpec("optimize")),
             //String Variables
+            new ConfigString(new OptionSpec("use")),
             new ConfigString(new OptionSpec("log")),
             new ConfigString(new OptionSpec("exe")),
             new ConfigString(new OptionSpec("language")),

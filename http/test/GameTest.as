@@ -38,7 +38,9 @@ function handleComplete (evt :Event) :void
 {
     trace("Compiling bytecode into new Domain...");
 
-    var domain :Domain = Domain.spawnDomain("UserCode");
+    var bridge = new EventDispatcher();
+
+    var domain :Domain = Domain.spawnDomain("UserCode", bridge);
     domain.loadBytes(bytes);
 
     trace("Successfully loaded! Testing...");
@@ -48,8 +50,6 @@ function handleComplete (evt :Event) :void
     var loaderInfo :Class = domain.getClass("flash.display.LoaderInfo");
     trace("LoaderInfo class in new domain: " + loaderInfo);
 
-    var bridge = new EventDispatcher();
-    loaderInfo.__currentBridge = bridge;
     bridge.addEventListener("controlConnect", handleUserCodeConnect);
     try {
         new gameServerClass();
