@@ -48,7 +48,11 @@ public class EventDispatcher implements IEventDispatcher
             try {
                 listener(event);
             } catch (err :Error) {
-                trace("Event[" + event + "] dispatch error: " + err);
+                var errStr :String = err.getStackTrace();
+                if (errStr == null) {
+                    errStr = err.message;
+                }
+                trace(errStr);
             }
             if (event.isPropagationStopped(true)) {
                 break;
