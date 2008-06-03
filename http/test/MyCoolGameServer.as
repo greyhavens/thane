@@ -15,7 +15,6 @@ import com.whirled.game.server.ServerObject;
 import flash.events.TimerEvent;
 import flash.utils.Timer;
 
-
 public class MyCoolGameServer extends ServerObject
 {
     public function MyCoolGameServer ()
@@ -24,9 +23,10 @@ public class MyCoolGameServer extends ServerObject
 
         trace("GameControl.isConnected() = " + _ctrl.isConnected());
 
-        var timer :Timer = new Timer(3);
+        var timer :Timer = new Timer(1, 1);
         timer.addEventListener(TimerEvent.TIMER, function (evt :TimerEvent) :void {
-            trace("Timer expired!");
+            trace("Timer expired! Testing call trace...");
+            throw new Error("Everything is working normally. There should be a stack trace here.");
         });
         timer.start();
     }

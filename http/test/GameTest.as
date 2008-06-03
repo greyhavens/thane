@@ -57,8 +57,6 @@ function handleComplete (evt :Event) :void
     } catch (err :Error) {
         trace("Error instantiating server class: " + err);
     }
-    loaderInfo.__currentBridge = null;
-
 }
 
 function handleUserCodeConnect (evt :Event) :void
