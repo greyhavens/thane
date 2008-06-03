@@ -19,6 +19,8 @@ client.addEventListener(HttpDataEvent.DATA, handleData);
 client.addEventListener(HttpErrorEvent.ERROR, event);
 client.addEventListener(HttpStatusEvent.STATUS, event);
 
+trace("Temporary hack: " + Date.UTC(2008, 5, 29, 15, 16, 22, 43));
+
 var bytes :ByteArray = new ByteArray();
 
 function event (evt :Event) :void
@@ -36,7 +38,7 @@ function handleComplete (evt :Event) :void
 {
     trace("Compiling bytecode into new Domain...");
 
-    var domain :Domain = new Domain();
+    var domain :Domain = Domain.spawnDomain("UserCode");
     domain.loadBytes(bytes);
 
     trace("Successfully loaded! Testing...");

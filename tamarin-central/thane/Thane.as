@@ -12,6 +12,14 @@ public class Thane
         }
     }
 
+    // TODO: This must be secured somehow.
+    public static function connectToMainDomain (requestFun :Function) :void
+    {
+        requestFun(function () :void {
+            heartbeat();
+        });
+    }
+
     private static function heartbeat () :void
     {
         for each (var heart :Function in _hearts) {

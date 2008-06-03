@@ -42,7 +42,27 @@ import flash.utils.ByteArray
 
 public class Domain
 {
-	public native function Domain(base:Domain = null);
+    public static function spawnDomain (domainId :String, base :Domain = null) :Domain
+    {
+        var dom :Domain = new Domain(base);
+
+        // TODO: Abstract this & the LoaderInfo stuff into one place, maybe clean it up
+        var tracer :Class = dom.getClass("Tracer");
+        if (tracer == null) {
+            throw new Error ("Could not locate Tracer in new Domain");
+        }
+        tracer["setDomainId"].apply(null, [ domainId ]);
+        
+        var thane :Class = dom.getClass("Thane");
+        if (thane == null) {
+            throw new Error ("Could not locate Thane in new Domain");
+        }
+        thane["connectToMainDomain"].apply(null, [ Thane.requestHeartbeat ]);
+        
+        return dom;
+    }
+
+	public native function Domain (base:Domain = null);
 	public native function loadBytes(byteArray:ByteArray);
 	public native function getClass(className:String):Class;
     public native function getVariables (value :*) :Array;

@@ -12,6 +12,10 @@ package zell.coolgame {
 
 import com.whirled.game.server.ServerObject;
 
+import flash.events.TimerEvent;
+import flash.utils.Timer;
+
+
 public class MyCoolGameServer extends ServerObject
 {
     public function MyCoolGameServer ()
@@ -19,6 +23,12 @@ public class MyCoolGameServer extends ServerObject
         _ctrl = new TestControl(this);
 
         trace("GameControl.isConnected() = " + _ctrl.isConnected());
+
+        var timer :Timer = new Timer(3);
+        timer.addEventListener(TimerEvent.TIMER, function (evt :TimerEvent) :void {
+            trace("Timer expired!");
+        });
+        timer.start();
     }
 
     protected var _ctrl :TestControl;
