@@ -74,7 +74,7 @@ public class Timer extends EventDispatcher
         }
         _currentCount ++;
         dispatchEvent(new TimerEvent(TimerEvent.TIMER));
-        if (_currentCount < _repeatCount) {
+        if (repeatCount == 0 || _currentCount < _repeatCount) {
             buddy.expiration += _delay;
             enqueue(buddy);
 
