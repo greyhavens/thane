@@ -20,10 +20,10 @@ public class Socket extends EventDispatcher
 {
     public function Socket (host :String = null, port :int = 0)
     {
-        if (_theSocket != null) {
-            throw new Error("You may not create Sockets");
-        }
-        _theSocket = this;
+        //if (_theSocket != null) {
+        //    throw new Error("You may not create Sockets");
+        //}
+        //_theSocket = this;
 
         _state = ST_VIRGIN;
         Thane.requestHeartbeat(heartbeat);
@@ -67,9 +67,9 @@ public class Socket extends EventDispatcher
 
     protected function heartbeat () :void
     {
-        if (_theSocket == null) {
-            return;
-        }
+        //if (_theSocket == null) {
+        //    return;
+        //}
         switch(_state) {
         case ST_VIRGIN:
             break;
@@ -323,7 +323,7 @@ public class Socket extends EventDispatcher
 
     private var _bytesTotal :int = 0;
 
-    private static var _theSocket :Socket = null;
+    //private static var _theSocket :Socket = null;
 
     private static const ST_VIRGIN :int = 1;
     private static const ST_WAITING :int = 2;
