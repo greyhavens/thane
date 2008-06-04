@@ -1,4 +1,4 @@
-package {
+package org.httpclient {
   
   import flash.utils.getQualifiedClassName;
   import flash.utils.describeType;

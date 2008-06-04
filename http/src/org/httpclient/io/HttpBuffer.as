@@ -3,9 +3,10 @@
  * See LICENSE.txt for full license information.
  */
 package org.httpclient.io {
-  
+
   import com.adobe.utils.StringUtil;
   import flash.utils.ByteArray;
+  import org.httpclient.Log;
   
   public class HttpBuffer {
     

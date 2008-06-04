@@ -3,10 +3,11 @@
  * See LICENSE.txt for full license information.
  */
 package org.httpclient.io {
-  
+
   import com.adobe.utils.StringUtil;
   import flash.utils.ByteArray;
-  
+
+  import org.httpclient.Log;
   import org.httpclient.HttpResponse;
   import org.httpclient.HttpHeader;
   
