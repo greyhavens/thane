@@ -30,6 +30,7 @@
   <filelist dir="." id="deploy.filelist">
     <file name="${deploy.dir}/thane.abc"/>
     <file name="${deploy.dir}/tamarin-builtin.abc"/>
+    <file name="${deploy.dir}/http.abc"/>
   </filelist>
 
   <!-- prepares the application directories -->
@@ -132,7 +133,7 @@
   </target>
 
   <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="prepare,thanelib,tamarin">
+  <target name="dist" depends="prepare,thanelib,tamarin,httplib">
   </target>
 
   <!-- deploys our built libraries to maven -->
