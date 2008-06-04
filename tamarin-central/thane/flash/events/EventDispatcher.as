@@ -20,7 +20,7 @@ public class EventDispatcher implements IEventDispatcher
         if (listeners == null) {
             _listenerMap[type] = listeners = new Array();
 
-        } else if (-1 == _listenerMap.indexOf(listener)) {
+        } else if (-1 != listeners.indexOf(listener)) {
             return;
         }
         listeners.push(listener);
@@ -44,6 +44,11 @@ public class EventDispatcher implements IEventDispatcher
     public function dispatchEvent (event :Event) :Boolean
     {
         var listeners :Array = _listenerMap[event.type] as Array;
+
+        if (listeners == null) {
+            return true;
+        }
+
         for each (var listener :Function in listeners) {
             try {
                 listener(event);
