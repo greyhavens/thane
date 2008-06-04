@@ -69,9 +69,14 @@ package {
 	}
 
 	// nonstandard Flash Player extensions
-	public function trace(s :String) :void
+	public function trace(... s) :void
 	{
-		System.trace([ "Domain[" + Thane.getDomainId() + "]: " + s ]);
+            // TODO: optimize
+            var args :Array = ["Domain[" + Thane.getDomainId() + "]: "];
+            for (var i :int = 0; i < s.length; ++i) {
+                args.push(s[i]);
+            }
+            System.trace(args);
 	}
 
     public class Tracer
