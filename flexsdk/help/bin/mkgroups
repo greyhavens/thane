@@ -23,13 +23,15 @@ def getPackage (imp):
     return imp[:imp.rfind('.')]
 
 class File:
-    def __init__ (self, path):
+    def __init__ (self, path, baseDir=None):
         self.imports = {}
         self.extends = {}
         self.implements = {}
         self.refers = {}
         self.path = path
-        for line in fileinput.FileInput(root + "/" + path):
+        if baseDir != None: baseDir = baseDir + "/" + root
+        else: baseDir = root
+        for line in fileinput.FileInput(baseDir + "/" + path):
             m = reImport.match(line)
             if m: self.imports[m.group('class')] = True
             m = reExtends.search(line)
@@ -107,13 +109,13 @@ class Graph:
             
 
 class FileSet:
-    def __init__(self, file=None, files=None):
+    def __init__(self, file=None, files=None, baseDir=None):
         self.files = []
         self.graph = None
         if files != None: self.files = files
         if file != None:
             for path in fileinput.FileInput(file):
-                file = File(path.rstrip())
+                file = File(path.rstrip(), baseDir)
                 self.files.append(file)
 
     def reorder (self):
@@ -200,7 +202,9 @@ class FileSet:
             self.graph = Graph(links)
         return self.graph
         
-files = FileSet(sys.argv[1])
+baseDir = None
+if len(sys.argv) > 2: baseDir = sys.argv[2]
+files = FileSet(sys.argv[1], baseDir=baseDir)
 
 if not True:
     files.reorder()
