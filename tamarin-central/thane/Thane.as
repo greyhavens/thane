@@ -7,6 +7,11 @@ import flash.events.EventDispatcher;
 
 public class Thane
 {
+    public static function getTracer () :EventDispatcher
+    {
+        return _tracer;
+    }
+
     public static function getDomainId () :String
     {
         return _domainId;
@@ -54,5 +59,7 @@ public class Thane
     private static var _domainId :String = "System"; // TODO: distinguish from anonymous domains?
     private static var _bridge :EventDispatcher;
     private static var _hearts :Array = new Array();
+
+    private static const _tracer :EventDispatcher = new EventDispatcher();
 }
 }

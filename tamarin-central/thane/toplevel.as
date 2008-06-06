@@ -71,30 +71,7 @@ package {
 	// nonstandard Flash Player extensions
 	public function trace(... s) :void
 	{
-            // TODO: optimize
-            var args :Array = ["Domain[" + Thane.getDomainId() + "]: "];
-            for (var i :int = 0; i < s.length; ++i) {
-                args.push(s[i]);
-            }
-            System.trace(args);
+        System.trace(s);
+        Thane.getTracer().dispatchEvent(new TraceEvent(TraceEvent.TRACE, false, false, s));
 	}
-
-    public class Tracer
-    {
-        public static function setDomainId (id :String) :void
-        {
-            if (_domainId != null) {
-                throw new Error("Cannot rename a Domain");
-            }
-            _domainId = id;
-        }
-
-        public static function getDomainId () :String
-        {
-            // TODO: differentiate between System and Anonymous
-            return _domainId != null ? _domainId : "<System>";
-        }
-
-        private static var _domainId :String;
-    }
 }
