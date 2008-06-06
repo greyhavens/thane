@@ -68,10 +68,22 @@ package {
 		return Domain.currentDomain.getClass(name);
 	}
 
+    var tracing :Boolean = false;
+
 	// nonstandard Flash Player extensions
 	public function trace(... s) :void
 	{
         System.trace(s);
-        Thane.getTracer().dispatchEvent(new TraceEvent(TraceEvent.TRACE, false, false, s));
+        // dispatch the trace on the Thane emitter, with recursion protection
+        if (!tracing) {
+            tracing = true;
+            try {
+                Thane.getTracer().dispatchEvent(new TraceEvent(TraceEvent.TRACE, false, false, s));
+            } catch (e :Error) {
+                tracing = false;
+                throw e;
+            }
+            tracing = false;
+        }
 	}
 }
