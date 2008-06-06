@@ -4,37 +4,31 @@
 package {
 
 import flash.events.EventDispatcher;
+import flash.utils.Dictionary;
+import avmplus.Domain;
 
 public class Thane
 {
-    public static function getTracer () :EventDispatcher
+    public static function getBridgeToDomain (domainId :String) :EventDispatcher
     {
-        return _tracer;
+        return _bridges[domainId];
     }
 
-    public static function getDomainId () :String
+    public static function spawnDomain (domainId :String, bridge :EventDispatcher) :Domain
     {
-        return _domainId;
-    }
+        var dom :Domain = new Domain();
 
-    public static function getDomainBridge () :EventDispatcher
-    {
-        return _bridge;
-    }
-
-    public static function initializeDomain (
-        domainId :String, bridge :EventDispatcher, foreignHeart :Function) :void
-    {
-        if (_initialized) {
-            throw new Error("This domain has already been initialized");
+        var thane :Class = dom.getClass("Thanette");
+        if (thane == null) {
+            throw new Error ("Could not locate Thanette in new Domain");
         }
-        _initialized = true;
-        _domainId = domainId;
-        _bridge = bridge;
-
-        if (foreignHeart != null) {
-            foreignHeart(heartbeat);
+        var initFun :Function = thane["initializeDomain"];
+        if (initFun == null) {
+            throw new Error("Could not locate initializeDomain() on foreign Thanette class");
         }
+        initFun(domainId, bridge, requestHeartbeat);
+        _bridges[domainId] = bridge;
+        return dom;
     }
 
     public static function requestHeartbeat (heart :Function) :void
@@ -44,7 +38,7 @@ public class Thane
         }
     }
 
-    private static function heartbeat () :void
+    public static function heartbeat () :void
     {
         for each (var heart :Function in _hearts) {
             try {
@@ -55,9 +49,7 @@ public class Thane
         }
     }
 
-    private static var _initialized :Boolean;
-    private static var _domainId :String = "System"; // TODO: distinguish from anonymous domains?
-    private static var _bridge :EventDispatcher;
+    private static var _bridges :Dictionary = new Dictionary();
     private static var _hearts :Array = new Array();
 
     private static const _tracer :EventDispatcher = new EventDispatcher();

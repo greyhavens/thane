@@ -12,7 +12,7 @@ public class LoaderInfo extends EventDispatcher
 {
     static function maybeCreateLoaderInfo () :LoaderInfo
     {
-        if (Thane.getDomainBridge() != null) {
+        if (Thanette.getBridgeHome() != null) {
             return new LoaderInfo();
         }
         return null;
@@ -20,7 +20,7 @@ public class LoaderInfo extends EventDispatcher
 
     public function get sharedEvents () :EventDispatcher
     {
-        return Thane.getDomainBridge();
+        return Thanette.getBridgeHome();
     }
 
     override public function dispatchEvent (event :Event) :Boolean

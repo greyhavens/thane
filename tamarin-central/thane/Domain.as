@@ -39,26 +39,9 @@
 package avmplus {
 
 import flash.utils.ByteArray
-import flash.events.EventDispatcher;
 
 public class Domain
 {
-    public static function spawnDomain (domainId :String, bridge :EventDispatcher) :Domain
-    {
-        var dom :Domain = new Domain();
-
-        var thane :Class = dom.getClass("Thane");
-        if (thane == null) {
-            throw new Error ("Could not locate Thane in new Domain");
-        }
-        var initFun :Function = thane["initializeDomain"];
-        if (initFun == null) {
-            throw new Error("Could not locate initializeDomain() on foreign Thane class");
-        }
-        initFun(domainId, bridge, Thane.requestHeartbeat);
-        return dom;
-    }
-
 	public native function Domain (base:Domain = null);
 	public native function loadBytes(byteArray:ByteArray);
 	public native function getClass(className:String):Class;

@@ -78,7 +78,8 @@ package {
         if (!tracing) {
             tracing = true;
             try {
-                Thane.getTracer().dispatchEvent(new TraceEvent(TraceEvent.TRACE, false, false, s));
+                Thanette.trace(s);
+
             } catch (e :Error) {
                 tracing = false;
                 throw e;
