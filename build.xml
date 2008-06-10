@@ -52,8 +52,8 @@
       <import dir="${tamarin.dir}">
         <include name="core/builtin.abc"/>
       </import>
-      <filespec dir="${tamarin.dir}">
-        <include name="thane/**/*.as"/>
+       <filespec dir="${tamarin.dir}/thane/as3src">
+        <include name="**/*.as"/>
       </filespec>
     </asclib>
     <copy tofile="${deploy.dir}/thane.abc" file="${thane.dir}/${lib.name}.abc"/>
