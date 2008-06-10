@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import fileinput, re, sys
+import fileinput, re, sys, os, optparse
 
 patClass = '(?P<class>[a-zA-Z0-9_]+)'
 patQClass = '(?P<class>[a-zA-Z0-9_.]+)' # with dots
@@ -201,10 +201,15 @@ class FileSet:
                         links.append(Link(i, j))
             self.graph = Graph(links)
         return self.graph
-        
-baseDir = None
-if len(sys.argv) > 2: baseDir = sys.argv[2]
-files = FileSet(sys.argv[1], baseDir=baseDir)
+
+
+parser = optparse.OptionParser()
+parser.add_option("", "--basedir", dest="basedir", default=None)
+parser.add_option("", "--input", dest="input", default="etc/asc-files.txt")
+parser.add_option("", "--outstem", dest="outstem", default="etc/asc-files")
+(options, args) = parser.parse_args()
+
+files = FileSet(options.input, baseDir=options.basedir)
 
 if not True:
     files.reorder()
@@ -214,7 +219,7 @@ elif True:
     groups = files.split()
 
     for i in range(0, len(groups)):
-        groups[i].output("etc/asc-files-%02d.txt" % i, "Group %d" % i)
+        groups[i].output("%s-%02d.txt" % (options.outstem, i), "Group %d" % i)
 else:
     graph = files.getImportGraph()
     graph.printCycles(int(sys.argv[2]))
