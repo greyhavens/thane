@@ -998,10 +998,12 @@ namespace avmplus
 			return;
 		}
 
+# ifdef AVMPLUS_VERBOSE
         if (core->verbose) {
             core->console << "emitNativeThunk(" << info << "), # " << info->param_count << " @ ";
             core->console.format("0x%A\n", code);
         }
+# endif
 
 #ifdef FEATURE_BUFFER_GUARD
 		GrowthGuard guard(pool->codeBuffer);
@@ -1438,10 +1440,12 @@ namespace avmplus
 
         if (frame_size > cur_frame_size) {
             *patch_frame_size = (byte)frame_size;
+# ifdef AVMPLUS_VERBOSE
             if (core->verbose) {
                 core->console << "Frame size patched from: " << cur_frame_size <<
                              " to "<< frame_size << "\n";
             }
+# endif
         } else {
           frame_size = cur_frame_size;
         }
