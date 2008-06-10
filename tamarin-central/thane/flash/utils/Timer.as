@@ -32,6 +32,15 @@ public class Timer extends EventDispatcher
         return _delay;
     }
 
+    public function set delay (value :Number) :void
+    {
+        _delay = value;
+        if (running) {
+            stop();
+            start();
+        }
+    }
+
     public function get repeatCount () :int
     {
         return _repeatCount;
