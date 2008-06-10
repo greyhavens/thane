@@ -74,6 +74,11 @@ public class EventDispatcher implements IEventDispatcher
         return false;
     }
 
+    public function toString () :String
+    {
+        return "[EventDispatcher]";
+    }
+
     private var _listenerMap :Dictionary = new Dictionary();
 }
 
