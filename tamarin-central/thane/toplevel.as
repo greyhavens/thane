@@ -56,7 +56,13 @@ package flash.system
 	public final class Capabilities
 	{
 		public static function get playerType():String { return "AVMPlus"; }
+            // TODO: when are we a debugger?
+            public static const isDebugger :Boolean = false;
 	}
+
+        public final class System
+        {
+        }
 }
 		
 package {
