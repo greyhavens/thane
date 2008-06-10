@@ -20,7 +20,7 @@ shell_CXXSRCS := $(shell_CXXSRCS) \
   $(curdir)/FileInputStream.cpp \
   $(curdir)/StringBuilderClass.cpp \
   $(curdir)/SystemClass.cpp \
-  $(curdir)/flash/net/SocketGlue.cpp \
-  $(curdir)/flash/utils/ByteArrayGlue.cpp \
-  $(curdir)/flash/utils/DictionaryGlue.cpp \
+  $(curdir)/as3src/flash/net/SocketGlue.cpp \
+  $(curdir)/as3src/flash/utils/ByteArrayGlue.cpp \
+  $(curdir)/as3src/flash/utils/DictionaryGlue.cpp \
   $(NULL)

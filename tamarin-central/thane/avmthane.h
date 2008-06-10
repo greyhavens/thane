@@ -73,8 +73,8 @@ namespace avmplus
 #include "DomainClass.h"
 #include "Profiler.h"
 #include "DataIO.h"
-#include "flash/utils/ByteArrayGlue.h"
-#include "flash/net/SocketGlue.h"
+#include "as3src/flash/utils/ByteArrayGlue.h"
+#include "as3src/flash/net/SocketGlue.h"
 #include "DictionaryGlue.h"
 
 #ifdef _MSC_VER
