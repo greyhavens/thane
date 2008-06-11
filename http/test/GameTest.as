@@ -1,3 +1,8 @@
+package {
+    public class GameTest {
+    }
+}
+
 import avmplus.*;
 
 import flash.events.Event;
@@ -38,9 +43,9 @@ function handleComplete (evt :Event) :void
 {
     trace("Compiling bytecode into new Domain...");
 
-    var bridge = new EventDispatcher();
+    var bridge :EventDispatcher = new EventDispatcher();
 
-    var domain :Domain = Domain.spawnDomain("UserCode", bridge);
+    var domain :Domain = Thane.spawnDomain("UserCode", bridge);
     domain.loadBytes(bytes);
 
     trace("Successfully loaded! Testing...");
