@@ -68,11 +68,12 @@ public class Event
         var s :StringBuilder = new StringBuilder();
         s.append("[");
         s.append(className);
+        var self :Object = this;
         arguments.forEach (function (name :String, ... unused) {
             s.append(" ");
             s.append(name);
             s.append("=");
-            s.append(this[name]);
+            s.append(self[name]);
         });
         s.append("]");
         return s.toString();
