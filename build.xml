@@ -16,7 +16,9 @@
 
   <property name="tamarin.dir"  value="${basedir}/tamarin-central"/>
   <property name="tamdist.dir"  value="${tamarin.dir}/dist"/>
-  <property name="thane.dir"  value="${tamarin.dir}/thane"/>
+  <property name="thane.dir"    value="${tamarin.dir}/thane"/>
+  <property name="builtin.name" value="builtin"/>
+  <property name="http.name"    value="http"/>
 
   <!-- declare our classpath business -->
   <path id="classpath">
@@ -31,20 +33,29 @@
     <copy todir="${deploy.dir}/lib" flatten="true">
       <fileset refid="${lib.name}.libs"/>
     </copy>
+    <copy file="etc/thane-config.xml.in" tofile="${deploy.dir}/thane-config.xml">
+      <filterset>
+        <filter token="ooothane" value="${basedir}"/>
+      </filterset>
+    </copy>
   </target>
 
-  <!-- checks whether our Flash library needs building -->
+  <!-- checks whether the Thane library needs building -->
   <target name="checkthanelib">
-    <condition property="no_build_thanelib">
-      <uptodate targetfile="${deploy.dir}/${lib.name}.abc">
+    <condition property="no_build_thanelib"><and>
+      <uptodate targetfile="${thane.dir}/${lib.name}.abc">
         <srcfiles dir="${thane.dir}" includes="**/*.as"/>
         <srcfiles dir="${tamarin.dir}/core" includes="*.abc"/>
       </uptodate>
-    </condition>
+      <uptodate targetfile="${deploy.dir}/${lib.name}.swc">
+        <srcfiles dir="${thane.dir}" includes="**/*.as"/>
+        <srcfiles dir="${tamarin.dir}/core" includes="*.as"/>
+      </uptodate>
+    </and></condition>
   </target>
 
   <!-- builds the Thane library -->
-  <target name="thanelib" unless="no_build_thanelib" depends="checkthanelib">
+  <target name="thanelib" unless="no_build_thanelib" depends="prepare,checkthanelib">
     <taskdef name="asclib" classname="flex.ant.AscLibTask" classpathref="classpath"/>
     <dirname property="abs.thane.out.dir" file="${tamarin.dir}/thane/somefile.txt"/>
     <asclib as3="true" strict="true" classpathref="classpath"
@@ -52,18 +63,35 @@
       <import dir="${tamarin.dir}">
         <include name="core/builtin.abc"/>
       </import>
-       <filespec dir="${tamarin.dir}/thane/as3src">
+      <filespec dir="${tamarin.dir}/thane/as3src">
         <include name="**/*.as"/>
       </filespec>
     </asclib>
-    <copy tofile="${deploy.dir}/thane.abc" file="${thane.dir}/${lib.name}.abc"/>
+
+    <java jar="flexsdk/lib/compc.jar" fork="true" failonerror="true">
+      <arg value="-load-config"/>
+      <arg value="dist/thane-config.xml"/>
+      <arg value="-compiler.strict=false"/>
+      <arg value="-compiler.show-actionscript-warnings=false"/>
+      <arg value="-compiler.optimize=true"/>
+      <arg value="-include-sources"/>
+      <arg value="${tamarin.dir}/core/builtin.as"/>
+      <arg value="${tamarin.dir}/core/Error.as"/>
+      <arg value="${tamarin.dir}/core/Math.as"/>
+      <arg value="${tamarin.dir}/core/XML.as"/>
+      <arg value="${tamarin.dir}/core/Date.as"/>
+      <arg value="${tamarin.dir}/core/RegExp.as"/>
+      <arg value="${thane.dir}/as3src"/>
+      <arg value="-output"/>
+      <arg value="${deploy.dir}/${lib.name}.swc"/>
+    </java>
   </target>
 
   <!-- checks whether our HTTP library needs building -->
   <target name="checkhttplib">
     <condition property="no_build_httplib">
-      <uptodate targetfile="${deploy.dir}/http.abc">
-        <srcfiles dir="${deploy.dir}" includes="*.abc"/>
+      <uptodate targetfile="${deploy.dir}/http.swc">
+        <srcfiles dir="${deploy.dir}" includes="*.swc"/>
         <srcfiles dir="http/src" includes="**/*.as"/>
       </uptodate>
     </condition>
@@ -71,18 +99,15 @@
 
   <!-- builds the HTTP library -->
   <target name="httplib" unless="no_build_httplib" depends="thanelib,checkhttplib">
-    <taskdef name="asclib" classname="flex.ant.AscLibTask" classpathref="classpath"/>
-    <dirname property="abs.http.out.dir" file="${deploy.dir}/somefile.txt"/>
-    <asclib as3="true" strict="true" classpathref="classpath"
-            outdir="${abs.http.out.dir}" out="http">
-      <import dir="${deploy.dir}">
-        <include name="tamarin-builtin.abc"/>
-        <include name="thane.abc"/>
-      </import>
-      <filespec dir="http/src">
-        <include name="**/*.as"/>
-      </filespec>
-    </asclib>
+    <java jar="flexsdk/lib/compc.jar" fork="true" failonerror="true">
+      <arg value="-load-config"/>
+      <arg value="dist/thane-config.xml"/>
+      <arg value="-compiler.external-library-path"/>
+      <arg value="${deploy.dir}/thane.swc"/>
+      <arg value="-include-sources=http/src"/>
+      <arg value="-output"/>
+      <arg value="${deploy.dir}/${http.name}.swc"/>
+    </java>
   </target>
 
   <!-- build Tamarin -->
@@ -101,23 +126,29 @@
     <exec dir="${tamdist.dir}" executable="${make}" failonerror="true">
        <arg line="-j4"/>
     </exec>
-    <!-- TODO: we should actually build builtin.abc -->
-    <copy tofile="${deploy.dir}/tamarin-builtin.abc" file="${tamarin.dir}/core/builtin.abc"/>
   </target>
 
   <!-- tests the HTTP library -->
-  <target name="http-test" unless="no_build_httplib" depends="tamarin,httplib">
-    <taskdef name="asc" classname="flex.ant.AscTask" classpathref="classpath"/>
-    <asc as3="true" strict="true" classpathref="classpath">
-      <import dir="${deploy.dir}">
-        <include name="tamarin-builtin.abc"/>
-        <include name="thane.abc"/>
-        <include name="http.abc"/>
-      </import>
-      <filespec dir="http/test" includes="GameTest.as"/>
-    </asc>
+  <target name="http-test" unless="no_build_http_test" depends="tamarin,httplib">
+    <java jar="flexsdk/lib/mxmlc.jar" fork="true" failonerror="true">
+      <arg value="-load-config"/>
+      <arg value="dist/thane-config.xml"/>
+      <arg value="-compiler.external-library-path"/>
+      <arg value="${deploy.dir}/thane.swc"/>
+      <arg value="${deploy.dir}/http.swc"/>
+      <arg value="-output"/>
+      <arg value="${deploy.dir}/http-test.swf"/>
+      <arg value="http/test/GameTest.as"/>
+    </java>
+
+    <java outputproperty="dump" jar="flexsdk/lib/swfdump.jar" fork="true" failonerror="true">
+      <arg value="-dump"/>
+      <arg value="${deploy.dir}/http-test.abc"/>
+      <arg value="${deploy.dir}/http-test.swf"/>
+    </java>
+
     <exec executable="${tamdist.dir}/thane/avmthane">
-      <arg line="-Dinterp ${deploy.dir}/http.abc http/test/GameTest.abc -- http://www.alyx.com/zell/gameserver.abc"/>
+      <arg line="-Dinterp ${deploy.dir}/http.abc ${deploy.dir}/http-test.abc -- http://www.alyx.com/zell/gameserver.abc"/>
     </exec>
   </target>
 
