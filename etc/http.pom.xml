@@ -3,5 +3,5 @@
   <groupId>com.threerings.thane</groupId>
   <artifactId>http</artifactId>
   <version>0.0-SNAPSHOT</version>
-  <packaging>abc</packaging>
+  <packaging>swc</packaging>
 </project>
