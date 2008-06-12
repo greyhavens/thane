@@ -4,7 +4,6 @@
  */
 package org.httpclient.io {
   
-  import com.adobe.utils.StringUtil;
   import flash.utils.ByteArray;
   
   public class HttpRequestBuffer {
