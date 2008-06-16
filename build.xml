@@ -8,6 +8,7 @@
   <!-- configuration parameters -->
   <property name="lib.name"     value="thane"/>
   <property name="deploy.dir"   value="dist"/>
+  <property name="bin.dir"      value="bin"/>
   <import file="etc/libs-incl.xml"/>
 
   <property name="tamarin.dir"  value="${basedir}/tamarin-central"/>
@@ -106,14 +107,19 @@
     </java>
   </target>
 
-  <!-- build Tamarin -->
+  <!-- detect make command -->
   <condition property="isunix"><os family="unix"/></condition>
   <if><os name="FreeBSD"/><then>
     <property name="make" value="gmake"/>
   </then><else>
     <property name="make" value="make"/>
   </else></if>
-  <property name="tamarin-debugger" value=""/>
+
+  <!-- enable debugging -->
+  <!-- TODO: are 2 individual targets needed and what do we do with them? -->
+  <property name="tamarin-debugger" value="--enable-debugger"/>
+
+  <!-- build tamarin -->
   <target name="tamarin" depends="prepare,thanelib" if="isunix">
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
     <exec dir="${tamdist.dir}" executable="python" failonerror="true">
@@ -156,6 +162,10 @@
     <delete><fileset dir="${tamarin.dir}/thane" includes="thane.*"/></delete>
   </target>
 
+  <!-- distclean = same as clean -->
+  <!-- TODO: what should be the difference? -->
+  <target name="distclean" depends="clean"/>
+
   <!-- builds our distribution files (war and jar) -->
   <target name="dist" depends="prepare,thanelib,tamarin,httplib">
   </target>
@@ -163,6 +173,26 @@
   <!-- deploys our built libraries to maven -->
   <target name="deploy" depends="dist">
     <antcall target="maven-deploy"/>
+  </target>
+
+  <!-- Detects the architecture id of this computer -->
+  <target name="detect-arch">
+    <!-- TODO: actually detect the arch id. It shuold be a short alphabetic code of the operating 
+         system and the number of bits in the application virtual address space -->
+
+    <!-- Just set to mine for now -->
+    <property name="arch.id" value="lin32"/>
+  </target>
+
+  <!-- Deploys our built executables to the bin directory. Normally a developer will -->
+  <!-- run this then do an svn commit on each target architecture, completing the new -->
+  <!-- thane release. The thane.swc file is included, but should not change from arch -->
+  <!-- to arch since the set of native methods doesn't change. -->
+  <target name="binaries" depends="detect-arch">
+    <mkdir dir="${bin.dir}"/>
+    <copy file="${deploy.dir}/thane.swc" todir="${bin.dir}"/>
+    <mkdir dir="${bin.dir}/${arch.id}"/>
+    <copy file="${tamdist.dir}/${lib.name}/avm${lib.name}" todir="${bin.dir}/${arch.id}"/>
   </target>
 
 </project>
