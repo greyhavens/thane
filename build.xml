@@ -8,10 +8,6 @@
   <!-- configuration parameters -->
   <property name="lib.name"     value="thane"/>
   <property name="deploy.dir"   value="dist"/>
-  <property name="savedoc.dir"  value="docs"/>
-  <property name="javadoc.home" value="${deploy.dir}/docs"/>
-  <property name="classes.dir"  value="${deploy.dir}/classes"/>
-  <property name="libs.dir"     value="extlibs/java"/>
   <import file="etc/libs-incl.xml"/>
 
   <property name="tamarin.dir"  value="${basedir}/tamarin-central"/>
@@ -154,11 +150,6 @@
 
   <!-- cleans up our build artifacts -->
   <target name="clean">
-    <!-- TODO -->
-  </target>
-
-  <!-- wipes out our build directory and deletes all non-version-controlled files -->
-  <target name="distclean">
     <delete dir="${deploy.dir}"/>
     <delete dir="${tamarin.dir}/${deploy.dir}"/>
     <delete><fileset dir="${tamarin.dir}/build" includes="*.pyc"/></delete>
