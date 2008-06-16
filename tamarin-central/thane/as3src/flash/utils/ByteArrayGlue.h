@@ -105,6 +105,8 @@ namespace thane
 		virtual Atom getUintProperty(uint32 i) const;
 		virtual void setUintProperty(uint32 i, Atom value);
 
+		virtual void setMultinameProperty(Multiname* name, Atom value);
+
 		void readBytes(ByteArrayObject *bytes, uint32 offset, uint32 length);
 		void writeBytes(ByteArrayObject *bytes, uint32 offset, uint32 length);
 

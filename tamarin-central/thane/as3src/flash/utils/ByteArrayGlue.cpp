@@ -309,6 +309,15 @@ namespace thane
 		return ScriptObject::hasAtomProperty(name) || getAtomProperty(name) != undefinedAtom;
 	}
 
+    void ByteArrayObject::setMultinameProperty(Multiname* name, Atom value)
+    {
+        if (isValidDynamicName(name)) {
+            setStringProperty(name->getName(), value);
+        } else {
+            ScriptObject::setMultinameProperty(name, value);
+        }
+    }
+
 	void ByteArrayObject::setLength(uint32 newLength)
 	{
 		m_byteArray.SetLength(newLength);
