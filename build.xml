@@ -172,7 +172,7 @@
     <delete><fileset dir="${tamarin.dir}/thane" includes="thane.*"/></delete>
     <!-- temporary hack to soothe upset build machine -->
     <delete>
-      <fileset dir="${tamarin.dir}/bin">
+      <fileset dir="${bin.dir}">
         <include name="thane.swc.r*"/>
         <include name="lin32"/>
       </fileset>
