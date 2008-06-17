@@ -14,6 +14,7 @@
   <property name="tamarin.dir"  value="${basedir}/tamarin-central"/>
   <property name="tamdist.dir"  value="${tamarin.dir}/dist"/>
   <property name="thane.dir"    value="${tamarin.dir}/thane"/>
+  <property name="thanedist.dir" value="${tamdist.dir}/${lib.name}"/>
   <property name="builtin.name" value="builtin"/>
   <property name="http.name"    value="http"/>
 
@@ -44,7 +45,7 @@
         <srcfiles dir="${thane.dir}" includes="**/*.as"/>
         <srcfiles dir="${tamarin.dir}/core" includes="*.abc"/>
       </uptodate>
-      <uptodate targetfile="${deploy.dir}/${lib.name}.swc">
+      <uptodate targetfile="${thanedist.dir}/${lib.name}.swc">
         <srcfiles dir="${thane.dir}" includes="**/*.as"/>
         <srcfiles dir="${tamarin.dir}/core" includes="*.as"/>
       </uptodate>
@@ -80,7 +81,7 @@
       <arg value="${tamarin.dir}/core/RegExp.as"/>
       <arg value="${thane.dir}/as3src"/>
       <arg value="-output"/>
-      <arg value="${deploy.dir}/${lib.name}.swc"/>
+      <arg value="${thanedist.dir}/${lib.name}.swc"/>
     </java>
   </target>
 
@@ -89,13 +90,14 @@
     <condition property="no_build_httplib">
       <uptodate targetfile="${deploy.dir}/http.swc">
         <srcfiles dir="${deploy.dir}" includes="*.swc"/>
+        <srcfiles dir="${bin.dir}" includes="*.swc"/>
         <srcfiles dir="http/src" includes="**/*.as"/>
       </uptodate>
     </condition>
   </target>
 
   <!-- builds the HTTP library -->
-  <target name="httplib" unless="no_build_httplib" depends="thanelib,checkhttplib">
+  <target name="httplib" unless="no_build_httplib" depends="prepare,checkhttplib,distbinaries">
     <java jar="flexsdk/lib/compc.jar" fork="true" failonerror="true">
       <arg value="-load-config"/>
       <arg value="dist/thane-config.xml"/>
@@ -154,6 +156,14 @@
     </exec>
   </target>
 
+  <!-- copy pre-built binary files to dist -->
+  <target name="distbinaries" depends="prepare,detect-arch">
+    <copy file="${bin.dir}/${lib.name}.swc" todir="${deploy.dir}"/>
+    <copy todir="${deploy.dir}">
+      <fileset dir="${bin.dir}/${arch.id}" includes="avm${lib.name}*"/>
+    </copy>
+  </target>
+
   <!-- cleans up our build artifacts -->
   <target name="clean">
     <delete dir="${deploy.dir}"/>
@@ -166,9 +176,10 @@
   <!-- TODO: what should be the difference? -->
   <target name="distclean" depends="clean"/>
 
-  <!-- builds our distribution files (war and jar) -->
-  <target name="dist" depends="prepare,thanelib,tamarin,httplib">
-  </target>
+  <!-- copies to the dist directory -->
+  <!-- TODO: remove the binaries target from this once we have enough stuff in bin/ -->
+  <!-- to cover the internal release, i.e. lin32, lin64 and mac -->
+  <target name="dist" depends="prepare,binaries,distbinaries,httplib"/>
 
   <!-- deploys our built libraries to maven -->
   <target name="deploy" depends="dist">
@@ -182,17 +193,19 @@
 
     <!-- Just set to mine for now -->
     <property name="arch.id" value="lin32"/>
+
+    <echo>Architecture is ${arch.id}</echo>
   </target>
 
   <!-- Deploys our built executables to the bin directory. Normally a developer will -->
   <!-- run this then do an svn commit on each target architecture, completing the new -->
   <!-- thane release. The thane.swc file is included, but should not change from arch -->
   <!-- to arch since the set of native methods doesn't change. -->
-  <target name="binaries" depends="detect-arch">
+  <target name="binaries" depends="detect-arch,tamarin">
     <mkdir dir="${bin.dir}"/>
-    <copy file="${deploy.dir}/thane.swc" todir="${bin.dir}"/>
     <mkdir dir="${bin.dir}/${arch.id}"/>
-    <copy file="${tamdist.dir}/${lib.name}/avm${lib.name}" todir="${bin.dir}/${arch.id}"/>
+    <copy file="${thanedist.dir}/avm${lib.name}" todir="${bin.dir}/${arch.id}"/>
+    <copy file="${thanedist.dir}/${lib.name}.swc" todir="${bin.dir}"/>
   </target>
 
 </project>
