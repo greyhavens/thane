@@ -170,6 +170,13 @@
     <delete dir="${tamarin.dir}/${deploy.dir}"/>
     <delete><fileset dir="${tamarin.dir}/build" includes="*.pyc"/></delete>
     <delete><fileset dir="${tamarin.dir}/thane" includes="thane.*"/></delete>
+    <!-- temporary hack to soothe upset build machine -->
+    <delete>
+      <fileset dir="${tamarin.dir}/bin">
+        <include name="thane.swc.r*"/>
+        <include name="lin32"/>
+      </fileset>
+    </delete>
   </target>
 
   <!-- distclean = same as clean -->
@@ -179,7 +186,7 @@
   <!-- copies to the dist directory -->
   <!-- TODO: remove the binaries target from this once we have enough stuff in bin/ -->
   <!-- to cover the internal release, i.e. lin32, lin64 and mac -->
-  <target name="dist" depends="prepare,binaries,distbinaries,httplib"/>
+  <target name="dist" depends="prepare,distbinaries,httplib"/>
 
   <!-- deploys our built libraries to maven -->
   <target name="deploy" depends="dist">
