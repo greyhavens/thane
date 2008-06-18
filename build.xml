@@ -194,14 +194,10 @@
   <!-- Detects the architecture id of this computer -->
   <target name="detect-arch">
     <!-- apparently Java uses both amd64 and x86_64 -->
-    <if><or><os arch="amd64"/><os arch="x86_64"/></or><then>
-      <property name="arch" value="64"/>
-    </then><else>
-      <property name="arch" value="32"/>
-    </else></if>
-
+    <condition property="arch" value="64" else="32">
+      <or><os arch="amd64"/><os arch="x86_64"/></or>
+    </condition>
     <property name="arch.id" value="${os.name}-${arch}"/>
-
     <echo>Architecture is ${arch.id}</echo>
   </target>
 
