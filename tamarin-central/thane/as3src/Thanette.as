@@ -20,6 +20,9 @@ public class Thanette
     public static function initializeDomain (
         domainId :String, bridge :EventDispatcher, foreignHeart :Function) :void
     {
+        if (domainId == null || domainId.length == 0) {
+            throw new Error ("Domain must be spawned with an identifier");
+        }
         if (_initialized) {
             throw new Error("This domain has already been initialized");
         }
