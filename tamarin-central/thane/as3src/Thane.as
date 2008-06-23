@@ -18,6 +18,13 @@ public class Thane
     {
         var dom :Domain = new Domain();
 
+        if (domainId == null || domainId.length == 0) {
+            throw new Error ("Domain must be spawned with an identifier");
+        }
+        if (_bridges[domainId] != null) {
+            throw new Error ("Domain identifier not unique");
+        }
+
         var thane :Class = dom.getClass("Thanette");
         if (thane == null) {
             throw new Error ("Could not locate Thanette in new Domain");

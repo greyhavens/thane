@@ -20,10 +20,9 @@ public class Socket extends EventDispatcher
 {
     public function Socket (host :String = null, port :int = 0)
     {
-        //if (_theSocket != null) {
-        //    throw new Error("You may not create Sockets");
-        //}
-        //_theSocket = this;
+        if (Thanette.getDomainId() != null) {
+            throw new Error("No network access for user code.");
+        }
 
         _state = ST_VIRGIN;
         Thane.requestHeartbeat(heartbeat);
@@ -35,6 +34,10 @@ public class Socket extends EventDispatcher
 
     public function connect (host: String, port: int) :void
     {
+        if (Thanette.getDomainId() != null) {
+            throw new Error("No network access for user code.");
+        }
+
         if (!host) {
             throw new IOError("No host specified in connect()");
         }
@@ -56,6 +59,10 @@ public class Socket extends EventDispatcher
 
     public function close () :void
     {
+        if (Thanette.getDomainId() != null) {
+            throw new Error("No network access for user code.");
+        }
+
         if (_state != ST_CONNECTED) {
             throw new IOError("Socket was not open");
         }
@@ -67,10 +74,8 @@ public class Socket extends EventDispatcher
 
     protected function heartbeat () :void
     {
-        //if (_theSocket == null) {
-        //    return;
-        //}
         switch(_state) {
+        case ST_BROKEN:
         case ST_VIRGIN:
             break;
 
@@ -311,7 +316,7 @@ public class Socket extends EventDispatcher
         return newBuffer;
     }
 
-    private var _state :int;
+    private var _state :int = ST_BROKEN;
     private var _host :String;
     private var _port :int;
 
@@ -323,8 +328,7 @@ public class Socket extends EventDispatcher
 
     private var _bytesTotal :int = 0;
 
-    //private static var _theSocket :Socket = null;
-
+    private static const ST_BROKEN :int = 0;
     private static const ST_VIRGIN :int = 1;
     private static const ST_WAITING :int = 2;
     private static const ST_CONNECTED :int = 3;
