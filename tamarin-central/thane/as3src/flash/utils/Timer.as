@@ -104,6 +104,12 @@ public class Timer extends EventDispatcher
         throw new Error("Too many simultaneous running flash.utils.Timer objects");
     }
 
+    private static function compareTimers (a :Buddy, b :Buddy) :int
+    {
+        // b-a rather than a-b so as to order low values before high
+        return b.expiration - a.expiration;
+    }
+
     protected static function heartbeat () :void
     {
         var now :int = getTimer();
@@ -117,7 +123,7 @@ public class Timer extends EventDispatcher
     }
 
     static function createTimer (closure :Function, delay :Number,
-                                           timeout :Boolean, args :Array) :uint
+                                 timeout :Boolean, args :Array) :uint
     {
         var timer :Timer = new Timer(delay, timeout ? 1 : 0);
         var thisIx = _timerIx;
@@ -141,12 +147,6 @@ public class Timer extends EventDispatcher
             bits[0].stop();
             delete _timers[id];
         }
-    }
-
-    private static function compareTimers (a :Buddy, b :Buddy) :int
-    {
-        // b-a rather than a-b so as to order low values before high
-        return b.expiration - a.expiration;
     }
 
     private var _currentCount :int;
