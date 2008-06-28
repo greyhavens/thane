@@ -116,6 +116,33 @@ public class Timer extends EventDispatcher
         }
     }
 
+    static function createTimer (closure :Function, delay :Number,
+                                           timeout :Boolean, args :Array) :uint
+    {
+        var timer :Timer = new Timer(delay, timeout ? 1 : 0);
+        var thisIx = _timerIx;
+        var fun :Function = function (event :TimerEvent) :void {
+            if (timeout) {
+                destroyTimer(thisIx);
+            }
+            closure.apply(null, args);
+        };
+        timer.addEventListener(TimerEvent.TIMER, fun);
+        _timers[_timerIx] = [ timer, fun ];
+        timer.start();
+        return _timerIx ++;
+    }
+
+    static function destroyTimer (id :uint) :void
+    {
+        var bits :Array = _timers[id];
+        if (bits) {
+            bits[0].removeEventListener(TimerEvent.TIMER, bits[1]);
+            bits[0].stop();
+            delete _timers[id];
+        }
+    }
+
     private static function compareTimers (a :Buddy, b :Buddy) :int
     {
         // b-a rather than a-b so as to order low values before high
@@ -128,6 +155,8 @@ public class Timer extends EventDispatcher
     private var _buddy :Buddy;
 
     private static var _heap :Heap;
+    private static var _timers :Dictionary = new Dictionary();
+    private static var _timerIx :uint = 1;
 }
 }
 
