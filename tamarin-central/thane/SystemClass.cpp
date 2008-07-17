@@ -43,7 +43,7 @@
 namespace thane
 {
 	BEGIN_NATIVE_MAP(SystemClass)
-		NATIVE_METHOD(avmplus_System_exit, SystemClass::exit)
+		NATIVE_METHOD(avmplus_System_private_doExit, SystemClass::exit)
 		NATIVE_METHOD(avmplus_System_getAvmplusVersion, SystemClass::getAvmplusVersion)
 		NATIVE_METHOD(avmplus_System_trace, SystemClass::trace)
 		NATIVE_METHOD(avmplus_System_getTimer, SystemClass::getTimer)

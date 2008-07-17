@@ -39,7 +39,16 @@ package avmplus
 {
 	public class System
 	{
-		public native static function exit(status:int):void
+        public static function exit (status :int) :void
+        {
+            if (!Thanette.isSystemDomain()) {
+                throw new Error("Ilegal operation");
+            }
+
+            doExit(status);
+        }
+        private static native function doExit (status :int) :void
+
 		public native static function getAvmplusVersion():String
 		public native static function trace(a:Array):void
 		public native static function getTimer():int;
