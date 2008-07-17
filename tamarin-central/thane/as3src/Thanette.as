@@ -7,6 +7,11 @@ import flash.events.EventDispatcher;
 
 public class Thanette
 {
+    public static function isSystemDomain () :Boolean
+    {
+        return _domainId == null;
+    }
+
     public static function getDomainId () :String
     {
         return _domainId;

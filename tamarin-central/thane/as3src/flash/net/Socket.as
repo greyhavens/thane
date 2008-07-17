@@ -20,7 +20,7 @@ public class Socket extends EventDispatcher
 {
     public function Socket (host :String = null, port :int = 0)
     {
-        if (Thanette.getDomainId() != null) {
+        if (!Thanette.isSystemDomain()) {
             throw new Error("No network access for user code.");
         }
 
@@ -34,7 +34,7 @@ public class Socket extends EventDispatcher
 
     public function connect (host: String, port: int) :void
     {
-        if (Thanette.getDomainId() != null) {
+        if (!Thanette.isSystemDomain()) {
             throw new Error("No network access for user code.");
         }
 
@@ -59,7 +59,7 @@ public class Socket extends EventDispatcher
 
     public function close () :void
     {
-        if (Thanette.getDomainId() != null) {
+        if (!Thanette.isSystemDomain()) {
             throw new Error("No network access for user code.");
         }
 
