@@ -42,7 +42,15 @@ import flash.utils.ByteArray
 
 public class Domain
 {
-	public native function Domain (base:Domain = null);
+	public function Domain ()
+    {
+        if (!Thanette.isSystemDomain()) {
+            throw new Error("Illegal operation");
+        }
+
+        initNewDomain();
+    }
+
 	public native function loadBytes(byteArray:ByteArray);
 	public native function getClass(className:String):Class;
     public native function getVariables (value :*) :Array;
@@ -51,6 +59,8 @@ public class Domain
     public native function isDynamic (value :*) :Boolean;
 
 	public native static function get currentDomain():Domain;
+
+    private native function initNewDomain () :void;
 }
 
 }

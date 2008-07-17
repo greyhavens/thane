@@ -41,7 +41,6 @@
 namespace thane
 {
 	BEGIN_NATIVE_MAP(DomainClass)
-		NATIVE_METHOD(avmplus_Domain_Domain, DomainObject::constructFromDomain)
 		NATIVE_METHOD(avmplus_Domain_loadBytes, DomainObject::loadBytes)
 		NATIVE_METHOD(avmplus_Domain_currentDomain_get, DomainClass::get_currentDomain)
 		NATIVE_METHOD(avmplus_Domain_getClass, DomainObject::getClass)
@@ -49,6 +48,7 @@ namespace thane
 		NATIVE_METHOD(avmplus_Domain_getClassName, DomainObject::getClassName)
 		NATIVE_METHOD(avmplus_Domain_isAssignableAs, DomainObject::isAssignableAs)
 		NATIVE_METHOD(avmplus_Domain_isDynamic, DomainObject::isDynamic)
+		NATIVE_METHOD(avmplus_Domain_private_initNewDomain, DomainObject::constructFromDomain)
 	END_NATIVE_MAP()
 	
 	DomainObject::DomainObject(VTable *vtable, ScriptObject *delegate)
