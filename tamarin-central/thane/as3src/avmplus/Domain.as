@@ -50,8 +50,18 @@ public class Domain
 
         initNewDomain();
     }
+    private native function initNewDomain () :void;
 
-	public native function loadBytes(byteArray:ByteArray);
+	public function loadBytes (byteArray :ByteArray)
+    {
+        if (!Thanette.isSystemDomain()) {
+            throw new Error("Illegal operation");
+        }
+
+        doLoadBytes(byteArray);
+    }
+	private native function doLoadBytes (byteArray :ByteArray);
+
 	public native function getClass(className:String):Class;
     public native function getVariables (value :*) :Array;
 	public native function getClassName(value :*): String;
@@ -60,7 +70,6 @@ public class Domain
 
 	public native static function get currentDomain():Domain;
 
-    private native function initNewDomain () :void;
 }
 
 }
