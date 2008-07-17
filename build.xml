@@ -132,30 +132,6 @@
     </exec>
   </target>
 
-  <!-- tests the HTTP library -->
-  <target name="http-test" unless="no_build_http_test" depends="tamarin,httplib">
-    <java jar="flexsdk/lib/mxmlc.jar" fork="true" failonerror="true">
-      <arg value="-load-config"/>
-      <arg value="dist/thane-config.xml"/>
-      <arg value="-compiler.external-library-path"/>
-      <arg value="${deploy.dir}/thane.swc"/>
-      <arg value="${deploy.dir}/http.swc"/>
-      <arg value="-output"/>
-      <arg value="${deploy.dir}/http-test.swf"/>
-      <arg value="http/test/GameTest.as"/>
-    </java>
-
-    <java outputproperty="dump" jar="flexsdk/lib/swfdump.jar" fork="true" failonerror="true">
-      <arg value="-dump"/>
-      <arg value="${deploy.dir}/http-test.abc"/>
-      <arg value="${deploy.dir}/http-test.swf"/>
-    </java>
-
-    <exec executable="${tamdist.dir}/thane/avmthane">
-      <arg line="-Dinterp ${deploy.dir}/http.abc ${deploy.dir}/http-test.abc -- http://www.alyx.com/zell/gameserver.abc"/>
-    </exec>
-  </target>
-
   <!-- copy pre-built binary files to dist -->
   <target name="distbinaries" depends="prepare,detect-arch">
     <copy file="${bin.dir}/${lib.name}.swc" todir="${deploy.dir}"/>
