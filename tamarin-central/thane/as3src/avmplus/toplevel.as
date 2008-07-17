@@ -39,6 +39,7 @@ package avmplus
 {
 	public class System
 	{
+		public native static function exit(status:int):void
 		public native static function getAvmplusVersion():String
 		public native static function trace(a:Array):void
 		public native static function getTimer():int;

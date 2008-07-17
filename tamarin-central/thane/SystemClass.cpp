@@ -43,6 +43,7 @@
 namespace thane
 {
 	BEGIN_NATIVE_MAP(SystemClass)
+		NATIVE_METHOD(avmplus_System_exit, SystemClass::exit)
 		NATIVE_METHOD(avmplus_System_getAvmplusVersion, SystemClass::getAvmplusVersion)
 		NATIVE_METHOD(avmplus_System_trace, SystemClass::trace)
 		NATIVE_METHOD(avmplus_System_getTimer, SystemClass::getTimer)
@@ -73,6 +74,11 @@ namespace thane
 	SystemClass::~SystemClass()
 	{
 		initialTime = 0;
+	}
+
+	void SystemClass::exit(int status)
+	{
+		::exit(status);
 	}
 
 	Stringp SystemClass::getAvmplusVersion()
