@@ -50,7 +50,7 @@ public class Domain
 
         initNewDomain();
     }
-    private native function initNewDomain () :void;
+    private native function initNewDomain (parentDomain :Domain = null) :void;
 
 	public function loadBytes (byteArray :ByteArray)
     {
