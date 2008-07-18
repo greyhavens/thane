@@ -1,3 +1,0 @@
-# Uncomment this line if you are not running on x86_64
-# tamarin-debugger = --enable-debugger
-tamarin-debugger=

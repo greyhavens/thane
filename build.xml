@@ -2,9 +2,6 @@
 <!-- build configuration -->
 <project name="thane" default="dist" basedir=".">
 
-  <!-- import overriding properties -->
-  <property file="build.properties"/>
-
   <!-- configuration parameters -->
   <property name="lib.name"     value="thane"/>
   <property name="deploy.dir"   value="dist"/>
@@ -125,7 +122,7 @@
   <target name="tamarin" depends="prepare,thanelib" if="isunix">
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
     <exec dir="${tamdist.dir}" executable="python" failonerror="true">
-       <arg line="${tamarin.dir}/configure.py --enable-thane ${tamarin-debugger} --enable-debug"/>
+       <arg line="${tamarin.dir}/configure.py --enable-thane ${tamarin-debugger}"/>
     </exec>
     <exec dir="${tamdist.dir}" executable="${make}" failonerror="true">
        <arg line="-j4"/>
