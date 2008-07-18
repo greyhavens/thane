@@ -145,7 +145,6 @@
     <delete dir="${deploy.dir}"/>
     <delete dir="${tamarin.dir}/${deploy.dir}"/>
     <delete><fileset dir="${tamarin.dir}/build" includes="*.pyc"/></delete>
-    <delete><fileset dir="${tamarin.dir}/thane" includes="thane.*"/></delete>
     <!-- temporary hack to soothe upset build machine -->
     <delete>
       <fileset dir="${bin.dir}">
