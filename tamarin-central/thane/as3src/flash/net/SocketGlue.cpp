@@ -1,6 +1,10 @@
 //
 // $Id: $
 
+# ifdef WIN32
+# include <winsock2.h>
+# else
+# define INVALID_SOCKET -1
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <sys/ioctl.h>
@@ -10,6 +14,7 @@
 # include <errno.h>
 # include <unistd.h>
 # include <netdb.h>
+# endif
 
 # include "avmthane.h"
 
@@ -28,14 +33,18 @@ namespace thane
 	
 	Socket::Socket()
 	{
-        m_descriptor = -1;
+        m_socket_ref = INVALID_SOCKET;
 	}
 
 	Socket::~Socket()
 	{
- 		if (m_descriptor >= 0) {
-            close(m_descriptor);
-            m_descriptor = -1;
+		if (m_socket_ref != INVALID_SOCKET) {
+# ifdef WIN32
+            closesocket(m_socket_ref);
+# else
+            close(m_socket_ref);
+# endif
+            m_socket_ref = INVALID_SOCKET;
  		}
 	}
 
@@ -45,11 +54,15 @@ namespace thane
     int Socket::connect (const char *host_name, int port)
     {
         // see if we've opened up a socket yet
-        if (-1 == m_descriptor) {
+        if (INVALID_SOCKET == m_socket_ref) {
             // if not, we may still be resolving the address
             struct hostent *resolution = gethostbyname(host_name);
             if (resolution == NULL) {
-                if (h_errno == TRY_AGAIN) {
+# ifdef WIN32
+                if (WSAGetLastError() == WSATRY_AGAIN) {
+# else
+				if (errno == TRY_AGAIN) {
+# endif
                     // tell caller to hit us again in a little while
                     return 0;
                 }
@@ -59,31 +72,48 @@ namespace thane
             // address finished resolving
             memset(&m_host, 0, sizeof(m_host));
             m_host.sin_family = resolution->h_addrtype;
-            m_host.sin_port = htons(port);
+            m_host.sin_port = htons((short) port);
             memcpy(&m_host.sin_addr.s_addr, resolution->h_addr, resolution->h_length);
 
             // if the address bits all went well, open the socket
-            m_descriptor = socket(AF_INET, SOCK_STREAM, 0);
-            if (-1 == m_descriptor) {
+            m_socket_ref = socket(AF_INET, SOCK_STREAM, 0);
+            if (INVALID_SOCKET == m_socket_ref) {
                 return -1;
             }
 
             // flag it as non-blocking
-            int flags = fcntl(m_descriptor, F_GETFL, 0);
-            fcntl(m_descriptor, F_SETFL, (flags > 0 ? flags : 0) | O_NONBLOCK);
+# ifdef WIN32
+			u_long iMode = 1;
+			ioctlsocket(m_socket_ref, FIONBIO, &iMode);
+# else
+            int flags = fcntl(m_socket_ref, F_GETFL, 0);
+            fcntl(m_socket_ref, F_SETFL, (flags > 0 ? flags : 0) | O_NONBLOCK);
+# endif
 
             // and fall through to connect
         }
-        if (-1 == ::connect(m_descriptor, (struct sockaddr*) &m_host, sizeof(m_host))) {
-            if (errno == EALREADY || errno == EINPROGRESS) {
-                // tell caller to try us again later
-                return 0;
-            }
-            if (errno != EISCONN) {
-                // anything else is a real error
-                disconnect();
-                return -1;
-            }
+        if (-1 == ::connect(m_socket_ref, (struct sockaddr*) &m_host, sizeof(m_host))) {
+# ifdef WIN32
+			switch(WSAGetLastError()) {
+				case WSAEALREADY: case WSAEINVAL: case WSAEWOULDBLOCK:
+# else
+			switch(errno) {
+				case EALREADY: case EINPROGRESS:
+# endif
+					// tell caller to try us again later
+					return 0;
+# ifdef WIN32
+				case WSAEISCONN:
+# else
+				case EISCONN:
+# endif
+					// this is goodness
+					break;
+				default:
+	                // anything else is a real error
+		            disconnect();
+			        return -1;
+			}
         }
         // success!
         return 1;
@@ -91,27 +121,35 @@ namespace thane
 
     void Socket::disconnect ()
     {
-        if (-1 != m_descriptor) {
-            close(m_descriptor);
-            m_descriptor = -1;
+        if (INVALID_SOCKET != m_socket_ref) {
+# ifdef WIN32
+            closesocket(m_socket_ref);
+# else
+            close(m_socket_ref);
+# endif
+            m_socket_ref = INVALID_SOCKET;
         }
     }
 
     int Socket::read (ByteArrayFile &bytes)
     {
-        if (m_descriptor < 0) {
+		if (m_socket_ref == INVALID_SOCKET) {
             return -1;
         }
         int tot_bytes = 0;
 
         while (true) {
-            int size = ::read(m_descriptor, m_buffer, SOCK_BUF_SZ);
+            int size = recv(m_socket_ref, (char *) m_buffer, SOCK_BUF_SZ, 0);
             if (size == 0) {
                 // size 0 from non-blocking socket means a closed connection
                 return -2;
             }
             if (size == -1) {
-                if (errno != EAGAIN) {
+# ifdef WIN32
+				if (WSAGetLastError() != WSAEWOULDBLOCK) {
+# else
+				if (errno != EWOULDBLOCK) {
+# endif
                     return -1;
                 }
                 // "try again" in non-blocking just means there was nothing to read
@@ -132,7 +170,7 @@ namespace thane
 
     int Socket::write (ByteArrayFile &bytes)
     {
-        if (m_descriptor < 0) {
+        if (m_socket_ref < 0) {
             return -1;
         }
 
@@ -141,9 +179,13 @@ namespace thane
             return 0;
         }
         int ptr = bytes.GetFilePointer();
-        int size = ::write(m_descriptor, bytes.GetBuffer() + ptr, avail);
+        int size = send(m_socket_ref, (char *) (bytes.GetBuffer() + ptr), avail, 0);
         if (size == -1) {
-            if (errno != EAGAIN) {
+# ifdef WIN32
+				if (WSAGetLastError() != WSAEWOULDBLOCK) {
+# else
+				if (errno != EWOULDBLOCK) {
+# endif
                 // TODO: throw an error
                 return -1;
             }

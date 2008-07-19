@@ -6,8 +6,13 @@
 
 namespace thane
 {
+
+# ifdef WIN32
+# include <winsock2.h>
+# else
 # include <netinet/in.h>
 # include <sys/socket.h>
+# endif
 
 # define SOCK_BUF_SZ 0x1000
 
@@ -23,10 +28,13 @@ namespace thane
         int write (ByteArrayFile &bytes);
 
 	protected:
+# ifdef WIN32
+		SOCKET m_socket_ref;
+# else
+        int m_socket_ref;
+# endif
         U8 m_buffer[SOCK_BUF_SZ];
-        int m_descriptor;
         sockaddr_in m_host;
-
 		void ThrowMemoryError();
 	};
 
