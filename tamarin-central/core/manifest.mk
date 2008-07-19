@@ -112,7 +112,6 @@ avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
   $(curdir)/AvmPlusScriptableObject.cpp \
   $(NULL)
 
-ifdef ENABLE_DEBUG
 ifeq (windows,$(TARGET_OS))
 avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
   $(curdir)/AvmDebugWin.cpp \
@@ -121,7 +120,6 @@ else
 avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
   $(curdir)/AvmDebugUnix.cpp \
   $(NULL)
-endif
 endif
 
 #  $(curdir)/avmplus.cpp \
