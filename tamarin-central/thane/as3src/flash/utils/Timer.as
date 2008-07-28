@@ -77,12 +77,17 @@ public class Timer extends EventDispatcher
 
     protected function expire (buddy :Buddy) :void
     {
-        if (buddy != _buddy) {
+        if (buddy !== _buddy) {
             // the timer was stopped since this buddy was enqueued
             return;
         }
         _currentCount ++;
         dispatchEvent(new TimerEvent(TimerEvent.TIMER));
+        if (_buddy == null) {
+            // the timer was stopped in the TIMER event itself - do not requeue!
+            return;
+        }
+
         if (repeatCount == 0 || _currentCount < _repeatCount) {
             buddy.expiration += _delay;
             enqueue(buddy);
