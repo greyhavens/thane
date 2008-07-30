@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -872,10 +873,16 @@ namespace avmplus
 					// TODO make this faster, we probably have memory stalls
 					// IA32 calling conventions don't require double's to be 8-aligned,
 					// but performance is better if they are.
-					double d = AvmCore::number_d(arg);
-					int *dp = (int*)&d;
-					PUSH (dp[1]); //msb
-					PUSH (dp[0]); //lsb
+					union {
+						double d;
+						struct {
+							int i0;
+							int i1;
+						} i;
+					} dp;
+					dp.d = AvmCore::number_d(arg);
+					PUSH (dp.i.i1); //msb
+					PUSH (dp.i.i0); //lsb
 				}
 				else
 				{
