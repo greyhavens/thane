@@ -13,7 +13,7 @@ package org.httpclient {
     public static const WARN:Number = 3;
     public static const ERROR:Number = 4;
     
-    public static var level:Number = DEBUG;
+    public static var level:Number = WARN;
       
     // What to do with logged string  
     private static function output(s:String):void {
