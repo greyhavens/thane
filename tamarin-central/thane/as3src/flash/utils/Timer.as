@@ -89,7 +89,7 @@ public class Timer extends EventDispatcher
         }
 
         if (repeatCount == 0 || _currentCount < _repeatCount) {
-            scheduleBuddy(buddy);
+            scheduleBuddy(_buddy);
 
         } else {
             dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
