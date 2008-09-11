@@ -57,7 +57,7 @@ public class Timer extends EventDispatcher
             return;
         }
 
-        enqueue(new Buddy(this, getTimer() + _delay));
+        scheduleBuddy(new Buddy(this));
     }
 
     public function stop () :void
@@ -89,8 +89,7 @@ public class Timer extends EventDispatcher
         }
 
         if (repeatCount == 0 || _currentCount < _repeatCount) {
-            buddy.expiration += _delay;
-            enqueue(buddy);
+            scheduleBuddy(buddy);
 
         } else {
             dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
@@ -98,9 +97,10 @@ public class Timer extends EventDispatcher
         }
     }
 
-    private function enqueue (buddy :Buddy) :void
+    private function scheduleBuddy (buddy :Buddy) :void
     {
         _buddy = buddy;
+        _buddy.expiration = getTimer() + Math.max(_delay, 5);
         if (_heap.enqueue(_buddy)) {
             return;
         }
@@ -119,7 +119,10 @@ public class Timer extends EventDispatcher
     {
         var now :int = getTimer();
 
-        while (_heap.size > 0 && _heap.front.expiration <= now) {
+        // see if we should pop one timer off the queue and expire it; we could pop all the
+        // outstanding ones, but this solution puts the onus on developers to make their event
+        // handlers light-weight, and protects the socket code from starvation
+        if (_heap.size > 0 && _heap.front.expiration <= now) {
             var buddy :Buddy = _heap.dequeue();
             if (buddy.budette != null) {
                 buddy.budette.expire(buddy);
@@ -166,14 +169,14 @@ public class Timer extends EventDispatcher
 }
 
 import flash.utils.Timer;
+import flash.utils.getTimer;
 
 class Buddy {
     public var budette :Timer;
     public var expiration :int;
 
-    public function Buddy (timer :Timer, expiration :int)
+    public function Buddy (timer :Timer)
     {
         this.budette = timer;
-        this.expiration = expiration;
     }
 }
