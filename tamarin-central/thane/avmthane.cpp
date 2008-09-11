@@ -652,8 +652,8 @@ namespace thane
             // now just call heartbeat() forever
             while (true) {
                 fun->coerceEnter(0, args);
-                // TODO: do something fancier with timers here
-                usleep(50000);
+                // call heartbeat() no more than 50 times per second
+                usleep(20 * 1000);
             }
 
 #ifdef DEBUGGER
