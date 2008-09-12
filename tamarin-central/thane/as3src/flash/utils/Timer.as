@@ -22,16 +22,19 @@ public class Timer extends EventDispatcher
         reset();
     }
 
+    /** The total number of times the timer has fired since it started at zero. */
     public function get currentCount () :int
     {
         return _currentCount;
     }
 
+    /** The delay, in milliseconds, between timer events. */
     public function get delay () :Number
     {
         return _delay;
     }
 
+    /** The delay, in milliseconds, between timer events. */
     public function set delay (value :Number) :void
     {
         _delay = value;
@@ -40,17 +43,31 @@ public class Timer extends EventDispatcher
             start();
         }
     }
-
+ 
+    /** The total number of times the timer is set to run. */
     public function get repeatCount () :int
     {
         return _repeatCount;
     }
 
+    /** The total number of times the timer is set to run. */
+    public function set repeatCount (count :int) :void
+    {
+        _repeatCount = count;
+        if (_repeatCount > 0 && _repeatCount < _currentCount) {
+            stop();
+        }
+    }
+
+    /** The timer's current state; true if the timer is running, otherwise false. */
     public function get running () :Boolean
     {
         return _buddy != null;
     }
 
+    /**
+     * Starts the timer, if it is not already running.
+     */
     public function start () :void
     {
         if (_buddy != null) {
@@ -60,6 +77,9 @@ public class Timer extends EventDispatcher
         scheduleBuddy(new Buddy(this));
     }
 
+    /**
+     * Stops the timer.
+     */
     public function stop () :void
     {
         // cut any current enqueued buddy adrift
@@ -69,6 +89,10 @@ public class Timer extends EventDispatcher
         }
     }
 
+    /**
+     * Stops the timer, if it is running, and sets the currentCount property back to 0,
+     * like the reset button of a stopwatch.
+     */
     public function reset () :void
     {
         stop();
@@ -81,13 +105,16 @@ public class Timer extends EventDispatcher
             // the timer was stopped since this buddy was enqueued
             return;
         }
+
         _currentCount ++;
         dispatchEvent(new TimerEvent(TimerEvent.TIMER));
+
+        // if the timer was stop()'ed in the TIMER event itself, do not requeue!
         if (_buddy == null) {
-            // the timer was stopped in the TIMER event itself - do not requeue!
             return;
         }
 
+        // if we're repeating forever, or still got a ways to go, reschedule, else finish
         if (repeatCount == 0 || _currentCount < _repeatCount) {
             scheduleBuddy(_buddy);
 
