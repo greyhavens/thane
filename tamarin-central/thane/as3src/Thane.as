@@ -37,7 +37,7 @@ public class Thane
         _spawnedDomains[domainId].domain = dom;
         _spawningDomain = domainId;
         try {
-            initFun(domainId, consoleTracePrefix, bridge, requestSpawnedHeartbeat);
+            initFun(domainId, consoleTracePrefix, bridge, requestSpawnedHeartbeat, registerTrace);
 
         } catch (e :Error) {
             unspawnDomain(dom);
@@ -59,6 +59,22 @@ public class Thane
             }
         }
         throw new Error("Domain not spawned");
+    }
+
+    /**
+     * Outputs a message and optional error to a domain's trace function.
+     */
+    public static function outputToTrace (domain :Domain, msg :String, err :Error) :void
+    {
+        for each (var spawned :SpawnedDomain in _spawnedDomains) {
+            if (spawned.domain == domain) {
+                spawned.traceFn(msg);
+                if (err != null) {
+                    spawned.traceFn(err.getStackTrace());
+                }
+                return;
+            }
+        }
     }
 
     public static function requestHeartbeat (heart :Function) :void
@@ -103,6 +119,15 @@ public class Thane
         }
         spawned.heartbeat = heart;
     }
+
+    protected static function registerTrace (traceFn :Function) :void
+    {
+        var spawned :SpawnedDomain = _spawnedDomains[_spawningDomain];
+        if (spawned == null) {
+            throw new Error("Domain not spawned");
+        }
+        spawned.traceFn = traceFn;
+    }
     
     /** The SpawnedDomain objects created by spawnDomain. */
     private static var _spawnedDomains :Dictionary = new Dictionary();
@@ -125,4 +150,7 @@ class SpawnedDomain
 
     /** The heartbeat function within the domain to call as often as possible. */
     public var heartbeat :Function;
+
+    /** The trace function within the domain. */
+    public var traceFn :Function;
 }

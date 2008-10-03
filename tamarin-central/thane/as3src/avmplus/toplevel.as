@@ -94,7 +94,7 @@ package {
         if (!tracing) {
             tracing = true;
             try {
-                Thanette.trace(s);
+                Thanette.traceToBridge(s);
 
             } catch (e :Error) {
                 tracing = false;

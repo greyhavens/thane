@@ -29,7 +29,7 @@ public class Thanette
 
     public static function initializeDomain (
         domainId :String, consoleTracePrefix :String, bridge :EventDispatcher,
-        foreignHeart :Function) :void
+        foreignHeart :Function, registerTrace :Function) :void
     {
         if (domainId == null || domainId.length == 0) {
             throw new Error ("Domain must be spawned with an identifier");
@@ -45,9 +45,13 @@ public class Thanette
         if (foreignHeart != null) {
             foreignHeart(Thane.heartbeat);
         }
+
+        if (registerTrace != null) {
+            registerTrace(trace);
+        }
     }
 
-    public static function trace (s :Array) :void
+    public static function traceToBridge (s :Array) :void
     {
         if (_bridge != null) {
             _bridge.dispatchEvent(new TraceEvent(TraceEvent.TRACE, false, false, s));
