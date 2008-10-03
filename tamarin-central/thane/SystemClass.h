@@ -81,7 +81,7 @@ namespace thane
 		 */
 		int exec(Stringp command);
 
-		void trace(ArrayObject* a);
+		void trace(Stringp prefix, ArrayObject* a);
 		void write(Stringp s);
 
 		

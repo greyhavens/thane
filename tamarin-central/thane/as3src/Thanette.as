@@ -22,8 +22,14 @@ public class Thanette
         return _bridge;
     }
 
+    public static function getConsoleTracePrefix () :String
+    {
+        return _consoleTracePrefix;
+    }
+
     public static function initializeDomain (
-        domainId :String, bridge :EventDispatcher, foreignHeart :Function) :void
+        domainId :String, consoleTracePrefix :String, bridge :EventDispatcher,
+        foreignHeart :Function) :void
     {
         if (domainId == null || domainId.length == 0) {
             throw new Error ("Domain must be spawned with an identifier");
@@ -34,6 +40,7 @@ public class Thanette
         _initialized = true;
         _domainId = domainId;
         _bridge = bridge;
+        _consoleTracePrefix = consoleTracePrefix;
 
         if (foreignHeart != null) {
             foreignHeart(Thane.heartbeat);
@@ -50,5 +57,6 @@ public class Thanette
     private static var _initialized :Boolean;
     private static var _domainId :String;
     private static var _bridge :EventDispatcher;
+    private static var _consoleTracePrefix :String;
 }
 }

@@ -50,7 +50,7 @@ package avmplus
         private static native function doExit (status :int) :void
 
 		public native static function getAvmplusVersion():String
-		public native static function trace(a:Array):void
+		public native static function trace(linePrefix:String, a:Array):void
 		public native static function getTimer():int;
 		private native static function getArgv():Array
 		public static const argv:Array = getArgv();
@@ -89,7 +89,7 @@ package {
 	// nonstandard Flash Player extensions
 	public function trace(... s) :void
 	{
-        System.trace(s);
+        System.trace(Thanette.getConsoleTracePrefix(),s);
         // dispatch the trace on the Thane emitter, with recursion protection
         if (!tracing) {
             tracing = true;

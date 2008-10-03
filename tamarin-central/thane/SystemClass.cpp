@@ -86,12 +86,13 @@ namespace thane
 		return core()->newString(AVMPLUS_VERSION_USER " " AVMPLUS_BUILD_CODE);
 	}
 
-	void SystemClass::trace(ArrayObject* a)
+	void SystemClass::trace(Stringp prefix, ArrayObject* a)
 	{
 		if (!a)
 			toplevel()->throwArgumentError(kNullArgumentError, "array");
 		AvmCore* core = this->core();
 		PrintWriter& console = core->console;
+		if (prefix != NULL) console << *prefix;
 		for (int i=0, n = a->getLength(); i < n; i++)
 		{
 			if (i > 0)
@@ -103,6 +104,7 @@ namespace thane
 				// '\r' gets converted into '\n'
 				// '\n' is left alone
 				// '\r\n' is left alone
+				// in all cases, the prefix is appended after '\n'
 				if (c == '\r')
 				{
 					if (((j+1) < s->length()) && (*s)[j+1] == '\n')
@@ -111,12 +113,13 @@ namespace thane
 						j++;
 					}
 
-					console << '\n';
+					console << (c = '\n');
 				}
 				else
 				{
 					console << c;
 				}
+				if (c == '\n' && prefix != NULL) console << *prefix;
 			}
 		}
 		console << '\n';
