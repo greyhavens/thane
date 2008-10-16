@@ -2172,8 +2172,8 @@ public final class SwfxPrinter extends TagHandler
                 }
                 out.flush();
                 if (abcOut != null) {
-                    
-                    abcOut.write(Optimizer.optimize(byteCodes.toArray(new BytecodeBuffer[0])));
+                    BytecodeBuffer[] codes = byteCodes.toArray(new BytecodeBuffer[0]);
+                    abcOut.write(Optimizer.optimize(codes, true));
                     abcOut.close();
                     abcOut = null;
                 }
