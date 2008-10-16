@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   DuplicateOverrideErr.as, Ln 14, Col 21: 
+   		override function foo(){}
+   ....................^
+
+1 error found

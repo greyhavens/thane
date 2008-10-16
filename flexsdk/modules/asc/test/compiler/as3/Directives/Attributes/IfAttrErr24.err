@@ -1,0 +1,12 @@
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   IfAttrErr24.as, Ln 3, Col 2: 
+   	static public static interface IfAttrErr24
+   .^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   IfAttrErr24.as, Ln 3, Col 16: 
+   	static public static interface IfAttrErr24
+   ...............^
+
+2 errors found

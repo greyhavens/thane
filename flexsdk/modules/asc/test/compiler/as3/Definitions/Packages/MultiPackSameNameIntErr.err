@@ -1,0 +1,12 @@
+
+[Compiler] Error #1129: Duplicate interface definition: a.
+as3.Definitions.Packages.MultiPackSameNameIntErr.as, Ln 27, Col 12:
+interface a{}
+...........^
+
+[Compiler] Error #1113: Circular type reference was detected in a.
+as3.Definitions.Packages.MultiPackSameNameIntErr.as, Ln 24, Col 12:
+interface a{}
+...........^
+
+2 errors found

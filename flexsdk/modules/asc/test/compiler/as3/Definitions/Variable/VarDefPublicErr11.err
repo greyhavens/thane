@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute public, not idTypeExprA.
+   VarDefPublicErr11.as, Ln 15, Col 26: 
+       		public idTypeExprA : Array, idTypeExprB : Boolean; 
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before semicolon.
+   VarDefPublicErr11.as, Ln 15, Col 56: 
+       		public idTypeExprA : Array, idTypeExprB : Boolean; 
+   .......................................................^
+
+2 errors found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before else.
+   StaticPublicNameErr47.as, Ln 5, Col 28: 
+       static public function else() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr47.as, Ln 5, Col 35: 
+       static public function else() {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr47.as, Ln 5, Col 35: 
+       static public function else() {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr47.as, Ln 5, Col 35: 
+       static public function else() {}
+   ..................................^
+
+4 errors found

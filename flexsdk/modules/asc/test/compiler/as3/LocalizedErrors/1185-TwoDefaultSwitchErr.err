@@ -1,0 +1,7 @@
+
+[Compiler] Error #1185: The switch has more than one default, but only one default is allowed.
+1185-TwoDefaultSwitchErr.as, Ln 25, Col 9:
+default:
+........^
+
+1 error found

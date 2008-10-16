@@ -1,0 +1,32 @@
+
+\[Compiler\] Error #1012: The static attribute may be used only on definitions inside a class.
+.*error1012.as, Ln 8, Col 8:
+static var sv = 1;
+.......\^
+
+\[Compiler\] Error #1012: The static attribute may be used only on definitions inside a class.
+.*error1012.as, Ln 11, Col 8:
+static class B \{\}
+.......\^
+
+\[Compiler\] Error #1131: Classes must not be nested.
+.*error1012.as, Ln 11, Col 15:
+static class B \{\}
+..............\^
+
+\[Compiler\] Error #1012: The static attribute may be used only on definitions inside a class.
+.*error1012.as, Ln 15, Col 10:
+static class B \{\}
+.........\^
+
+\[Compiler\] Error #1131: Classes must not be nested.
+.*error1012.as, Ln 15, Col 17:
+static class B \{\}
+................\^
+
+\[Compiler\] Error #1131: Classes must not be nested.
+.*error1012.as, Ln 19, Col 13:
+static class B \{\} // this should be allowed... for now
+............\^
+
+6 errors found

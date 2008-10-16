@@ -1,0 +1,5 @@
+\[Compiler\] Error #1105: Target of assignment must be a reference value.
+.*ClassInstantiationErr5.as, Ln 7, Col 6:
+new A\(\) = new B\(\);
+.....^
+1 error found

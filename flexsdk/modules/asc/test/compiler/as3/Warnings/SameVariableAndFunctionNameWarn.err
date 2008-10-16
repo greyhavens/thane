@@ -1,0 +1,7 @@
+
+[Compiler] Error #1151: A conflict exists with definition foo in namespace internal.
+SameVariableAndFunctionNameWarn.as, Ln 11, Col 7:
+var foo:Number;
+......^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1121: A getter definition must have no parameters.
+   getterParamsErr.as, Ln 5, Col 25: 
+   		public function get x\(param1,param2\):int{
+   ........................^
+
+1 error found

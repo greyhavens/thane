@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr27.as, Ln 5, Col 22: 
+       static function a{b () {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr27.as, Ln 5, Col 22: 
+       static function a{b () {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr27.as, Ln 5, Col 22: 
+       static function a{b () {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before leftbrace.
+   StaticNameErr27.as, Ln 5, Col 28: 
+       static function a{b () {}
+   ...........................^
+
+4 errors found

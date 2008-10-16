@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*SystemCapabilitiesMethWarn.as\(7\): Migration issue: The method SystemCapabilities is no longer supported.  The SystemCapabilities class has been renamed Capabilities..
+SystemCapabilities();
+..^
+
+-------------------------------------------------------------------------
+
+
+
+SystemCapabilitiesMethWarn.abc, [0-9]+ bytes written
+.*Error.*
+

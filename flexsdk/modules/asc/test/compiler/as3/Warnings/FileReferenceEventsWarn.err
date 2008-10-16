@@ -1,0 +1,46 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*FileReferenceEventsWarn.as\(11\): Migration issue: The onCancel event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( cancel, onCancel\).
+fileRef.onCancel = function():void{}
+............^
+
+.*FileReferenceEventsWarn.as\(12\): Migration issue: The onComplete event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \('complete', callback_handler\).
+fileRef.onComplete = function():void{}
+............^
+
+.*FileReferenceEventsWarn.as\(13\): Migration issue: The onHTTPError event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \('httpError', callback_handler\).
+fileRef.onHTTPError = function():void{}
+............^
+
+.*FileReferenceEventsWarn.as\(14\): Migration issue: The onIOError event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \('ioError', callback_handler\).
+fileRef.onIOError = function():void{}
+............^
+
+.*FileReferenceEventsWarn.as\(15\): Migration issue: The onOpen event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \('open', callback_handler\).
+fileRef.onOpen = function():void{}
+............^
+
+.*FileReferenceEventsWarn.as\(16\): Migration issue: The onProgress event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \('progress', callback_handler\).
+fileRef.onProgress = function():void{}
+............^
+
+.*FileReferenceEventsWarn.as\(17\): Migration issue: The onSecurityError event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \('securityError', callback_handler\).
+fileRef.onSecurityError = function():void{}
+............^
+
+.*FileReferenceEventsWarn.as\(18\): Migration issue: The onSelect event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'menuSelect', callback_handler\).
+fileRef.onSelect = function():void{}
+............^
+
+-------------------------------------------------------------------------
+
+
+
+FileReferenceEventsWarn.abc, [0-9]+ bytes written
+.*Error.*
+

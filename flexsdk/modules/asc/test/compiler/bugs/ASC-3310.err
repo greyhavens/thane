@@ -1,0 +1,25 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1008: Missing type declaration.
+-------------------------------------------------------------------------
+bugs.ASC-3310.as\(15\): return value for function 'rebuildStage' has no type declaration.
+{
+^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1114: The super\(\) statement was not called within the constructor.
+-------------------------------------------------------------------------
+bugs.ASC-3310.as\(9\): The super\(\) statement will be executed prior to entering this constructor.  Add a call to super\(\) within the constructor if you want to explicitly control when it is executed.
+public function MainPocket\(\)
+..................^
+
+-------------------------------------------------------------------------
+
+
+
+ASC-3310.swf, .* bytes written
+VerifyError: Error #1014.*$

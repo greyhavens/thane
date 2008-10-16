@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before with.
+   StaticNameErr73.as, Ln 5, Col 21: 
+       static function with() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr73.as, Ln 5, Col 28: 
+       static function with() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr73.as, Ln 5, Col 28: 
+       static function with() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr73.as, Ln 5, Col 28: 
+       static function with() {}
+   ...........................^
+
+4 errors found

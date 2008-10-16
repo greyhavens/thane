@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*NextFrameWarn.as\(12\): Migration issue: The method nextFrame is no longer supported.  For more information, see MovieClip.nextFrame()..
+nextFrame\(a\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+NextFrameWarn.abc, [0-9]+ bytes written
+.*Error.*
+

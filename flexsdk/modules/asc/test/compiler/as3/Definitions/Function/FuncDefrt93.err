@@ -1,0 +1,12 @@
+
+[Compiler] Error #1017: The definition of base class base was not found.
+   FuncDefrt93.as, Ln 7, Col 29: 
+     class FuncDefrt93 extends base {
+   ............................^
+
+[Compiler] Error #1145: Native methods cannot have a body.
+   FuncDefrt93.as, Ln 9, Col 20: 
+      native function foo() {}
+   ...................^
+
+2 errors found

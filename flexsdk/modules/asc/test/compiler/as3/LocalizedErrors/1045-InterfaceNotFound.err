@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface B was not found.
+1045-InterfaceNotFound.as, Ln 4, Col 20:
+class A implements B {}
+...................^
+
+1 error found

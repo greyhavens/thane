@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftbrace before comma.
+   ExtObj1Obj2Err.as, Ln 26, Col 35: 
+   	class ExtObj1Obj2Err extends obj1,obj2 {}
+   ..................................^
+
+1 error found

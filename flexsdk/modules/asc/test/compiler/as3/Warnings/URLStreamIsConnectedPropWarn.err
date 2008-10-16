@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*URLStreamIsConnectedPropWarn.as\(12\): Migration issue: The property isConnected is no longer supported.  Use the URLStream.connected property instead..
+a.isConnected;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+URLStreamIsConnectedPropWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

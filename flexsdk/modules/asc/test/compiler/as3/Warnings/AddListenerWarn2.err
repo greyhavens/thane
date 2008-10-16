@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*AddListenerWarn2.as\(20\): Migration issue: The property AsBroadcaster is no longer supported.  Use the flash.events.EventDispatcher class instead..
+AsBroadcaster.initialize\(myBroadCaster\);
+....^
+
+-------------------------------------------------------------------------
+
+
+
+AddListenerWarn2.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

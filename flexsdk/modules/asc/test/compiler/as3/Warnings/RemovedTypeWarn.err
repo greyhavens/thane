@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*RemovedTypeWarn.as\(12\): Migration issue: The property REMOVED_TYPE is no longer supported.  Use the Event.REMOVED constant instead..
+trace\(Event.REMOVED_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+RemovedTypeWarn.abc, [0-9]+ bytes written
+.*Error.*
+

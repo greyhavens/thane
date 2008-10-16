@@ -1,0 +1,7 @@
+
+[Compiler] Error #1054: Return type of a setter definition must be unspecified or void.
+1054-SetterMethodNotVoid.as, Ln 8, Col 23:
+function set x\(v\):Number {
+......................^
+
+1 error found

@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*FocusRectPropWarn.as\(9\): Migration issue: The property _focusrect is no longer supported.  For more information, see InteractiveObject.focusRect..
+_focusrect = false;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+FocusRectPropWarn.abc, [0-9]+ bytes written

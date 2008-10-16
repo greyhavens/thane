@@ -1,0 +1,7 @@
+
+[Compiler] Error #1087: Syntax error: extra characters found after end of program.
+   deleteAttrErr.as, Ln 4, Col 10: 
+   delete x1@attr1;
+   .........^
+
+1 error found

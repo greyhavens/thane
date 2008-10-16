@@ -1,0 +1,7 @@
+
+[Compiler] Error #1099: Syntax error.
+1099-SyntaxError.as, Ln 7, Col 7:
+ns1::\[\];
+......^
+
+1 error found

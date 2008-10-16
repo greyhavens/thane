@@ -1,0 +1,21 @@
+
+exceptions.abc, \d+ bytes written
+Regression #112582:
+Test #1: PASSED
+Test #2: PASSED
+Test #3: PASSED
+Test #4: PASSED
+Test #5: PASSED
+Test #6: PASSED
+Test #7: PASSED
+
+Regression #120410:
+About to throw TypeError...
+PASSED
+No exception thrown here
+PASSED: No VerifyError on #122367 killreg case
+Testing finally with no catch clause
+PASSED: finally with no catch clause executed
+
+Regression #120639:
+Error: RegError

@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*SystemCapabilitiesPropWarn.as\(8\): Migration issue: The property SystemCapabilities is no longer supported.  The SystemCapabilities class has been renamed Capabilities..
+public var str:String = SystemCapabilities;
+..........................^
+
+-------------------------------------------------------------------------
+
+
+
+SystemCapabilitiesPropWarn.abc, [0-9]+ bytes written
+.*Error.*
+

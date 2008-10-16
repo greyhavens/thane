@@ -1,0 +1,7 @@
+
+[Compiler] Error #1068: Unable to open included file: .*
+as3.Directives.Include.IncWOCorrectPathErr.as, Ln 76, Col 9:
+include "../../../Directives/Include/Inc2.as"
+........^
+
+1 error found

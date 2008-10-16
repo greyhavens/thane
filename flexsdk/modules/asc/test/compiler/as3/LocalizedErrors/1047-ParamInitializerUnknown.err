@@ -1,0 +1,7 @@
+
+[Compiler] Error #1047: Parameter initializer unknown or is not a compile-time constant.
+1047-ParamInitializerUnknown.as, Ln 5, Col 27:
+function f\(a:Number = b\):void {}
+..........................^
+
+1 error found

@@ -1,0 +1,26 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1072: Class is sealed.  It cannot have members added to it dynamically.
+-------------------------------------------------------------------------
+.*ContextMenuItemEventsWarn.as\(11\): Migration issue: ContextMenuItem is not a dynamic class.  Instances cannot have members added to them dynamically.
+my_cmi.onSelect = function():void{}
+................................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*ContextMenuItemEventsWarn.as\(11\): Migration issue: The onSelect event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'menuSelect', callback_handler\).
+my_cmi.onSelect = function():void{}
+..........^
+
+-------------------------------------------------------------------------
+
+
+
+ContextMenuItemEventsWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

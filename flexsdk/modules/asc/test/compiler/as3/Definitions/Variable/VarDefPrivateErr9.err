@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute private, not idA.
+   VarDefPrivateErr9.as, Ln 15, Col 18: 
+       		private idA, idB:Boolean;
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before semicolon.
+   VarDefPrivateErr9.as, Ln 15, Col 31: 
+       		private idA, idB:Boolean;
+   ..............................^
+
+2 errors found

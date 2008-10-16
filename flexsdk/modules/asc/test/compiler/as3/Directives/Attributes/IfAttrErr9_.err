@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr9 was not found.
+   IfAttrErr9_.as, Ln 6, Col 38: 
+   	public class IfAttrErr9_ implements IfAttrErr9
+   .....................................^
+
+1 error found

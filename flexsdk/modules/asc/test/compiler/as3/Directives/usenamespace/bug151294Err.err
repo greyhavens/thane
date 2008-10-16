@@ -1,0 +1,12 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   bug151294Err.as, Ln 3, Col 1: 
+   n1 function myfunc2(){}
+   ^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   bug151294Err.as, Ln 5, Col 26: 
+   public function myfunc(){n1 var myvar = 10;}
+   .........................^
+
+2 errors found

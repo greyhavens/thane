@@ -1,0 +1,12 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   PrivExtFinalClassErr.as, Ln 15, Col 10: 
+   	 	final class PrivExtFinalClassErr {
+   .........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   PrivExtFinalClassErr.as, Ln 22, Col 12: 
+   	 	private class B extends PrivExtFinalClassErr {
+   ...........^
+
+2 errors found

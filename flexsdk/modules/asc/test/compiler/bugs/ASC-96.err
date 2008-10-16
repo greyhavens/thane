@@ -1,0 +1,48 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1008: Missing type declaration.
+-------------------------------------------------------------------------
+bugs.ASC-96.as\(3\): variable 'number' has no type declaration.
+public static var number;
+......................^
+
+bugs.ASC-96.as\(5\): variable 'number' has no type declaration.
+var number = number;
+..........^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1084: Missing namespace declaration \(e.g. variable is not defined to be public, private, etc.\).
+-------------------------------------------------------------------------
+bugs.ASC-96.as\(2\): class 'number' will be scoped to the default namespace: number internal.  It will not be visible outside of this package.
+class number {
+........^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1114: The super\(\) statement was not called within the constructor.
+-------------------------------------------------------------------------
+bugs.ASC-96.as\(4\): The super\(\) statement will be executed prior to entering this constructor.  Add a call to super\(\) within the constructor if you want to explicitly control when it is executed.
+public function number\(number:int\) {
+....................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #3598: Definition name is the same as an imported package name.  Unqualified references to that name will resolve to the package and not the definition.
+-------------------------------------------------------------------------
+bugs.ASC-96.as\(3\): Definition name is the same as an imported package name.  Unqualified references to that name will resolve to the package and not the definition.
+public static var number;
+......................^
+
+bugs.ASC-96.as\(5\): Definition name is the same as an imported package name.  Unqualified references to that name will resolve to the package and not the definition.
+var number = number;
+..........^
+
+-------------------------------------------------------------------------
+
+
+
+ASC-96.abc, 181 bytes written

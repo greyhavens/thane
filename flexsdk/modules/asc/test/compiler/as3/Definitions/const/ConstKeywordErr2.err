@@ -1,0 +1,7 @@
+
+[Compiler] Error #1083: Syntax error: package is unexpected.
+as3.Definitions.const.ConstKeywordErr2.as, Ln 32, Col 1:
+package Expressions.const {
+^
+
+1 error found

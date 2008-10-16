@@ -1,0 +1,12 @@
+
+[Compiler] Error #1044: Interface method foo in namespace Errors:DefaultIntDef not implemented by class Errors:ExtDImplDDOverRidePubStaticErr.
+   ExtDImplDDOverRidePubStaticErr.as, Ln 36, Col 8: 
+   	class ExtDImplDDOverRidePubStaticErr extends DynamicClass implements ...
+   .......^
+
+[Compiler] Error #1044: Interface method goo in namespace Errors:DefaultInt not implemented by class Errors:ExtDImplDDOverRidePubStaticErr.
+   ExtDImplDDOverRidePubStaticErr.as, Ln 36, Col 8: 
+   	class ExtDImplDDOverRidePubStaticErr extends DynamicClass implements ...
+   .......^
+
+2 errors found

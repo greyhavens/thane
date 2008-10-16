@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before do.
+ecma3.e7_4_3_10_Err.as, Ln 47, Col 9:
+var do = true;
+........^
+
+1 error found

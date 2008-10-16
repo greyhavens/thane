@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*HighQualityPropWarn.as\(9\): Migration issue: The property _highquality is no longer supported.  For more information, see Stage.quality..
+_highquality = false;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+HighQualityPropWarn.abc, [0-9]+ bytes written

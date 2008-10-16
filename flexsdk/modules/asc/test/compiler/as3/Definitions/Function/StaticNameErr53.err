@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before for.
+   StaticNameErr53.as, Ln 5, Col 21: 
+       static function for() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr53.as, Ln 5, Col 27: 
+       static function for() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr53.as, Ln 5, Col 27: 
+       static function for() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr53.as, Ln 5, Col 27: 
+       static function for() {}
+   ..........................^
+
+4 errors found

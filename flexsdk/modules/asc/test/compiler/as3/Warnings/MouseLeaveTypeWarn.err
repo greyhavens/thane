@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*MouseLeaveTypeWarn.as\(12\): Migration issue: The property MOUSE_LEAVE_TYPE is no longer supported.  Use the Event.MOUSE_LEAVE constant instead..
+trace\(Event.MOUSE_LEAVE_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+MouseLeaveTypeWarn.abc, [0-9]+ bytes written
+.*Error.*
+

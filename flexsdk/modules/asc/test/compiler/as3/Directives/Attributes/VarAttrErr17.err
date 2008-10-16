@@ -1,0 +1,12 @@
+
+[Compiler] Error #1127: Attribute private was specified multiple times.
+   VarAttrErr17.as, Ln 6, Col 13: 
+   	   private private private var v : Integer;
+   ............^
+
+[Compiler] Error #1127: Attribute private was specified multiple times.
+   VarAttrErr17.as, Ln 6, Col 5: 
+   	   private private private var v : Integer;
+   ....^
+
+2 errors found

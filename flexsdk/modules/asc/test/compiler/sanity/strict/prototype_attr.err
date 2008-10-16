@@ -1,0 +1,22 @@
+
+\[Compiler\] Error #1194: The prototype attribute is invalid.
+.*prototype_attr.as, Ln 5, Col 5:
+prototype var x = 10
+....\^
+
+\[Compiler\] Error #1194: The prototype attribute is invalid.
+.*prototype_attr.as, Ln 6, Col 5:
+prototype var f = function\(\) \{ return prototype.x \}
+....\^
+
+\[Compiler\] Error #1194: The prototype attribute is invalid.
+.*prototype_attr.as, Ln 9, Col 5:
+prototype var g = function\(a:int=1, b:String="foo"\)
+....\^
+
+\[Compiler\] Error #1194: The prototype attribute is invalid.
+.*prototype_attr.as, Ln 18, Col 5:
+prototype var x = 20
+....\^
+
+4 errors found

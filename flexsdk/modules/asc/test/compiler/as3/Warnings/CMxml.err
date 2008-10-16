@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #3573: Possible usage of the ActionScript 2.0 XML class.
+-------------------------------------------------------------------------
+.*CMxml.as\(8\): Migration issue: The ActionScript 2.0 XML class has been renamed XMLDocument.
+var my_xml:XML = new XML()
+.........................^
+
+-------------------------------------------------------------------------
+
+
+
+CMxml.abc, [0-9]+ bytes written

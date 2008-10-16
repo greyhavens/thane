@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before default.
+   StaticPublicNameErr44.as, Ln 5, Col 28: 
+       static public function default() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr44.as, Ln 5, Col 38: 
+       static public function default() {}
+   .....................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr44.as, Ln 5, Col 38: 
+       static public function default() {}
+   .....................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr44.as, Ln 5, Col 38: 
+       static public function default() {}
+   .....................................^
+
+4 errors found

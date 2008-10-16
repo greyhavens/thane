@@ -1,0 +1,7 @@
+
+[Compiler] Error #1151: A conflict exists with definition x in namespace internal.
+1151-ConflictingDefinitionsInNamesapceErr.as, Ln 10, Col 11:
+for \(var x:int =0; x<10; x\+\+\)
+..........^
+
+1 error found

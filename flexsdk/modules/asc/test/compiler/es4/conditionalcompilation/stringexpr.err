@@ -1,0 +1,8 @@
+
+stringexpr.abc, [0-9]+ bytes written
+plus1=value1 and value2
+plus2=
+ne1=true
+ne2=false
+eq1=false
+eq2=true

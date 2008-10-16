@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1012: Illogical comparison with undefined.  Only untyped variables \(or variables of type \*\) can be undefined.
+-------------------------------------------------------------------------
+.*ComparisonWithUndefWarn.as\(12\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if\(a == undefined\) {}
+....^
+
+-------------------------------------------------------------------------
+
+
+
+ComparisonWithUndefWarn.abc, [0-9]+ bytes written

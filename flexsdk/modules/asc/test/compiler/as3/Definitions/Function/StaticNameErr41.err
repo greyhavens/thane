@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before class.
+   StaticNameErr41.as, Ln 5, Col 21: 
+       static function class() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr41.as, Ln 5, Col 29: 
+       static function class() {}
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr41.as, Ln 5, Col 29: 
+       static function class() {}
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr41.as, Ln 5, Col 29: 
+       static function class() {}
+   ............................^
+
+4 errors found

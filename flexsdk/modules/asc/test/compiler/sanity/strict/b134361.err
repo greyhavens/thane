@@ -1,0 +1,23 @@
+
+b134361.abc, \d+ bytes written
+Methods
+x.ns1::foo\(\) = A.ns1:foo
+x.ns2::foo\(\) = B.ns2:foo
+x.ns3::foo\(\) = B.ns3:foo
+x.ns4::foo\(\) = A.ns4:foo
+---
+Getters
+x.ns1::get foo\(\) = A.ns1:get foo
+x.ns2::get foo\(\) = B.ns2:get foo
+x.ns3::get foo\(\) = B.ns3:get foo
+x.ns4::get foo\(\) = A.ns4:get foo
+---
+Setters
+x.ns1::set foo\(\) =
+A.ns1:set foo
+x.ns2::set foo\(\) =
+B.ns2:set foo
+x.ns3::set foo\(\) =
+B.ns3:set foo
+x.ns4::set foo\(\) =
+A.ns4:set foo

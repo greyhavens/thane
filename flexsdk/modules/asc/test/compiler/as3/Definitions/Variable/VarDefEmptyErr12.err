@@ -1,0 +1,7 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   VarDefEmptyErr12.as, Ln 15, Col 52: 
+       		idTypeExprAAssign : Array, idTypeExprBAssign : Boolean = true;
+   ...................................................^
+
+1 error found

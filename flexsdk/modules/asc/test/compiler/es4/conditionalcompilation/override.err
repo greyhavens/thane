@@ -1,0 +1,7 @@
+
+[Compiler] Error #1151: A conflict exists with definition var1 in namespace CONFIG.
+.*override.as, Ln 2, Col 16:
+CONFIG const var1=10
+...............^
+
+1 error found

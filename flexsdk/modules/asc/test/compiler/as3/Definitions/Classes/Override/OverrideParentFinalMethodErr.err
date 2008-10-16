@@ -1,0 +1,7 @@
+
+[Compiler] Error #1025: Cannot redefine a final method.
+   OverrideParentFinalMethodErr.as, Ln 7, Col 28: 
+   		override public function foo() {}
+   ...........................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1087: Syntax error: extra characters found after end of program.
+.*block_err.as, Ln 2, Col 1:
+\}
+\^
+
+1 error found

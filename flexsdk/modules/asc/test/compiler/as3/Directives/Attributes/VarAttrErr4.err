@@ -1,0 +1,12 @@
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   VarAttrErr4.as, Ln 6, Col 13: 
+    	   public public public var v : Integer;
+   ............^
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   VarAttrErr4.as, Ln 6, Col 6: 
+    	   public public public var v : Integer;
+   .....^
+
+2 errors found

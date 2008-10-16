@@ -1,0 +1,7 @@
+
+[Compiler] Error #1162: Only one namespace attribute can be used per definition.
+1162-MultiNSErr.as, Ln 10, Col 9:
+N1 N2 var myvar:int = 0;
+........^
+
+1 error found

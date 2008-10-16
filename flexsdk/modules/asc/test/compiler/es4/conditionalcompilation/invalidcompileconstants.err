@@ -1,0 +1,17 @@
+
+[Compiler] Error #1208: The initializer for a configuration value must be a compile time constant.
+.*invalidcompileconstants.as, Ln 1, Col 20:
+CONFIG const null1=null
+...................^
+
+[Compiler] Error #1208: The initializer for a configuration value must be a compile time constant.
+.*invalidcompileconstants.as, Ln 2, Col 25:
+CONFIG const undefined1=undefined
+........................^
+
+[Compiler] Error #1208: The initializer for a configuration value must be a compile time constant.
+.*invalidcompileconstants.as, Ln 3, Col 23:
+CONFIG const pi1=Math.PI
+......................^
+
+3 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1127: Attribute private was specified multiple times.
+   PrivatePrivateNameErr.as, Ln 5, Col 5: 
+       private private function a() {}
+   ....^
+
+1 error found

@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1181: Forward reference to base class B.
+.*cls_fwdref.as, Ln 1, Col 17:
+class A extends B implements I \{\}
+................\^
+
+1 error found

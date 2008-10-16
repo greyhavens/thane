@@ -1,0 +1,12 @@
+
+[Compiler] Error #1162: Only one namespace attribute can be used per definition.
+   IllegalAccSpecifiersErr.as, Ln 16, Col 4: 
+   	 	pub stat var e;
+   ...^
+
+[Compiler] Error #1162: Only one namespace attribute can be used per definition.
+   IllegalAccSpecifiersErr.as, Ln 22, Col 4: 
+   	 	pub stat function foo5() {return 1;}
+   ...^
+
+2 errors found

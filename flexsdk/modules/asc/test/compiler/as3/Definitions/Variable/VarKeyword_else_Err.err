@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before else.
+   VarKeyword_else_Err.as, Ln 14, Col 6: 
+   	var else;
+   .....^
+
+1 error found

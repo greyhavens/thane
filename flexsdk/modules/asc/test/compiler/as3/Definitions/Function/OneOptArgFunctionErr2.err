@@ -1,0 +1,13 @@
+\[Compiler\] Error #1030: Must specify name of variable arguments array.
+.*OneOptArgFunctionErr2.as, Ln 50, Col 73:
+function returnStringInner\(s:String = "inside class inside package",...\):String \{...
+........................................................................^
+\[Compiler\] Error #1030: Must specify name of variable arguments array.
+.*OneOptArgFunctionErr2.as, Ln 56, Col 50:
+function returnBooleanInner\(b:Boolean = true,...\):Boolean \{ return b...
+.................................................^
+\[Compiler\] Error #1030: Must specify name of variable arguments array.
+.*OneOptArgFunctionErr2.as, Ln 62, Col 47:
+function returnNumberInner\(b:Number = 100,...\):Number \{ return n; \}
+..............................................^
+3 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   StatOverLoadFunctionErr.as, Ln 4, Col 19: 
+   		static function EmptyOverLoadErr\(x\) {}
+   ..................^
+
+1 error found

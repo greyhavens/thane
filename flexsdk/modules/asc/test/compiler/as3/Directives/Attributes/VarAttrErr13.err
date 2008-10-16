@@ -1,0 +1,12 @@
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   VarAttrErr13.as, Ln 6, Col 14: 
+   	    private public public var v : Integer;
+   .............^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   VarAttrErr13.as, Ln 6, Col 6: 
+   	    private public public var v : Integer;
+   .....^
+
+2 errors found

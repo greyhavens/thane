@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1203: No default constructor found in base class A.
+.*class_ctor_strict.as, Ln 12, Col 18:
+function B\(\)
+.................\^
+
+1 error found

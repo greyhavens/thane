@@ -1,0 +1,7 @@
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before debug1.
+as3.Directives.Attributes.CTA.MultipleDefErr.as, Ln 44, Col 13:
+const debug debug1 debug2 name=true;
+............^
+
+1 error found

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1077: Expecting CaseLabel.
+1077-ExpectingCaseLabelErr.as, Ln 10, Col 3:
+var a = 1;
+..^
+
+[Compiler] Error #1084: Syntax error: expecting colon before rightbrace.
+1077-ExpectingCaseLabelErr.as, Ln 11, Col 2:
+}
+.^
+
+2 errors found

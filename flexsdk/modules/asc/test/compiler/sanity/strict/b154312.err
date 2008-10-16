@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1038: Target of break statement was not found.
+.*b154312.as, Ln 7, Col 39:
+\{ result \+= object\[property\]; \}; break; yoohoo;
+......................................\^
+
+1 error found

@@ -1,0 +1,72 @@
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 14, Col 21: 
+   		override function pubFn() { }	// ILLEGAL 1 of 14
+   ....................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 15, Col 21: 
+   		override function protFn() { }	// ILLEGAL 2 of 14
+   ....................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 21, Col 30: 
+   		internal override function pubFn() { }	// ILLEGAL 3 of 14
+   .............................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 22, Col 30: 
+   		internal override function protFn() { }	// ILLEGAL 4 of 14
+   .............................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 26, Col 28: 
+   		public override function defFn() { }	// ILLEGAL 5 of 14
+   ...........................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 27, Col 28: 
+   		public override function intFn() { }	// ILLEGAL 6 of 14
+   ...........................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 29, Col 28: 
+   		public override function protFn() { }	// ILLEGAL 7 of 14
+   ...........................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 33, Col 31: 
+   		protected override function defFn() { }	// ILLEGAL 8 of 14
+   ..............................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 34, Col 31: 
+   		protected override function intFn() { }	// ILLEGAL 9 of 14
+   ..............................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 35, Col 31: 
+   		protected override function pubFn() { }	// ILLEGAL 10 of 14
+   ..............................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 40, Col 29: 
+   		private override function defFn() { }	// ILLEGAL 11 of 14
+   ............................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 41, Col 29: 
+   		private override function intFn() { }	// ILLEGAL 12 of 14
+   ............................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 42, Col 29: 
+   		private override function pubFn() { }	// ILLEGAL 13 of 14
+   ............................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtOverrideBadAccessErr.as, Ln 43, Col 29: 
+   		private override function protFn() { }	// ILLEGAL 14 of 14
+   ............................^
+
+14 errors found

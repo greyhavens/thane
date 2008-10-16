@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*RemoveMovieclipWarn.as\(14\): Migration issue: The method removeMovieClip is no longer supported.  Use Container.removeChild\(childName\). For more information, see the DisplayObjectContainer class..
+removeMovieClip\(a\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+RemoveMovieclipWarn.abc, [0-9]+ bytes written
+.*Error.*
+

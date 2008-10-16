@@ -1,0 +1,7 @@
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+as3.Definitions.Packages.PrivateInPackage.as, Ln 24, Col 2:
+private class C {}
+.^
+
+1 error found

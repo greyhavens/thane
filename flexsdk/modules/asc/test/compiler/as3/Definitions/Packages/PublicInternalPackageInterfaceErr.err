@@ -1,0 +1,7 @@
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+as3.Definitions.Packages.PublicInternalPackageInterfaceErr.as, Ln 29, Col 5:
+public internal interface B{};
+....^
+
+1 error found

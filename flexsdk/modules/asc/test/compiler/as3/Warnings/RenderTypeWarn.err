@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*RenderTypeWarn.as\(12\): Migration issue: The property RENDER_TYPE is no longer supported.  Use the Event.RENDER constant instead..
+trace\(Event.RENDER_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+RenderTypeWarn.abc, [0-9]+ bytes written
+.*Error.*
+

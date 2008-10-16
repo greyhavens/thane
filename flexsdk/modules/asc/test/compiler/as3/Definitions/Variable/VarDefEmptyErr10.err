@@ -1,0 +1,7 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   VarDefEmptyErr10.as, Ln 15, Col 27: 
+   	    	idAAssign, idBAssign:Boolean = true; 
+   ..........................^
+
+1 error found

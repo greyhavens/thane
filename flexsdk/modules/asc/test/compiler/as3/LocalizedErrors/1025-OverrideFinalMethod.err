@@ -1,0 +1,7 @@
+
+[Compiler] Error #1025: Cannot redefine a final method.
+1025-OverrideFinalMethod.as, Ln 10, Col 21:
+override function a():void {
+....................^
+
+1 error found

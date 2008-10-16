@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before semicolon.
+   NSBlankErr.as, Ln 2, Col 14: 
+   use namespace;
+   .............^
+
+1 error found

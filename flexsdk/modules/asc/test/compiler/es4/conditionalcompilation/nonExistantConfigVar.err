@@ -1,0 +1,17 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before if.
+.*nonExistantConfigVar.as, Ln 3, Col 2:
+if \(CONFIG::flag\) {
+.^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+.*nonExistantConfigVar.as, Ln 3, Col 20:
+if \(CONFIG::flag\) {
+...................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before leftbrace.
+.*nonExistantConfigVar.as, Ln 3, Col 20:
+if \(CONFIG::flag\) {
+...................^
+
+3 errors found

@@ -1,0 +1,13 @@
+
+\[Compiler\] Error #1104: invalid xml name
+.*b112393.as, Ln 5, Col 1:
+</blah>
+\^
+
+\[Compiler\] Error #1084: Syntax error: expecting xmltagendend before end of program.
+.*b112393.as, Ln 7, Col 1:
+
+\[Compiler\] Error #1100: Syntax error: XML does not have matching begin and end tags.
+.*b112393.as, Ln 7, Col 1:
+
+3 errors found

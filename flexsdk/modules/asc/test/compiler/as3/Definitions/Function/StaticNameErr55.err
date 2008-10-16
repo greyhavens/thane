@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before import.
+   StaticNameErr55.as, Ln 5, Col 21: 
+       static function import() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr55.as, Ln 5, Col 30: 
+       static function import() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr55.as, Ln 5, Col 30: 
+       static function import() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr55.as, Ln 5, Col 30: 
+       static function import() {}
+   .............................^
+
+4 errors found

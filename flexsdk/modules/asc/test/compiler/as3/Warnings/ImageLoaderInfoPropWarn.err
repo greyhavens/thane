@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*ImageLoaderInfoPropWarn.as\(8\): Migration issue: The property ImageLoaderInfo is no longer supported.  The ImageLoaderInfo class has been renamed BitmapLoaderInfo..
+ImageLoaderInfo = true;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ImageLoaderInfoPropWarn.abc, [0-9]+ bytes written

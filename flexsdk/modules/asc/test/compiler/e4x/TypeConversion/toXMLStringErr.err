@@ -1,0 +1,18 @@
+
+[Compiler] Error #1093: Syntax error.
+   toXMLStringErr.as, Ln 1, Col 20: 
+   x0 = toXMLString\(<x><!-- Hello World --</x>\);
+   ...................^
+
+[Compiler] Error #1093: Syntax error.
+   toXMLStringErr.as, Ln 1, Col 41: 
+   x0 = toXMLString\(<x><!-- Hello World --</x>\);
+   ........................................^
+
+[Compiler] Error #1100: Syntax error: XML does not have matching begin and end tags.
+   toXMLStringErr.as, Ln 2, Col 1: 
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before end of program.
+   toXMLStringErr.as, Ln 2, Col 1: 
+
+4 errors found

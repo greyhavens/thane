@@ -1,0 +1,30 @@
+<ErrorGenerator>
+  <Ifdef>_LintWarnings__</Ifdef>
+  <InputFileBase>../../src/localized_strings/</InputFileBase>
+  <Language>EN</Language>
+  <Language>CN</Language>
+  <Language>CS</Language>
+  <Language>DE</Language>
+  <Language>ES</Language>
+  <Language>FR</Language>
+  <Language>IT</Language>
+  <Language>JP</Language>
+  <Language>KR</Language>
+  <Language>NL</Language>
+  <Language>PL</Language>
+  <Language>PT</Language>
+  <Language>RU</Language>
+  <Language>SV</Language>
+  <Language>TR</Language>
+  <Language>TW</Language>
+  <XmlInputFile>/Lint_Warnings.xml</XmlInputFile>
+  <OutputCppFile>../../src/cpp/embedding/WarningConstants.cpp</OutputCppFile>
+  <OutputJavaFile>../../src/java/macromedia/asc/embedding/WarningConstants.java</OutputJavaFile>
+  <OutputHFile>../../src/cpp/embedding/WarningConstants.h</OutputHFile>
+  <ArrayName>allWarningConstants</ArrayName>
+  <LangCountName>kNumLanguages</LangCountName>
+  <CountName>kNumWarningConstants</CountName>
+  <NamespaceName>WarningConstants</NamespaceName>
+  <MainInclude>LintEvaluator.h</MainInclude>
+</ErrorGenerator>
+

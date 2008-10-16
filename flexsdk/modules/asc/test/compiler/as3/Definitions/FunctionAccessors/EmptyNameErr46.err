@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before do.
+   EmptyNameErr46.as, Ln 5, Col 18: 
+       function set do\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr46.as, Ln 5, Col 24: 
+       function set do\(e\) {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr46.as, Ln 5, Col 24: 
+       function set do\(e\) {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr46.as, Ln 5, Col 24: 
+       function set do\(e\) {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before do.
+   EmptyNameErr46.as, Ln 6, Col 18: 
+       function get do() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr46.as, Ln 6, Col 23: 
+       function get do() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr46.as, Ln 6, Col 23: 
+       function get do() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr46.as, Ln 6, Col 23: 
+       function get do() {}
+   ......................^
+
+8 errors found

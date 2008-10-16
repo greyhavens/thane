@@ -1,0 +1,6 @@
+package import {
+
+	class InsidePackageImport {
+
+			}
+}

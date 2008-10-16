@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*MovieclipUrlWarn.as\(13\): Migration issue: The property _url is no longer supported.  For more information, see LoaderInfo.url and the Loader class..
+a._url = "Hello.swf";
+...^
+
+-------------------------------------------------------------------------
+
+
+
+MovieclipUrlWarn.abc, [0-9]+ bytes written
+.*Error.*
+

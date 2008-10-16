@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+as3.Definitions.Packages.MultiPackSameNameFuncErr.as, Ln 27, Col 11:
+function a(){}
+..........^
+
+1 error found

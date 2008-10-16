@@ -1,0 +1,27 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   IllegalStatClassAccSpecifiersErr.as, Ln 6, Col 17: 
+   	 static Public class c1 {}
+   ................^
+
+[Compiler] Error #1131: Classes must not be nested.
+   IllegalStatClassAccSpecifiersErr.as, Ln 7, Col 17: 
+   	 static Finall class c2 {}
+   ................^
+
+[Compiler] Error #1131: Classes must not be nested.
+   IllegalStatClassAccSpecifiersErr.as, Ln 8, Col 17: 
+   	 Public Static class c3 {}
+   ................^
+
+[Compiler] Error #1131: Classes must not be nested.
+   IllegalStatClassAccSpecifiersErr.as, Ln 9, Col 10: 
+   	 Static class c4 {}
+   .........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   IllegalStatClassAccSpecifiersErr.as, Ln 10, Col 9: 
+   	 stati class c5 {}
+   ........^
+
+5 errors found

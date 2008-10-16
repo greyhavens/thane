@@ -1,0 +1,7 @@
+
+[Compiler] Error #1144: Interface method get fn in namespace Errors:_If is implemented with an incompatible signature in class Errors:FuncDefErr0.
+   TypeMismatchGetErr.as, Ln 8, Col 8: 
+    class FuncDefErr0 implements _If
+   .......^
+
+1 error found

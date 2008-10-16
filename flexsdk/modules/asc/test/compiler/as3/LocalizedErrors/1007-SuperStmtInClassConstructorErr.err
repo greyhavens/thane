@@ -1,0 +1,7 @@
+
+[Compiler] Error #1007: A super statement can be used only inside class instance constructors.
+1007-SuperStmtInClassConstructorErr.as, Ln 7, Col 5:
+super();
+....^
+
+1 error found

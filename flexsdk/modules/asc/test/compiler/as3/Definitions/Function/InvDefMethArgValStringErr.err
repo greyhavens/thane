@@ -1,0 +1,22 @@
+
+[Compiler] Error #1184: Incompatible default value of type Boolean where String is expected.
+   InvDefMethArgValStringErr.as, Ln 1, Col 36: 
+   function InvDefMethArgVal\(a:String=false\){}
+   ...................................^
+
+[Compiler] Error #1184: Incompatible default value of type Boolean where String is expected.
+   InvDefMethArgValStringErr.as, Ln 1, Col 36: 
+   function InvDefMethArgVal\(a:String=false\){}
+   ...................................^
+
+[Compiler] Error #1184: Incompatible default value of type Boolean where String is expected.
+   InvDefMethArgValStringErr.as, Ln 1, Col 36: 
+   function InvDefMethArgVal\(a:String=false\){}
+   ...................................^
+
+[Compiler] Error #1184: Incompatible default value of type Boolean where String is expected.
+   InvDefMethArgValStringErr.as, Ln 1, Col 36: 
+   function InvDefMethArgVal\(a:String=false\){}
+   ...................................^
+
+4 errors found

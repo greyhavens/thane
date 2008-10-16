@@ -1,0 +1,7 @@
+
+[Compiler] Error #1050: Cannot assign to a non-reference value.
+   uc_002_Err.as, Ln 43, Col 30: 
+       reportCompare \("error", \("\\u0020" = 5\),
+   .............................^
+
+1 error found

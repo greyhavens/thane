@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1151: A conflict exists with definition x in namespace internal.
+.*block_names_err.as, Ln 131, Col 5:
+var x : String
+....\^
+
+1 error found

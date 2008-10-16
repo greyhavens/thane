@@ -1,0 +1,5 @@
+[Compiler] Error #1000: Ambiguous reference to MyString.
+   PublicSubClassErr.as, Ln 53, Col 9:
+PubInt3.MyString();//This should throw an ambiguous reference error --...
+........^
+1 error found

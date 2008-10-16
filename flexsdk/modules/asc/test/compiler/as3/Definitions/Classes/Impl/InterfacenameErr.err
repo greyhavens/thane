@@ -1,0 +1,7 @@
+
+[Compiler] Error #1018: Duplicate class definition: A.
+   InterfacenameErr.as, Ln 3, Col 7: 
+   class A implements A{}
+   ......^
+
+1 error found

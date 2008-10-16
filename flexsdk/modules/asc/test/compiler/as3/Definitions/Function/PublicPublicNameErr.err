@@ -1,0 +1,7 @@
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   PublicPublicNameErr.as, Ln 5, Col 5: 
+       public public function a() {}
+   ....^
+
+1 error found

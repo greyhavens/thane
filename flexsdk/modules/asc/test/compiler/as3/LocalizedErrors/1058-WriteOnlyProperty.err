@@ -1,0 +1,7 @@
+
+[Compiler] Error #1058: Property is write-only.
+1058-WriteOnlyProperty.as, Ln 13, Col 7:
+a.x;
+......^
+
+1 error found

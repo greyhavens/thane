@@ -1,0 +1,12 @@
+
+[Compiler] Error #1157: Interface members cannot be declared public, private, protected, or internal.
+   NotImplementedPublicStaticErr.as, Ln 10, Col 26: 
+   		public static function hello()
+   .........................^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   NotImplementedPublicStaticErr.as, Ln 10, Col 26: 
+   		public static function hello()
+   .........................^
+
+2 errors found

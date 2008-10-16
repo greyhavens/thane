@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*GotoAndStopWarn.as\(12\): Migration issue: The method gotoAndStop is no longer supported.  For more information, see MovieClip.gotoAndStop()..
+gotoAndStop\(a\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+GotoAndStopWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

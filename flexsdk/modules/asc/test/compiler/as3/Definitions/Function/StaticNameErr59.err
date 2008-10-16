@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before new.
+   StaticNameErr59.as, Ln 5, Col 21: 
+       static function new() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr59.as, Ln 5, Col 27: 
+       static function new() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr59.as, Ln 5, Col 27: 
+       static function new() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr59.as, Ln 5, Col 27: 
+       static function new() {}
+   ..........................^
+
+4 errors found

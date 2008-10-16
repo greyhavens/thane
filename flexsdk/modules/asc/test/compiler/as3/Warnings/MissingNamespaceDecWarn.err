@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1084: Missing namespace declaration \(e.g. variable is not defined to be public, private, etc.\).
+-------------------------------------------------------------------------
+.*MissingNamespaceDecWarn.as\(13\): function 'foo' will be scoped to the default namespace: A: internal.  It will not be visible outside of this package.
+function foo():void{}
+...........^
+
+-------------------------------------------------------------------------
+
+
+
+MissingNamespaceDecWarn.abc, [0-9]+ bytes written

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftparen.
+   PrivFuncPrivNameErr.as, Ln 5, Col 32: 
+       private a private function () {}
+   ...............................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   PrivFuncPrivNameErr.as, Ln 5, Col 35: 
+       private a private function () {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   PrivFuncPrivNameErr.as, Ln 5, Col 35: 
+       private a private function () {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   PrivFuncPrivNameErr.as, Ln 5, Col 35: 
+       private a private function () {}
+   ..................................^
+
+4 errors found

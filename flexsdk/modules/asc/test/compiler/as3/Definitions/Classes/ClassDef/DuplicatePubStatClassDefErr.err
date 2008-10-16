@@ -1,0 +1,12 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   DuplicatePubStatClassDefErr.as, Ln 5, Col 9: 
+   	static class B{}
+   ........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   DuplicatePubStatClassDefErr.as, Ln 6, Col 16: 
+   	public static class B{}
+   ...............^
+
+2 errors found

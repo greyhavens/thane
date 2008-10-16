@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before else.
+   EmptyNameErr47.as, Ln 5, Col 14: 
+       function else() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr47.as, Ln 5, Col 21: 
+       function else() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr47.as, Ln 5, Col 21: 
+       function else() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr47.as, Ln 5, Col 21: 
+       function else() {}
+   ....................^
+
+4 errors found

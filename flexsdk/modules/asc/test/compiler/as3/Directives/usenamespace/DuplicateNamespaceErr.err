@@ -1,0 +1,7 @@
+
+[Compiler] Error #1103: Duplicate namespace definition.
+   DuplicateNamespaceErr.as, Ln 2, Col 11: 
+   namespace N1 = "foo";
+   ..........^
+
+1 error found

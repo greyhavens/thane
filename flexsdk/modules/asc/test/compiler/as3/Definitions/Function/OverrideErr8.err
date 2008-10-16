@@ -1,0 +1,7 @@
+
+[Compiler] Error #1145: Native methods cannot have a body.
+   OverrideErr8.as, Ln 4, Col 19: 
+   		native function f() {}
+   ..................^
+
+1 error found

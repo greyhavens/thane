@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*ContainerPropWarn.as\(8\): Migration issue: The property Container is no longer supported.  The Container class has been renamed DisplayObjectContainer..
+Container = true;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ContainerPropWarn.abc, [0-9]+ bytes written

@@ -1,0 +1,17 @@
+\[Compiler\] Error #1188: Illegal assignment to class A2.
+.*constClass.as, Ln 3, Col 6:
+A2 = null;	// const error
+.....\^
+\[Compiler\] Error #1188: Illegal assignment to class A2.
+.*constClass.as, Ln 4, Col 6:
+A2 = CC;	// ditto
+.....\^
+\[Compiler\] Error #1188: Illegal assignment to class Number.
+.*constClass.as, Ln 9, Col 10:
+Number = String;			// error, need to test imported defs too
+.........\^
+\[Compiler\] Error #1049: Illegal assignment to a variable specified as constant.
+.*constClass.as, Ln 10, Col 26:
+Number.NEGATIVE_INFINITY=0; // ditto
+.........................\^
+4 errors found

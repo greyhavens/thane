@@ -1,0 +1,7 @@
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   OverrideFnWODeclaringErr2.as, Ln 7, Col 19: 
+   		public function foo() {}
+   ..................^
+
+1 error found

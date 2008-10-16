@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ScalingGridPropWarn.as\(12\): Migration issue: The method setScalingGrid is no longer supported.  Use the DisplayObject.scale9Grid property instead..
+a.setScalingGrid();
+...^
+
+-------------------------------------------------------------------------
+
+
+
+ScalingGridPropWarn.abc, [0-9]+ bytes written
+.*Error.*
+

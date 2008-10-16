@@ -1,0 +1,12 @@
+
+[Compiler] Error #1114: The public attribute can only be used inside a package.
+as3.Definitions.Packages.PublicPackageErr.as, Ln 23, Col 1:
+public package foo {}
+^
+
+[Compiler] Error #1198: Attributes are not allowed on package definition.
+as3.Definitions.Packages.PublicPackageErr.as, Ln 23, Col 8:
+public package foo {}
+.......^
+
+2 errors found

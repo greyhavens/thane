@@ -1,0 +1,7 @@
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   VarAttrErr11.as, Ln 6, Col 3: 
+   		public static private var v : Integer;
+   ..^
+
+1 error found

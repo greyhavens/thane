@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*ImageSpritePropWarn.as\(8\): Migration issue: The property ImageSprite is no longer supported.  The ImageSprite class has been renamed Bitmap..
+ImageSprite = true;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ImageSpritePropWarn.abc, [0-9]+ bytes written

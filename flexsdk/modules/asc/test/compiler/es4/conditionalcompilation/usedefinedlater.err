@@ -1,0 +1,17 @@
+
+[Compiler] Error #1208: The initializer for a configuration value must be a compile time constant.
+.*usedefinedlater.as, Ln 1, Col 1:
+print(.*CONFIG::var1=.*CONFIG::var1)
+^
+
+[Compiler] Error #1120: Access of undefined property var1.
+.*usedefinedlater.as, Ln 1, Col 31:
+print(.*CONFIG::var1=.*CONFIG::var1)
+..............................^
+
+[Compiler] Error #1120: Access of undefined property var2.
+.*usedefinedlater.as, Ln 2, Col 31:
+print(.*CONFIG::var2=.*CONFIG::var2)
+..............................^
+
+3 errors found

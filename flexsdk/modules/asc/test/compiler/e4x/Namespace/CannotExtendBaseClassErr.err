@@ -1,0 +1,7 @@
+
+[Compiler] Error #1016: Base class is final.
+   CannotExtendBaseClassErr.as, Ln 2, Col 34: 
+   	class extendedNamespace extends Namespace {
+   .................................^
+
+1 error found

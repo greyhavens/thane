@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*LevelPropWarn.as\(9\): Migration issue: The property _level is no longer supported.  The concept of levels does not exist in ActionScript 3.0, which instead provides direct access to the display list. See the flash.display package for details..
+_level = 10;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+LevelPropWarn.abc, [0-9]+ bytes written

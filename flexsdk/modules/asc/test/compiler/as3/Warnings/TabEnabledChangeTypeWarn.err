@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*TabEnabledChangeTypeWarn.as\(13\): Migration issue: The property TAB_ENABLED_CHANGE_TYPE is no longer supported.  Use the Event.TAB_ENABLED_CHANGE constant instead..
+trace\(Event.TAB_ENABLED_CHANGE_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+TabEnabledChangeTypeWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

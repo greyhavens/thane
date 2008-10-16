@@ -1,0 +1,7 @@
+
+[Compiler] Error #1182: Package cannot be used as a value: A.
+as3.Definitions.Packages.PackageAliasErr.as, Ln 44, Col 16:
+var packageA = A;
+...............^
+
+1 error found

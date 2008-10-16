@@ -1,0 +1,7 @@
+
+[Compiler] Error #1034: Variables cannot be native.
+   CreateNativePackageVariableErr.as, Ln 3, Col 16: 
+       native var item1;
+   ...............^
+
+1 error found

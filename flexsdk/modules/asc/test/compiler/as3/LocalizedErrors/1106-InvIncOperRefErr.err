@@ -1,0 +1,7 @@
+
+[Compiler] Error #1106: Operand of increment must be a reference.
+1106-InvIncOperRefErr.as, Ln 8, Col 1:
+5\+\+;
+^
+
+1 error found

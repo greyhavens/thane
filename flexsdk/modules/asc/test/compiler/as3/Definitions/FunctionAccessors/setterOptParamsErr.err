@@ -1,0 +1,7 @@
+
+[Compiler] Error #1123: A setter definition cannot have optional parameters.
+   setterOptParamsErr.as, Ln 5, Col 25: 
+   		public function set x\(v:int=100\){
+   ........................^
+
+1 error found

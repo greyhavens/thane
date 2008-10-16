@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr25 was not found.
+   IfAttrErr25_.as, Ln 6, Col 39: 
+   	public class IfAttrErr25_ implements IfAttrErr25
+   ......................................^
+
+1 error found

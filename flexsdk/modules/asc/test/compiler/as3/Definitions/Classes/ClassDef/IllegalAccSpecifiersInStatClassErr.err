@@ -1,0 +1,7 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   IllegalAccSpecifiersInStatClassErr.as, Ln 12, Col 11: 
+   	  static class Inner {
+   ..........^
+
+1 error found

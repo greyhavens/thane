@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*OrdWarn.as\(9\): Migration issue: The method ord is no longer supported.  Use String.charCodeAt() instead..
+ord\('S'\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+OrdWarn.abc, [0-9]+ bytes written
+.*Error.*
+

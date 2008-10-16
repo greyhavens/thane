@@ -1,0 +1,11 @@
+[Compiler] Error #1084: Syntax error: expecting identifier before xmltagstartend.
+   EmbeddedExpressionNotClosedErr.as, Ln 4, Col 37:
+var xml = <><{myVar}>hello</{myVar></>;
+....................................^
+[Compiler] Error #1084: Syntax error: expecting greaterthan before end of program.
+   EmbeddedExpressionNotClosedErr.as, Ln 6, Col 1:
+[Compiler] Error #1100: Syntax error: XML does not have matching begin and end tags.
+   EmbeddedExpressionNotClosedErr.as, Ln 6, Col 1:
+[Compiler] Error #1084: Syntax error: expecting rightbrace before end of program.
+   EmbeddedExpressionNotClosedErr.as, Ln 6, Col 1:
+4 errors found

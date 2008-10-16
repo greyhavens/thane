@@ -1,0 +1,3 @@
+
+native.abc, \d+ bytes written
+VerifyError: Error #1079.*

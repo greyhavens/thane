@@ -1,0 +1,23 @@
+
+boolean.abc, \d+ bytes written
+15.6.1 The Boolean constructor called as a function: Boolean\( value \) and Boolean\(\)
+Boolean\(1\) = true PASSED!
+Boolean\(0\) = false PASSED!
+Boolean\(-1\) = true PASSED!
+Boolean\('1'\) = true PASSED!
+Boolean\('0'\) = true PASSED!
+Boolean\('-1'\) = true PASSED!
+Boolean\(true\) = true PASSED!
+Boolean\(false\) = false PASSED!
+Boolean\('true'\) = true PASSED!
+Boolean\('false'\) = true PASSED!
+Boolean\(null\) = false PASSED!
+Boolean\(-Infinity\) = true PASSED!
+Boolean\(NaN\) = false PASSED!
+Boolean\(void\(0\)\) = false PASSED!
+Boolean\(x=0\) = false PASSED!
+Boolean\(x=1\) = true PASSED!
+Boolean\(x=false\) = false PASSED!
+Boolean\(x=true\) = true PASSED!
+Boolean\(x=null\) = false PASSED!
+Boolean\(\) = false PASSED!

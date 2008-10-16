@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before 123.
+ecma3.e7_5_10_Err.as, Ln 39, Col 9:
+var 123="hi";
+........^
+
+1 error found

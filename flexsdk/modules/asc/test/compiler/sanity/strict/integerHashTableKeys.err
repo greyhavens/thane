@@ -1,0 +1,48 @@
+
+integerHashTableKeys.abc, \d+ bytes written
+a
+b
+c
+d
+e
+a
+a
+b
+c
+d
+e
+one
+last one
+last one
+first int that will get interned as a string
+first int that will get interned as a string
+negative one
+negative one
+undefined
+max int
+max int
+max int 2
+max int 2
+a
+b
+c
+d
+e
+a
+a
+b
+c
+d
+e
+one
+last one
+last one
+first int that will get interned as a string
+first int that will get interned as a string
+negative one
+negative one
+undefined
+max int
+max int
+max int 2
+max int 2

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1140: Parameters specified after the ...rest parameter definition keyword can only be an Array data type.
+1140-RestParamNotArrTypeErr.as, Ln 5, Col 47:
+public function myfunction\(... rest:String\){
+..............................................^
+
+1 error found

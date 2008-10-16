@@ -1,0 +1,7 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSInterfaceErr.as, Ln 3, Col 1: 
+   English interface IPod {
+   ^
+
+1 error found

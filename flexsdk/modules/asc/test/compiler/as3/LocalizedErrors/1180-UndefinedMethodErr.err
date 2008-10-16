@@ -1,0 +1,7 @@
+
+[Compiler] Error #1180: Call to a possibly undefined method MyClass.
+1180-UndefinedMethodErr.as, Ln 17, Col 14:
+var c1 = new MyClass();
+.............^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1142: An interface can only extend other interfaces, but IntExtClassErr is a class.
+1142-IntExtClassErr.as, Ln 9, Col 35:
+interface myinterface extends IntExtClassErr{}
+..................................^
+
+1 error found

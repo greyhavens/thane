@@ -1,0 +1,7 @@
+
+[Compiler] Error #1198: Attributes are not allowed on package definition.
+as3.Directives.Attributes.CTA.PackageErr.as, Ln 37, Col 7:
+debug package P {
+......^
+
+1 error found

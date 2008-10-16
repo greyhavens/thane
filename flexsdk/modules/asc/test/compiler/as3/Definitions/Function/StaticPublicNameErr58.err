@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before instanceof.
+   StaticPublicNameErr58.as, Ln 5, Col 28: 
+       static public function instanceof() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr58.as, Ln 5, Col 41: 
+       static public function instanceof() {}
+   ........................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr58.as, Ln 5, Col 41: 
+       static public function instanceof() {}
+   ........................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr58.as, Ln 5, Col 41: 
+       static public function instanceof() {}
+   ........................................^
+
+4 errors found

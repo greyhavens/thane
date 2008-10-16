@@ -1,0 +1,12 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   DuplicateStatClassErr3.as, Ln 4, Col 10: 
+   		static class B{}
+   .........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   DuplicateStatClassErr3.as, Ln 5, Col 16: 
+   		static final class B{}
+   ...............^
+
+2 errors found

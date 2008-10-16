@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before var.
+   StaticPublicNameErr70.as, Ln 5, Col 28: 
+       static public function var() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr70.as, Ln 5, Col 34: 
+       static public function var() {}
+   .................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr70.as, Ln 5, Col 34: 
+       static public function var() {}
+   .................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr70.as, Ln 5, Col 34: 
+       static public function var() {}
+   .................................^
+
+4 errors found

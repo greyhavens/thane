@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before typeof.
+   VarKeyword_typeof_Err.as, Ln 14, Col 6: 
+   	var typeof;
+   .....^
+
+1 error found

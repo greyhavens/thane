@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before extends.
+   StaticPublicNameErr50.as, Ln 5, Col 28: 
+       static public function extends() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr50.as, Ln 5, Col 38: 
+       static public function extends() {}
+   .....................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr50.as, Ln 5, Col 38: 
+       static public function extends() {}
+   .....................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr50.as, Ln 5, Col 38: 
+       static public function extends() {}
+   .....................................^
+
+4 errors found

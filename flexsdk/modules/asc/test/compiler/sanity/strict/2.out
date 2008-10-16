@@ -1,0 +1,757 @@
+
+arguments.abc, 397 bytes written
+
+arguments2.abc, 136 bytes written
+
+array.abc, 1509 bytes written
+
+array2.abc, 1472 bytes written
+
+arrayextensions.abc, 1944 bytes written
+
+arrayliteral.abc, 137 bytes written
+
+as.abc, 146 bytes written
+
+[Compiler] Error #1114: The public attribute can only be used inside a package.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 34, Col 1: 
+   public var v1:Object;
+   ^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 35, Col 1: 
+   static private var v2:Object;
+   ^
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 35, Col 8: 
+   static private var v2:Object;
+   .......^
+
+[Compiler] Error #1150: The protected attribute can only be used on class property definitions.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 36, Col 1: 
+   protected var v3:Object;
+   ^
+
+[Compiler] Error #1115: The internal attribute can only be used inside a package.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 37, Col 1: 
+   internal var v4:Object;
+   ^
+
+5 errors found
+
+[Compiler] Error #1071: Expecting definition after attribute.
+   C:\depot\main\as\asc\test\sanity\tests\b107194.as, Ln 1, Col 24: 
+   fucntion foo( a, b, c ){ print('hello') } // notice fucntion not funct...
+   .......................^
+
+1 error found
+
+b107938.abc, 183 bytes written
+
+b107979.abc, 258 bytes written
+
+b107980.abc, 308 bytes written
+
+b108022.abc, 195 bytes written
+
+b108470.abc, 292 bytes written
+
+b108631.abc, 172 bytes written
+
+b108798.abc, 472 bytes written
+
+b109167.abc, 181 bytes written
+
+b109167_in.abc, 171 bytes written
+
+[Compiler] Error #1113: Circular type reference was detected in der.
+   C:\depot\main\as\asc\test\sanity\tests\b109751.as, Ln 1, Col 7: 
+   class der extends der {}
+   ......^
+
+1 error found
+
+b110112.abc, 468 bytes written
+
+b110112_i.abc, 272 bytes written
+
+b111199.abc, 337 bytes written
+
+b111261.abc, 180 bytes written
+
+b111262.abc, 149 bytes written
+
+b111413.abc, 233 bytes written
+
+b111651.abc, 77 bytes written
+
+b111679.abc, 317 bytes written
+
+b111951.abc, 82 bytes written
+
+b112173.abc, 207 bytes written
+
+[Compiler] Error #1104: invalid xml name
+   C:\depot\main\as\asc\test\sanity\tests\b112393.as, Ln 5, Col 1: 
+   </blah>
+   ^
+
+1 error found
+
+b113192.abc, 78 bytes written
+
+b113887.abc, 394 bytes written
+
+b114584.abc, 313 bytes written
+
+b114774.abc, 368 bytes written
+
+b115155.abc, 105 bytes written
+
+[Compiler] Error #1083: Syntax Error: rightparen is unexpected. Expected a primary expression.
+   C:\depot\main\as\asc\test\sanity\tests\b115412.as, Ln 2, Col 4: 
+   a*/)
+   ...^
+
+[Compiler] Error #1093: Syntax error.
+   C:\depot\main\as\asc\test\sanity\tests\b115412.as, Ln 3, Col 6: 
+   = 232?;
+   .....^
+
+2 errors found
+
+b115530.abc, 317 bytes written
+
+b115584.abc, 388 bytes written
+
+b115876.abc, 325 bytes written
+
+b115964.abc, 389 bytes written
+
+b116702.abc, 243 bytes written
+
+b117267.abc, 219 bytes written
+
+b117268.abc, 136 bytes written
+
+b118175.abc, 151 bytes written
+
+b120414.abc, 360 bytes written
+
+b120414_unix.abc, 365 bytes written
+
+b120428.abc, 482 bytes written
+
+b120428_unix.abc, 487 bytes written
+
+b120429.abc, 572 bytes written
+
+b120429_unix.abc, 577 bytes written
+
+b120430.abc, 563 bytes written
+
+b120430_unix.abc, 568 bytes written
+
+b120449.abc, 172 bytes written
+
+b120523.abc, 421 bytes written
+
+b120524.abc, 307 bytes written
+
+b120576.abc, 416 bytes written
+
+b121234.abc, 507 bytes written
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   C:\depot\main\as\asc\test\sanity\tests\b121391.as, Ln 2, Col 1: 
+   static function foo(){}
+   ^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   C:\depot\main\as\asc\test\sanity\tests\b121391.as, Ln 4, Col 9: 
+   dynamic static class A{}
+   ........^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   C:\depot\main\as\asc\test\sanity\tests\b121391.as, Ln 5, Col 1: 
+   static function foo(){}
+   ^
+
+3 errors found
+
+b121469.abc, 122 bytes written
+
+b122038.abc, 164 bytes written
+
+b124435.abc, 301 bytes written
+
+b124561.abc, 312 bytes written
+
+b124583.abc, 99 bytes written
+
+b124585.abc, 529 bytes written
+
+b127174.abc, 721 bytes written
+
+b127559.abc, 135 bytes written
+
+b128275.abc, 361 bytes written
+
+[Compiler] Error #1152: A conflict exists with inherited definition P:A.v in namespace public.
+   C:\depot\main\as\asc\test\sanity\tests\b129633.as, Ln 9, Col 13: 
+   private var v:*;
+   ............^
+
+1 error found
+
+b130764.abc, 444 bytes written
+
+b132189.abc, 3068 bytes written
+
+b132771.abc, 262 bytes written
+
+b132818.abc, 143 bytes written
+
+b134151.abc, 484 bytes written
+
+b134359.abc, 407 bytes written
+
+b134361.abc, 1556 bytes written
+
+b134539.abc, 156 bytes written
+
+b135181.abc, 569 bytes written
+
+b136054.abc, 98 bytes written
+
+b136765.abc, 330 bytes written
+
+b137604.abc, 238 bytes written
+
+b137659.abc, 190 bytes written
+
+b137800.abc, 293 bytes written
+
+b137879.abc, 509 bytes written
+
+b138386.abc, 133 bytes written
+
+[Compiler] Error #1182: Package cannot be used as a value: A.A.
+   C:\depot\main\as\asc\test\sanity\tests\b138992.as, Ln 29, Col 7: 
+   new A.A
+   ......^
+
+[Compiler] Error #1182: Package cannot be used as a value: A.A.
+   C:\depot\main\as\asc\test\sanity\tests\b138992.as, Ln 32, Col 3: 
+   A.A()
+   ..^
+
+[Compiler] Error #1182: Package cannot be used as a value: A.A.
+   C:\depot\main\as\asc\test\sanity\tests\b138992.as, Ln 35, Col 3: 
+   A.A = 10
+   ..^
+
+[Compiler] Error #1182: Package cannot be used as a value: A.A.
+   C:\depot\main\as\asc\test\sanity\tests\b138992.as, Ln 38, Col 3: 
+   A.A
+   ..^
+
+4 errors found
+
+b139065.abc, 267 bytes written
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   C:\depot\main\as\asc\test\sanity\tests\b139770.as, Ln 6, Col 7: 
+   N1::v1:5;
+   ......^
+
+1 error found
+
+b142772.abc, 165 bytes written
+
+b147398.abc, 155 bytes written
+
+b148822.abc, 454 bytes written
+
+b149131.abc, 203 bytes written
+
+[Compiler] Error #1046: Type was not found or was not a compile-time constant: B.
+   C:\depot\main\as\asc\test\sanity\tests\b149448.as, Ln 4, Col 7: 
+   var B:B
+   ......^
+
+1 error found
+
+b150025.abc, 265 bytes written
+
+b150032.abc, 203 bytes written
+
+b150975.abc, 242 bytes written
+
+b151539.abc, 326 bytes written
+
+b152173.abc, 1277 bytes written
+
+b152594.abc, 247 bytes written
+
+b152915.abc, 409 bytes written
+
+b152925.abc, 179 bytes written
+
+b153336.abc, 257 bytes written
+
+b153874.abc, 215 bytes written
+
+b154156.abc, 529 bytes written
+
+b154298.abc, 396 bytes written
+
+[Compiler] Error #1038: Target of break statement was not found.
+   C:\depot\main\as\asc\test\sanity\tests\b154312.as, Ln 7, Col 39: 
+   { result += object[property]; }; break; yoohoo;
+   ......................................^
+
+1 error found
+
+b154319.abc, 207 bytes written
+
+b154771.abc, 121 bytes written
+
+b154869.abc, 317 bytes written
+
+b155288.abc, 322 bytes written
+
+b158169.abc, 332 bytes written
+
+b158305.abc, 126 bytes written
+
+b159449.abc, 256 bytes written
+
+b161702.abc, 308 bytes written
+
+b161825.abc, 349 bytes written
+
+bignumber.abc, 10291 bytes written
+
+bigstring.abc, 8617 bytes written
+
+binary.abc, 339 bytes written
+
+[Compiler] Error #1087: Extra characters found after end of program.
+   C:\depot\main\as\asc\test\sanity\tests\block_err.as, Ln 2, Col 1: 
+   } 
+   ^
+
+1 error found
+
+block_names.abc, 382 bytes written
+
+[Compiler] Error #1151: A conflict exists with definition x in namespace internal.
+   C:\depot\main\as\asc\test\sanity\tests\block_names_err.as, Ln 131, Col 5: 
+   var x : String
+   ....^
+
+1 error found
+
+boidshack.abc, 7210 bytes written
+
+bool.abc, 78 bytes written
+
+boolean.abc, 7773 bytes written
+
+bound.abc, 152 bytes written
+
+break.abc, 177 bytes written
+
+break_in_try.abc, 441 bytes written
+
+bug109296.abc, 423 bytes written
+
+class1.abc, 1065 bytes written
+
+class3.abc, 1118 bytes written
+
+class4.abc, 263 bytes written
+
+class_ctor.abc, 963 bytes written
+
+closure.abc, 372 bytes written
+
+[Compiler] Error #1181: Forward reference to base class B.
+   C:\depot\main\as\asc\test\sanity\tests\cls_fwdref.as, Ln 1, Col 17: 
+   class A extends B implements I {}
+   ................^
+
+1 error found
+
+coerce.abc, 428 bytes written
+
+completion.abc, 90 bytes written
+
+compound.abc, 100 bytes written
+
+cond.abc, 102 bytes written
+
+const.abc, 315 bytes written
+
+continue.abc, 127 bytes written
+
+[Compiler] Error #1039: Target of continue statement was not found.
+   C:\depot\main\as\asc\test\sanity\tests\continue_err.as, Ln 1, Col 56: 
+   while( true ) { L1: switch(true) { case true: continue L1 } break }
+   .......................................................^
+
+1 error found
+
+delete.abc, 269 bytes written
+
+do.abc, 149 bytes written
+
+doubleToInt.abc, 1985 bytes written
+
+dynamic.abc, 342 bytes written
+
+empty.abc, 34 bytes written
+
+equals.abc, 853 bytes written
+
+[Compiler] Error #1084: Expecting rightparen before semicolon.
+   C:\depot\main\as\asc\test\sanity\tests\error.as, Ln 3, Col 12: 
+   print(false;
+   ...........^
+
+1 error found
+
+exception_scope.abc, 454 bytes written
+
+exceptions.abc, 3113 bytes written
+
+fexpr.abc, 529 bytes written
+
+finally-nested.abc, 681 bytes written
+
+flength.abc, 220 bytes written
+
+flowConst.abc, 599 bytes written
+
+for.abc, 275 bytes written
+
+for_fast.abc, 136 bytes written
+
+for_slow.abc, 116 bytes written
+
+forin.abc, 279 bytes written
+
+forin2.abc, 594 bytes written
+
+func.abc, 242 bytes written
+
+get.abc, 160 bytes written
+
+getset.abc, 566 bytes written
+
+getstmt.abc, 280 bytes written
+
+harness.abc, 6701 bytes written
+
+harnessASC.abc, 10965 bytes written
+
+hello.abc, 86 bytes written
+
+if.abc, 240 bytes written
+
+import.abc, 283 bytes written
+
+import_bug.abc, 334 bytes written
+
+incr.abc, 1035 bytes written
+
+index.abc, 146 bytes written
+
+indexed.abc, 197 bytes written
+
+init.abc, 1364 bytes written
+
+integerHashTableKeys.abc, 1182 bytes written
+
+interface2.abc, 439 bytes written
+
+interface3.abc, 567 bytes written
+
+interface_ns.abc, 416 bytes written
+
+interface_ns_error.abc, 450 bytes written
+
+interface_override.abc, 552 bytes written
+
+interface_simple.abc, 397 bytes written
+
+interface_super.abc, 640 bytes written
+
+intrinsic.abc, 97 bytes written
+
+itable.abc, 821 bytes written
+
+[Compiler] Error #1040: Duplicate label definition.
+   C:\depot\main\as\asc\test\sanity\tests\label.as, Ln 5, Col 5: 
+   L2: L1: while(false) { continue L1; break L2; } break L1; continue; 
+   ....^
+
+[Compiler] Error #1040: Duplicate label definition.
+   C:\depot\main\as\asc\test\sanity\tests\label.as, Ln 5, Col 5: 
+   L2: L1: while(false) { continue L1; break L2; } break L1; continue; 
+   ....^
+
+[Compiler] Error #1038: Target of break statement was not found.
+   C:\depot\main\as\asc\test\sanity\tests\label.as, Ln 5, Col 55: 
+   L2: L1: while(false) { continue L1; break L2; } break L1; continue; 
+   ......................................................^
+
+[Compiler] Error #1040: Duplicate label definition.
+   C:\depot\main\as\asc\test\sanity\tests\label.as, Ln 7, Col 1: 
+   L1: 
+   ^
+
+4 errors found
+
+[Compiler] Error #1040: Duplicate label definition.
+   C:\depot\main\as\asc\test\sanity\tests\label_err.as, Ln 5, Col 4: 
+      L1: while(false) { continue L1; break; }; break L1; continue; 
+   ...^
+
+[Compiler] Error #1040: Duplicate label definition.
+   C:\depot\main\as\asc\test\sanity\tests\label_err.as, Ln 5, Col 4: 
+      L1: while(false) { continue L1; break; }; break L1; continue; 
+   ...^
+
+[Compiler] Error #1038: Target of break statement was not found.
+   C:\depot\main\as\asc\test\sanity\tests\label_err.as, Ln 5, Col 52: 
+      L1: while(false) { continue L1; break; }; break L1; continue; 
+   ...................................................^
+
+[Compiler] Error #1038: Target of break statement was not found.
+   C:\depot\main\as\asc\test\sanity\tests\label_err.as, Ln 10, Col 9: 
+      break;
+   ........^
+
+[Compiler] Error #1039: Target of continue statement was not found.
+   C:\depot\main\as\asc\test\sanity\tests\label_err.as, Ln 15, Col 13: 
+      continue L3;
+   ............^
+
+[Compiler] Error #1039: Target of continue statement was not found.
+   C:\depot\main\as\asc\test\sanity\tests\label_err.as, Ln 16, Col 12: 
+      continue;
+   ...........^
+
+6 errors found
+
+local.abc, 143 bytes written
+
+member.abc, 616 bytes written
+
+metadata.abc, 179 bytes written
+
+mod.abc, 115 bytes written
+
+namespace-alias.abc, 302 bytes written
+
+namespace.abc, 300 bytes written
+
+namespaces2.abc, 415 bytes written
+
+native.abc, 188 bytes written
+
+nested.abc, 280 bytes written
+
+nested2.abc, 251 bytes written
+
+new.abc, 157 bytes written
+
+nothing.abc, 34 bytes written
+
+object.abc, 173 bytes written
+
+objectliteral.abc, 148 bytes written
+
+offsetStringTests.abc, 1020 bytes written
+
+optionalargs.abc, 1272 bytes written
+
+override-protected.abc, 433 bytes written
+
+[Compiler] Error #1152: A conflict exists with inherited definition A.n in namespace public.
+   C:\depot\main\as\asc\test\sanity\tests\override_err.as, Ln 8, Col 7: 
+   		var n:Number
+   ......^
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   C:\depot\main\as\asc\test\sanity\tests\override_err.as, Ln 9, Col 12: 
+   		function f( n:Number ) { }
+   ...........^
+
+2 errors found
+
+overwrite.abc, 173 bytes written
+
+package.abc, 568 bytes written
+
+package_doccomment.abc, 100 bytes written
+
+parseFloatVsNumber.abc, 226 bytes written
+
+plus.abc, 103 bytes written
+
+plus2.abc, 313 bytes written
+
+prime.abc, 219 bytes written
+
+prime_int.abc, 233 bytes written
+
+prime_number.abc, 236 bytes written
+
+private.abc, 278 bytes written
+
+protected.abc, 586 bytes written
+
+proto.abc, 303 bytes written
+
+[Compiler] Error #1194: 'prototype' is an invalid attribute.
+   C:\depot\main\as\asc\test\sanity\tests\prototype_attr.as, Ln 5, Col 5: 
+       prototype var x = 10
+   ....^
+
+[Compiler] Error #1194: 'prototype' is an invalid attribute.
+   C:\depot\main\as\asc\test\sanity\tests\prototype_attr.as, Ln 6, Col 5: 
+       prototype var f = function() { return prototype.x }
+   ....^
+
+[Compiler] Error #1194: 'prototype' is an invalid attribute.
+   C:\depot\main\as\asc\test\sanity\tests\prototype_attr.as, Ln 9, Col 5: 
+       prototype var g = function(a:int=1, b:String="foo") 
+   ....^
+
+[Compiler] Error #1194: 'prototype' is an invalid attribute.
+   C:\depot\main\as\asc\test\sanity\tests\prototype_attr.as, Ln 18, Col 5: 
+       prototype var x = 20
+   ....^
+
+4 errors found
+
+regexp.abc, 117 bytes written
+
+regress.abc, 280 bytes written
+
+rest.abc, 197 bytes written
+
+ret.abc, 115 bytes written
+
+sanity.abc, 134 bytes written
+
+set.abc, 293 bytes written
+
+shift.abc, 76 bytes written
+
+simple.abc, 389 bytes written
+
+staranno.abc, 143 bytes written
+
+statics_and_namespaces.abc, 362 bytes written
+
+str.abc, 84 bytes written
+
+stringEscapes.abc, 406 bytes written
+
+subtle_finally.abc, 271 bytes written
+
+super.abc, 469 bytes written
+
+super2.abc, 654 bytes written
+
+super3.abc, 498 bytes written
+
+[Compiler] Error #1007: A super statement can be used only inside class instance constructors.
+   C:\depot\main\as\asc\test\sanity\tests\super_err.as, Ln 2, Col 1: 
+   super()
+   ^
+
+[Compiler] Error #1006: A super expression can be used only inside class instance methods.
+   C:\depot\main\as\asc\test\sanity\tests\super_err.as, Ln 3, Col 9: 
+   return super;
+   ........^
+
+[Compiler] Error #1007: A super statement can be used only inside class instance constructors.
+   C:\depot\main\as\asc\test\sanity\tests\super_err.as, Ln 5, Col 1: 
+   super()
+   ^
+
+3 errors found
+
+swap.abc, 299 bytes written
+
+switch.abc, 608 bytes written
+
+t1.abc, 203 bytes written
+
+t2.abc, 335 bytes written
+
+t3.abc, 387 bytes written
+
+t4.abc, 267 bytes written
+
+t5.abc, 456 bytes written
+
+this.abc, 176 bytes written
+
+this2.abc, 377 bytes written
+
+trycatch.abc, 161 bytes written
+
+typeConversion.abc, 4279 bytes written
+
+u.abc, 312 bytes written
+
+uint.abc, 162 bytes written
+
+unary.abc, 193 bytes written
+
+unbound.abc, 199 bytes written
+
+vars.abc, 209 bytes written
+
+vector.abc, 700 bytes written
+
+versions.abc, 353 bytes written
+
+void.abc, 85 bytes written
+
+while.abc, 236 bytes written
+
+with.abc, 106 bytes written
+
+xmlfilter.abc, 327 bytes written
+
+xmlfixes.abc, 827 bytes written
+
+xmlname.abc, 717 bytes written
+
+dict.abc, 1076 bytes written
+Logging to C:\depot\main\as\asc\test\sanity\tests\b124583.log
+Logging to C:\depot\main\as\asc\test\sanity\tests\constClass.log
+Logging to C:\depot\main\as\asc\test\sanity\tests\invalidtypeexpr.log
+Logging to C:\depot\main\as\asc\test\sanity\tests\pkg_missing.log
+Logging to C:\depot\main\as\asc\test\sanity\tests\pnf.log
+Logging to C:\depot\main\as\asc\test\sanity\tests\metadata2.log
+
+importorder_a.abc, 334 bytes written
+
+importorder_b.abc, 321 bytes written
+
+importorder.abc, 86 bytes written
+
+importorder_abc.abc, 300 bytes written
+
+bug123884-import.abc, 246 bytes written
+
+bug123884.abc, 64 bytes written

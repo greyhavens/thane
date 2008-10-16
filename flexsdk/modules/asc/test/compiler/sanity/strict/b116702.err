@@ -1,0 +1,4 @@
+
+b116702.abc, \d+ bytes written
+ReferenceError: Error #1069: Property xxx not found on Number and there is no default value.
+at global\$init\(\)

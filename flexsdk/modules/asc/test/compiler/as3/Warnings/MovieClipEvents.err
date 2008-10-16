@@ -1,0 +1,86 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*\MovieClipEvents.as\(12\): Migration issue: The onRelease event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'click', callback_handler\).
+a_mc.onRelease = function\(\):void { trace\("onRelease ..."\); };
+.......^
+
+.*\MovieClipEvents.as\(13\): Migration issue: The onMouseDown event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseDown', callback_handler\).
+a_mc.onMouseDown = function\(\):void  { trace\("onMouseDown"\); };
+..........^
+
+.*\MovieClipEvents.as\(14\): Migration issue: The onData event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'data', callback_handler\).
+a_mc.onData = function\(\):void  { trace\("onData"\); };
+.......^
+
+.*\MovieClipEvents.as\(15\): Migration issue: The onDragOut event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseOut', callback_handler\).
+a_mc.onDragOut = function\(\):void  { trace\("onDragOut"\); };
+.......^
+
+.*\MovieClipEvents.as\(16\): Migration issue: The onDragOver event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseOver', callback_handler\).
+a_mc.onDragOver = function\(\):void  { trace\("onDragOver"\); };
+.......^
+
+.*\MovieClipEvents.as\(17\): Migration issue: The onEnterFrame is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'enterFrame', callback_handler\).
+a_mc.onEnterFrame = function\(\):void  { trace\("onEnterFrame"\); };
+.......^
+
+.*\MovieClipEvents.as\(18\): Migration issue: The onKeyDown event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'keyDown', callback_handler\).
+a_mc.onKeyDown = function\(\):void  { trace\("onKeyDown"\); };
+.......^
+
+.*\MovieClipEvents.as\(19\): Migration issue: The onKeyUp event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'keyUp', callback_handler\).
+a_mc.onKeyUp = function\(\):void  { trace\("onKeyUp"\); };
+.......^
+
+.*\MovieClipEvents.as\(20\): Migration issue: The onKillFocus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'focusOut', callback_handler\).
+a_mc.onKillFocus = function\(\):void  { trace\("onKillFocus"\); };
+.......^
+
+.*\MovieClipEvents.as\(21\): Migration issue: The onLoad event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'load', callback_handler\).
+a_mc.onLoad = function\(\):void  { trace\("onLoad"\); };
+.......^
+
+.*\MovieClipEvents.as\(22\): Migration issue: The onMouseMove event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseMove', callback_handler\).
+a_mc.onMouseMove = function\(\):void  { trace\("onMouseMove"\); };
+.......^
+
+.*\MovieClipEvents.as\(23\): Migration issue: The onMouseUp event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseUp', callback_handler\).
+a_mc.onMouseUp = function\(\):void  { trace\("onMouseUp"\); };
+.......^
+
+.*\MovieClipEvents.as\(24\): Migration issue: The onPress event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseDown', callback_handler\).
+a_mc.onPress = function\(\):void  { trace\("onPress"\); };
+.......^
+
+.*\MovieClipEvents.as\(25\): Migration issue: The onReleaseOutside event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseUp', callback_handler\).
+a_mc.onReleaseOutside = function\(\):void  { trace\("onReleaseOutside"\); };
+.......^
+
+.*\MovieClipEvents.as\(26\): Migration issue: The onRollOut event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseOut', callback_handler\).
+a_mc.onRollOut = function\(\):void  { trace\("onRollOut"\); };
+.......^
+
+.*\MovieClipEvents.as\(27\): Migration issue: The onRollOver event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseOver', callback_handler\).
+a_mc.onRollOver = function\(\):void  { trace\("onRollOver"\); };
+.......^
+
+.*\MovieClipEvents.as\(28\): Migration issue: The onSetFocus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'focusIn', callback_handler\).
+a_mc.onSetFocus = function\(\):void  { trace\("onSetFocus"\); };
+.......^
+
+.*\MovieClipEvents.as\(29\): Migration issue: The onUnload event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'unload', callback_handler\).
+a_mc.onUnload = function\(\):void  { trace\("onUnload"\); };
+.......^
+
+-------------------------------------------------------------------------
+
+
+
+MovieClipEvents.abc, [0-9]+ bytes written
+.*Error.*
+

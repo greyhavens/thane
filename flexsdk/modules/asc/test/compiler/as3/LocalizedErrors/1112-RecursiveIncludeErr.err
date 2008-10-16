@@ -1,0 +1,7 @@
+
+[Compiler] Error #1112: Possible infinite recursion due to this file include: .*1112-RecursiveIncludeErr.as.
+1112-RecursiveIncludeErr.as, Ln 7, Col 9:
+include "1112-RecursiveIncludeErr.as"
+........^
+
+1 error found

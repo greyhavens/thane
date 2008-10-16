@@ -1,0 +1,12 @@
+
+[Compiler] Error #1155: Accessors cannot be nested inside other functions.
+   NestedGetterErr.as, Ln 5, Col 14: 
+   function get x():int {
+   .............^
+
+[Compiler] Error #1155: Accessors cannot be nested inside other functions.
+   NestedGetterErr.as, Ln 5, Col 14: 
+   function get x():int {
+   .............^
+
+2 errors found

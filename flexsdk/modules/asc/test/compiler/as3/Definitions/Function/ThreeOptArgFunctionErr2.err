@@ -1,0 +1,32 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before doubledot.
+as3.Definitions.Function.ThreeOptArgFunctionErr2.as, Ln 53, Col 86:
+function returnArgumentsInner\(s:String = "Str1", b:Boolean = true, n:Number = 10, ..rest\) {
+.....................................................................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+as3.Definitions.Function.ThreeOptArgFunctionErr2.as, Ln 53, Col 94:
+function returnArgumentsInner\(s:String = "Str1", b:Boolean = true, n:Number = 10, ..rest\) {
+.............................................................................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before doubledot.
+as3.Definitions.Function.ThreeOptArgFunctionErr2.as, Ln 62, Col 85:
+function returnArgumentsInner\(s:String = "Str2", b:Boolean = false, n:Number = 20, ..rest\) {
+....................................................................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+as3.Definitions.Function.ThreeOptArgFunctionErr2.as, Ln 62, Col 93:
+function returnArgumentsInner\(s:String = "Str2", b:Boolean = false, n:Number = 20, ..rest\) {
+............................................................................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before doubledot.
+as3.Definitions.Function.ThreeOptArgFunctionErr2.as, Ln 75, Col 88:
+function returnArgumentsNoPackage\(s:String = "Str4", b:Boolean = false, n:Number = 40, ..rest\) {
+.......................................................................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+as3.Definitions.Function.ThreeOptArgFunctionErr2.as, Ln 75, Col 96:
+function returnArgumentsNoPackage\(s:String = "Str4", b:Boolean = false, n:Number = 40, ..rest\) {
+...............................................................................................^
+
+6 errors found

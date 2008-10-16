@@ -1,0 +1,7 @@
+
+[Compiler] Error #1157: Interface members cannot be declared public, private, protected, or internal.
+   InterfacePrivateMethodErr.as, Ln 10, Col 20: 
+   		private function foo()
+   ...................^
+
+1 error found

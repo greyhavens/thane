@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before while.
+   EmptyNameErr72.as, Ln 5, Col 14: 
+       function while() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr72.as, Ln 5, Col 22: 
+       function while() {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr72.as, Ln 5, Col 22: 
+       function while() {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr72.as, Ln 5, Col 22: 
+       function while() {}
+   .....................^
+
+4 errors found

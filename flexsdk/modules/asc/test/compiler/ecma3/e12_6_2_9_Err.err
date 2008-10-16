@@ -1,0 +1,18 @@
+
+[Compiler] Error #1084: Syntax error: expecting semicolon before rightparen.
+ecma3.e12_6_2_9_Err.as, Ln 42, Col 11:
+for \(i\) {
+..........^
+
+[Compiler] Error #1084: Syntax error: expecting semicolon before test.
+ecma3.e12_6_2_9_Err.as, Ln 45, Col 5:
+test\(\);
+....^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before end of program.
+ecma3.e12_6_2_9_Err.as, Ln 58, Col 1:
+
+[Compiler] Error #1084: Syntax error: expecting identifier before end of program.
+ecma3.e12_6_2_9_Err.as, Ln 58, Col 1:
+
+4 errors found

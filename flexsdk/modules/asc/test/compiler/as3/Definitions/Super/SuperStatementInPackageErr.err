@@ -1,0 +1,12 @@
+
+[Compiler] Error #1007: A super statement can be used only inside class instance constructors.
+   SuperStatementInPackageErr.as, Ln 3, Col 2: 
+   	super()	// illegal in package code
+   .^
+
+[Compiler] Error #1007: A super statement can be used only inside class instance constructors.
+   SuperStatementInPackageErr.as, Ln 5, Col 1: 
+   super()	// illegal in global code
+   ^
+
+2 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1072: Syntax error: expecting xml before namespace.
+1072-ExpectXmlBeforeNamespace.as, Ln 5, Col 14:
+default xxml namespace =  ns
+.............^
+
+1 error found

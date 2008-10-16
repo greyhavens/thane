@@ -1,0 +1,25 @@
+
+class1.abc, \d+ bytes written
+A
+f in A
+g in A
+A.x = 100
+A
+B
+f in B
+g in A
+A
+B
+C
+f in B
+g in C
+100
+200
+300
+10
+20
+30
+A.x = 10
+A.y = 20
+B = 10 20
+C = 10 20 30

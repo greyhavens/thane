@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before 4.
+as3.Definitions.Packages.PackageNameNumErr.as, Ln 23, Col 9:
+package 4foo {}
+........^
+
+1 error found

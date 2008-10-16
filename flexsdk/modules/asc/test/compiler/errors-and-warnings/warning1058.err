@@ -1,0 +1,18 @@
+Warning Report:
+---------------
+\[Coach\] Warning #1008: Missing type declaration.
+-------------------------------------------------------------------------
+.*warning1058.bar.as.inc\(1\): return value for function 'f' has no type declaration.
+public function f\(\) \{ _focusrect = 22; \}
+..................\^
+-------------------------------------------------------------------------
+\[Coach\] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*warning1058.as\(5\): Migration issue: The property _focusrect is no longer supported.  For more information, see InteractiveObject.focusRect..
+_focusrect = false;
+...\^
+.*warning1058.bar.as.inc\(1\): Migration issue: The property _focusrect is no longer supported.  For more information, see InteractiveObject.focusRect..
+public function f\(\) \{ _focusrect = 22; \}
+......................\^
+-------------------------------------------------------------------------
+warning1058.abc, \d+ bytes written

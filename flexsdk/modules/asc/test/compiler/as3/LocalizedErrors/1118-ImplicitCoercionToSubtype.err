@@ -1,0 +1,7 @@
+
+[Compiler] Error #1118: Implicit coercion of a value with static type 1118-ImplicitCoercionToSubtype.as\$1:A to a possibly unrelated type 1118-ImplicitCoercionToSubtype.as\$1:B.
+1118-ImplicitCoercionToSubtype.as, Ln 14, Col 13:
+var b : B = a // error
+............^
+
+1 error found

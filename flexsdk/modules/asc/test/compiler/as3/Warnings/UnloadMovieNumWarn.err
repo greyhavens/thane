@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*UnloadMovieNumWarn.as\(14\): Migration issue: The method unloadMovieNum is no longer supported.  Use DisplayObjectContainer.removeChild\(childName\) instead. For more information, see the DisplayObjectContainer class..
+unloadMovieNum\(a\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+UnloadMovieNumWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

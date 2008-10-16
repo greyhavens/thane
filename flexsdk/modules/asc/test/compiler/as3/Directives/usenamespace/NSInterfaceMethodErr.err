@@ -1,0 +1,7 @@
+
+[Compiler] Error #1169: Namespace attributes are not permitted on interface methods.
+   NSInterfaceMethodErr.as, Ln 8, Col 20: 
+   		English function forward()
+   ...................^
+
+1 error found

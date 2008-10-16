@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before case.
+   VarKeyword_case_Err.as, Ln 14, Col 6: 
+   	var case;
+   .....^
+
+1 error found

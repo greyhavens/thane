@@ -1,0 +1,5 @@
+\[Compiler\] Error #1139: Variable declarations are not permitted in interfaces.
+.*ClassInstantiationErr3.as, Ln 6, Col 7:
+var a = new A\(\);
+......^
+1 error found

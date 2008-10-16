@@ -1,0 +1,7 @@
+
+[Compiler] Error #1044: Interface method foo in namespace Errors:I not implemented by class Errors:MyClass.
+   NameMismatchVerErr.as, Ln 13, Col 8: 
+   	class MyClass implements I {
+   .......^
+
+1 error found

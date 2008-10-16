@@ -1,0 +1,7 @@
+
+[Compiler] Error #1195: Attempted access of inaccessible method myFunction through a reference with static type Class.
+1195-InaccessibleMethodErr.as, Ln 19, Col 9:
+myClass.myFunction();
+........^
+
+1 error found

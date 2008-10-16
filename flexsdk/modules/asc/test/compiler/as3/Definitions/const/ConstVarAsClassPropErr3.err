@@ -1,0 +1,7 @@
+
+[Compiler] Error #1134: The dynamic attribute can only be used with class definitions.
+as3.Definitions.const.ConstVarAsClassPropErr3.as, Ln 48, Col 16:
+dynamic const dynConst;
+...............^
+
+1 error found

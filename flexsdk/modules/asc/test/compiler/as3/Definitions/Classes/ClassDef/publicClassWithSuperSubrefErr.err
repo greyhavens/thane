@@ -1,0 +1,7 @@
+
+[Compiler] Error #1201: A super statement cannot occur after a this, super, return, or throw statement.
+   publicClassWithSuperSubrefErr.as, Ln 23, Col 41: 
+                                           super();
+   ........................................^
+
+1 error found

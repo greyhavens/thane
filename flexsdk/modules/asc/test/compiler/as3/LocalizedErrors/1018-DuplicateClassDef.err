@@ -1,0 +1,7 @@
+
+[Compiler] Error #1018: Duplicate class definition: A.
+1018-DuplicateClassDef.as, Ln 5, Col 7:
+class A {}
+......^
+
+1 error found

@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*LineMetricsMethWarn.as\(13\): Migration issue: The method LineMetrics is no longer supported.  The LineMetrics class has been renamed TextLineMetrics..
+var ln:TextLineMetrics = new LineMetrics();
+..............................^
+
+-------------------------------------------------------------------------
+
+
+
+LineMetricsMethWarn.abc, [0-9]+ bytes written
+.*Error.*
+

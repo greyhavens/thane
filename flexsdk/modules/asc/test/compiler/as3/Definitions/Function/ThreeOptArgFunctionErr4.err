@@ -1,0 +1,17 @@
+
+[Compiler] Error #1140: Parameters specified after the ...rest parameter definition keyword can only be an Array data type.
+as3.Definitions.Function.ThreeOptArgFunctionErr4.as, Ln 49, Col 63:
+function returnArgumentsInner\(n:Number = 10, ...rest:Number\) {
+..............................................................^
+
+[Compiler] Error #1140: Parameters specified after the ...rest parameter definition keyword can only be an Array data type.
+as3.Definitions.Function.ThreeOptArgFunctionErr4.as, Ln 57, Col 65:
+function returnArgumentsInner\(b:Boolean = false, ...rest:String\) {
+................................................................^
+
+[Compiler] Error #1140: Parameters specified after the ...rest parameter definition keyword can only be an Array data type.
+as3.Definitions.Function.ThreeOptArgFunctionErr4.as, Ln 68, Col 68:
+function returnArgumentsNoPackage\(s:String = "Str4", ...rest:String\) {...
+...................................................................^
+
+3 errors found

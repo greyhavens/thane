@@ -1,0 +1,7 @@
+
+[Compiler] Error #1105: Target of assignment must be a reference value.
+1105-AssignmentTargetNotRefValErr.as, Ln 13, Col 6:
+new A() = new A();
+.....^
+
+1 error found

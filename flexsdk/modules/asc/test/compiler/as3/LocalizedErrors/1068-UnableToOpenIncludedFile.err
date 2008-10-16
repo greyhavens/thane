@@ -1,0 +1,7 @@
+
+[Compiler] Error #1068: Unable to open included file: .*no-such-file.as.
+1068-UnableToOpenIncludedFile.as, Ln 5, Col 9:
+include "no-such-file.as";
+........^
+
+1 error found

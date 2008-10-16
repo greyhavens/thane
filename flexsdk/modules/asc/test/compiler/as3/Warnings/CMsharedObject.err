@@ -1,0 +1,34 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1008: Missing type declaration.
+-------------------------------------------------------------------------
+.*CMsharedObject.as\(17\): return value for function 'anonymous' has no type declaration.
+so.onStatus=function(){
+............................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMsharedObject.as\(21\): Migration issue: The method getSize is no longer supported.  Use the SharedObject.size property instead..
+so.getSize()
+...........^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*CMsharedObject.as\(17\): Migration issue: The onStatus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'status', callback_handler\).
+so.onStatus=function(){
+...........^
+
+-------------------------------------------------------------------------
+
+
+
+CMsharedObject.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

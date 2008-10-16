@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*TextFieldBottomScrollPropWarn.as\(13\): Migration issue: The property bottomScroll is no longer supported.  Use the TextField.bottomScrollV property instead..
+a.bottomScroll;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+TextFieldBottomScrollPropWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1100: Syntax error: XML does not have matching begin and end tags.
+   b121926Err.as, Ln 8, Col 57: 
+   r.constructors.constructor \+= <constructor>b<constructor>; // also imp...
+   ........................................................^
+
+[Compiler] Error #1100: Syntax error: XML does not have matching begin and end tags.
+   b121926Err.as, Ln 8, Col 57: 
+   r.constructors.constructor \+= <constructor>b<constructor>; // also imp...
+   ........................................................^
+
+[Compiler] Error #1100: Syntax error: XML does not have matching begin and end tags.
+   b121926Err.as, Ln 8, Col 57: 
+   r.constructors.constructor \+= <constructor>b<constructor>; // also imp...
+   ........................................................^
+
+[Compiler] Error #1100: Syntax error: XML does not have matching begin and end tags.
+   b121926Err.as, Ln 8, Col 57: 
+   r.constructors.constructor \+= <constructor>b<constructor>; // also imp...
+   ........................................................^
+
+4 errors found

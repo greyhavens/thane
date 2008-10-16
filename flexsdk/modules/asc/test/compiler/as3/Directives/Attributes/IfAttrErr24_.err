@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr24 was not found.
+   IfAttrErr24_.as, Ln 6, Col 39: 
+   	public class IfAttrErr24_ implements IfAttrErr24
+   ......................................^
+
+1 error found

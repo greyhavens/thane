@@ -1,0 +1,14 @@
+
+split.abc, \d+ bytes written
+s
+p
+l
+i
+t
+m
+e
+Splitting on a string: \[oneword\]
+Splitting on a regexp: \[oneword\]
+xb,
+xb
+xb

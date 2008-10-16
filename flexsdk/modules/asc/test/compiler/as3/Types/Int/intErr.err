@@ -1,0 +1,7 @@
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before int.
+   intErr.as, Ln 1, Col 9: 
+   var int int;
+   ........^
+
+1 error found

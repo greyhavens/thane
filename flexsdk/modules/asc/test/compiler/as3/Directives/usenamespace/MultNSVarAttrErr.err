@@ -1,0 +1,12 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   MultNSVarAttrErr.as, Ln 4, Col 1: 
+   Football Baseball  var teamName="Giants";
+   ^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   MultNSVarAttrErr.as, Ln 4, Col 1: 
+   Football Baseball  var teamName="Giants";
+   ^
+
+2 errors found

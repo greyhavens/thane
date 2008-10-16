@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute private, not public.
+   FuncAttrErr15.as, Ln 5, Col 29: 
+   	    private public static f(){};
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before leftbrace.
+   FuncAttrErr15.as, Ln 5, Col 31: 
+   	    private public static f(){};
+   ..............................^
+
+2 errors found

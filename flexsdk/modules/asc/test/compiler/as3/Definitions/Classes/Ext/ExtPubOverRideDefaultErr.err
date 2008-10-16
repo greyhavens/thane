@@ -1,0 +1,27 @@
+
+[Compiler] Error #1152: A conflict exists with inherited definition Errors:PublicClass.array in namespace internal.
+   ExtPubOverRideDefaultErr.as, Ln 42, Col 10: 
+   	    var array;
+   .........^
+
+[Compiler] Error #1152: A conflict exists with inherited definition Errors:PublicClass.pubArray in namespace public.
+   ExtPubOverRideDefaultErr.as, Ln 43, Col 10: 
+   	    var pubArray;
+   .........^
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   ExtPubOverRideDefaultErr.as, Ln 55, Col 15: 
+   	    function getBoolean() : Boolean { return true; }
+   ..............^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtPubOverRideDefaultErr.as, Ln 62, Col 15: 
+   	    function setPubBoolean\( b:Boolean \) { return b; }
+   ..............^
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   ExtPubOverRideDefaultErr.as, Ln 62, Col 15: 
+   	    function setPubBoolean\( b:Boolean \) { return b; }
+   ..............^
+
+5 errors found

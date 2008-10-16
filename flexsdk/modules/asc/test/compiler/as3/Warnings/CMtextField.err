@@ -1,0 +1,162 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CMtextField.as\(11\): Migration issue: The property _alpha is no longer supported.  Use the DisplayObject.alpha property instead..
+trace\(tf._alpha\)
+.........^
+
+.*CMtextField.as\(12\): Migration issue: The property _height is no longer supported.  Use the DisplayObject.height property instead..
+tf._height;
+...^
+
+.*CMtextField.as\(13\): Migration issue: The property _highquality is no longer supported.  For more information, see Stage.quality..
+tf._highquality;
+...^
+
+.*CMtextField.as\(14\): Migration issue: The property hscroll is no longer supported.  Use the TextField.scrollH property instead..
+tf.hscroll;
+...^
+
+.*CMtextField.as\(15\): Migration issue: The property maxhscroll is no longer supported.  Use the TextField.maxScrollH property instead..
+tf.maxhscroll;
+...^
+
+.*CMtextField.as\(16\): Migration issue: The property maxscroll is no longer supported.  Use the TextField.maxScrollV property instead..
+tf.maxscroll;
+...^
+
+.*CMtextField.as\(17\): Migration issue: The property menu is no longer supported.  Use the InteractiveObject.contextMenu property instead..
+tf.menu;
+...^
+
+.*CMtextField.as\(18\): Migration issue: The property _name is no longer supported.  Use the DisplayObject.name property instead..
+tf._name;
+...^
+
+.*CMtextField.as\(19\): Migration issue: The property _rotation is no longer supported.  Use the DisplayObject.rotation property instead..
+tf._rotation;
+...^
+
+.*CMtextField.as\(20\): Migration issue: The property scroll is no longer supported.  Use the TextField.scrollV property instead..
+tf.scroll;
+...^
+
+.*CMtextField.as\(21\): Migration issue: The property _soundbuftime is no longer supported.  Use the static property flash.media.SoundMixer.bufferTime instead..
+tf._soundbuftime;
+...^
+
+.*CMtextField.as\(22\): Migration issue: The property _url is no longer supported.  For more information, see LoaderInfo.url..
+tf._url;
+...^
+
+.*CMtextField.as\(23\): Migration issue: The property variable is no longer supported.  This functionality is no longer supported..
+tf.variable;
+...^
+
+.*CMtextField.as\(24\): Migration issue: The property _visible is no longer supported.  Use the DisplayObject.visible property instead..
+tf._visible;
+...^
+
+.*CMtextField.as\(25\): Migration issue: The property _width is no longer supported.  Use the DisplayObject.width property instead..
+tf._width;
+...^
+
+.*CMtextField.as\(26\): Migration issue: The property _x is no longer supported.  Use the DisplayObject.x property instead..
+tf._x;
+...^
+
+.*CMtextField.as\(27\): Migration issue: The property _xmouse is no longer supported.  Use the DisplayObject.mouseX property instead..
+tf._xmouse;
+...^
+
+.*CMtextField.as\(28\): Migration issue: The property _xscale is no longer supported.  Use the DisplayObject.scaleX property instead..
+tf._xscale;
+...^
+
+.*CMtextField.as\(29\): Migration issue: The property _y is no longer supported.  Use the DisplayObject.y property instead..
+tf._y;
+...^
+
+.*CMtextField.as\(30\): Migration issue: The property _ymouse is no longer supported.  Use the DisplayObject.mouseY property instead..
+tf._ymouse;
+...^
+
+.*CMtextField.as\(31\): Migration issue: The property _yscale is no longer supported.  Use the DisplayObject.scaleY property instead..
+tf._yscale;
+...^
+
+.*CMtextField.as\(32\): Migration issue: The property _target is no longer supported.  This functionality is no longer supported..
+tf._target
+...^
+
+.*CMtextField.as\(33\): Migration issue: The property _parent is no longer supported.  Use the DisplayObject.parent property instead..
+tf._parent
+...^
+
+.*CMtextField.as\(34\): Migration issue: The property _quality is no longer supported.  For more information, see Stage.quality..
+tf._quality
+...^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMtextField.as\(36\): Migration issue: The method addListener is no longer supported.  For more information, see addEventListener \( eventName, listener, useCapture, priority \)..
+tf.addListener();
+...^
+
+.*CMtextField.as\(37\): Migration issue: The method getDepth is no longer supported.  Use DisplayObjectContainer.parent.getChildIndex instead. For more information, see the DisplayObjectContainer class, which MovieClip extends..
+tf.getDepth();
+...^
+
+.*CMtextField.as\(38\): Migration issue: The method getFontList is no longer supported.  Use the Font.enumerateFonts() method instead..
+tf.getFontList();
+...^
+
+.*CMtextField.as\(39\): Migration issue: The method getNewTextFormat is no longer supported.  Use the TextField.defaultTextFormat property instead..
+tf.getNewTextFormat();
+...^
+
+.*CMtextField.as\(51\): Migration issue: The method removeListener is no longer supported.  For more information, see removeEventListener \( eventName, listener, useCapture\)..
+tf.removeListener();
+...^
+
+.*CMtextField.as\(52\): Migration issue: The method replaceSel is no longer supported.  Use the TextField.replaceSelectedText() method instead..
+tf.replaceSel();
+...^
+
+.*CMtextField.as\(53\): Migration issue: The method setNewTextFormat is no longer supported.  Use the TextField.defaultTextFormat property instead..
+tf.setNewTextFormat();
+...^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*CMtextField.as\(43\): Migration issue: The onChanged event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'change', callback_handler\).
+tf.onChanged = function():void{
+...^
+
+.*CMtextField.as\(47\): Migration issue: The onKillFocus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'focusOut', callback_handler\).
+tf.onKillFocus = function():void{};
+...^
+
+.*CMtextField.as\(48\): Migration issue: The onScroller event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'scroll', callback_handler\).
+tf.onScroller = function():void{};
+...^
+
+.*CMtextField.as\(49\): Migration issue: The onSetFocus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'focusIn', callback_handler\).
+tf.onSetFocus = function():void{};
+...^
+
+-------------------------------------------------------------------------
+
+
+
+CMtextField.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

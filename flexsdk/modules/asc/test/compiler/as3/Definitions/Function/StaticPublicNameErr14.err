@@ -1,0 +1,12 @@
+
+[Compiler] Error #1093: Syntax error.
+   StaticPublicNameErr14.as, Ln 5, Col 29: 
+       static public function a`b () {}
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before b.
+   StaticPublicNameErr14.as, Ln 5, Col 30: 
+       static public function a`b () {}
+   .............................^
+
+2 errors found

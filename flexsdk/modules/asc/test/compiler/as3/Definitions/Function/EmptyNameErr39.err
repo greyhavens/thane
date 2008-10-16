@@ -1,0 +1,7 @@
+
+[Compiler] Error #1093: Syntax error.
+   EmptyNameErr39.as, Ln 5, Col 15: 
+       function a#() {}
+   ..............^
+
+1 error found

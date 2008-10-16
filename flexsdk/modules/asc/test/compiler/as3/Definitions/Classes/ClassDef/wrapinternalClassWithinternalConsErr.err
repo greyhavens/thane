@@ -1,0 +1,5 @@
+\[Compiler\] Error #1153: A constructor can only be declared public.
+.*wrapinternalClassWithinternalConsErr.as, Ln 7, Col 35:
+                   internal function internalClassWithinternalCons\(a:Numb...
+   ..................................^
+1 error found

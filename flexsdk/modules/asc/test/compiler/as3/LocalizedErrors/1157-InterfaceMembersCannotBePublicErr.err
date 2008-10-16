@@ -1,0 +1,7 @@
+
+[Compiler] Error #1157: Interface members cannot be declared public, private, protected, or internal.
+1157-InterfaceMembersCannotBePublicErr.as, Ln 9, Col 18:
+public function myFunction();
+.................^
+
+1 error found

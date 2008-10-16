@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before rightbrace.
+   EmptyNameErr28.as, Ln 5, Col 15: 
+       function a}b () {}
+   ..............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before rightbrace.
+   EmptyNameErr28.as, Ln 5, Col 15: 
+       function a}b () {}
+   ..............^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before rightbrace.
+   EmptyNameErr28.as, Ln 5, Col 15: 
+       function a}b () {}
+   ..............^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before leftbrace.
+   EmptyNameErr28.as, Ln 5, Col 21: 
+       function a}b () {}
+   ....................^
+
+4 errors found

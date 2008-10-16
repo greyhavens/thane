@@ -1,0 +1,17 @@
+
+\[Compiler\] Error #1012: The static attribute may be used only on definitions inside a class.
+.*b121391.as, Ln 2, Col 1:
+static function foo\(\)\{\}
+\^
+
+\[Compiler\] Error #1012: The static attribute may be used only on definitions inside a class.
+.*b121391.as, Ln 4, Col 9:
+dynamic static class A\{\}
+........\^
+
+\[Compiler\] Error #1012: The static attribute may be used only on definitions inside a class.
+.*b121391.as, Ln 5, Col 1:
+static function foo\(\)\{\}
+\^
+
+3 errors found

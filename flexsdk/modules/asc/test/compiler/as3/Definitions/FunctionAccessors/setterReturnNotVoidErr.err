@@ -1,0 +1,7 @@
+
+[Compiler] Error #1054: Return type of a setter definition must be unspecified or void.
+   setterReturnNotVoidErr.as, Ln 3, Col 45: 
+   public function set someProperty\(value:int\):int
+   ............................................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   OverrideDiffReturnTypeErr.as, Ln 7, Col 28: 
+   		override public function returnString() : Boolean {}
+   ...........................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1130: A constructor cannot specify a return type.
+1130-ConstructorReturnTypeErr.as, Ln 8, Col 29:
+public function ConstructorReturnTypeErr():String{}
+............................^
+
+1 error found

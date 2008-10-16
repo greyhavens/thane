@@ -1,0 +1,17 @@
+
+[Compiler] Error #1160: The native attribute cannot be used in interface definitions.
+   FuncDefrt98.as, Ln 8, Col 28: 
+        native final function foo();
+   ...........................^
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+   FuncDefrt98.as, Ln 8, Col 28: 
+        native final function foo();
+   ...........................^
+
+[Compiler] Error #1145: Native methods cannot have a body.
+   FuncDefrt98.as, Ln 13, Col 33: 
+      public native final function foo() {}
+   ................................^
+
+3 errors found

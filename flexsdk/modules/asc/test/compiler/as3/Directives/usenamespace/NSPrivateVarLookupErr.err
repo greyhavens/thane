@@ -1,0 +1,12 @@
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+as3.Directives.usenamespace.NSPrivateVarLookupErr.as, Ln 60, Col 84:
+AddTestCase\( "try to access a private var using namespaces", "private var", myTest.private::z\)...
+...................................................................................^
+
+[Compiler] Error #1043: Undefined namespace.
+as3.Directives.usenamespace.NSPrivateVarLookupErr.as, Ln 60, Col 84:
+AddTestCase\( "try to access a private var using namespaces", "private var", myTest.private::z\)...
+...................................................................................^
+
+2 errors found

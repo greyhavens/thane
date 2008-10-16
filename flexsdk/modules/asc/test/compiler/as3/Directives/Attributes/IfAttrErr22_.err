@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr22 was not found.
+   IfAttrErr22_.as, Ln 6, Col 39: 
+   	public class IfAttrErr22_ implements IfAttrErr22
+   ......................................^
+
+1 error found

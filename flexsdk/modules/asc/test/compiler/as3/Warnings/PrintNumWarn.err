@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*PrintNumWarn.as\(11\): Migration issue: The method printNum is no longer supported.  For more information, see PrintJob..
+printNum\(mc, "bframe"\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+PrintNumWarn.abc, [0-9]+ bytes written
+.*Error.*
+

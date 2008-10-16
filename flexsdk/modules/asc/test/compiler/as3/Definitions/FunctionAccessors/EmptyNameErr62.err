@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before return.
+   EmptyNameErr62.as, Ln 5, Col 18: 
+       function set return\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr62.as, Ln 5, Col 28: 
+       function set return\(e\) {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr62.as, Ln 5, Col 28: 
+       function set return\(e\) {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr62.as, Ln 5, Col 28: 
+       function set return\(e\) {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before return.
+   EmptyNameErr62.as, Ln 6, Col 18: 
+       function get return() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr62.as, Ln 6, Col 27: 
+       function get return() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr62.as, Ln 6, Col 27: 
+       function get return() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr62.as, Ln 6, Col 27: 
+       function get return() {}
+   ..........................^
+
+8 errors found

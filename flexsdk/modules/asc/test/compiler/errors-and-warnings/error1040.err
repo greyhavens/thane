@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1040: Duplicate label definition.
+.*error1040.as, Ln 8, Col 10:
+i:\{
+.........\^
+
+1 error found

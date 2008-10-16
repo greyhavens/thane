@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before private.
+   IllegalIdentifiersPrivateErr.as, Ln 1, Col 11: 
+   namespace private;
+   ..........^
+
+1 error found

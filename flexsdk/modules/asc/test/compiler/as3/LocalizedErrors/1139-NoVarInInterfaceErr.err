@@ -1,0 +1,7 @@
+
+[Compiler] Error #1139: Variable declarations are not permitted in interfaces.
+1139-NoVarInInterfaceErr.as, Ln 4, Col 14:
+var a:Number = 100;
+.............^
+
+1 error found

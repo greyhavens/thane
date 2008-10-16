@@ -1,0 +1,12 @@
+
+[Compiler] Error #1027: Functions cannot be both static and override.
+   OverrideStaticMethodErr.as, Ln 7, Col 3: 
+   		override public static function foo() {}
+   ..^
+
+[Compiler] Error #1020: Method marked override must override another method.
+   OverrideStaticMethodErr.as, Ln 7, Col 35: 
+   		override public static function foo() {}
+   ..................................^
+
+2 errors found

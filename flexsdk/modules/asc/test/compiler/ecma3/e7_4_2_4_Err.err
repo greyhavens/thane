@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before var.
+ecma3.e7_4_2_4_Err.as, Ln 52, Col 9:
+var var = true;
+........^
+
+1 error found

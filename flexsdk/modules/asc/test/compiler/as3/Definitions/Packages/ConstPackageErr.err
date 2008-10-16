@@ -1,0 +1,17 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before package.
+as3.Definitions.Packages.ConstPackageErr.as, Ln 23, Col 7:
+const package foo {}
+......^
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before leftbrace.
+as3.Definitions.Packages.ConstPackageErr.as, Ln 23, Col 19:
+const package foo {}
+..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before trace.
+as3.Definitions.Packages.ConstPackageErr.as, Ln 25, Col 1:
+trace\( "FAILED: cannot give a package an attribute" \);
+^
+
+3 errors found

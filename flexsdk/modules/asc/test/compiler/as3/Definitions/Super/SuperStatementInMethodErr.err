@@ -1,0 +1,17 @@
+
+[Compiler] Error #1007: A super statement can be used only inside class instance constructors.
+   SuperStatementInMethodErr.as, Ln 17, Col 3: 
+   		super()	// illegal in class init
+   ..^
+
+[Compiler] Error #1007: A super statement can be used only inside class instance constructors.
+   SuperStatementInMethodErr.as, Ln 15, Col 4: 
+   			super()	// illegal in static method
+   ...^
+
+[Compiler] Error #1007: A super statement can be used only inside class instance constructors.
+   SuperStatementInMethodErr.as, Ln 12, Col 4: 
+   			super()	// illegal in method
+   ...^
+
+3 errors found

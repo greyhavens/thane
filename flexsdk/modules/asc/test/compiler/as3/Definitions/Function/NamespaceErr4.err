@@ -1,0 +1,7 @@
+
+[Compiler] Error #1004: Namespace was not found or is not a compile-time constant.
+   NamespaceErr4.as, Ln 10, Col 15: 
+   use namespace nonamespace;
+   ..............^
+
+1 error found

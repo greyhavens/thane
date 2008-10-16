@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   OverrideDiffParamsErr2.as, Ln 7, Col 28: 
+   		override public function setString\( n:Number, s:String \) : void {}
+   ...........................^
+
+1 error found

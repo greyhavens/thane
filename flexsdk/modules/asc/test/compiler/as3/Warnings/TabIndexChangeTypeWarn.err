@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*TabIndexChangeTypeWarn.as\(13\): Migration issue: The property TAB_INDEX_CHANGE_TYPE is no longer supported.  Use the Event.TAB_INDEX_CHANGE constant instead..
+trace\(Event.TAB_INDEX_CHANGE_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+TabIndexChangeTypeWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

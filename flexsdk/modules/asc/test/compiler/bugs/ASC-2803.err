@@ -1,0 +1,7 @@
+
+[Compiler] Error #1208: The initializer for a configuration value must be a compile time constant.
+bugs.ASC-2803.as, Ln 5, Col 29:
+CONFIG const plus2=CONFIG::str1\+CONFI::str2
+............................^
+
+1 error found

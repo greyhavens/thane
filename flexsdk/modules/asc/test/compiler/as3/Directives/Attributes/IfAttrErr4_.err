@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr4 was not found.
+   IfAttrErr4_.as, Ln 6, Col 38: 
+   	public class IfAttrErr4_ implements IfAttrErr4
+   .....................................^
+
+1 error found

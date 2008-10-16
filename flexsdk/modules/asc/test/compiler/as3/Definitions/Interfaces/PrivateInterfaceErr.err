@@ -1,0 +1,7 @@
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+   PrivateInterfaceErr.as, Ln 8, Col 2: 
+   	private interface I {
+   .^
+
+1 error found

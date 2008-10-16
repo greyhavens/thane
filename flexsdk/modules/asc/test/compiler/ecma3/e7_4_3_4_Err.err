@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before super.
+ecma3.e7_4_3_4_Err.as, Ln 48, Col 9:
+var super = true;
+........^
+
+1 error found

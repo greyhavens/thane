@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute private, not static.
+   VarDefPrivateStaticErr12.as, Ln 15, Col 40: 
+       		private static idTypeExprAAssign : Array, idTypeExprBAssign : Bo...
+   .......................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before semicolon.
+   VarDefPrivateStaticErr12.as, Ln 15, Col 83: 
+       		private static idTypeExprAAssign : Array, idTypeExprBAssign : Boolean = true;
+   ..................................................................................^
+
+2 errors found

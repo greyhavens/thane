@@ -1,0 +1,17 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+as3\Warnings\TextFieldScrollPropWarn.as(13): Migration issue: The property scroll is no longer supported.  Use the TextField.scrollV property instead..
+a.scroll;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+TextFieldScrollPropWarn.abc, 208 bytes written
+VerifyError: Error #1014

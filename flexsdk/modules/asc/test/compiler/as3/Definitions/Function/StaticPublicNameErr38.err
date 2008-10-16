@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before case.
+   StaticPublicNameErr38.as, Ln 5, Col 28: 
+       static public function case() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr38.as, Ln 5, Col 35: 
+       static public function case() {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr38.as, Ln 5, Col 35: 
+       static public function case() {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr38.as, Ln 5, Col 35: 
+       static public function case() {}
+   ..................................^
+
+4 errors found

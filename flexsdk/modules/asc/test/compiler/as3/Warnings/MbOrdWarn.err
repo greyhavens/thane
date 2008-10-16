@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*MbOrdWarn.as\(9\): Migration issue: The method mbord is no longer supported.  Use String.charCodeAt() instead..
+mbord\('S'\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+MbOrdWarn.abc, [0-9]+ bytes written
+.*Error.*
+

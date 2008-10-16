@@ -1,0 +1,12 @@
+
+[Compiler] Error #1129: Duplicate interface definition: A.
+   SameClassAndInterfaceNameErr.as, Ln 5, Col 12: 
+   	interface A {}
+   ...........^
+
+[Compiler] Error #1113: Circular type reference was detected in A.
+   SameClassAndInterfaceNameErr.as, Ln 3, Col 8: 
+   	class A{}
+   .......^
+
+2 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before continue.
+ecma3.e7_4_2_5_Err.as, Ln 52, Col 9:
+var continue = true;
+........^
+
+1 error found

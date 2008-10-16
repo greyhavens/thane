@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftparen.
+   EFuncStatNameErr.as, Ln 5, Col 23: 
+       a static function () {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EFuncStatNameErr.as, Ln 5, Col 26: 
+       a static function () {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EFuncStatNameErr.as, Ln 5, Col 26: 
+       a static function () {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EFuncStatNameErr.as, Ln 5, Col 26: 
+       a static function () {}
+   .........................^
+
+4 errors found

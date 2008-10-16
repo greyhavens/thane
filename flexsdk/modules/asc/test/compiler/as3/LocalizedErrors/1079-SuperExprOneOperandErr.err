@@ -1,0 +1,7 @@
+
+[Compiler] Error #1079: A super expression must have one operand.
+1079-SuperExprOneOperandErr.as, Ln 14, Col 8:
+super().a;
+.......^
+
+1 error found

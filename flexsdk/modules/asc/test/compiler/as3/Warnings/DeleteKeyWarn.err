@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*DeleteKeyWarn.as\(12\): Migration issue: The property DELETEKEY is no longer supported.  Use the DELETE constant instead..
+a.DELETEKEY;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+DeleteKeyWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

@@ -1,0 +1,27 @@
+
+\[Compiler\] Error #1064: Invalid metadata.
+bugs.ASC-1564.as, Ln 2, Col 2:
+\[1\]
+.^
+
+\[Compiler\] Error #1064: Invalid metadata.
+bugs.ASC-1564.as, Ln 3, Col 2:
+\["Event"\]
+.^
+
+\[Compiler\] Error #1064: Invalid metadata.
+bugs.ASC-1564.as, Ln 4, Col 2:
+\[\[\]\]
+.^
+
+\[Compiler\] Error #1064: Invalid metadata.
+bugs.ASC-1564.as, Ln 6, Col 2:
+\[true\]
+.^
+
+\[Compiler\] Error #1064: Invalid metadata.
+bugs.ASC-1564.as, Ln 7, Col 2:
+\[false\]
+.^
+
+5 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1003: Access specifiers are not allowed with namespace attributes.
+1003-AccSpecifierWithNamespaceAttrErr.as, Ln 8, Col 5:
+public ns var x
+....^
+
+1 error found

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before not.
+   EmptyNameErr1.as, Ln 3, Col 20: 
+   	    function get a!\( \) {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before not.
+   EmptyNameErr1.as, Ln 4, Col 20: 
+   	    function set a!\(e\) {}
+   ...................^
+
+2 errors found

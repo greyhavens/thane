@@ -1,0 +1,18 @@
+
+proto.abc, \d+ bytes written
+a: \[object Object\]
+b: \[object Object\]
+a.x: 10
+b.x: 10
+a.x: 10
+b.x: 20
+true
+164168 \[object .*\]
+161857 false
+161834 0
+136662 \[object String\]
+136662 \[object Number\]
+136847 false
+155025 undefined
+162564 \[object Object\]
+136677 pass

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1046: Type was not found or was not a compile-time constant: Rott.
+as3.Definitions.Packages.unNamedPackErr.as, Ln 44, Col 9:
+var dog:Rott = new Rott();
+........^
+
+1 error found

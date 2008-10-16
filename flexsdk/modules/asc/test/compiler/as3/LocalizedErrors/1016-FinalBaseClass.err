@@ -1,0 +1,7 @@
+
+[Compiler] Error #1016: Base class is final.
+1016-FinalBaseClass.as, Ln 6, Col 17:
+class B extends A {}
+................^
+
+1 error found

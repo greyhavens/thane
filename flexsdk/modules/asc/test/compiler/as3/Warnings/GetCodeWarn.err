@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*GetCodeWarn.as\(12\): Migration issue: The method getCode is no longer supported.  Use KeyboardEvent.keyCode instead..
+a.getCode\('A'\);
+...^
+
+-------------------------------------------------------------------------
+
+
+
+GetCodeWarn.abc, [0-9]+ bytes written
+.*Error.*
+

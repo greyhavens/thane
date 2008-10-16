@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftparen.
+   StaticPublicNameErr8.as, Ln 5, Col 32: 
+       static public function a\(b () {}
+   ...............................^
+
+1 error found

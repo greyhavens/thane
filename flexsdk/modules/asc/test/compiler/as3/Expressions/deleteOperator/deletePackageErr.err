@@ -1,0 +1,7 @@
+
+[Compiler] Error #1182: Package cannot be used as a value: pkg.
+   deletePackageErr.as, Ln 2, Col 8: 
+   delete pkg;
+   .......^
+
+1 error found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before switch.
+   StaticNameErr65.as, Ln 5, Col 21: 
+       static function switch() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr65.as, Ln 5, Col 30: 
+       static function switch() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr65.as, Ln 5, Col 30: 
+       static function switch() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr65.as, Ln 5, Col 30: 
+       static function switch() {}
+   .............................^
+
+4 errors found

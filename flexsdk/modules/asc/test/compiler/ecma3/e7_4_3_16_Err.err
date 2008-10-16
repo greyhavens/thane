@@ -1,0 +1,13 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftbrace before assign.
+ecma3.e7_4_3_16_Err.as, Ln 46, Col 13:
+try = true;
+............^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before end of program.
+ecma3.e7_4_3_16_Err.as, Ln 62, Col 1:
+
+[Compiler] Error #1073: Syntax error: expecting a catch or a finally clause.
+ecma3.e7_4_3_16_Err.as, Ln 62, Col 1:
+
+3 errors found

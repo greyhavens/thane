@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before switch.
+   EmptyNameErr65.as, Ln 5, Col 18: 
+       function get switch() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr65.as, Ln 5, Col 27: 
+       function get switch() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr65.as, Ln 5, Col 27: 
+       function get switch() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr65.as, Ln 5, Col 27: 
+       function get switch() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before switch.
+   EmptyNameErr65.as, Ln 6, Col 18: 
+       function set switch\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr65.as, Ln 6, Col 28: 
+       function set switch\(e\) {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr65.as, Ln 6, Col 28: 
+       function set switch\(e\) {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr65.as, Ln 6, Col 28: 
+       function set switch\(e\) {}
+   ...........................^
+
+8 errors found

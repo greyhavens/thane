@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before comma.
+   EmptyNameErr21.as, Ln 5, Col 15: 
+       function a,b () {}
+   ..............^
+
+1 error found

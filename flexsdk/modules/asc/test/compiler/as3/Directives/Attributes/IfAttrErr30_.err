@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr30 was not found.
+   IfAttrErr30_.as, Ln 6, Col 39: 
+   	public class IfAttrErr30_ implements IfAttrErr30
+   ......................................^
+
+1 error found

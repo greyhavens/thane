@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before catch.
+   EmptyNameErr40.as, Ln 5, Col 14: 
+       function catch() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr40.as, Ln 5, Col 22: 
+       function catch() {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr40.as, Ln 5, Col 22: 
+       function catch() {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr40.as, Ln 5, Col 22: 
+       function catch() {}
+   .....................^
+
+4 errors found

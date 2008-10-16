@@ -1,0 +1,7 @@
+
+[Compiler] Error #1050: Cannot assign to a non-reference value.
+   AssgnToNonRefValErr.as, Ln 2, Col 1: 
+   null = 10;
+   ^
+
+1 error found

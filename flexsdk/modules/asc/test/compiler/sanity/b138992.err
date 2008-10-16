@@ -1,0 +1,22 @@
+
+\[Compiler\] Error #1182: Package cannot be used as a value: A.A.
+.*b138992.as, Ln 29, Col 7:
+new A.A
+......\^
+
+\[Compiler\] Error #1182: Package cannot be used as a value: A.A.
+.*b138992.as, Ln 32, Col 3:
+A.A\(\)
+..\^
+
+\[Compiler\] Error #1182: Package cannot be used as a value: A.A.
+.*b138992.as, Ln 35, Col 3:
+A.A = 10
+..\^
+
+\[Compiler\] Error #1182: Package cannot be used as a value: A.A.
+.*b138992.as, Ln 38, Col 3:
+A.A
+..\^
+
+4 errors found

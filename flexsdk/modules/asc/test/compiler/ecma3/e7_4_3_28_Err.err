@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before implements.
+   e7_4_3_24_Err.as, Ln 67, Col 9: 
+       var implements:Boolean = true;
+   ........^
+
+1 error found

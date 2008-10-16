@@ -1,0 +1,7 @@
+
+[Compiler] Error #1034: Variables cannot be native.
+   CreateNativeClassVariableErr.as, Ln 5, Col 20: 
+           native var item1;
+   ...................^
+
+1 error found

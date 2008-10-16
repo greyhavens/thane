@@ -1,0 +1,7 @@
+
+[Compiler] Error #1153: A constructor can only be declared public.
+   dynpubClassWithintConsErr.as, Ln 5, Col 35: 
+                   internal function dynpubClassWithintCons(){
+   ..................................^
+
+1 error found

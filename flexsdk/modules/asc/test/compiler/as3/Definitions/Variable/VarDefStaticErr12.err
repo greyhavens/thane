@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute static, not idTypeExprAAssign.
+   VarDefStaticErr12.as, Ln 15, Col 32: 
+       		static idTypeExprAAssign : Array, idTypeExprBAssign : Boolean = ...
+   ...............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before semicolon.
+   VarDefStaticErr12.as, Ln 15, Col 75: 
+       		static idTypeExprAAssign : Array, idTypeExprBAssign : Boolean = true;
+   ..........................................................................^
+
+2 errors found

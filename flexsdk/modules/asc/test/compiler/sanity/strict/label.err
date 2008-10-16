@@ -1,0 +1,22 @@
+
+\[Compiler\] Error #1040: Duplicate label definition.
+.*label.as, Ln 5, Col 5:
+L2: L1: while\(false\) \{ continue L1; break L2; \} break L1; continue;
+....\^
+
+\[Compiler\] Error #1040: Duplicate label definition.
+.*label.as, Ln 5, Col 5:
+L2: L1: while\(false\) \{ continue L1; break L2; \} break L1; continue;
+....\^
+
+\[Compiler\] Error #1038: Target of break statement was not found.
+.*label.as, Ln 5, Col 55:
+L2: L1: while\(false\) \{ continue L1; break L2; \} break L1; continue;
+......................................................\^
+
+\[Compiler\] Error #1040: Duplicate label definition.
+.*label.as, Ln 7, Col 1:
+L1:
+\^
+
+4 errors found

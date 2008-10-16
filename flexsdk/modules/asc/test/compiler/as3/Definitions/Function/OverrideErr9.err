@@ -1,0 +1,7 @@
+
+[Compiler] Error #1025: Cannot redefine a final method.
+   OverrideErr9.as, Ln 8, Col 21: 
+   		override function f() {}
+   ....................^
+
+1 error found

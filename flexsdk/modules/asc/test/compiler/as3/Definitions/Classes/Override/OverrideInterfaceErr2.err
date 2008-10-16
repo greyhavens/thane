@@ -1,0 +1,7 @@
+
+[Compiler] Error #1141: A class can only extend another class, not an interface.
+   OverrideInterfaceErr2.as, Ln 7, Col 20: 
+   	class bar extends foo{
+   ...................^
+
+1 error found

@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMcolor.as\(8\): Migration issue: The method Color is no longer supported.  The Color class has been removed. Use the flash.geom.ColorTransform class for equivalent functionality..
+new Color();
+....^
+
+-------------------------------------------------------------------------
+
+
+
+CMcolor.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

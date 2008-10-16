@@ -1,0 +1,27 @@
+
+RegExpUnicodeWhiteSpace.abc, \d+ bytes written
+result length: 4
+ƀ
+Ɓ
+Ƃ
+
+result length: 17
+A
+A
+A
+ 
+Ɓ
+​
+B
+C
+D
+　
+E
+F
+G
+﻿
+H
+J
+I
+space test result length: 6
+match: we ʁhaveʂ​found　each﻿match,we,ʁhaveʂ,found,each,match

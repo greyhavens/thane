@@ -1,0 +1,17 @@
+
+[Compiler] Error #1127: Attribute static was specified multiple times.
+   StaticNameErr75.as, Ln 6, Col 5: 
+       static static function StaticNameErr75() {}
+   ....^
+
+[Compiler] Error #1026: Constructor functions must be instance methods.
+   StaticNameErr75.as, Ln 6, Col 28: 
+       static static function StaticNameErr75() {}
+   ...........................^
+
+[Compiler] Error #1153: A constructor can only be declared public.
+   StaticNameErr75.as, Ln 6, Col 28: 
+       static static function StaticNameErr75() {}
+   ...........................^
+
+3 errors found

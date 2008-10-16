@@ -1,0 +1,12 @@
+
+[Compiler] Error #1146: A constructor cannot be a getter or setter method.
+   GetterAsConstructorErr.as, Ln 5, Col 23: 
+   		public function get GetterName():String { 
+   ......................^
+
+[Compiler] Error #1130: A constructor cannot specify a return type.
+   GetterAsConstructorErr.as, Ln 5, Col 23: 
+   		public function get GetterName():String { 
+   ......................^
+
+2 errors found

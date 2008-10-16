@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*SetPropertyWarn.as\(13\): Migration issue: The method setProperty is no longer supported.  Set properties directly on the instance using dot \(.\) notation instead..
+setProperty\(a,"_x",50\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+SetPropertyWarn.abc, [0-9]+ bytes written
+.*Error.*
+

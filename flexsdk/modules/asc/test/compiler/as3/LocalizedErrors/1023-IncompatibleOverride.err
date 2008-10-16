@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+1023-IncompatibleOverride.as, Ln 11, Col 21:
+override function a():void {
+....................^
+
+1 error found

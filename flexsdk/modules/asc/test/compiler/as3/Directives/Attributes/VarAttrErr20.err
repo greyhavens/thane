@@ -1,0 +1,7 @@
+
+[Compiler] Error #1127: Attribute private was specified multiple times.
+   VarAttrErr20.as, Ln 6, Col 6: 
+    	   private static private var v : Integer;
+   .....^
+
+1 error found

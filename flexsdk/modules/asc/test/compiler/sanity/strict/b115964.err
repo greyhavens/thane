@@ -1,0 +1,5 @@
+
+b115964.abc, \d+ bytes written
+<class>this is class info</class>
+<descendants>these are my descendants</descendants>
+<can-throw>description of what Errors this method can throw</can-throw>

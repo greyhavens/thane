@@ -1,0 +1,12 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInFunctionErr.as, Ln 4, Col 3: 
+   	 class A {}
+   ..^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInFunctionErr.as, Ln 9, Col 5: 
+   	   class B {}
+   ....^
+
+2 errors found

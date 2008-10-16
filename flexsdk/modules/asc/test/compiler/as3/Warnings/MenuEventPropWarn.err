@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*MenuEventPropWarn.as\(7\): Migration issue: The property MenuEvent is no longer supported.  The MenuEvent class has been renamed ContextMenuEvent..
+MenuEvent = true;
+..^
+
+-------------------------------------------------------------------------
+
+
+
+MenuEventPropWarn.abc, [0-9]+ bytes written

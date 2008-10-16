@@ -1,0 +1,7 @@
+
+[Compiler] Error #1194: The prototype attribute is invalid.
+1194-PrototypeInvalidAttribute.as, Ln 10, Col 9:
+prototype var attr;
+........^
+
+1 error found

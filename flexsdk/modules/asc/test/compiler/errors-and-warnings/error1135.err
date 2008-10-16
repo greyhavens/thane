@@ -1,0 +1,12 @@
+
+\[Compiler\] Error #1135: Syntax error: void as not a valid type.
+.*error1135.as, Ln 3, Col 19:
+function initPB\(f:void\):void \{\}
+..................\^
+
+\[Compiler\] Error #1135: Syntax error: void as not a valid type.
+.*error1135.as, Ln 4, Col 7:
+var v:void;
+......\^
+
+2 errors found

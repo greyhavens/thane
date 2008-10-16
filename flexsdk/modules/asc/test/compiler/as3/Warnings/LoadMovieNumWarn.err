@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*LoadMovieNumWarn.as\(12\): Migration issue: The method loadMovieNum is no longer supported.  For more information, see MovieClip.loadMovieNum()..
+loadMovieNum\(a\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+LoadMovieNumWarn.abc, [0-9]+ bytes written
+.*Error.*
+

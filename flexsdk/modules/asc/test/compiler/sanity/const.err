@@ -1,0 +1,6 @@
+
+const.abc, \d+ bytes written
+10
+20
+30
+ReferenceError: Error #1074

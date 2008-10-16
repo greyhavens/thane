@@ -1,0 +1,7 @@
+
+[Compiler] Error #1018: Duplicate class definition: A.
+   DuplicateClassDefErr.as, Ln 5, Col 8: 
+   	class A{}
+   .......^
+
+1 error found

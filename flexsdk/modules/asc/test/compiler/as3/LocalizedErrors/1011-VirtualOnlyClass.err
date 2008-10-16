@@ -1,0 +1,12 @@
+
+[Compiler] Error #1011: The virtual attribute may be used only on class property definitions.
+1011-VirtualOnlyClass.as, Ln 5, Col 1:
+virtual var a;
+^
+
+[Compiler] Error #1033: Virtual variables are not supported.
+1011-VirtualOnlyClass.as, Ln 5, Col 13:
+virtual var a;
+............^
+
+2 errors found

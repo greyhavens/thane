@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before switch.
+   StaticPublicNameErr65.as, Ln 5, Col 28: 
+       static public function switch() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr65.as, Ln 5, Col 37: 
+       static public function switch() {}
+   ....................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr65.as, Ln 5, Col 37: 
+       static public function switch() {}
+   ....................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr65.as, Ln 5, Col 37: 
+       static public function switch() {}
+   ....................................^
+
+4 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1083: Syntax error: catch is unexpected.
+   TryAndCatchWithSttsInbetweenErr.as, Ln 59, Col 9: 
+           catch\(er1\){
+   ........^
+
+1 error found

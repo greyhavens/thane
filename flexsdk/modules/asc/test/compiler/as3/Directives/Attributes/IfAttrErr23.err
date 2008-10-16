@@ -1,0 +1,12 @@
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   IfAttrErr23.as, Ln 3, Col 2: 
+   	static public private interface IfAttrErr23
+   .^
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+   IfAttrErr23.as, Ln 3, Col 16: 
+   	static public private interface IfAttrErr23
+   ...............^
+
+2 errors found

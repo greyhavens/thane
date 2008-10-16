@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*DisplayObjectScaleXWarn.as\(12\): Migration issue: The property _xscale is no longer supported.  Use the DisplayObject.scaleX property instead..
+a._xscale = 10;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+DisplayObjectScaleXWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

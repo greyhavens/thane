@@ -1,0 +1,7 @@
+
+[Compiler] Error #1046: Type was not found or was not a compile-time constant: DefaultClass.
+   AccDefClassFromDiffPackErr.as, Ln 12, Col 19: 
+   	var defaultClass:DefaultClass;
+   ..................^
+
+1 error found

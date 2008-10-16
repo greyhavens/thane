@@ -1,0 +1,12 @@
+
+[Compiler] Error #1125: Methods defined in an interface must not have a body.
+   ExtDefImplDefDefErr1.as, Ln 20, Col 17: 
+   	     	function foo() {
+   ................^
+
+[Compiler] Error #1125: Methods defined in an interface must not have a body.
+   ExtDefImplDefDefErr1.as, Ln 25, Col 17: 
+   	     	function goo() {
+   ................^
+
+2 errors found

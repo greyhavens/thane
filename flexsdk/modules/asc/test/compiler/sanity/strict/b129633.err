@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1152: A conflict exists with inherited definition P:A.v in namespace public.
+.*b129633.as, Ln 9, Col 13:
+private var v:\*;
+............\^
+
+1 error found

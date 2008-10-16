@@ -1,0 +1,12 @@
+
+[Compiler] Error #1044: Interface method a in namespace Errors:A not implemented by class Errors:D.
+   NotImplementedNestedverErr.as, Ln 17, Col 8: 
+   	class D implements C {}
+   .......^
+
+[Compiler] Error #1044: Interface method b in namespace Errors:B not implemented by class Errors:D.
+   NotImplementedNestedverErr.as, Ln 17, Col 8: 
+   	class D implements C {}
+   .......^
+
+2 errors found

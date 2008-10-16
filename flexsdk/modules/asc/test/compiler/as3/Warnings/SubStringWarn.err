@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*SubStringWarn.as\(9\): Migration issue: The method substring is no longer supported.  Use the String.substr method instead..
+substring\('String',2,5\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+SubStringWarn.abc, [0-9]+ bytes written
+.*Error.*
+

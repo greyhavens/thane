@@ -1,0 +1,1 @@
+function InvDefMethArgVal(a:uint=-1){}

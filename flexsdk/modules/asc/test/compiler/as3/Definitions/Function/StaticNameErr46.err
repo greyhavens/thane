@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before do.
+   StaticNameErr46.as, Ln 5, Col 21: 
+       static function do() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr46.as, Ln 5, Col 26: 
+       static function do() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr46.as, Ln 5, Col 26: 
+       static function do() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr46.as, Ln 5, Col 26: 
+       static function do() {}
+   .........................^
+
+4 errors found

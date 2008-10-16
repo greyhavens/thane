@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before var.
+   EmptyNameErr70.as, Ln 5, Col 18: 
+       function set var\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr70.as, Ln 5, Col 25: 
+       function set var\(e\) {}
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr70.as, Ln 5, Col 25: 
+       function set var\(e\) {}
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr70.as, Ln 5, Col 25: 
+       function set var\(e\) {}
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before var.
+   EmptyNameErr70.as, Ln 6, Col 18: 
+       function set var() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr70.as, Ln 6, Col 24: 
+       function set var() {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr70.as, Ln 6, Col 24: 
+       function set var() {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr70.as, Ln 6, Col 24: 
+       function set var() {}
+   .......................^
+
+8 errors found

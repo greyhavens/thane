@@ -1,0 +1,7 @@
+
+[Compiler] Error #1138: Required parameters are not permitted after optional parameters.
+1138-OptParamAfterReqParamError.as, Ln 11, Col 66:
+public function OptionalParametersErr\( myString:String='string',myint...
+.................................................................^
+
+1 error found

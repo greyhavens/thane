@@ -1,0 +1,50 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*\KeyboardClassConstWarn.as\(13\): Migration issue: The property CAPSLOCK is no longer supported.  Use the CAPS_LOCK constant instead..
+Keyboard.CAPSLOCK;
+.................^
+
+.*\KeyboardClassConstWarn.as\(14\): Migration issue: The property DELETEKEY is no longer supported.  Use the DELETE constant instead..
+Keyboard.DELETEKEY;
+.................^
+
+.*\KeyboardClassConstWarn.as\(15\): Migration issue: The property _listeners is no longer supported.  There is no direct replacement. The willTrigger() method can be used to tell if any listeners have been registered..
+Keyboard._listeners;
+.................^
+
+.*\KeyboardClassConstWarn.as\(16\): Migration issue: The property PGDN is no longer supported.  Use the PAGE_DOWN constant instead..
+Keyboard.PGDN;
+.................^
+
+.*\KeyboardClassConstWarn.as\(17\): Migration issue: The property PGUP is no longer supported.  Use the PAGE_UP constant instead..
+Keyboard.PGUP;
+.................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1084: Missing namespace declaration \(e.g. variable is not defined to be public, private, etc.\).
+-------------------------------------------------------------------------
+.*\KeyboardClassConstWarn.as\(11\): var 'KB' will be scoped to the default namespace: KeyboardExample: internal.  It will not be visible outside of this package.
+var KB:Keyboard = new Keyboard();
+............^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1104: Missing constructor.
+-------------------------------------------------------------------------
+.*\KeyboardClassConstWarn.as\(10\): No constructor function was specified for class KeyboardExample.
+public class KeyboardExample extends Sprite{
+.................^
+
+-------------------------------------------------------------------------
+
+
+
+KeyboardClassConstWarn.abc, [0-9]+ bytes written
+.*Error.*
+

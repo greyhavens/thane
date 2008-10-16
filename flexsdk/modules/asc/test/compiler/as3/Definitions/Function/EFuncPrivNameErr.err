@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftparen.
+   EFuncPrivNameErr.as, Ln 5, Col 24: 
+       a private function () {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EFuncPrivNameErr.as, Ln 5, Col 27: 
+       a private function () {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EFuncPrivNameErr.as, Ln 5, Col 27: 
+       a private function () {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EFuncPrivNameErr.as, Ln 5, Col 27: 
+       a private function () {}
+   ..........................^
+
+4 errors found

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1053: Accessor types must match.
+1053-AccessorTypeMismatch.as, Ln 7, Col 22:
+function get x():Boolean { return _x; }
+.....................^
+
+[Compiler] Error #1053: Accessor types must match.
+1053-AccessorTypeMismatch.as, Ln 8, Col 22:
+function set x\(v:String\) { _x = v; }
+.....................^
+
+2 errors found

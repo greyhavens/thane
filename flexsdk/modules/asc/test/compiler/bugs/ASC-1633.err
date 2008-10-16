@@ -1,0 +1,7 @@
+
+[Compiler] Error #1151: A conflict exists with definition COUNT in namespace internal.
+bugs.ASC-1633.as, Ln 2, Col 7:
+const COUNT = 100;
+......^
+
+1 error found

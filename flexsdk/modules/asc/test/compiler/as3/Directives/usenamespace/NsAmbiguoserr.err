@@ -1,0 +1,12 @@
+
+[Compiler] Error #1000: Ambiguous reference to x.
+   NsAmbiguoserr.as, Ln 11, Col 31: 
+             function A(){return x}
+   ..............................^
+
+[Compiler] Error #1000: Ambiguous reference to x.
+   NsAmbiguoserr.as, Ln 15, Col 32: 
+             function B() {return x}
+   ...............................^
+
+2 errors found

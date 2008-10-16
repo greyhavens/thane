@@ -1,0 +1,113 @@
+
+[Compiler] Error #1114: The public attribute can only be used inside a package.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 34, Col 1: 
+   public var v1:Object;
+   ^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 35, Col 1: 
+   static private var v2:Object;
+   ^
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 35, Col 8: 
+   static private var v2:Object;
+   .......^
+
+[Compiler] Error #1150: The protected attribute can only be used on class property definitions.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 36, Col 1: 
+   protected var v3:Object;
+   ^
+
+[Compiler] Error #1115: The internal attribute can only be used inside a package.
+   C:\depot\main\as\asc\test\sanity\tests\attr_err.as, Ln 37, Col 1: 
+   internal var v4:Object;
+   ^
+
+5 errors found
+
+[Compiler] Error #1071: Expecting definition after attribute.
+   C:\depot\main\as\asc\test\sanity\tests\b107194.as, Ln 1, Col 24: 
+   fucntion foo( a, b, c ){ print('hello') } // notice fucntion not funct...
+   .......................^
+
+1 error found
+
+[Compiler] Error #1104: invalid xml name
+   C:\depot\main\as\asc\test\sanity\tests\b112393.as, Ln 5, Col 1: 
+   </blah>
+   ^
+
+1 error found
+
+[Compiler] Error #1083: Syntax Error: rightparen is unexpected. Expected a primary expression.
+   C:\depot\main\as\asc\test\sanity\tests\b115412.as, Ln 2, Col 4: 
+   a*/)
+   ...^
+
+[Compiler] Error #1093: Syntax error.
+   C:\depot\main\as\asc\test\sanity\tests\b115412.as, Ln 3, Col 6: 
+   = 232?;
+   .....^
+
+2 errors found
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   C:\depot\main\as\asc\test\sanity\tests\b121391.as, Ln 2, Col 1: 
+   static function foo(){}
+   ^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   C:\depot\main\as\asc\test\sanity\tests\b121391.as, Ln 4, Col 9: 
+   dynamic static class A{}
+   ........^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   C:\depot\main\as\asc\test\sanity\tests\b121391.as, Ln 5, Col 1: 
+   static function foo(){}
+   ^
+
+3 errors found
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   C:\depot\main\as\asc\test\sanity\tests\b139770.as, Ln 6, Col 7: 
+   N1::v1:5;
+   ......^
+
+1 error found
+
+[Compiler] Error #1087: Extra characters found after end of program.
+   C:\depot\main\as\asc\test\sanity\tests\block_err.as, Ln 2, Col 1: 
+   } 
+   ^
+
+1 error found
+
+[Compiler] Error #1084: Expecting rightparen before semicolon.
+   C:\depot\main\as\asc\test\sanity\tests\error.as, Ln 3, Col 12: 
+   print(false;
+   ...........^
+
+1 error found
+
+[Compiler] Error #1194: 'prototype' is an invalid attribute.
+   C:\depot\main\as\asc\test\sanity\tests\prototype_attr.as, Ln 5, Col 5: 
+       prototype var x = 10
+   ....^
+
+[Compiler] Error #1194: 'prototype' is an invalid attribute.
+   C:\depot\main\as\asc\test\sanity\tests\prototype_attr.as, Ln 6, Col 5: 
+       prototype var f = function() { return prototype.x }
+   ....^
+
+[Compiler] Error #1194: 'prototype' is an invalid attribute.
+   C:\depot\main\as\asc\test\sanity\tests\prototype_attr.as, Ln 9, Col 5: 
+       prototype var g = function(a:int=1, b:String="foo") 
+   ....^
+
+[Compiler] Error #1194: 'prototype' is an invalid attribute.
+   C:\depot\main\as\asc\test\sanity\tests\prototype_attr.as, Ln 18, Col 5: 
+       prototype var x = 20
+   ....^
+
+4 errors found

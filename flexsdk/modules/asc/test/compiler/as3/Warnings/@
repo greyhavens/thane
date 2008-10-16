@@ -1,0 +1,274 @@
+<?xml version="1.0"?>
+
+<!--
+Ant build file for Actionscript 3.0 test cases
+
+Used to build Warnings (Coach mode)
+
+Usage:
+
+	Optional
+
+		-DTESTCASE  - runs a single test case
+		-DJAVA - puts log files into a separate directory
+-->
+
+<project name="Warnings" default="all" basedir=".">
+
+<!-- specify where Flash MX 2004 is installed -->
+<property name="FLMX2004" value="c:\program files\macromedia\flash mx 2004\flash.exe"/>
+<property name="FL8BALL"  value="c:\program files\macromedia\8ball\flash.exe"/>
+
+<dirname  property="CURDIR"  file ="build.xml"          />
+<dirname  property="ROOT"    file ="${CURDIR}"      />
+<dirname  property="AS3"     file ="${ROOT}"            />
+<!-- hack to go two levels up -->
+<dirname  property="ASRT_"   file ="${AS3}"             />
+<dirname  property="ASRT"    file ="${ASRT_}"           />
+<property name    ="BIN"     value="${ASRT}/bin"        />
+<property name    ="LIB"     value="${ASRT}/lib"        />
+<property name    ="LOG"     value="${AS3}/log"         />
+<property name    ="LOG"     value="${AS3}/log"         />
+<property name    ="REG"     value="${AS3}/regress"     />
+<property name    ="ASC"     value="${BIN}/asc"         />
+<property name    ="AVMPLUS" value="${BIN}/avmplus"     />
+<property name    ="JSSHELL" value="${BIN}/jsshell.exe" />
+<property name    ="SHELLASC" value="${AS3}/../shell.as" />
+<property name	  ="GLOBALAS" value="${AS3}/../Global.abc"  />
+<property name	  ="GLOBALABC" value="${AS3}/../Global.abc"/>
+<property name    ="PGLOBALABC" value="${AS3}/../playerglobal.abc"/>
+
+<taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+
+<mkdir dir="${LOG}"/>
+<mkdir dir="${REG}"/>
+
+<target name="all">
+	<echo>Usage: ant runType</echo>
+	<echo> </echo>
+	<echo>       - runType : run-as3 | run-8ball </echo>
+	<echo>		 - compilerType: -DJAVA="true" for java </echo>
+</target>
+
+<target name="run-8ball">
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+	<property name="COMPILER"    value="8ball" />
+	<antcall target="Warnings" />
+</target>
+
+<target name="run-as3">
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+	<property name="COMPILER"    value="AS3" />
+	<antcall target="Warnings" />
+</target>
+
+<target name="Warnings">
+	<if>
+		<isset property="TESTCASE" />
+		<then>
+			<antcall target="run-single-test"/>
+		</then>
+		<else>
+			<antcall target="run-all-tests"/>
+		</else>
+	</if>
+</target>
+
+<target name="run-all-tests">
+
+	<property name="DIR" value="${CURDIR}"                       />
+
+	<!-- Check if -DJAVA="true" was used -->
+	<if>
+		<and>
+			<isset PROPERTY="JAVA"/>
+			<equals arg1="${JAVA}" arg2="false"/>
+		</and>
+	<then>
+		<property name="OUT" value="${LOG}/asc_cpp/Warnings" />
+	</then>
+	<else>
+		<property name="OUT" value="${LOG}/asc_java/Warnings" />
+	</else>
+	</if>
+
+	<mkdir dir="${OUT}" />
+
+	<!-- clean log directory -->
+	<delete><fileset dir="${OUT}"/></delete>
+
+	<!--
+
+		Compile Errors Directory
+
+		- There won't be an Errors directory in this case
+
+	-->
+
+
+	<!-- compile and run the rest of the files -->
+	<for param="files">
+		<path>
+            <fileset dir="${DIR}" includes="*.as" excludes="temp.as,template.as,includes.as" />
+		</path>
+        <sequential>
+			<propertyregex	override="yes"
+							property="FILE"
+							input="@{files}"
+							regexp=".*[\\/]([^\/.]*)\.as"
+							replace="\1" />
+
+			<echo>Processing: ${FILE}</echo>
+
+			<switch value="${COMPILER}">
+
+				<case value="AS3">
+					<if>
+						<available file="${DIR}/${FILE}" type="dir"/>
+					<then>
+						<echo file="${DIR}/includes.as" append="false">${line.separator}</echo>
+						<!-- add all test cases in the {FILE} to include.as -->
+						<for param="incfiles">
+						<path><fileset dir="${DIR}/${FILE}" includes="*.as" excludes="includes.as"/></path>
+						<sequential>
+							<propertyregex	override="yes"
+											property="INCFILE"
+											input="@{incfiles}"
+											regexp=".*[\\/]([^\/.]*)\.as"
+											replace="\1" />
+
+							<echo>Adding File: ${FILE}/${INCFILE}</echo>
+
+							<echo file="${DIR}/includes.as" append="true">include "${FILE}/${INCFILE}.as"${line.separator}</echo>
+						</sequential>
+						</for>
+
+						<!-- compile abc file -->
+						<exec executable="${ASC}" dir="${DIR}" output="${OUT}/${FILE}.log" append="true" >
+							<arg line="-import ${GLOBALABC}"/>
+							<arg line="-import ${PGLOBALABC}"/>
+							<arg line="-coach ${FILE}.as" />
+						</exec>
+					</then>
+					<else>
+						<!-- compile abc file -->
+						<exec executable="${ASC}" dir="${DIR}" output="${OUT}/${FILE}.log" append="true" >
+							<arg line="-import ${GLOBALABC}"/>
+							<arg line="-import ${PGLOBALABC}"/>
+							<arg line="-coach ${FILE}.as" />
+						</exec>
+					</else>
+					</if>
+
+					<!-- run tests in AVMPlus is not required.Only warnings at compile time are required
+
+					<if>
+						<available file="${DIR}/${FILE}.abc" />
+					<then>
+						<delete failonerror="false" file="${DIR}/${FILE}.abc"/>
+						<echo file=${OUT}/ErrorFilesCompiled.log" append="true">${FILE}.as${line.separator}</echo>
+					</then>
+					</if>
+
+					-->
+
+
+
+
+				</case>
+
+				<case value="8ball">
+				</case>
+			</switch>
+		</sequential>
+	</for>
+
+
+</target>
+
+<target name="finalize">
+	<!-- diff flash 8 verse regress directory -->
+	<echo> Comparing log and regress directories for Warnings </echo>
+	<property name="OUT" value="${LOG}/asc_java/Warnings" />
+	<property name="DIR" value="${CURDIR}"           />
+
+	<exec executable="diff" output="${LOG}/Warnings_diff.log">
+		<arg line="--ignore-all-space"          />
+		<arg line="--exclude=*.abc"             />
+		<arg line="--exclude=*.il"              />
+		<arg line="--exclude=*.p"               />
+		<arg line="--exclude=build.log"			/>
+		<arg line="${REG}/asc/Warnings"/>
+		<arg line="${OUT}"                      />
+	</exec>
+</target>
+
+<!--
+
+	Compare is used to compare the abc files in the asc_cpp directory
+	to the ones in asc_java.  This is what we use to find differences
+	in the java compiler.
+
+ -->
+<target name="compare">
+    <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+	<echo>*** Comparing c++ and java compiler output ***</echo>
+	<delete failonerror="false" file="${LOG}/java_diff.log" />
+	<exec executable="diff" output="${LOG}/java_diff.log"
+					append="true">
+		<arg line="--ignore-all-space"          		/>
+		<arg line="--recursive"			          		/>
+		<arg line="--exclude=*.log"             		/>
+		<arg line="${LOG}/asc_java/"			  		/>
+		<arg line="${LOG}/asc_cpp/"							/>
+	</exec>
+
+</target>
+
+<!--
+	Runs a single test... this is optional, however very useful
+-->
+<target name="run-single-test">
+	<echo>${line.separator}Running test file: ${TESTCASE}.as</echo>
+
+	<property name="OUT" value="${LOG}/asc_java/Warnings" />
+	<property name="DIR" value="${CURDIR}"           />
+
+
+	<echo file="${CURDIR}/includes.as" append="false">${line.separator}</echo>
+	<!-- add all test cases in the {TESTCASE} to include.as -->
+	<for param="files">
+		<path><fileset dir="${TESTCASE}" includes="*.as" excludes="includes.as"/></path>
+		<sequential>
+		<propertyregex	override="yes"
+						property="FILE"
+						input="@{files}"
+						regexp=".*[\\/]([^\/.]*)\.as"
+						replace="\1" />
+
+		<echo>Adding File: ${TESTCASE}/${FILE}</echo>
+
+		<echo file="${CURDIR}/includes.as" append="true">include "${TESTCASE}/${FILE}.as"${line.separator}</echo>
+		</sequential>
+	</for>
+
+	<!-- compile abc file -->
+	<exec executable="${ASC}" dir="${DIR}" >
+		<arg line="-d -import ${GLOBALAS}"/>
+		<arg line="-in ${CURDIR}/includes.as"/>
+		<arg line="-in ${SHELLASC} ${TESTCASE}.as" />
+	</exec>
+
+	<!-- run tests in AVMPlus -->
+	<if>
+		<available file="${DIR}/${TESTCASE}.abc" />
+			<then>
+				<echo>Running: ${TESTCASE}.abc</echo>
+				<exec executable="${AVMPLUS}" dir="${DIR}" >
+					<arg line="${TESTCASE}.abc" />
+				</exec>
+			</then>
+	</if>
+</target>
+
+</project>

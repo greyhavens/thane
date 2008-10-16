@@ -1,0 +1,7 @@
+
+[Compiler] Error #1188: Illegal assignment to class illegalAssgnErr.
+1188-IllegalAssgnErr.as, Ln 11, Col 21:
+illegalAssgnErr=otherClass;
+....................^
+
+1 error found

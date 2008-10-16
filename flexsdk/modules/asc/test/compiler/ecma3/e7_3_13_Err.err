@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before return.
+ecma3.e7_3_13_Err.as, Ln 42, Col 9:
+return \( array \);
+........^
+
+1 error found

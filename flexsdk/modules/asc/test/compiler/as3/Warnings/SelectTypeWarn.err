@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*SelectTypeWarn.as\(13\): Migration issue: The property SELECT_TYPE is no longer supported.  Use the Event.SELECT constant instead..
+trace\(Event.SELECT_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+SelectTypeWarn.abc, [0-9]+ bytes written
+.*Error.*
+

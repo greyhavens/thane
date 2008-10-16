@@ -1,0 +1,6 @@
+/**
+*
+*/
+package p {
+print("hello")
+}

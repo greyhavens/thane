@@ -1,0 +1,7 @@
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before ampersand.
+   IllegalIdentifiersIllegalCharErr.as, Ln 1, Col 19: 
+    namespace illegal@character; 
+   ..................^
+
+1 error found

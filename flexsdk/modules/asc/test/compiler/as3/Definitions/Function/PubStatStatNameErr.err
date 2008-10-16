@@ -1,0 +1,7 @@
+
+[Compiler] Error #1127: Attribute static was specified multiple times.
+   PubStatStatNameErr.as, Ln 5, Col 12: 
+       public static static function a() {}
+   ...........^
+
+1 error found

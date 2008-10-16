@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before with.
+   VarKeyword_with_Err.as, Ln 14, Col 6: 
+   	var with;
+   .....^
+
+1 error found

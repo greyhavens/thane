@@ -1,0 +1,7 @@
+
+[Compiler] Error #1151: A conflict exists with definition a in namespace internal.
+as3.Definitions.Packages.MultiPackSameNameVarErr.as, Ln 27, Col 6:
+var a;
+.....^
+
+1 error found

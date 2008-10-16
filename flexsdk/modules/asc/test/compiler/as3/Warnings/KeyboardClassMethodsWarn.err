@@ -1,0 +1,62 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*\KeyboardClassMethodsWarn.as\(10\): Migration issue: The method addListener is no longer supported.  For more information, see addEventListener \( eventName, listener, useCapture, priority \)..
+Keyboard.addListener\(listener\);
+.............^
+
+.*\KeyboardClassMethodsWarn.as\(11\): Migration issue: The method getAscii is no longer supported.  Use KeyboardEvent.charCode instead..
+Keyboard.getAscii();
+.............^
+
+.*\KeyboardClassMethodsWarn.as\(12\): Migration issue: The method getCode is no longer supported.  Use KeyboardEvent.keyCode instead..
+Keyboard.getCode();
+.............^
+
+.*\KeyboardClassMethodsWarn.as\(13\): Migration issue: The method isDown is no longer supported.  For more information, see the KeyboardEvent class..
+Keyboard.isDown();
+.............^
+
+.*\KeyboardClassMethodsWarn.as\(14\): Migration issue: The method isToggled is no longer supported.  For more information, see KeyboardEvent.ctrlKey, KeyboardEvent.altKey, and KeyboardEvent.shiftKey..
+Keyboard.isToggled();
+.............^
+
+.*\KeyboardClassMethodsWarn.as\(15\): Migration issue: The method removeListener is no longer supported.  For more information, see removeEventListener \( eventName, listener, useCapture\)..
+Keyboard.removeListener();
+.............^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1072: Class is sealed.  It cannot have members added to it dynamically.
+-------------------------------------------------------------------------
+.*\KeyboardClassMethodsWarn.as\(16\): Migration issue: Class is not a dynamic class.  Instances cannot have members added to them dynamically.
+Keyboard.onKeyDown = function():void{}
+....................................^
+
+.*\KeyboardClassMethodsWarn.as\(17\): Migration issue: Class is not a dynamic class.  Instances cannot have members added to them dynamically.
+Keyboard.onKeyUp = function():void{}
+..................................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*\KeyboardClassMethodsWarn.as\(16\): Migration issue: The onKeyDown event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'keyDown', callback_handler\).
+Keyboard.onKeyDown = function():void{}
+.............^
+
+.*\KeyboardClassMethodsWarn.as\(17\): Migration issue: The onKeyUp event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'keyUp', callback_handler\).
+Keyboard.onKeyUp = function():void{}
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+KeyboardClassMethodsWarn.abc, [0-9]+ bytes written
+.*Error.*
+

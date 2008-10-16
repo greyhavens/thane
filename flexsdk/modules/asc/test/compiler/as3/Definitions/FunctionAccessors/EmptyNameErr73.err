@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before with.
+   EmptyNameErr73.as, Ln 5, Col 18: 
+       function get with() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr73.as, Ln 5, Col 25: 
+       function get with() {}
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr73.as, Ln 5, Col 25: 
+       function get with() {}
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr73.as, Ln 5, Col 25: 
+       function get with() {}
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before with.
+   EmptyNameErr73.as, Ln 6, Col 18: 
+       function set with\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr73.as, Ln 6, Col 26: 
+       function set with\(e\) {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr73.as, Ln 6, Col 26: 
+       function set with\(e\) {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr73.as, Ln 6, Col 26: 
+       function set with\(e\) {}
+   .........................^
+
+8 errors found

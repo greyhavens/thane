@@ -1,0 +1,7 @@
+
+[Compiler] Error #1006: A super expression can be used only inside class instance methods.
+1006-SuperExprInClassMethodErr.as, Ln 9, Col 1:
+super.a();
+^
+
+1 error found

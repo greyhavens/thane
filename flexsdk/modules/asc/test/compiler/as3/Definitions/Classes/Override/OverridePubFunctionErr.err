@@ -1,0 +1,12 @@
+
+[Compiler] Error #1010: The override attribute may be used only on class property definitions.
+   OverridePubFunctionErr.as, Ln 2, Col 2: 
+   	override public function a(){};
+   .^
+
+[Compiler] Error #1020: Method marked override must override another method.
+   OverridePubFunctionErr.as, Ln 2, Col 27: 
+   	override public function a(){};
+   ..........................^
+
+2 errors found

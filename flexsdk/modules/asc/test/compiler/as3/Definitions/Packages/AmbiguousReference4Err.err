@@ -1,0 +1,7 @@
+
+[Compiler] Error #1000: Ambiguous reference to C.
+   AmbiguousReference4Err.as, Ln 15, Col 1: 
+   C();
+   ^
+
+1 error found

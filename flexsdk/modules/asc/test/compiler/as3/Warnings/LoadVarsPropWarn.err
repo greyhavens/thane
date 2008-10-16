@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*LoadVarsPropWarn.as\(9\): Migration issue: The property LoadVars is no longer supported.  For more information, see the URLVariables class, the URLRequest.urlVariables and URLRequest.postData properties, and the URLLoader.dataFormat property..
+LoadVars = "";
+..^
+
+-------------------------------------------------------------------------
+
+
+
+LoadVarsPropWarn.abc, [0-9]+ bytes written

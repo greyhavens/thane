@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before dot.
+   FuncDefErr56.as, Ln 8, Col 32: 
+    class FuncDefErr56 implements ._If1Arg
+   ...............................^
+
+1 error found

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute private, not idIdAssign.
+   VarDefPrivateErr14.as, Ln 15, Col 25: 
+       		private idIdAssign, idIdTypeExprAAssign:Array, idIdTypeExprBAssi...
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before semicolon.
+   VarDefPrivateErr14.as, Ln 15, Col 88: 
+       		private idIdAssign, idIdTypeExprAAssign:Array, idIdTypeExprBAssign:Boolean = true;
+   .......................................................................................^
+
+2 errors found

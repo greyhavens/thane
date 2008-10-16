@@ -1,0 +1,47 @@
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 82, Col 28:
+public final static const num9 = 9;
+...........................^
+
+[Compiler] Error #1134: The dynamic attribute can only be used with class definitions.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 84, Col 29:
+dynamic final static const num11 = 11;
+............................^
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 84, Col 29:
+dynamic final static const num11 = 11;
+............................^
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 75, Col 14:
+final const num1 = 1;
+.............^
+
+[Compiler] Error #1134: The dynamic attribute can only be used with class definitions.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 76, Col 16:
+dynamic const num2 = 2;
+...............^
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 80, Col 21:
+public final const num7 = 7;
+....................^
+
+[Compiler] Error #1134: The dynamic attribute can only be used with class definitions.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 81, Col 23:
+public dynamic const num8 = 8;
+......................^
+
+[Compiler] Error #1134: The dynamic attribute can only be used with class definitions.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 83, Col 22:
+dynamic final const num10 = 10;
+.....................^
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+as3.Definitions.const.ConstVarAsClassPropErr.as, Ln 83, Col 22:
+dynamic final const num10 = 10;
+.....................^
+
+9 errors found

@@ -1,0 +1,427 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before as.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 31, Col 9:
+package as {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before break.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 32, Col 9:
+package break {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before case.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 33, Col 9:
+package case {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before catch.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 34, Col 9:
+package catch {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before class.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 35, Col 9:
+package class {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before const.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 36, Col 9:
+package const {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before continue.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 37, Col 9:
+package continue {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before default.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 38, Col 9:
+package default {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before delete.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 39, Col 9:
+package delete {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before do.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 40, Col 9:
+package do {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before else.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 41, Col 9:
+package else {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before extends.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 42, Col 9:
+package extends {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before false.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 43, Col 9:
+package false {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before finally.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 44, Col 9:
+package finally {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before for.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 45, Col 9:
+package for {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before function.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 46, Col 9:
+package function {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before if.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 47, Col 9:
+package if {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before implements.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 48, Col 9:
+package implements {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before import.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 49, Col 9:
+package import {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before in.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 50, Col 9:
+package in {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before include.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 51, Col 9:
+package include {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before instanceof.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 52, Col 9:
+package instanceof {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before interface.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 53, Col 9:
+package interface {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before is.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 54, Col 9:
+package is {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before new.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 55, Col 9:
+package new {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before null.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 56, Col 9:
+package null {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before package.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 57, Col 9:
+package package {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before private.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 58, Col 9:
+package private {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before protected.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 59, Col 9:
+package protected {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before public.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 60, Col 9:
+package public {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before return.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 61, Col 9:
+package return {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before super.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 62, Col 9:
+package super {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before switch.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 63, Col 9:
+package switch {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before this.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 64, Col 9:
+package this {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before throw.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 65, Col 9:
+package throw {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before true.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 66, Col 9:
+package true {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before try.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 67, Col 9:
+package try {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before typeof.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 68, Col 9:
+package typeof {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before use.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 69, Col 9:
+package use {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before var.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 70, Col 9:
+package var {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before void.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 71, Col 9:
+package void {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before while.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 72, Col 9:
+package while {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before with.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 73, Col 9:
+package with {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before as.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 76, Col 13:
+package foo.as.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before break.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 77, Col 13:
+package foo.break.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before case.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 78, Col 13:
+package foo.case.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before catch.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 79, Col 13:
+package foo.catch.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before class.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 80, Col 13:
+package foo.class.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before const.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 81, Col 13:
+package foo.const.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before continue.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 82, Col 13:
+package foo.continue.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before delete.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 84, Col 13:
+package foo.delete.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before do.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 85, Col 13:
+package foo.do.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before else.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 86, Col 13:
+package foo.else.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before extends.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 87, Col 13:
+package foo.extends.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before false.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 88, Col 13:
+package foo.false.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before finally.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 89, Col 13:
+package foo.finally.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before for.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 90, Col 13:
+package foo.for.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before function.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 91, Col 13:
+package foo.function.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before if.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 92, Col 13:
+package foo.if.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before implements.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 93, Col 13:
+package foo.implements.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before import.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 94, Col 13:
+package foo.import.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before in.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 95, Col 13:
+package foo.in.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before include.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 96, Col 13:
+package foo.include.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before instanceof.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 97, Col 13:
+package foo.instanceof.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before interface.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 98, Col 13:
+package foo.interface.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before is.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 99, Col 13:
+package foo.is.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before new.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 100, Col 13:
+package foo.new.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before null.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 101, Col 13:
+package foo.null.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before package.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 102, Col 13:
+package foo.package.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before private.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 103, Col 13:
+package foo.private.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before protected.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 104, Col 13:
+package foo.protected.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before public.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 105, Col 13:
+package foo.public.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before return.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 106, Col 13:
+package foo.return.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before super.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 107, Col 13:
+package foo.super.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before switch.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 108, Col 13:
+package foo.switch.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before this.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 109, Col 13:
+package foo.this.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before throw.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 110, Col 13:
+package foo.throw.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before true.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 111, Col 13:
+package foo.true.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before try.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 112, Col 13:
+package foo.try.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before typeof.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 113, Col 13:
+package foo.typeof.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before use.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 114, Col 13:
+package foo.use.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before var.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 115, Col 13:
+package foo.var.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before void.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 116, Col 13:
+package foo.void.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before while.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 117, Col 13:
+package foo.while.bar {}
+............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before with.
+as3.Definitions.Packages.ReservedPackageNames.as, Ln 118, Col 13:
+package foo.with.bar {}
+............^
+
+85 errors found

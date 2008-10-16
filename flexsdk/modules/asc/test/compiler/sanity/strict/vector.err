@@ -1,0 +1,27 @@
+
+\[Compiler\] Error #1000: Ambiguous reference to Vector.
+.*vector.as, Ln 60, Col 22:
+var v : Vector = new Vector
+.....................\^
+
+\[Compiler\] Error #1000: Ambiguous reference to Vector.
+.*vector.as, Ln 60, Col 9:
+var v : Vector = new Vector
+........\^
+
+\[Compiler\] Error #1000: Ambiguous reference to Vector.
+.*vector.as, Ln 9, Col 28:
+function copyVector\( v:Vector \):void
+...........................\^
+
+\[Compiler\] Error #1000: Ambiguous reference to Vector.
+.*vector.as, Ln 21, Col 27:
+function addVector\( v:Vector \):void
+..........................\^
+
+\[Compiler\] Error #1000: Ambiguous reference to Vector.
+.*vector.as, Ln 28, Col 27:
+function subVector\( v:Vector \):void
+..........................\^
+
+5 errors found

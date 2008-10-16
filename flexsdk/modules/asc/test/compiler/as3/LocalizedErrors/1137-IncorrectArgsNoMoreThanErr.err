@@ -1,0 +1,7 @@
+
+[Compiler] Error #1137: Incorrect number of arguments.  Expected no more than 1.
+1137-IncorrectArgsNoMoreThanErr.as, Ln 5, Col 49:
+Date.parse\("Wed Apr 12 15:30:17 GMT-0700 2006", "extra_arg"\);
+................................................^
+
+1 error found

@@ -1,0 +1,17 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+as3\Warnings\TextSnapshotMethodsWarn.as(13): Migration issue: The method getCount is no longer supported.  Use the TextSnapshot.charCount property instead..
+TS.getCount();
+.......^
+
+-------------------------------------------------------------------------
+
+
+
+TextSnapshotMethodsWarn.abc, 278 bytes written
+VerifyError: Error #1014

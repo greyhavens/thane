@@ -1,0 +1,7 @@
+
+[Compiler] Error #1152: A conflict exists with inherited definition DupDefInSameNamespaceErrPackage:DupDefInSameNamespaceErr.samevar in namespace internal.
+1152-DupDefInSameNamespaceErr.as, Ln 13, Col 16:
+N1 var samevar:String = 'mystring';
+...............^
+
+1 error found

@@ -1,0 +1,23 @@
+
+b172372.abc, \d+ bytes written
+Sie haben ein grünes Buch.
+length = 26
+uch.
+String.search:
+PASS
+String.replace:
+S_ hab_n _n grün_s Buch.
+Sie haben ein gr_nes Buch.
+Sie haben ein gr_nes Buch.
+SIE HABEN EIN GRÜNES BUCH.
+String.match:
+Buch
+null
+grünes
+String.split:
+0: Sie
+1: haben
+2: ein
+3: grünes
+4: Buch.
+25

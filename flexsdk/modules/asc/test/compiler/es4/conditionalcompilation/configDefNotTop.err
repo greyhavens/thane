@@ -1,0 +1,7 @@
+
+[Compiler] Error #1210: A configuration value must be declared at the top level of a program or package.
+.*configDefNotTop.as, Ln 3, Col 22:
+config namespace CONFIG2
+.....................^
+
+1 error found

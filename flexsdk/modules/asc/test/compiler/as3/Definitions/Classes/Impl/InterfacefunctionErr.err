@@ -1,0 +1,17 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   InterfacefunctionErr.as, Ln 10, Col 23: 
+   		public A function m {    }
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   InterfacefunctionErr.as, Ln 10, Col 23: 
+   		public A function m {    }
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   InterfacefunctionErr.as, Ln 10, Col 23: 
+   		public A function m {    }
+   ......................^
+
+3 errors found

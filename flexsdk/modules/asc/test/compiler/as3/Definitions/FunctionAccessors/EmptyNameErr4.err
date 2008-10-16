@@ -1,0 +1,12 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before modulus.
+   EmptyNameErr4.as, Ln 5, Col 19: 
+       function set a%\(e\) {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before modulus.
+   EmptyNameErr4.as, Ln 6, Col 19: 
+       function get a%() {}
+   ..................^
+
+2 errors found

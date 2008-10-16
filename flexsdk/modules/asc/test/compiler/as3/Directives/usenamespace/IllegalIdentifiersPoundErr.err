@@ -1,0 +1,7 @@
+
+[Compiler] Error #1093: Syntax error.
+   IllegalIdentifiersPoundErr.as, Ln 1, Col 11: 
+   namespace #startswithillegal;
+   ..........^
+
+1 error found

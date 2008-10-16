@@ -1,0 +1,7 @@
+
+[Compiler] Error #1141: A class can only extend another class, not an interface.
+1141-ClassExtIntErr.as, Ln 8, Col 41:
+public class ClassExtIntErr extends myinterface{}
+........................................^
+
+1 error found

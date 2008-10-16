@@ -1,0 +1,7 @@
+
+[Compiler] Error #1192: The static attribute is not allowed on namespace definitions.
+1192-StaticNamespaceErr.as, Ln 10, Col 9:
+static namespace myNamespace;
+........^
+
+1 error found

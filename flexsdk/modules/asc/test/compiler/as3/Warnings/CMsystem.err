@@ -1,0 +1,46 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CMsystem.as\(13\): Migration issue: The property exactSettings is no longer supported.  ActionScript 3.0 SWF files always use exact domain matching rules..
+System.exactSettings;
+........^
+
+.*CMsystem.as\(14\): Migration issue: The property useCodepage is no longer supported.  Use the System.useCodePage property instead..
+System.useCodepage;
+........^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMsystem.as\(18\): Migration issue: The method showSettings is no longer supported.  Use the flash.system.Security.showSettings method instead..
+System.showSettings()
+........^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1072: Class is sealed.  It cannot have members added to it dynamically.
+-------------------------------------------------------------------------
+.*CMsystem.as\(16\): Migration issue: Class is not a dynamic class.  Instances cannot have members added to them dynamically.
+System.onStatus = function():void{}
+..............................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*CMsystem.as\(16\): Migration issue: The onStatus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'status', callback_handler\).
+System.onStatus = function():void{}
+........^
+
+-------------------------------------------------------------------------
+
+
+
+CMsystem.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   IfAttrErr4.as, Ln 3, Col 9: 
+   	public public public interface IfAttrErr4
+   ........^
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   IfAttrErr4.as, Ln 3, Col 2: 
+   	public public public interface IfAttrErr4
+   .^
+
+2 errors found

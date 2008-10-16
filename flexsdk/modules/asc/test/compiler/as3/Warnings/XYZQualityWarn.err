@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*XYZQualityWarn.as\(12\): Migration issue: The property XYZ_QUALITY is no longer supported.  Use the BitmapFilter.quality property instead..
+a.XYZ_QUALITY;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+XYZQualityWarn.abc, [0-9]+ bytes written
+.*Error.*
+

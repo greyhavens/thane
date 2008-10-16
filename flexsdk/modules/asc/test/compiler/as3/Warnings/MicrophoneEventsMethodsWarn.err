@@ -1,0 +1,50 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*\MicrophoneEventsMethodsWarn.as\(10\): Migration issue: The method get is no longer supported.  Use the Microphone.getMicrophone() method instead..
+Microphone.get();
+...............^
+
+.*\MicrophoneEventsMethodsWarn.as\(22\): Migration issue: The method setGain is no longer supported.  Use the gain property instead..
+my_microphone.setGain\(100\);
+..................^
+
+.*\MicrophoneEventsMethodsWarn.as\(23\): Migration issue: The method setRate is no longer supported.  Use the rate property instead..
+my_microphone.setRate();
+..................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1072: Class is sealed.  It cannot have members added to it dynamically.
+-------------------------------------------------------------------------
+.*\MicrophoneEventsMethodsWarn.as\(14\): Migration issue: Microphone is not a dynamic class.  Instances cannot have members added to them dynamically.
+my_mc.onActivity = function\(active:Boolean\):void{
+................................................^
+
+.*\MicrophoneEventsMethodsWarn.as\(18\): Migration issue: Microphone is not a dynamic class.  Instances cannot have members added to them dynamically.
+my_mc.onStatus = function():void{
+................................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*\MicrophoneEventsMethodsWarn.as\(14\): Migration issue: The onActivity event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'activity', callback_handler\).
+my_mc.onActivity = function\(active:Boolean\):void{
+..........^
+
+.*\MicrophoneEventsMethodsWarn.as\(18\): Migration issue: The onStatus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'status', callback_handler\).
+my_mc.onStatus = function():void{
+..........^
+
+-------------------------------------------------------------------------
+
+
+
+MicrophoneEventsMethodsWarn.abc, [0-9]+ bytes written
+.*Error.*
+

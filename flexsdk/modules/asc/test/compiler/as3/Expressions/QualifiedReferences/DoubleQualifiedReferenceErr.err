@@ -1,0 +1,5 @@
+[Compiler] Error #1084: Syntax error: expecting identifier before doublecolon.
+.*DoubleQualifiedReferenceErr.as, Ln 16, Col 11:
+a.ns2::ns1::x;
+..........^
+1 error found

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   ClassAttrErr24.as, Ln 3, Col 2: 
+   	static public static class ClassAttrErr24
+   .^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   ClassAttrErr24.as, Ln 3, Col 16: 
+   	static public static class ClassAttrErr24
+   ...............^
+
+2 errors found

@@ -1,0 +1,58 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CMselection.as\(10\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.addListener()
+.^
+
+.*CMselection.as\(11\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.getBeginIndex()
+.^
+
+.*CMselection.as\(12\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.getCaretIndex()
+.^
+
+.*CMselection.as\(13\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.getEndIndex()
+.^
+
+.*CMselection.as\(14\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.getFocus()
+.^
+
+.*CMselection.as\(15\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.removeListener()
+.^
+
+.*CMselection.as\(16\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.setFocus()
+.^
+
+.*CMselection.as\(17\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.setSelection()
+.^
+
+.*CMselection.as\(18\): Migration issue: The property Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+Selection.onSetFocus()
+.^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMselection.as\(8\): Migration issue: The method Selection is no longer supported.  The Selection class has been removed. For more information, see the addEventListener method of the class you want selection information from..
+new Selection()
+.....^
+
+-------------------------------------------------------------------------
+
+
+
+CMselection.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

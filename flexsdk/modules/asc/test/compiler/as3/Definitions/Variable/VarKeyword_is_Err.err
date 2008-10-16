@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before is.
+   VarKeyword_is_Err.as, Ln 14, Col 6: 
+   	var is;
+   .....^
+
+1 error found

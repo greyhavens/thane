@@ -1,0 +1,7 @@
+
+[Compiler] Error #1018: Duplicate class definition: A.
+   DuplicateDynClassDefErr.as, Ln 5, Col 16: 
+   	dynamic class A{}
+   ...............^
+
+1 error found

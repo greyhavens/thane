@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before class.
+   IllegalIdentifiersReservedErr.as, Ln 1, Col 11: 
+   namespace class;
+   ..........^
+
+1 error found

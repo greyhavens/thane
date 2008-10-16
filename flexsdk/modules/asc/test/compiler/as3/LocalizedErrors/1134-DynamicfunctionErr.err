@@ -1,0 +1,7 @@
+
+[Compiler] Error #1134: The dynamic attribute can only be used with class definitions.
+1134-DynamicfunctionErr.as, Ln 10, Col 10:
+dynamic static function dynamicfunction(){}
+.........^
+
+1 error found

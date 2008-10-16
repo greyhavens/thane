@@ -1,0 +1,7 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NamespaceErr2.as, Ln 3, Col 2: 
+   	ns class A {
+   .^
+
+1 error found

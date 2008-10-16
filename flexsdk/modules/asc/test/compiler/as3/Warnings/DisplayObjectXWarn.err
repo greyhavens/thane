@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*DisplayObjectXWarn.as\(12\): Migration issue: The property _x is no longer supported.  Use the DisplayObject.x property instead..
+a._x = 10;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+DisplayObjectXWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

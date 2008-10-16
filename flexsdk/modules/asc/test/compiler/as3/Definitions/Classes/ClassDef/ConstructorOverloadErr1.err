@@ -1,0 +1,12 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   ConstructorOverloadErr1.as, Ln 20, Col 19: 
+   		public function Bar(){}
+   ..................^
+
+[Compiler] Error #1021: Duplicate function definition.
+   ConstructorOverloadErr1.as, Ln 22, Col 19: 
+   		public function Bar\(s:String\){}
+   ..................^
+
+2 errors found

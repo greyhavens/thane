@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before void.
+ecma3.e7_4_2_8_Err.as, Ln 49, Col 9:
+var void = true;
+........^
+
+1 error found

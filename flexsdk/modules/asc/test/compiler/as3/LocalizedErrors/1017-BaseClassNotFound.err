@@ -1,0 +1,7 @@
+
+[Compiler] Error #1017: The definition of base class A was not found.
+1017-BaseClassNotFound.as, Ln 5, Col 17:
+class B extends A {}
+................^
+
+1 error found

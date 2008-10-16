@@ -1,0 +1,7 @@
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   OverrideFnWODeclaringErr5.as, Ln 7, Col 20: 
+   		virtual function foo() {}
+   ...................^
+
+1 error found

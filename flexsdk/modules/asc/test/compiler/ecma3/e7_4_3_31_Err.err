@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before protected.
+ecma3.e7_4_3_31_Err.as, Ln 59, Col 9:
+var protected:Boolean = true;
+........^
+
+1 error found

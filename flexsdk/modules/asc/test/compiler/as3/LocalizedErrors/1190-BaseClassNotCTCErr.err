@@ -1,0 +1,7 @@
+
+[Compiler] Error #1090: Syntax error: expecting leftbrace before leftparen.
+1190-BaseClassNotCTCErr.as, Ln 30, Col 48:
+class goo extends nonCompileTimeConstantFunc() { }
+...............................................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1158: Syntax error: missing left brace \({\) before the function body.
+   FreeFloatingFuncBodyErr2.as, Ln 2, Col 23: 
+   function myFunction() return "this should not compile";
+   ......................^
+
+1 error found

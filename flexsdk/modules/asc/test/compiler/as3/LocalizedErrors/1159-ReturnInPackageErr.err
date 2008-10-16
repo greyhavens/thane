@@ -1,0 +1,7 @@
+
+[Compiler] Error #1159: The return statement cannot be used in package initialization code.
+1159-ReturnInPackageErr.as, Ln 2, Col 14:
+return 'a';
+.............^
+
+1 error found

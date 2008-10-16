@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before case.
+ecma3.e7_4_3_1_Err.as, Ln 47, Col 9:
+var case = true;
+........^
+
+1 error found

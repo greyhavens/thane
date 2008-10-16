@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before import.
+   ImportAsFunctionNameErr.as, Ln 1, Col 10: 
+   function import() {
+   .........^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   ImportAsFunctionNameErr.as, Ln 1, Col 19: 
+   function import() {
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   ImportAsFunctionNameErr.as, Ln 1, Col 19: 
+   function import() {
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   ImportAsFunctionNameErr.as, Ln 1, Col 19: 
+   function import() {
+   ..................^
+
+4 errors found

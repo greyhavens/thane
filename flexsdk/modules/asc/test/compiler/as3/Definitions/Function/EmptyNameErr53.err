@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before for.
+   EmptyNameErr53.as, Ln 5, Col 14: 
+       function for() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr53.as, Ln 5, Col 20: 
+       function for() {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr53.as, Ln 5, Col 20: 
+       function for() {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr53.as, Ln 5, Col 20: 
+       function for() {}
+   ...................^
+
+4 errors found

@@ -1,0 +1,37 @@
+
+[Compiler] Error #1076: Syntax error: expecting left parenthesis before the identifier.
+1076-ExpectingLeftParenthesis.as, Ln 5, Col 9:
+for i = 0;;\) {}
+........^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before assign.
+1076-ExpectingLeftParenthesis.as, Ln 5, Col 11:
+for i = 0;;\) {}
+..........^
+
+[Compiler] Error #1075: Syntax error: the 'each' keyword is not allowed without an 'in' operator.
+1076-ExpectingLeftParenthesis.as, Ln 5, Col 15:
+for i = 0;;\) {}
+..............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before rightparen.
+1076-ExpectingLeftParenthesis.as, Ln 5, Col 16:
+for i = 0;;\) {}
+...............^
+
+[Compiler] Error #1084: Syntax error: expecting semicolon before leftbrace.
+1076-ExpectingLeftParenthesis.as, Ln 5, Col 18:
+for i = 0;;\) {}
+.................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before rightbrace.
+1076-ExpectingLeftParenthesis.as, Ln 6, Col 1:
+}
+^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before rightbrace.
+1076-ExpectingLeftParenthesis.as, Ln 6, Col 1:
+}
+^
+
+7 errors found

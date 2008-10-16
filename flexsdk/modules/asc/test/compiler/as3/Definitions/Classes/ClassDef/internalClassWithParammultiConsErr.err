@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   internalClassWithParammultiConsErr.as, Ln 11, Col 33: 
+                   public function internalClassWithParammultiConsErr\(a:N...
+   ................................^
+
+1 error found

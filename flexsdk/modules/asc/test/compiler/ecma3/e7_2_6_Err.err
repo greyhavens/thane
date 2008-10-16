@@ -1,0 +1,32 @@
+
+\[Compiler\] Error #1093: Syntax error.
+.*e7_2_6_Err.as, Ln 45, Col 93:
+array\[item..\] = new TestCase.*
+............................................................................................^
+
+\[Compiler\] Error #1084: Syntax error: expecting rightparen before nb.
+.*e7_2_6_Err.as, Ln 45, Col 94:
+array\[item..\] = new TestCase.*
+.............................................................................................^
+
+\[Compiler\] Error #1093: Syntax error.
+.*e7_2_6_Err.as, Ln 46, Col 93:
+array\[item..\] = new TestCase.*
+............................................................................................^
+
+\[Compiler\] Error #1084: Syntax error: expecting rightparen before rb.
+.*e7_2_6_Err.as, Ln 46, Col 94:
+array\[item..\] = new TestCase.*
+.............................................................................................^
+
+\[Compiler\] Error #1084: Syntax error: expecting rightparen before b.
+.*e7_2_6_Err.as, Ln 47, Col 99:
+array\[item..\] = new TestCase.*
+..................................................................................................^
+
+\[Compiler\] Error #1084: Syntax error: expecting rightparen before b.
+.*e7_2_6_Err.as, Ln 48, Col 99:
+array\[item..\] = new TestCase.*
+..................................................................................................^
+
+6 errors found

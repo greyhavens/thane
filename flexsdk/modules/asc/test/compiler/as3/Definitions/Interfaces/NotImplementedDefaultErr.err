@@ -1,0 +1,7 @@
+
+[Compiler] Error #1044: Interface method hello in namespace Errors:IInterface not implemented by class Errors:MyClass.
+   NotImplementedDefaultErr.as, Ln 12, Col 8: 
+   	class MyClass implements IInterface {
+   .......^
+
+1 error found

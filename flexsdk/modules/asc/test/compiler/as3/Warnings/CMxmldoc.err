@@ -1,0 +1,70 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CMxmldoc.as\(13\): Migration issue: The property contentType is no longer supported.  Use the URLRequest.contentType property instead..
+trace\(xmldoc.contentType\);
+.............^
+
+.*CMxmldoc.as\(14\): Migration issue: The property loaded is no longer supported.  Use an instance of URLLoader to load the XML file, then pass the loaders data to the StyleSheet.parseCSS method. For more information, see the URLLoader and EventDispatcher classes..
+xmldoc.loaded;
+.......^
+
+.*CMxmldoc.as\(15\): Migration issue: The property status is no longer supported.  Check for the possible exceptions thrown by the XMLDocument constructor or the XMLDocument.parseXML method instead. For more information, see XMLDocument..
+xmldoc.status;
+.......^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMxmldoc.as\(16\): Migration issue: The method addRequestHeader is no longer supported.  To add request headers, set the URLRequest.requestHeaders property to an array of URLRequestHeader objects..
+xmldoc.addRequestHeader();
+.......^
+
+.*CMxmldoc.as\(17\): Migration issue: The method getBytesLoaded is no longer supported.  For more information, see URLLoader.bytesLoaded and the URLLoader class..
+xmldoc.getBytesLoaded();
+.......^
+
+.*CMxmldoc.as\(18\): Migration issue: The method getBytesTotal is no longer supported.  For more information, see URLLoader.bytesTotal and the URLLoader class..
+xmldoc.getBytesTotal();
+.......^
+
+.*CMxmldoc.as\(19\): Migration issue: The method load is no longer supported.  Use an instance of URLLoader to load the XML file, then pass the URLLoaders data to the XMLDocuments constructor. For more information, see the URLLoader and EventDispatcher classes..
+xmldoc.load();
+.......^
+
+.*CMxmldoc.as\(20\): Migration issue: The method send is no longer supported.  Use the sendToURL() method in the flash.net package instead..
+xmldoc.send();
+.......^
+
+.*CMxmldoc.as\(21\): Migration issue: The method sendAndLoad is no longer supported.  Set a URLRequest object postData property and use it with a URLLoader object to load the XML file.  Pass the URLLoaders data to the XMLDocuments constructor. For more information, see the URLLoader, URLRequest and EventDispatcher classes..
+xmldoc.sendAndLoad();
+.......^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*CMxmldoc.as\(22\): Migration issue: The onData event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'data', callback_handler\).
+xmldoc.onData = function():void{
+.......^
+
+.*CMxmldoc.as\(25\): Migration issue: The onHTTPStatus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'httpStatus', callback_handler\).
+xmldoc.onHTTPStatus = function():void{
+.......^
+
+.*CMxmldoc.as\(27\): Migration issue: The onLoad event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'load', callback_handler\).
+xmldoc.onLoad = function():void{
+.......^
+
+-------------------------------------------------------------------------
+
+
+
+CMxmldoc.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

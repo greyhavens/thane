@@ -1,0 +1,7 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   userdefnameoutsideclassErr.as, Ln 3, Col 1: 
+   n1 var x:int = 1
+   ^
+
+1 error found

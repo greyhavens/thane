@@ -1,0 +1,7 @@
+
+[Compiler] Error #1171: A namespace initializer must be either a literal string or another namespace.
+1171-NSIntErr.as, Ln 9, Col 24:
+namespace N1 = 100;
+.......................^
+
+1 error found

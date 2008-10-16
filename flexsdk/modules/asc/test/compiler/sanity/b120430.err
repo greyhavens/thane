@@ -1,0 +1,9 @@
+
+b120430.abc, \d+ bytes written
+<soap:Envelope soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+<soap:Body>
+<stock:GetLastTradePrice xmlns:stock="http://mycompany.com/stocks">
+<stock:symbol>DIS</stock:symbol>
+</stock:GetLastTradePrice>
+</soap:Body>
+</soap:Envelope>

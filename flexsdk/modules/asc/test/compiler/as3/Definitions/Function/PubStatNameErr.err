@@ -1,0 +1,7 @@
+
+[Compiler] Error #1026: Constructor functions must be instance methods.
+   PubStatNameErr.as, Ln 6, Col 28: 
+       public static function PubStatNameErr() {}
+   ...........................^
+
+1 error found

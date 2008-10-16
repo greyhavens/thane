@@ -1,0 +1,22 @@
+
+[Compiler] Error #1093: Syntax error.
+   EmptyNameErr23.as, Ln 5, Col 15: 
+       function a/b () {}
+   ..............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before rightbrace.
+   EmptyNameErr23.as, Ln 6, Col 2: 
+    }
+   .^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before rightbrace.
+   EmptyNameErr23.as, Ln 6, Col 2: 
+    }
+   .^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before rightbrace.
+   EmptyNameErr23.as, Ln 6, Col 2: 
+    }
+   .^
+
+4 errors found

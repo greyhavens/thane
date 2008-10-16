@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before continue.
+   StaticPublicNameErr42.as, Ln 5, Col 28: 
+       static public function continue() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr42.as, Ln 5, Col 39: 
+       static public function continue() {}
+   ......................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr42.as, Ln 5, Col 39: 
+       static public function continue() {}
+   ......................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr42.as, Ln 5, Col 39: 
+       static public function continue() {}
+   ......................................^
+
+4 errors found

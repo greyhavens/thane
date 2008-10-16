@@ -1,0 +1,7 @@
+
+[Compiler] Error #1145: Native methods cannot have a body.
+1145-NativeMethodWithBodyErr.as, Ln 8, Col 25:
+native function MyNativeFunction(){}
+........................^
+
+1 error found

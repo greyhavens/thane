@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr23 was not found.
+   IfAttrErr23_.as, Ln 6, Col 39: 
+   	public class IfAttrErr23_ implements IfAttrErr23
+   ......................................^
+
+1 error found

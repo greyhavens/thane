@@ -1,0 +1,7 @@
+
+[Compiler] Error #1034: Variables cannot be native.
+1034-NativeVariables.as, Ln 5, Col 16:
+native var a;
+...............^
+
+1 error found

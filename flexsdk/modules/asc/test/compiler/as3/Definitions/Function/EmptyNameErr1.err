@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before not.
+   EmptyNameErr1.as, Ln 3, Col 16: 
+   	    function a!() {}
+   ...............^
+
+1 error found

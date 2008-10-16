@@ -1,0 +1,7 @@
+
+[Compiler] Error #1103: Duplicate namespace definition.
+1103-DuplicateNamespaceErr.as, Ln 8, Col 11:
+namespace ns1;
+..........^
+
+1 error found

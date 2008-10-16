@@ -1,0 +1,7 @@
+
+[Compiler] Error #1198: Attributes are not allowed on package definition.
+as3.Definitions.Packages.DynamicPackageErr.as, Ln 23, Col 9:
+dynamic package foo {}
+........^
+
+1 error found

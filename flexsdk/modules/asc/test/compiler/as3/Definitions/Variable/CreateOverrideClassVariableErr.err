@@ -1,0 +1,7 @@
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   CreateOverrideClassVariableErr.as, Ln 5, Col 22: 
+           override var item1;
+   .....................^
+
+1 error found

@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*LengthWarn.as\(9\): Migration issue: The method length is no longer supported.  Use the length property of the argument instead..
+length\("String"\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+LengthWarn.abc, [0-9]+ bytes written
+.*Error.*
+

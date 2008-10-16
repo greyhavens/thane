@@ -1,0 +1,5 @@
+
+b139065.abc, \d+ bytes written
+caught exception ReferenceError: Error #1065.*
+foo
+caught exception ReferenceError: Error #1065.*

@@ -1,0 +1,29 @@
+
+ASC-77.abc, .* bytes written
+Good Results
+500 200 \[v:0 i:0 a: 0 e: 0\]
+500 200 \[v:0 i:0 a: 0 e: 1\]
+500 200 \[v:0 i:0 a: 1 e: 0\]
+500 200 \[v:0 i:0 a: 1 e: 1\]
+500 200 \[v:0 i:1 a: 0 e: 0\]
+500 200 \[v:0 i:1 a: 0 e: 1\]
+500 200 \[v:0 i:1 a: 1 e: 0\]
+500 200 \[v:0 i:1 a: 1 e: 1\]
+Bad Results - first iteration - first event loop good, second loop bad
+500 200 \[v:0 i:0 a: 0 e: 0\]
+500 200 \[v:0 i:0 a: 0 e: 1\]
+500 200 \[v:0 i:0 a: 1 e: 0\]
+500 200 \[v:0 i:0 a: 1 e: 1\]
+500 200 \[v:0 i:1 a: 0 e: 0\]
+500 200 \[v:0 i:1 a: 0 e: 1\]
+500 200 \[v:0 i:1 a: 1 e: 0\]
+500 200 \[v:0 i:1 a: 1 e: 1\]
+Bad Results - second iteration - both loops bad
+500 200 \[v:0 i:0 a: 0 e: 0\]
+500 200 \[v:0 i:0 a: 0 e: 1\]
+500 200 \[v:0 i:0 a: 1 e: 0\]
+500 200 \[v:0 i:0 a: 1 e: 1\]
+500 200 \[v:0 i:1 a: 0 e: 0\]
+500 200 \[v:0 i:1 a: 0 e: 1\]
+500 200 \[v:0 i:1 a: 1 e: 0\]
+500 200 \[v:0 i:1 a: 1 e: 1\]

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1037: Packages cannot be nested.
+as3.Definitions.Packages.PackageInPackageErr.as, Ln 25, Col 2:
+package bar {
+.^
+
+1 error found

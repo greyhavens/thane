@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before comma.
+   StaticPublicNameErr21.as, Ln 5, Col 29: 
+       static public function a,b () {}
+   ............................^
+
+1 error found

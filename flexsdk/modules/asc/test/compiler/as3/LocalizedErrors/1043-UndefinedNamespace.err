@@ -1,0 +1,12 @@
+
+[Compiler] Error #1043: Undefined namespace.
+1043-UndefinedNamespace.as, Ln 5, Col 9:
+use ns1
+........^
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before ns1.
+1043-UndefinedNamespace.as, Ln 5, Col 9:
+use ns1
+........^
+
+2 errors found

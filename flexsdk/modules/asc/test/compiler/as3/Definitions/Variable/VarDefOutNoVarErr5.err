@@ -1,0 +1,7 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr5.as, Ln 81, Col 14:
+idA, idB:Boolean;
+.............^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before not.
+   LegalAssignmentExpIllegalIdentifierErr.as, Ln 1, Col 12: 
+    namespace !illegalName;
+   ...........^
+
+1 error found

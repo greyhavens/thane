@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr20 was not found.
+   IfAttrErr20_.as, Ln 6, Col 39: 
+   	public class IfAttrErr20_ implements IfAttrErr20
+   ......................................^
+
+1 error found

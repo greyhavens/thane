@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before package.
+   StaticNameErr60.as, Ln 5, Col 21: 
+       static function package() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr60.as, Ln 5, Col 31: 
+       static function package() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr60.as, Ln 5, Col 31: 
+       static function package() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr60.as, Ln 5, Col 31: 
+       static function package() {}
+   ..............................^
+
+4 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1000: Ambiguous reference to hello.
+1000-AmbiguousReferenceErr.as, Ln 13, Col 10:
+trace\(hello()\);
+.........^
+
+1 error found

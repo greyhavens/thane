@@ -1,0 +1,7 @@
+
+[Compiler] Error #1142: An interface can only extend other interfaces, but Array is a class.
+   DynImplErr.as, Ln 13, Col 38: 
+   	dynamic class DynImplErr implements Array {}
+   .....................................^
+
+1 error found

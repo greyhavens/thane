@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr7 was not found.
+   IfAttrErr7_.as, Ln 6, Col 38: 
+   	public class IfAttrErr7_ implements IfAttrErr7
+   .....................................^
+
+1 error found

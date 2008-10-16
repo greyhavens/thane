@@ -1,0 +1,4 @@
+
+b111951.abc, \d+ bytes written
+ReferenceError: Error #1065: Variable x is not defined.
+at global\$init\(\)

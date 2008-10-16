@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1039: Target of continue statement was not found.
+.*continue_err.as, Ln 1, Col 56:
+while\( true \) \{ L1: switch\(true\) \{ case true: continue L1 \} break \}
+.......................................................\^
+
+1 error found

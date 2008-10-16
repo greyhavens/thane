@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before try.
+   EmptyNameErr68.as, Ln 5, Col 14: 
+       function try() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr68.as, Ln 5, Col 20: 
+       function try() {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr68.as, Ln 5, Col 20: 
+       function try() {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr68.as, Ln 5, Col 20: 
+       function try() {}
+   ...................^
+
+4 errors found

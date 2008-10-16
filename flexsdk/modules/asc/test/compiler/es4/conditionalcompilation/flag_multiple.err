@@ -1,0 +1,8 @@
+
+flag_multiple.abc, [0-9]+ bytes written
+value1: 10
+value2: 2.5
+value3: 12.5
+value4: 1
+value5: -5
+value6: -7.5

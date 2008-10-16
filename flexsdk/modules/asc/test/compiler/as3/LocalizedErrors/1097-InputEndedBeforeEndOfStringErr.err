@@ -1,0 +1,12 @@
+
+[Compiler] Error #1097: Syntax error: input ended before reaching the closing quotation mark for a string literal.
+1097-InputEndedBeforeEndOfStringErr.as, Ln 7, Col 20:
+var myVar:String = "\\";
+...................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before end of program.
+1097-InputEndedBeforeEndOfStringErr.as, Ln 7, Col 20:
+var myVar:String = "\\";
+...................^
+
+2 errors found

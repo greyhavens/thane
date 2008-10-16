@@ -1,0 +1,7 @@
+
+[Compiler] Error #1113: Circular type reference was detected in A.
+   InterfaceExtendSelfErr.as, Ln 7, Col 12: 
+   	interface A extends A{
+   ...........^
+
+1 error found

@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ImageFilterMethWarn.as\(8\): Migration issue: The method ImageFilter is no longer supported.  The ImageFilter class has been renamed BitmapFilter..
+ImageFilter();
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ImageFilterMethWarn.abc, [0-9]+ bytes written
+.*Error.*
+

@@ -1,0 +1,52 @@
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 270, Col 3: 
+   		public public function ppubSubSetArray\( a:Array \) { setArray\( a \); }
+   ..^
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 271, Col 3: 
+   		public public function ppubSubGetArray() : Array { return getArray()...
+   ..^
+
+[Compiler] Error #1127: Attribute static was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 275, Col 3: 
+   		static static function sstatSubSetArray\( a:Array \) { setStatArray\( a...
+   ..^
+
+[Compiler] Error #1127: Attribute static was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 276, Col 3: 
+   		static static function sstatSubGetArray() : Array { return getStatAr...
+   ..^
+
+[Compiler] Error #1127: Attribute final was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 280, Col 3: 
+   		final final function ffinSubSetArray\( a:Array \)  { setArray\( a \); }
+   ..^
+
+[Compiler] Error #1127: Attribute final was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 281, Col 3: 
+   		final final function ffinSubGetArray() : Array { return getArray(); ...
+   ..^
+
+[Compiler] Error #1127: Attribute virtual was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 285, Col 3: 
+   		virtual virtual function vvirSubSetArray\( a:Array \) { setArray\( a \);...
+   ..^
+
+[Compiler] Error #1127: Attribute virtual was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 286, Col 3: 
+   		virtual virtual function vvirSubGetArray() : Array { return getArray...
+   ..^
+
+[Compiler] Error #1127: Attribute private was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 290, Col 3: 
+   		private private function pprivSubSetArray\( a:Array \) { setArray\( a \)...
+   ..^
+
+[Compiler] Error #1127: Attribute private was specified multiple times.
+   FinExtDefaultClassErr.as, Ln 291, Col 3: 
+   		private private function pprivSubGetArray() : Array { return getArra...
+   ..^
+
+10 errors found

@@ -1,0 +1,26 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #3594: Unknown method.
+-------------------------------------------------------------------------
+.*DateWarn.as\(11\): getUTCYear is not a recognized method of the dynamic class Date.
+trace\(date.getUTCYear()\);
+..............^
+
+.*DateWarn.as\(12\): getYear is not a recognized method of the dynamic class Date.
+trace\(date.getYear()\);
+..............^
+
+.*DateWarn.as\(13\): setYear is not a recognized method of the dynamic class Date.
+date.setYear\(1969\);
+........^
+
+-------------------------------------------------------------------------
+
+
+
+DateWarn.abc, [0-9]+ bytes written
+TypeError: Error #1006
+

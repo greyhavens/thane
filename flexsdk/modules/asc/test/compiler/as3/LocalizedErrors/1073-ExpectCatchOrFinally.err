@@ -1,0 +1,7 @@
+
+[Compiler] Error #1073: Syntax error: expecting a catch or a finally clause.
+1073-ExpectCatchOrFinally.as, Ln 10, Col 5:
+}
+....^
+
+1 error found

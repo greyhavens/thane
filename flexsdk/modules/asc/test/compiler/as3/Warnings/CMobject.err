@@ -1,0 +1,42 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CMobject.as\(58\): Migration issue: The property __resolve is no longer supported.  For more information, see help for the Proxy class, which offers similar functionality..
+obj.__resolve = function():String  //  Testing AS 2.0 __resolve method
+....^
+
+.*CMobject.as\(65\): Migration issue: The property __proto__ is no longer supported.  For more information, see obsolete  __proto__..
+obj.prototype = oneField.__proto__;		//  Testing AS 2.0 __proto__
+.........................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMobject.as\(18\): Migration issue: The method registerClass is no longer supported.  In ActionScript 3.0 all classes are registered by default.  If you are using AMF, see flash.utils.registerClassAlias() for more information..
+Object.registerClass();   //  Testing AS 2.0 registerClass method
+.......^
+
+.*CMobject.as\(40\): Migration issue: The method addProperty is no longer supported.  Set properties directly on the instance using dot \(.\) notation instead..
+Speedster.addProperty\("speed", this.setSpeed, this.getSpeed\);  //  Testing AS 2.0 addProperty
+..........^
+
+.*CMobject.as\(52\): Migration issue: The method watch is no longer supported.  Use accessor properties \(get/set functions\) or the flash.utils.Proxy class for similar functionality..
+Speedster.watch\("speed", speedWatcher, 55\);  //  Testing AS 2.0 watch method
+..........^
+
+.*CMobject.as\(55\): Migration issue: The method unwatch is no longer supported.  Use accessor properties \(get/set functions\) or the flash.utils.Proxy class for similar functionality..
+Speedster.unwatch\("speed"\);
+..........^
+
+-------------------------------------------------------------------------
+
+
+
+CMobject.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

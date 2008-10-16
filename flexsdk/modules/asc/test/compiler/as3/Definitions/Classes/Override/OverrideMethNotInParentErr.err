@@ -1,0 +1,17 @@
+
+[Compiler] Error #1020: Method marked override must override another method.
+   OverrideMethNotInParentErr.as, Ln 7, Col 28: 
+   		override public function pubFunction() {}
+   ...........................^
+
+[Compiler] Error #1020: Method marked override must override another method.
+   OverrideMethNotInParentErr.as, Ln 8, Col 29: 
+   		override virtual function virtFunction() {}
+   ............................^
+
+[Compiler] Error #1020: Method marked override must override another method.
+   OverrideMethNotInParentErr.as, Ln 9, Col 29: 
+   		override private function privFunction() {}
+   ............................^
+
+3 errors found

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1211: Namespace NS1 conflicts with a configuration namespace.
+.*standardnamespace.as, Ln 4, Col 22:
+public namespace NS1
+.....................^
+
+[Compiler] Error #1210: A configuration value must be declared at the top level of a program or package.
+.*standardnamespace.as, Ln 5, Col 13:
+NS1 var v1=10;
+............^
+
+2 errors found

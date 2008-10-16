@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMtextFormat.as\(12\): Migration issue: The method getTextExtent is no longer supported.  Create a temporary TextField and use TextField.getLineMetrics instead..
+var metrics:\*=tft.getTextExtent\("theText"\);
+..................^
+
+-------------------------------------------------------------------------
+
+
+
+CMtextFormat.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

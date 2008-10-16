@@ -1,0 +1,6 @@
+
+stringEscapes.abc, \d+ bytes written
+this is a 'continued  line' the newline in the source is removed during parsing
+this is not a "continued
+line" the embedded newline is added during parsing
+unknown escape chars such as '\\q' should result in the character 'q', rather than '\\q'

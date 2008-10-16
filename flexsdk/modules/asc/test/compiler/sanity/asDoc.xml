@@ -1,0 +1,21 @@
+<asdoc>
+
+<method name='lable' fullname='a.b:Foo/lable' isStatic='false' isFinal='true' isOverride='false'  param_names='i' param_types='String' param_defaults='undefined' result_type='String'>
+</method>
+<field name='x' fullname='a.b:Foo/x' type='a.b:Foo' isStatic='false' isConst='false' >
+</field>
+<method name='readOnly' fullname='a.b:Foo/readOnly/get' isStatic='false' isFinal='false' isOverride='false'  result_type='int'>
+</method>
+<method name='writeOnly' fullname='a.b:Foo/protected:writeOnly/set' isStatic='false' isFinal='false' isOverride='false'  param_names='a' param_types='Object' param_defaults='undefined' result_type='void'>
+</method>
+<method name='readWrite' fullname='a.b:Foo/private:readWrite/get' isStatic='false' isFinal='false' isOverride='false'  result_type='Date'>
+</method>
+<method name='readWrite' fullname='a.b:Foo/a.b:readWrite/set' isStatic='false' isFinal='false' isOverride='false'  param_names='a' param_types='Date' param_defaults='undefined' result_type='*'>
+</method>
+<method name='writeOnly' fullname='a.b:Bar/protected:writeOnly/set' isStatic='false' isFinal='false' isOverride='true'  param_names='a' param_types='Object' param_defaults='undefined' result_type='void'>
+</method>
+<classRec name='Foo' fullname='a.b:Foo' sourcefile='sanity/asDoc.as' namespace='a.b' access='public' baseclass='Object' isFinal='false' isDynamic='false' >
+</classRec>
+<classRec name='Bar' fullname='a.b:Bar' sourcefile='sanity/asDoc.as' namespace='a.b' access='public' baseclass='a.b:Foo' isFinal='false' isDynamic='false' >
+</classRec>
+</asdoc>

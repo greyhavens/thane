@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ImageMethWarn.as\(8\): Migration issue: The method Image is no longer supported.  The Image class has been renamed BitmapData..
+Image();
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ImageMethWarn.abc, [0-9]+ bytes written
+.*Error.*
+

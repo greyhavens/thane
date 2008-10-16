@@ -1,0 +1,22 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ClearIntervalWarn.as\(8\): Migration issue: The method setInterval is no longer supported.  Moved to the flash.utils package.  Consider using the Timer class instead..
+var intervalId:uint = setInterval\(k,1000\)
+..............................^
+
+.*ClearIntervalWarn.as\(9\): Migration issue: The method clearInterval is no longer supported.  This method has moved to the flash.utils package..
+clearInterval\(intervalId\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ClearIntervalWarn.abc, 209 bytes written
+ReferenceError: Error #1065
+

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting semicolon before rightparen.
+ecma3.e7_8_3_Err.as, Ln 42, Col 1:
+\)
+^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before return.
+ecma3.e7_8_3_Err.as, Ln 48, Col 5:
+return \( array \);
+....^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before rightbrace.
+ecma3.e7_8_3_Err.as, Ln 49, Col 1:
+}
+^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before rightbrace.
+ecma3.e7_8_3_Err.as, Ln 49, Col 1:
+}
+^
+
+4 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1157: Interface members cannot be declared public, private, protected, or internal.
+   NotImplementedProtectedErr.as, Ln 9, Col 22: 
+   		protected function hello()
+   .....................^
+
+1 error found

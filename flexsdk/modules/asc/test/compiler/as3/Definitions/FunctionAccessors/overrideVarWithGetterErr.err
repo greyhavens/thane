@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   overrideVarWithGetterErr.as, Ln 8, Col 25: 
+   		override function get a():Object{
+   ........................^
+
+1 error found

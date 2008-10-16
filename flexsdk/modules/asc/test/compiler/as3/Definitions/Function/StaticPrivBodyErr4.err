@@ -1,0 +1,12 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   StaticPrivBodyErr4.as, Ln 5, Col 29: 
+       static private function setX\(x\) {}
+   ............................^
+
+[Compiler] Error #1021: Duplicate function definition.
+   StaticPrivBodyErr4.as, Ln 6, Col 29: 
+       static private function setX\(x,y\) {}
+   ............................^
+
+2 errors found

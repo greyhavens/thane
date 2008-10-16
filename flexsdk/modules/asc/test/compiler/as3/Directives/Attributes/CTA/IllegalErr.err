@@ -1,0 +1,82 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before for.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 42, Col 7:
+const for = true;
+......^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before function.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 45, Col 5:
+for function assert\(x, y\) {
+....^
+
+[Compiler] Error #1084: Syntax error: expecting semicolon before rightparen.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 45, Col 25:
+for function assert\(x, y\) {
+........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before if.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 47, Col 2:
+if \( x!= y\) throw "assertion failure";
+.^
+
+[Compiler] Error #1084: Syntax error: expecting colon before rightbrace.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 48, Col 1:
+}
+^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before rightbrace.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 48, Col 1:
+}
+^
+
+[Compiler] Error #1084: Syntax error: expecting semicolon before const.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 50, Col 1:
+const function = true;
+^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before test.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 52, Col 14:
+function car test;
+.............^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before const.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 54, Col 1:
+const 4startswithnumber = true;
+^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before function.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 56, Col 1:
+function assert\(x, y\) {
+^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before const.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 61, Col 1:
+const !startswithillegal = true;
+^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before const.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 63, Col 1:
+const @startswithillegal = true;
+^
+
+[Compiler] Error #1093: Syntax error.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 65, Col 7:
+const #startswithillegal = true;
+......^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before modulus.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 67, Col 7:
+const %startswithillegal = true;
+......^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before bitwiseand.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 69, Col 7:
+const &startswithillegal = true;
+......^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before mult.
+as3.Directives.Attributes.CTA.IllegalErr.as, Ln 71, Col 7:
+const \*startswithillegal = true;
+......^
+
+16 errors found

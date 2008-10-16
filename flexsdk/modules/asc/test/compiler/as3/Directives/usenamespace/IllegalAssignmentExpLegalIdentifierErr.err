@@ -1,0 +1,7 @@
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before questionmark.
+   IllegalAssignmentExpLegalIdentifierErr.as, Ln 2, Col 19: 
+    legalName var v1 \? 5;
+   ..................^
+
+1 error found

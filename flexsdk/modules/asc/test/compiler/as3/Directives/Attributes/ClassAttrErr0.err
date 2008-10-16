@@ -1,0 +1,7 @@
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+   ClassAttrErr0.as, Ln 2, Col 2: 
+   	public public class ClassAttrErr0
+   .^
+
+1 error found

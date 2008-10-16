@@ -1,0 +1,7 @@
+
+[Compiler] Error #1110: Missing XML tag name.
+1110-MissingXmlTagNameErr.as, Ln 7, Col 9:
+<data></>
+........^
+
+1 error found

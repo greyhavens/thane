@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before void.
+   StaticPublicNameErr71.as, Ln 5, Col 28: 
+       static public function void() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr71.as, Ln 5, Col 35: 
+       static public function void() {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr71.as, Ln 5, Col 35: 
+       static public function void() {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr71.as, Ln 5, Col 35: 
+       static public function void() {}
+   ..................................^
+
+4 errors found

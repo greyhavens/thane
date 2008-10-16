@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1034: Boolean() with no arguments returns false in ActionScript 3.0.  Boolean() returned undefined in ActionScript 2.0.
+-------------------------------------------------------------------------
+.*BooleanWithNoArgWarn.as\(9\): Use of Boolean() with no arguments.
+var bool:Boolean = new Boolean();
+.........................^
+
+-------------------------------------------------------------------------
+
+
+
+BooleanWithNoArgWarn.abc, [0-9]+ bytes written

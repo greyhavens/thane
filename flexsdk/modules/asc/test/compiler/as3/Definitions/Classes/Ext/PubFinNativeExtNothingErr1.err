@@ -1,0 +1,7 @@
+
+[Compiler] Error #1133: The native attribute can only be used with function definitions.
+   PubFinNativeExtNothingErr1.as, Ln 14, Col 28: 
+   	public final native class PubFinNativeExtNothingErr1 {
+   ...........................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1144: Interface method fn in namespace Errors:_If1Arg is implemented with an incompatible signature in class Errors:FuncDefErr28.
+   FuncDefErr28.as, Ln 8, Col 8: 
+    class FuncDefErr28 implements _If1Arg
+   .......^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+bugs.ASC-1637.as, Ln 3, Col 8:
+static class B{}
+.......^
+
+1 error found

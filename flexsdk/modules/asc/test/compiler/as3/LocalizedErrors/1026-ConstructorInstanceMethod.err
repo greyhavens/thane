@@ -1,0 +1,7 @@
+
+[Compiler] Error #1026: Constructor functions must be instance methods.
+1026-ConstructorInstanceMethod.as, Ln 5, Col 26:
+public static function A() {}
+.........................^
+
+1 error found

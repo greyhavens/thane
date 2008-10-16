@@ -1,0 +1,7 @@
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   OverrideErr1.as, Ln 8, Col 12: 
+   		function f() {}
+   ...........^
+
+1 error found

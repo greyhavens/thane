@@ -1,0 +1,7 @@
+
+[Compiler] Error #1156: Interfaces cannot be instantiated with the new operator.
+1156-InstIntErr.as, Ln 8, Col 24:
+var myinterr = new InstIntErr();
+.......................^
+
+1 error found

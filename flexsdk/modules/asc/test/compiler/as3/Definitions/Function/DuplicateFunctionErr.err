@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   DuplicateFunctionErr.as, Ln 4, Col 17: 
+   public function foo() {}
+   ................^
+
+1 error found

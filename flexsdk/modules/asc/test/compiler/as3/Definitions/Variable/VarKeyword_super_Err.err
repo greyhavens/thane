@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before super.
+   VarKeyword_super_Err.as, Ln 14, Col 6: 
+   	var super;
+   .....^
+
+1 error found

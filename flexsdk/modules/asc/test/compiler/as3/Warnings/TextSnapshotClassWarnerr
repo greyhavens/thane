@@ -1,0 +1,17 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+as3\Warnings\TextSnapshotClassWarn.as(12): Migration issue: The method getTextSnapshot is no longer supported.  Use the Container.textSnapshot property instead..
+var TS:TextSnapshot = my_mc.getTextSnapshot();
+................................^
+
+-------------------------------------------------------------------------
+
+
+
+TextSnapshotClassWarn.abc, 246 bytes written
+VerifyError: Error #1014

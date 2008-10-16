@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before class.
+ecma3.e7_4_3_9_Err.as, Ln 46, Col 9:
+var class = true;
+........^
+
+1 error found

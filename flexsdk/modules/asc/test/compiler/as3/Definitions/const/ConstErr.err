@@ -1,0 +1,12 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before var.
+as3.Definitions.const.ConstErr.as, Ln 72, Col 7:
+const var myOneHalfConstVar:Number = 1 / 2;
+......^
+
+[Compiler] Error #1093: Syntax error.
+as3.Definitions.const.ConstErr.as, Ln 72, Col 40:
+const var myOneHalfConstVar:Number = 1 / 2;
+.......................................^
+
+2 errors found

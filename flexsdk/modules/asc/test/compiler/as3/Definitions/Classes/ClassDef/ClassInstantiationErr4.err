@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before class.
+   ClassInstantiationErr4.as, Ln 5, Col 14: 
+   	var a = new class A();
+   .............^
+
+1 error found

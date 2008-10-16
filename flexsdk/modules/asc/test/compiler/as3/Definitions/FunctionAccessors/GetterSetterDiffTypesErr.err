@@ -1,0 +1,12 @@
+
+[Compiler] Error #1053: Accessor types must match.
+   GetterSetterDiffTypesErr.as, Ln 3, Col 44: 
+           public function get dataProvider():Number {}
+   ...........................................^
+
+[Compiler] Error #1053: Accessor types must match.
+   GetterSetterDiffTypesErr.as, Ln 4, Col 48: 
+           public function set dataProvider\(value:Object\) {}
+   ...............................................^
+
+2 errors found

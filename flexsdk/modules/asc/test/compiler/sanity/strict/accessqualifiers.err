@@ -1,0 +1,8 @@
+
+accessqualifiers.abc, \d+ bytes written
+10
+p.A
+internal::A
+internal::A
+20
+30

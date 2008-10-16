@@ -1,0 +1,12 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftbrace before modulus.
+   InterfacedirErr.as, Ln 1, Col 12: 
+   interface A%{ }
+   ...........^
+
+[Compiler] Error #1084: Syntax error: expecting leftbrace before modulus.
+   InterfacedirErr.as, Ln 3, Col 21: 
+   class x implements A%{}
+   ....................^
+
+2 errors found

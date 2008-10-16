@@ -1,0 +1,7 @@
+
+[Compiler] Error #1103: Duplicate namespace definition.
+as3.Definitions.Packages.MultiPackSameNameNamespaceErr.as, Ln 27, Col 12:
+namespace a;
+...........^
+
+1 error found

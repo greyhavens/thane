@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface _If0ArgRet was not found.
+   FuncDefErr83.as, Ln 8, Col 32: 
+    class FuncDefErr83 implements _If0ArgRet
+   ...............................^
+
+1 error found

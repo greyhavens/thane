@@ -1,0 +1,5 @@
+
+regexp_zeroWidthLookahead.abc, \d+ bytes written
+baaabaac,ba,,abaac
+,aaa
+aba,a

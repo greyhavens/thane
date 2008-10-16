@@ -1,0 +1,7 @@
+
+[Compiler] Error #1108: Decrement operand is invalid.
+1108-InvalidDecrementOperand.as, Ln 6, Col 2:
+f--;
+.^
+
+1 error found

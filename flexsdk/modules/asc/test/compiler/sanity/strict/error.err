@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1084: Syntax error: expecting rightparen before semicolon.
+.*error.as, Ln 3, Col 12:
+print\(false;
+...........\^
+
+1 error found

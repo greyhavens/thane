@@ -1,0 +1,12 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   VarDefEmptyErr8.as, Ln 15, Col 35: 
+       		variable1:Boolean, variable2:Boolean, variable3:Boolean = true;
+   ..................................^
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   VarDefEmptyErr8.as, Ln 15, Col 54: 
+       		variable1:Boolean, variable2:Boolean, variable3:Boolean = true;
+   .....................................................^
+
+2 errors found

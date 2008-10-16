@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before default.
+   EmptyNameErr44.as, Ln 5, Col 18: 
+       function get default() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr44.as, Ln 5, Col 28: 
+       function get default() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr44.as, Ln 5, Col 28: 
+       function get default() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr44.as, Ln 5, Col 28: 
+       function get default() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before default.
+   EmptyNameErr44.as, Ln 6, Col 18: 
+       function set default\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr44.as, Ln 6, Col 29: 
+       function set default\(e\) {}
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr44.as, Ln 6, Col 29: 
+       function set default\(e\) {}
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr44.as, Ln 6, Col 29: 
+       function set default\(e\) {}
+   ............................^
+
+8 errors found

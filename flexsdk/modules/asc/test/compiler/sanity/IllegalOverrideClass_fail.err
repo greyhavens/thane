@@ -1,0 +1,5 @@
+IllegalOverrideClass_fail.abc, \d+ bytes written
+param count mismatch
+virt params=2 optional=0 BaseClass/class_method\(\)
+over params=1 optional=0 BaseClass/class_method\(\)
+VerifyError: Error #1053.*$

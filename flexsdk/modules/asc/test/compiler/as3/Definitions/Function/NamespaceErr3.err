@@ -1,0 +1,7 @@
+
+[Compiler] Error #1004: Namespace was not found or is not a compile-time constant.
+   NamespaceErr3.as, Ln 3, Col 3: 
+   		ns function f() {}
+   ..^
+
+1 error found

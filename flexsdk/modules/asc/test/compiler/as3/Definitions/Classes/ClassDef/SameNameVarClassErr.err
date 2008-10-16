@@ -1,0 +1,7 @@
+
+[Compiler] Error #1151: A conflict exists with definition foo in namespace internal.
+   SameNameVarClassErr.as, Ln 2, Col 5: 
+   var foo;
+   ....^
+
+1 error found

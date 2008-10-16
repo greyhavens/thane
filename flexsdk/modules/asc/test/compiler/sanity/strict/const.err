@@ -1,0 +1,7 @@
+
+const.abc, \d+ bytes written
+10
+20
+30
+ReferenceError: Error #1074: Illegal write to read-only property y on const.as\$1.A.
+at global\$init\(\)

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1198: Attributes are not allowed on package definition.
+1198-AttributeOnPackageDefErr.as, Ln 7, Col 7:
+final package myPackage
+......^
+
+1 error found

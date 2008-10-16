@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*UnsupportedAS2FunctionWarn.as\(9\): Migration issue: The method random is no longer supported.  Use Math.random() instead..
+var num:Number = random\(3\);
+...................^
+
+-------------------------------------------------------------------------
+
+
+
+UnsupportedAS2FunctionWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

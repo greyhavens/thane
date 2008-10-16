@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+as3.Definitions.Function.ThreeOptArgFunctionErr1.as, Ln 71, Col 18:
+public function returnArguments\(\) { returnArgumentsInner\("String",fal...
+.................^
+
+1 error found

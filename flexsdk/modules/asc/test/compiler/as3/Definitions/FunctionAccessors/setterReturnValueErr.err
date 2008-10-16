@@ -1,0 +1,7 @@
+
+[Compiler] Error #1054: Return type of a setter definition must be unspecified or void.
+   setterReturnValueErr.as, Ln 5, Col 32: 
+   		public function set x\(p:int\):int{
+   ...............................^
+
+1 error found

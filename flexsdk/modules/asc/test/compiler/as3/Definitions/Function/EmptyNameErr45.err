@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before delete.
+   EmptyNameErr45.as, Ln 5, Col 14: 
+       function delete() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr45.as, Ln 5, Col 23: 
+       function delete() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr45.as, Ln 5, Col 23: 
+       function delete() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr45.as, Ln 5, Col 23: 
+       function delete() {}
+   ......................^
+
+4 errors found

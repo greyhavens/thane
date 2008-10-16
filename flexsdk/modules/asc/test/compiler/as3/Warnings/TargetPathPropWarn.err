@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*TargetPathPropWarn.as\(9\): Migration issue: The property targetPath is no longer supported.  Use MovieClip objects directly as arguments instead of paths..
+targetPath = "";
+.^
+
+-------------------------------------------------------------------------
+
+
+
+TargetPathPropWarn.abc, [0-9]+ bytes written

@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before class.
+   EmptyNameErr41.as, Ln 5, Col 18: 
+       function get class() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr41.as, Ln 5, Col 26: 
+       function get class() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr41.as, Ln 5, Col 26: 
+       function get class() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr41.as, Ln 5, Col 26: 
+       function get class() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before class.
+   EmptyNameErr41.as, Ln 6, Col 18: 
+       function set class\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr41.as, Ln 6, Col 27: 
+       function set class\(e\) {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr41.as, Ln 6, Col 27: 
+       function set class\(e\) {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr41.as, Ln 6, Col 27: 
+       function set class\(e\) {}
+   ..........................^
+
+8 errors found

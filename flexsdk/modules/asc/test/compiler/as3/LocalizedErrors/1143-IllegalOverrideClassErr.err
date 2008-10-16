@@ -1,0 +1,7 @@
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+1143-IllegalOverrideClassErr.as, Ln 9, Col 27:
+override public var myvar:String = "illegal override";
+..........................^
+
+1 error found

@@ -1,0 +1,20 @@
+nopackage             ,   asc.args         ,   .*   , -import global.abc -config CONFIG::flag=true
+flag_true             ,   asc.args         ,   .*   , -import global.abc -config CONFIG::flag=true
+flag_false            ,   asc.args         ,   .*   , -import global.abc -config CONFIG::flag=false
+flag_int              ,   asc.args         ,   .*   , -import global.abc -config CONFIG::flag=101
+flag_number           ,   asc.args         ,   .*   , -import global.abc -config CONFIG::flag=3.14159265
+flag_string           ,   asc.args         ,   .*   , -import global.abc -config CONFIG::flag=\"string\"
+flag_multiple         ,   asc.args         ,   .*   , -import global.abc -config CONFIG::value1=10 -config CONFIG::value2=5/2 -config CONFIG::value3=CONFIG::value1+CONFIG::value2 -config CONFIG::value4=10%3 -config CONFIG::value5=-5 -config CONFIG::value6=CONFIG::value5-CONFIG::value2
+othernamespace        ,   asc.args         ,   .*   , -import global.abc -config PROFILER::flag1=1 -config PROFILER::flag2=20
+hasparens             ,   asc.args         ,   .*   , -import global.abc -config CONFIG::expr2=2 -config CONFIG::expr1=1 -config CONFIG::expr=\(CONFIG::expr2+1\)
+usedefinedlater       ,   asc.args         ,   .*   , -import global.abc -config CONFIG::expr2=CONFIG::expr1 -config CONFIG::expr1=1
+override              ,   asc.args         ,   .*   , -import global.abc -config CONFIG::var1=8
+expressionlogic       ,   asc.args         ,   .*   , -import global.abc -config CONFIG::debug=true
+flag_specialnumber    ,   asc.args         ,   .*   , -import global.abc -config CONFIG::var1=10e2 -config CONFIG::var2=15e-13 -config CONFIG::var3=10e-2 -config CONFIG::var4=0x0FF
+configDefNotTop       ,   asc.args         ,   .*   , -import global.abc -config CONFIG::debug=true
+flag_invalidstring    ,   asc.args         ,   .*   , -import global.abc -config CONFIG::invalid=invalidstring
+flag_specialstring    ,   asc.args         ,   .*   , -import global.abc -config CONFIG::emptystring=\"\"
+typedefinitions1      ,   asc.args         ,   .*   , -import global.abc -config CONFIG::class1=true
+typedefinitions2      ,   asc.args         ,   .*   , -import global.abc -config CONFIG::class1=false
+vardefinitions        ,   asc.args         ,   .*   , -import global.abc -config CONFIG::a=10 -config CONFIG::b=true
+flag_iskeyword        ,   asc.args         ,   .*   , -import global.abc -config CONFIG::null=5

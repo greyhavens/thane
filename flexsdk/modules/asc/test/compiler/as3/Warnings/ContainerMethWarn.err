@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ContainerMethWarn.as\(8\): Migration issue: The method Container is no longer supported.  The Container class has been renamed DisplayObjectContainer..
+Container();
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ContainerMethWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

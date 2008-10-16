@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before function.
+   ClassKeywordErr.as, Ln 3, Col 8: 
+   	class function foo() {}
+   .......^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassKeywordErr.as, Ln 6, Col 10: 
+   	 public class function foo() {}
+   .........^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before function.
+   ClassKeywordErr.as, Ln 6, Col 16: 
+   	 public class function foo() {}
+   ...............^
+
+[Compiler] Error #1158: Syntax error: missing left brace \({\) before the function body.
+   ClassKeywordErr.as, Ln 9, Col 17: 
+   	function goo() class () {}
+   ................^
+
+4 errors found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before semicolon.
+   EmptyNameErr16.as, Ln 5, Col 19: 
+       function get a;b () {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftparen.
+   EmptyNameErr16.as, Ln 5, Col 22: 
+       function get a;b () {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before semicolon.
+   EmptyNameErr16.as, Ln 6, Col 19: 
+       function set a;b \(e\) {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftparen.
+   EmptyNameErr16.as, Ln 6, Col 22: 
+       function set a;b \(e\) {}
+   .....................^
+
+4 errors found

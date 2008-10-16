@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*UnsupportedAS2PropertyWarn.as\(11\): Migration issue: The property __proto__ is no longer supported.  For more information, see obsolete  __proto__..
+if\(str.__proto__ == String.prototype\) {}
+.........^
+
+-------------------------------------------------------------------------
+
+
+
+UnsupportedAS2PropertyWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1069
+

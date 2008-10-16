@@ -1,0 +1,7 @@
+
+[Compiler] Error #1037: Packages cannot be nested.
+1037-NestedPackages.as, Ln 5, Col 3:
+package b {
+..^
+
+1 error found

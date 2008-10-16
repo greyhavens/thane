@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before break.
+   StaticPublicNameErr36.as, Ln 5, Col 28: 
+       static public function break() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr36.as, Ln 5, Col 36: 
+       static public function break() {}
+   ...................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr36.as, Ln 5, Col 36: 
+       static public function break() {}
+   ...................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr36.as, Ln 5, Col 36: 
+       static public function break() {}
+   ...................................^
+
+4 errors found

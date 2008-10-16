@@ -1,0 +1,7 @@
+
+[Compiler] Error #1049: Illegal assignment to a variable specified as constant.
+1049-IllegalAssignmentToConst.as, Ln 6, Col 5:
+a = 1;
+....^
+
+1 error found

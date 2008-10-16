@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*KeyFocusChangeTypeWarn.as\(16\): Migration issue: The property KEY_FOCUS_CHANGE_TYPE is no longer supported.  Use the FocusEvent.KEY_FOCUS_CHANGE constant instead..
+dispMov.addEventListener\(FocusEvent.KEY_FOCUS_CHANGE_TYPE, keyFocListener\);
+.....................................^
+
+-------------------------------------------------------------------------
+
+
+
+KeyFocusChangeTypeWarn.abc, [0-9]+ bytes written
+.*Error.*
+

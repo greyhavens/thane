@@ -1,0 +1,7 @@
+
+[Compiler] Error #1127: Attribute static was specified multiple times.
+   VarAttrErr28.as, Ln 6, Col 6: 
+      	 static static public var v : Integer;
+   .....^
+
+1 error found

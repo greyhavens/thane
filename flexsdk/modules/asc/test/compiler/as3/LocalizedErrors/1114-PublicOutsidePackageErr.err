@@ -1,0 +1,7 @@
+
+[Compiler] Error #1114: The public attribute can only be used inside a package.
+1114-PublicOutsidePackageErr.as, Ln 19, Col 1:
+public class b { }
+^
+
+1 error found

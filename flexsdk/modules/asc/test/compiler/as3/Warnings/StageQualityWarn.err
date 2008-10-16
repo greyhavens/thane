@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*StageQualityWarn.as\(12\): Migration issue: The property _quality is no longer supported.  For more information, see Stage.quality..
+a._quality = 10;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+StageQualityWarn.abc, [0-9]+ bytes written
+.*Error.*
+

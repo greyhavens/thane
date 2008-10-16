@@ -1,0 +1,12 @@
+
+[Compiler] Error #1023: Incompatible override.
+   SameDefaultMethodNameErr.as, Ln 12, Col 12: 
+   		function f()
+   ...........^
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   SameDefaultMethodNameErr.as, Ln 12, Col 12: 
+   		function f()
+   ...........^
+
+2 errors found

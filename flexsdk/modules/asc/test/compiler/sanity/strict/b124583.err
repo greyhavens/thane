@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1021: Duplicate function definition.
+.*b124583.as, Ln 2, Col 10:
+function foo\(\) \{\}
+.........\^
+
+1 error found

@@ -1,0 +1,30 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ColorMethodsWarn.as\(12\): Migration issue: The method setRGB is no longer supported.  Use the ColorTransform.color property instead..
+my_color.setRGB\(0xff9933\);
+.............^
+
+.*ColorMethodsWarn.as\(13\): Migration issue: The method getRGB is no longer supported.  Use the ColorTransform.color property instead..
+var my_value:String = my_color.getRGB().toString\(16\);
+...................................^
+
+.*ColorMethodsWarn.as\(16\): Migration issue: The method getTransform is no longer supported.  Color values can be assigned directly using the ColorTransform class constructor or properties..
+var myTransform:Object = my_color.getTransform();
+......................................^
+
+.*ColorMethodsWarn.as\(18\): Migration issue: The method setTransform is no longer supported.  Color values can be assigned directly using the ColorTransform class constructor or properties..
+my_color.setTransform\(my_Transform\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+ColorMethodsWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

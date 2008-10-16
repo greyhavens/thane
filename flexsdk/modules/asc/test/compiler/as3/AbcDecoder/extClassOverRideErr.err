@@ -1,0 +1,7 @@
+
+[Compiler] Error #1017: The definition of base class finClass was not found.
+as3.AbcDecoder.extClassOverRideErr.as, Ln 44, Col 32:
+class extClassOverRide extends finClass {
+...............................^
+
+1 error found

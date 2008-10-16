@@ -1,0 +1,12 @@
+
+[Compiler] Error #1126: Function does not have a body.
+   EmptyFunctionBodyErr.as, Ln 4, Col 20: 
+      public function A();
+   ...................^
+
+[Compiler] Error #1126: Function does not have a body.
+   EmptyFunctionBodyErr.as, Ln 5, Col 20: 
+      public function method();
+   ...................^
+
+2 errors found

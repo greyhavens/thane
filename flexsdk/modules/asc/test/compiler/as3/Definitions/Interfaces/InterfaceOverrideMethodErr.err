@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   InterfaceOverrideMethodErr.as, Ln 14, Col 21: 
+   		override function foo()
+   ....................^
+
+1 error found

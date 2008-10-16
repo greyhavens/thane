@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before catch.
+   StaticPublicNameErr40.as, Ln 5, Col 28: 
+       static public function catch() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr40.as, Ln 5, Col 36: 
+       static public function catch() {}
+   ...................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr40.as, Ln 5, Col 36: 
+       static public function catch() {}
+   ...................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr40.as, Ln 5, Col 36: 
+       static public function catch() {}
+   ...................................^
+
+4 errors found

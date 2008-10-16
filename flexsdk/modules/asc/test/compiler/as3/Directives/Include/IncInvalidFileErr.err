@@ -1,0 +1,17 @@
+[Compiler] Error #1093: Syntax error.
+as3.Directives.Include.temp.fla, Ln 1, Col 1:
+\?\?\?\?
+^
+[Compiler] Error #1093: Syntax error.
+as3.Directives.Include.temp.fla, Ln 1, Col 2:
+\?\?\?\?
+.^
+[Compiler] Error #1093: Syntax error.
+as3.Directives.Include.temp.fla, Ln 1, Col 4:
+\?\?\?\?
+...^
+[Compiler] Error #1093: Syntax error.
+.as3.Directives.Include.temp.fla, Ln 1, Col 6:
+\?\?\?\?
+.....^
+4 errors found

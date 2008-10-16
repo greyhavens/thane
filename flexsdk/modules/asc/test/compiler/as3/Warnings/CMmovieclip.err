@@ -1,0 +1,238 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CMmovieclip.as\(45\): Migration issue: The property _alpha is no longer supported.  Use the DisplayObject.alpha property instead..
+trace\(a_mc._alpha\);
+............^
+
+.*CMmovieclip.as\(46\): Migration issue: The property _x is no longer supported.  Use the DisplayObject.x property instead..
+trace\(a_mc._x\); // warning, _x is no longer supported.  Use x instead.
+............^
+
+.*CMmovieclip.as\(47\): Migration issue: The property _rotation is no longer supported.  Use the DisplayObject.rotation property instead..
+a_mc._rotation = 10;
+......^
+
+.*CMmovieclip.as\(48\): Migration issue: The property _focusrect is no longer supported.  Use the InteractiveObject.focusRect property instead..
+a_mc._focusrect
+......^
+
+.*CMmovieclip.as\(49\): Migration issue: The property _lockroot is no longer supported.  For more information, see displayObjectInstance.root..
+a_mc._lockroot = true;
+......^
+
+.*CMmovieclip.as\(50\): Migration issue: The property _highquality is no longer supported.  For more information, see Stage.quality..
+a_mc._highquality = false;
+......^
+
+.*CMmovieclip.as\(51\): Migration issue: The property _name is no longer supported.  Use the DisplayObject.name property instead..
+a_mc._name = true;
+......^
+
+.*CMmovieclip.as\(52\): Migration issue: The property _currentframe is no longer supported.  Use the MovieClip.currentFrame property instead..
+a_mc._currentframe
+......^
+
+.*CMmovieclip.as\(53\): Migration issue: The property _droptarget is no longer supported.  Use the Sprite.dropTarget property instead..
+a_mc._droptarget
+......^
+
+.*CMmovieclip.as\(54\): Migration issue: The property _framesloaded is no longer supported.  Use the MovieClip.framesLoaded property instead..
+a_mc._framesloaded
+......^
+
+.*CMmovieclip.as\(55\): Migration issue: The property _height is no longer supported.  Use the DisplayObject.height property instead..
+a_mc._height
+......^
+
+.*CMmovieclip.as\(56\): Migration issue: The property _parent is no longer supported.  Use the DisplayObject.parent property instead..
+a_mc._parent
+......^
+
+.*CMmovieclip.as\(57\): Migration issue: The property _quality is no longer supported.  For more information, see Stage.quality..
+a_mc._quality
+......^
+
+.*CMmovieclip.as\(58\): Migration issue: The property _soundbuftime is no longer supported.  Use the static propery flash.media.SoundMixer.bufferTime instead..
+a_mc._soundbuftime
+......^
+
+.*CMmovieclip.as\(59\): Migration issue: The property _target is no longer supported.  This functionality is no longer supported..
+a_mc._target
+......^
+
+.*CMmovieclip.as\(60\): Migration issue: The property _totalframes is no longer supported.  Use the MovieClip.totalFrames property instead..
+a_mc._totalframes
+......^
+
+.*CMmovieclip.as\(61\): Migration issue: The property _url is no longer supported.  For more information, see LoaderInfo.url and the Loader class..
+a_mc._url
+......^
+
+.*CMmovieclip.as\(62\): Migration issue: The property _visible is no longer supported.  Use the DisplayObject.visible property instead..
+a_mc._visible
+......^
+
+.*CMmovieclip.as\(63\): Migration issue: The property _width is no longer supported.  Use the DisplayObject.width property instead..
+a_mc._width
+......^
+
+.*CMmovieclip.as\(64\): Migration issue: The property _xmouse is no longer supported.  Use the DisplayObject.mouseX property instead..
+a_mc._xmouse
+......^
+
+.*CMmovieclip.as\(65\): Migration issue: The property _xscale is no longer supported.  Use the DisplayObject.scaleX property instead..
+a_mc._xscale
+......^
+
+.*CMmovieclip.as\(66\): Migration issue: The property _y is no longer supported.  Use the DisplayObject.y property instead..
+a_mc._y
+......^
+
+.*CMmovieclip.as\(67\): Migration issue: The property _ymouse is no longer supported.  Use the DisplayObject.mouseY property instead..
+a_mc._ymouse
+......^
+
+.*CMmovieclip.as\(68\): Migration issue: The property _yscale is no longer supported.  Use the DisplayObject.scaleY property instead..
+a_mc._yscale
+......^
+
+.*CMmovieclip.as\(70\): Migration issue: The property focusEnabled is no longer supported.  See help for the focus related properties of the flash.display.InteractiveObject class..
+a_mc.focusEnabled = true;
+......^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMmovieclip.as\(13\): Migration issue: The method duplicateMovieClip is no longer supported.  Replaced by new MovieClip class constructor function..
+duplicateMovieClip\(a_mc\);
+.^
+
+.*CMmovieclip.as\(15\): Migration issue: The method createEmptyMovieClip is no longer supported.  Use var mc= new MovieClip(); addChild\(mc\). For more information, see the DisplayObjectContainer class..
+a_mc.createEmptyMovieClip\("the_mc",8\);
+......^
+
+.*CMmovieclip.as\(16\): Migration issue: The method swapDepths is no longer supported.  Use DisplayObjectContainer.parent.setChildIndex instead. For more information, see the DisplayObjectContainer class, which is extended by MovieClip..
+a_mc.swapDepths\(7\)
+......^
+
+.*CMmovieclip.as\(17\): Migration issue: The method loadVariables is no longer supported.  For more information, see Loader.load()..
+a_mc.loadVariables\("test.txt"\);
+......^
+
+.*CMmovieclip.as\(18\): Migration issue: The method attachMovie is no longer supported.  If the MovieClip subclass name is A use var mc= new A(); addChild\(mc\). For more information, see the DisplayObjectContainer class..
+a_mc.attachMovie()
+......^
+
+.*CMmovieclip.as\(19\): Migration issue: The method beginBitmapFill is no longer supported.  See help for the flash.display.Graphics.beginBitmapFill method..
+a_mc.beginBitmapFill()
+......^
+
+.*CMmovieclip.as\(20\): Migration issue: The method beginFill is no longer supported.  For more information, see the Graphics class..
+a_mc.beginFill()
+......^
+
+.*CMmovieclip.as\(21\): Migration issue: The method beginGradientFill is no longer supported.  For more information, see the Graphics class..
+a_mc.beginGradientFill()
+......^
+
+.*CMmovieclip.as\(22\): Migration issue: The method clear is no longer supported.  For more information, see the Graphics class..
+a_mc.clear()
+......^
+
+.*CMmovieclip.as\(23\): Migration issue: The method createTextField is no longer supported.  Use var tf= new TextField(); addChild\(mc\). For more information, see the DisplayObjectContainer class..
+a_mc.createTextField()
+......^
+
+.*CMmovieclip.as\(24\): Migration issue: The method curveTo is no longer supported.  For more information, see the Graphics class..
+a_mc.curveTo()
+......^
+
+.*CMmovieclip.as\(25\): Migration issue: The method endFill is no longer supported.  For more information, see the Graphics class..
+a_mc.endFill()
+......^
+
+.*CMmovieclip.as\(26\): Migration issue: The method getBytesLoaded is no longer supported.  For more information, see LoaderInfo.bytesLoaded and the Loader class..
+a_mc.getBytesLoaded()
+......^
+
+.*CMmovieclip.as\(27\): Migration issue: The method getDepth is no longer supported.  Use DisplayObjectContainer.parent.getChildIndex instead. For more information, see the DisplayObjectContainer class, is extended by MovieClip..
+a_mc.getDepth()
+......^
+
+.*CMmovieclip.as\(28\): Migration issue: The method getInstanceAtDepth is no longer supported.  Use DisplayObjectContainer.getChildAt instead. For more information, see the DisplayObjectContainer class, which is extended by MovieClip..
+a_mc.getInstanceAtDepth()
+......^
+
+.*CMmovieclip.as\(29\): Migration issue: The method getNextHighestDepth is no longer supported.  Use DisplayObjectContainer.numChildren instead. DisplayObjectContainer.addChild always adds the new child to index DisplayObjectContainer.numChildren..
+a_mc.getNextHighestDepth()
+......^
+
+.*CMmovieclip.as\(30\): Migration issue: The method getTextSnapshot is no longer supported.  Use the Container.textSnapshot property instead..
+a_mc.getTextSnapshot()
+......^
+
+.*CMmovieclip.as\(31\): Migration issue: The method getURL is no longer supported.  For equivalent functionality, see flash.net.URLLoader.  The flash.net package also contains package-level functions navigateToURL() and sendToURL()..
+a_mc.getURL()
+......^
+
+.*CMmovieclip.as\(32\): Migration issue: The method hitTest is no longer supported.  See help for the flash.display.DisplayObject.hitTestObject() method..
+a_mc.hitTest()
+......^
+
+.*CMmovieclip.as\(33\): Migration issue: The method lineGradientStyle is no longer supported.  For more information, see the Graphics class..
+a_mc.lineGradientStyle()
+......^
+
+.*CMmovieclip.as\(34\): Migration issue: The method lineStyle is no longer supported.  For more information, see the Graphics class..
+a_mc.lineStyle()
+......^
+
+.*CMmovieclip.as\(35\): Migration issue: The method lineTo is no longer supported.  For more information, see the Graphics class..
+a_mc.lineTo()
+......^
+
+.*CMmovieclip.as\(36\): Migration issue: The method loadMovie is no longer supported.  Use var l = new Loader(); addChild\(l\); l.load\(new URLRequest\("your url"\)\);. For more information, see the Loader and DisplayObjectContainer classes..
+a_mc.loadMovie()
+......^
+
+.*CMmovieclip.as\(37\): Migration issue: The method removeMovieClip is no longer supported.  Use Container.removeChild\(childName\). For more information, see the DisplayObjectContainer class..
+a_mc.removeMovieClip()
+......^
+
+.*CMmovieclip.as\(38\): Migration issue: The method setMask is no longer supported.  Use the MovieClip.mask property instead..
+a_mc.setMask()
+......^
+
+.*CMmovieclip.as\(39\): Migration issue: The method unloadMovie is no longer supported.  Use DisplayObjectContainer.removeChild\(childName\) instead. For more information, see the DisplayObjectContainer class..
+a_mc.unloadMovie()
+......^
+
+.*CMmovieclip.as\(40\): Migration issue: The method attachAudio is no longer supported.  For more information, see DisplayObject.addChild..
+a_mc.attachAudio();
+......^
+
+.*CMmovieclip.as\(41\): Migration issue: The method attachBitmap is no longer supported.  See help for the addChild() method..
+a_mc.attachBitmap();
+......^
+
+.*CMmovieclip.as\(42\): Migration issue: The method getBytesTotal is no longer supported.  For more information, see LoaderInfo.bytesTotal and the Loader class..
+a_mc.getBytesTotal()
+......^
+
+.*CMmovieclip.as\(43\): Migration issue: The method getSWFVersion is no longer supported.  For more information, see LoaderInfo.swfVersion and the Loader class..
+a_mc.getSWFVersion()
+......^
+
+-------------------------------------------------------------------------
+
+
+
+CMmovieclip.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1006: A super expression can be used only inside class instance methods.
+   SuperInStaticErr.as, Ln 9, Col 4: 
+   			super.f()	// illegal in a static method
+   ...^
+
+1 error found

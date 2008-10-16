@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before this.
+   EmptyNameErr66.as, Ln 5, Col 14: 
+       function this() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr66.as, Ln 5, Col 21: 
+       function this() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr66.as, Ln 5, Col 21: 
+       function this() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr66.as, Ln 5, Col 21: 
+       function this() {}
+   ....................^
+
+4 errors found

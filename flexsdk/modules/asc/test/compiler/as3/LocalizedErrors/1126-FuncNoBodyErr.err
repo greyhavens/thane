@@ -1,0 +1,7 @@
+
+[Compiler] Error #1126: Function does not have a body.
+1126-FuncNoBodyErr.as, Ln 10, Col 26:
+public function FuncNoBody():void;
+.........................^
+
+1 error found

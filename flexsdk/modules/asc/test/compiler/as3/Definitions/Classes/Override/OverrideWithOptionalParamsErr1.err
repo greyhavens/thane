@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   OverrideWithOptionalParamsErr1.as, Ln 7, Col 21: 
+   		override function foo\( s:String \){}
+   ....................^
+
+1 error found

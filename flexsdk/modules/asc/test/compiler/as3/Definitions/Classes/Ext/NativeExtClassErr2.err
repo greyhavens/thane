@@ -1,0 +1,7 @@
+
+[Compiler] Error #1133: The native attribute can only be used with function definitions.
+   NativeExtClassErr2.as, Ln 24, Col 16: 
+   	 native class B extends NativeExtClassErr2 {
+   ...............^
+
+1 error found

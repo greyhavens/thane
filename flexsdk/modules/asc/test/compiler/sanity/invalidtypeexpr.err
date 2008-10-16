@@ -1,0 +1,22 @@
+
+\[Compiler\] Error #1084: Syntax error: expecting leftbrace before leftparen.
+.*invalidtypeexpr.as, Ln 1, Col 24:
+class Test extends Date\(\)\{
+.......................\^
+
+\[Compiler\] Error #1084: Syntax error: expecting identifier before true.
+.*invalidtypeexpr.as, Ln 8, Col 24:
+class Test2 implements true
+.......................\^
+
+\[Compiler\] Error #1084: Syntax error: expecting rightparen before plus.
+.*invalidtypeexpr.as, Ln 12, Col 15:
+function s\(a:x\+b\):foo\(\)
+..............\^
+
+\[Compiler\] Error #1158: Syntax error: missing left brace \(\{\) before the function body.
+.*invalidtypeexpr.as, Ln 12, Col 22:
+function s\(a:x\+b\):foo\(\)
+.....................\^
+
+4 errors found

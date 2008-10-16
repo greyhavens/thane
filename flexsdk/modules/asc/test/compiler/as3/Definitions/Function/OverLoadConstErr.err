@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   OverLoadConstErr.as, Ln 4, Col 12: 
+   		function Bar\(a\){}
+   ...........^
+
+1 error found

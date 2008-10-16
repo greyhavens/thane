@@ -1,0 +1,7 @@
+
+[Compiler] Error #1010: The override attribute may be used only on class property definitions.
+   OverrideInterfaceErr.as, Ln 2, Col 2: 
+   	override interface a{};
+   .^
+
+1 error found

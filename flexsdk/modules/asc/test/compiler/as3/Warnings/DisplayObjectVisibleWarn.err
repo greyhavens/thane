@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*DisplayObjectVisibleWarn.as\(12\): Migration issue: The property _visible is no longer supported.  Use the DisplayObject.visible property instead..
+a._visible = 1;
+...^
+
+-------------------------------------------------------------------------
+
+
+
+DisplayObjectVisibleWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

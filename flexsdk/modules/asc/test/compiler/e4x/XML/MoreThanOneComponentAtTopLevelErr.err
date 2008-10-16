@@ -1,0 +1,7 @@
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before xmltagstartend.
+   MoreThanOneComponentAtTopLevelErr.as, Ln 31, Col 57: 
+   var xml = <\?xml version="1.0"\?><root><child>Kibo</child></root>;
+   ........................................................^
+
+1 error found

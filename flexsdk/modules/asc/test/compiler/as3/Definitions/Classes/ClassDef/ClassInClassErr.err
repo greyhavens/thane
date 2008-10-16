@@ -1,0 +1,72 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 3, Col 10: 
+   		static class inner1 { }
+   .........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 7, Col 3: 
+   		class inner2 { }
+   ..^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 11, Col 18: 
+   		private static class inner1 { }
+   .................^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 15, Col 11: 
+   		private class inner2 { }
+   ..........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 19, Col 17: 
+   		public static class inner1 { }
+   ................^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 23, Col 10: 
+   		public class inner2 { }
+   .........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 27, Col 18: 
+   		dynamic static class inner1 { }
+   .................^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 31, Col 11: 
+   		dynamic class inner2 { }
+   ..........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 35, Col 16: 
+   		final static class inner1 { }
+   ...............^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 39, Col 9: 
+   		final class inner2 { }
+   ........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 43, Col 19: 
+   		explicit static class inner1 { }
+   ..................^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 47, Col 12: 
+   		explicit class inner2 { }
+   ...........^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 51, Col 19: 
+   		internal static class inner1 { }
+   ..................^
+
+[Compiler] Error #1131: Classes must not be nested.
+   ClassInClassErr.as, Ln 55, Col 12: 
+   		internal class inner2 { }
+   ...........^
+
+14 errors found

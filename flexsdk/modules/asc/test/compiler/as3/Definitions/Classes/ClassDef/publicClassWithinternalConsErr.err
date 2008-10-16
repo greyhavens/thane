@@ -1,0 +1,7 @@
+
+[Compiler] Error #1153: A constructor can only be declared public.
+   publicClassWithinternalConsErr.as, Ln 7, Col 35: 
+                   internal function publicClassWithinternalCons(){
+   ..................................^
+
+1 error found

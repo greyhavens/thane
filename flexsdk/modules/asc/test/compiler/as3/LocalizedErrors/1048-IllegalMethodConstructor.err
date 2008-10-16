@@ -1,0 +1,12 @@
+
+[Compiler] Error #1048: Method cannot be used as a constructor.
+1048-IllegalMethodConstructor.as, Ln 16, Col 19:
+var try1 = new mz.test();
+..................^
+
+[Compiler] Error #1048: Method cannot be used as a constructor.
+1048-IllegalMethodConstructor.as, Ln 17, Col 23:
+var try2 = new MyTest.test2();
+......................^
+
+2 errors found

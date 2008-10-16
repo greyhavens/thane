@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute public, not static.
+   VarDefPublicStaticErr8.as, Ln 15, Col 30: 
+       		public static variable1:Boolean, variable2:Boolean, variable3:Bo...
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before semicolon.
+   VarDefPublicStaticErr8.as, Ln 15, Col 83: 
+       		public static variable1:Boolean, variable2:Boolean, variable3:Boolean = true;
+   ..................................................................................^
+
+2 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1135: Syntax error: const as not a valid type.
+as3.Definitions.const.ConstAsFunctionArgTypeErr.as, Ln 33, Col 27:
+function myConstArg\( arg1:const \) {
+..........................^
+
+1 error found

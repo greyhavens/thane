@@ -1,0 +1,5 @@
+
+[Compiler] Error #1208: The initializer for a configuration value must be a compile time constant.
+.*flag_invalidstring.as, Ln 1, Col 1:
+
+1 error found

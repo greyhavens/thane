@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before valueOf.
+ecma3.e11_2_3_2_Err.as, Ln 61, Col 39:
+3.valueOf\(\) \);
+......................................^
+
+1 error found

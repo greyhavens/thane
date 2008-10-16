@@ -1,0 +1,7 @@
+
+[Compiler] Error #1016: Base class is final.
+   CannotExtendBaseClassErr.as, Ln 46, Col 32: 
+   	class ExtendedXMLList extends XMLList {
+   ...............................^
+
+1 error found

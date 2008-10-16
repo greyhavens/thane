@@ -1,0 +1,52 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   DynExtFinalClassErr.as, Ln 30, Col 2: 
+   	final NS class DynExtFinalNSClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   DynExtFinalClassErr.as, Ln 50, Col 2: 
+   	dynamic final NS class DynExtDynamicFinalNSClassErr {
+   .^
+
+[Compiler] Error #1016: Base class is final.
+   DynExtFinalClassErr.as, Ln 55, Col 27: 
+   	dynamic class B1 extends DynExtFinalClassErr {
+   ..........................^
+
+[Compiler] Error #1016: Base class is final.
+   DynExtFinalClassErr.as, Ln 64, Col 27: 
+   	dynamic class B2 extends DynExtFinalInternalClassErr {
+   ..........................^
+
+[Compiler] Error #1016: Base class is final.
+   DynExtFinalClassErr.as, Ln 73, Col 27: 
+   	dynamic class B3 extends DynExtFinalPublicClassErr {
+   ..........................^
+
+[Compiler] Error #1017: The definition of base class DynExtFinalNSClassErr was not found.
+   DynExtFinalClassErr.as, Ln 82, Col 31: 
+   	dynamic class B4 extends NS::DynExtFinalNSClassErr {
+   ..............................^
+
+[Compiler] Error #1016: Base class is final.
+   DynExtFinalClassErr.as, Ln 91, Col 27: 
+   	dynamic class B5 extends DynExtDynamicFinalClassErr {
+   ..........................^
+
+[Compiler] Error #1016: Base class is final.
+   DynExtFinalClassErr.as, Ln 100, Col 27: 
+   	dynamic class B6 extends DynExtDynamicFinalInternalClassErr {
+   ..........................^
+
+[Compiler] Error #1016: Base class is final.
+   DynExtFinalClassErr.as, Ln 109, Col 27: 
+   	dynamic class B7 extends DynExtDynamicFinalPublicClassErr {
+   ..........................^
+
+[Compiler] Error #1017: The definition of base class DynExtDynamicFinalNSClassErr was not found.
+   DynExtFinalClassErr.as, Ln 118, Col 31: 
+   	dynamic class B8 extends NS::DynExtDynamicFinalNSClassErr {
+   ..............................^
+
+10 errors found

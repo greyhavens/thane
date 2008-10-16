@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   OverrideDiffParamsErr1.as, Ln 7, Col 28: 
+   		override public function setString\( s:Boolean \) : void {}
+   ...........................^
+
+1 error found

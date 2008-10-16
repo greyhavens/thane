@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*\BitmapDataWarn.as\(8\): Migration issue: The method loadBitmap is no longer supported.  Create a new instance of the bitmap library symbol class, i.e. new myBitmapName(), instead..
+var myBitmapData:BitmapData = BitmapData.loadBitmap\(linkageId\);
+.............................................^
+
+-------------------------------------------------------------------------
+
+
+
+BitmapDataWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

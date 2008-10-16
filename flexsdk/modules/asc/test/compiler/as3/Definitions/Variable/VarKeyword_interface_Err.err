@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before interface.
+   VarKeyword_interface_Err.as, Ln 14, Col 6: 
+   	var interface;
+   .....^
+
+1 error found

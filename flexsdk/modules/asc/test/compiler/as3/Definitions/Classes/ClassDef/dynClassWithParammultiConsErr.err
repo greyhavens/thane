@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   dynClassWithParammultiConsErr.as, Ln 11, Col 33: 
+                   public function dynClassWithParammultiConsErr\(a:Number...
+   ................................^
+
+1 error found

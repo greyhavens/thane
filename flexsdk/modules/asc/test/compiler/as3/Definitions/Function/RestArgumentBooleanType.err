@@ -1,0 +1,7 @@
+
+[Compiler] Error #1140: Parameters specified after the ...rest parameter definition keyword can only be an Array data type.
+   RestArgumentBooleanType.as, Ln 1, Col 32: 
+   function foo\( ... rest:Boolean \){}
+   ...............................^
+
+1 error found

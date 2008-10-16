@@ -1,0 +1,7 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr7.as, Ln 81, Col 36:
+idTypeExprA:Array, idTypeExprB:Boolean;
+...................................^
+
+1 error found

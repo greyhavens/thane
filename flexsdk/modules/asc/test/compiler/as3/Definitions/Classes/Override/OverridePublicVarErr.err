@@ -1,0 +1,12 @@
+
+[Compiler] Error #1010: The override attribute may be used only on class property definitions.
+   OverridePublicVarErr.as, Ln 2, Col 2: 
+   	override public var a;
+   .^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   OverridePublicVarErr.as, Ln 2, Col 22: 
+   	override public var a;
+   .....................^
+
+2 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   InterfaceStaticMethodErr.as, Ln 10, Col 19: 
+   		static function foo()
+   ..................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before dot.
+   IllegalIdentifiersDotErr.as, Ln 1, Col 15: 
+   namespace some.long.ns.withdots;
+   ..............^
+
+1 error found

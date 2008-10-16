@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before typeof.
+   StaticPublicNameErr69.as, Ln 5, Col 28: 
+       static public function typeof() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr69.as, Ln 5, Col 37: 
+       static public function typeof() {}
+   ....................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr69.as, Ln 5, Col 37: 
+       static public function typeof() {}
+   ....................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr69.as, Ln 5, Col 37: 
+       static public function typeof() {}
+   ....................................^
+
+4 errors found

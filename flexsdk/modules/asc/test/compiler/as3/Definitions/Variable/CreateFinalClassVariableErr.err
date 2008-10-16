@@ -1,0 +1,7 @@
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+   CreateFinalClassVariableErr.as, Ln 5, Col 19: 
+           final var item1;
+   ..................^
+
+1 error found

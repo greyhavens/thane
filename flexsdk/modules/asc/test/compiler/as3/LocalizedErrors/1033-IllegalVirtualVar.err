@@ -1,0 +1,7 @@
+
+[Compiler] Error #1033: Virtual variables are not supported.
+1033-IllegalVirtualVar.as, Ln 7, Col 17:
+virtual var a;
+................^
+
+1 error found

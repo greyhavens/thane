@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before interface.
+   EmptyNameErr56.as, Ln 5, Col 14: 
+       function interface() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr56.as, Ln 5, Col 26: 
+       function interface() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr56.as, Ln 5, Col 26: 
+       function interface() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr56.as, Ln 5, Col 26: 
+       function interface() {}
+   .........................^
+
+4 errors found

@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before instanceof.
+   EmptyNameErr58.as, Ln 5, Col 18: 
+       function set instanceof\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr58.as, Ln 5, Col 32: 
+       function set instanceof\(e\) {}
+   ...............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr58.as, Ln 5, Col 32: 
+       function set instanceof\(e\) {}
+   ...............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr58.as, Ln 5, Col 32: 
+       function set instanceof\(e\) {}
+   ...............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before instanceof.
+   EmptyNameErr58.as, Ln 6, Col 18: 
+       function get instanceof() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr58.as, Ln 6, Col 31: 
+       function get instanceof() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr58.as, Ln 6, Col 31: 
+       function get instanceof() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr58.as, Ln 6, Col 31: 
+       function get instanceof() {}
+   ..............................^
+
+8 errors found

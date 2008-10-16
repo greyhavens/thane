@@ -1,0 +1,12 @@
+
+finally-nested.abc, \d+ bytes written
+outer-try
+outer-catch
+inner-try1
+inner-finally1
+inner-inner-try
+inner-inner-finally
+inner-try2
+inner-finally2
+outer-finally
+Error: blah.*

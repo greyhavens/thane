@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before finally.
+   VarKeyword_finally_Err.as, Ln 14, Col 6: 
+   	var finally;
+   .....^
+
+1 error found

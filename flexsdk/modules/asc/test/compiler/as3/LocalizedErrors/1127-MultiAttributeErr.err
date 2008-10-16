@@ -1,0 +1,7 @@
+
+[Compiler] Error #1127: Attribute public was specified multiple times.
+1127-MultiAttributeErr.as, Ln 10, Col 5:
+public public class MultiAttributeErr{
+....^
+
+1 error found

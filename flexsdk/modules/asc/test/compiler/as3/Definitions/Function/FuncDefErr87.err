@@ -1,0 +1,7 @@
+
+[Compiler] Error #1144: Interface method fn in namespace Errors:_If1ArgRet is implemented with an incompatible signature in class Errors:FuncDefErr87.
+   FuncDefErr87.as, Ln 8, Col 8: 
+    class FuncDefErr87 implements _If1ArgRet
+   .......^
+
+1 error found

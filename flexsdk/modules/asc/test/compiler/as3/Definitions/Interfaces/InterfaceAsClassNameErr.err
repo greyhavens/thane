@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before interface.
+   InterfaceAsClassNameErr.as, Ln 6, Col 8: 
+   	class interface {}
+   .......^
+
+1 error found

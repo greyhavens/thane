@@ -1,0 +1,12 @@
+
+[Compiler] Error #1046: Type was not found or was not a compile-time constant: Bar.
+   ConstReturnErr.as, Ln 3, Col 18: 
+   		function Bar():Bar{}
+   .................^
+
+[Compiler] Error #1046: Type was not found or was not a compile-time constant: Bar.
+   ConstReturnErr.as, Ln 3, Col 18: 
+   		function Bar():Bar{}
+   .................^
+
+2 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1144: Interface method foo in namespace Errors:I is implemented with an incompatible signature in class Errors:MyClass.
+   ParamTypeMismatchErr.as, Ln 14, Col 8: 
+   	class MyClass implements I {
+   .......^
+
+1 error found

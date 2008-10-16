@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before implements.
+   StaticNameErr54.as, Ln 5, Col 21: 
+       static function implements() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr54.as, Ln 5, Col 34: 
+       static function implements() {}
+   .................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr54.as, Ln 5, Col 34: 
+       static function implements() {}
+   .................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr54.as, Ln 5, Col 34: 
+       static function implements() {}
+   .................................^
+
+4 errors found

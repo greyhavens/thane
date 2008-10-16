@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before interface.
+   StaticPublicNameErr56.as, Ln 5, Col 28: 
+       static public function interface() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr56.as, Ln 5, Col 40: 
+       static public function interface() {}
+   .......................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr56.as, Ln 5, Col 40: 
+       static public function interface() {}
+   .......................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr56.as, Ln 5, Col 40: 
+       static public function interface() {}
+   .......................................^
+
+4 errors found

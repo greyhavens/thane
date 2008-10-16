@@ -1,0 +1,7 @@
+
+[Compiler] Error #1124: Return type of a getter definition must not be void.
+   getterReturnVoidErr.as, Ln 3, Col 29: 
+   function get someProperty():void
+   ............................^
+
+1 error found

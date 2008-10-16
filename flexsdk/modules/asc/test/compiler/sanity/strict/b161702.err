@@ -1,0 +1,5 @@
+
+b161702.abc, \d+ bytes written
+in catch, throwing exception
+in finally
+TypeError: blah.*

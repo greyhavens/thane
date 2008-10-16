@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+\[Coach\] Warning #3555: Use of the instanceof operator.
+-------------------------------------------------------------------------
+.*warning3555.as\(5\): The instanceof operator is deprecated, use the is operator instead.
+\(a instanceof A\);
+...\^
+
+-------------------------------------------------------------------------
+
+
+
+warning3555.abc, \d+ bytes written

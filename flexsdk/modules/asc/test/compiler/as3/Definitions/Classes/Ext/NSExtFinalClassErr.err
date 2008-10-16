@@ -1,0 +1,92 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 30, Col 2: 
+   	final NS class NSExtFinalNSClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 50, Col 2: 
+   	dynamic final NS class NSExtDynamicFinalNSClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 55, Col 2: 
+   	NS class B1 extends NSExtFinalClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 64, Col 2: 
+   	NS class B2 extends NSExtFinalInternalClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 73, Col 2: 
+   	NS class B3 extends NSExtFinalPublicClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 82, Col 2: 
+   	NS class B4 extends NS::NSExtFinalNSClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 91, Col 2: 
+   	NS class B5 extends NSExtDynamicFinalClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 100, Col 2: 
+   	NS class B6 extends NSExtDynamicFinalInternalClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 109, Col 2: 
+   	NS class B7 extends NSExtDynamicFinalPublicClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   NSExtFinalClassErr.as, Ln 118, Col 2: 
+   	NS class B8 extends NS::NSExtDynamicFinalNSClassErr {
+   .^
+
+[Compiler] Error #1016: Base class is final.
+   NSExtFinalClassErr.as, Ln 55, Col 22: 
+   	NS class B1 extends NSExtFinalClassErr {
+   .....................^
+
+[Compiler] Error #1016: Base class is final.
+   NSExtFinalClassErr.as, Ln 64, Col 22: 
+   	NS class B2 extends NSExtFinalInternalClassErr {
+   .....................^
+
+[Compiler] Error #1016: Base class is final.
+   NSExtFinalClassErr.as, Ln 73, Col 22: 
+   	NS class B3 extends NSExtFinalPublicClassErr {
+   .....................^
+
+[Compiler] Error #1017: The definition of base class NSExtFinalNSClassErr was not found.
+   NSExtFinalClassErr.as, Ln 82, Col 26: 
+   	NS class B4 extends NS::NSExtFinalNSClassErr {
+   .........................^
+
+[Compiler] Error #1016: Base class is final.
+   NSExtFinalClassErr.as, Ln 91, Col 22: 
+   	NS class B5 extends NSExtDynamicFinalClassErr {
+   .....................^
+
+[Compiler] Error #1016: Base class is final.
+   NSExtFinalClassErr.as, Ln 100, Col 22: 
+   	NS class B6 extends NSExtDynamicFinalInternalClassErr {
+   .....................^
+
+[Compiler] Error #1016: Base class is final.
+   NSExtFinalClassErr.as, Ln 109, Col 22: 
+   	NS class B7 extends NSExtDynamicFinalPublicClassErr {
+   .....................^
+
+[Compiler] Error #1017: The definition of base class NSExtDynamicFinalNSClassErr was not found.
+   NSExtFinalClassErr.as, Ln 118, Col 26: 
+   	NS class B8 extends NS::NSExtDynamicFinalNSClassErr {
+   .........................^
+
+18 errors found

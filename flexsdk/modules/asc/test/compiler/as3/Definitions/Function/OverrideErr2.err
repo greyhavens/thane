@@ -1,0 +1,7 @@
+
+[Compiler] Error #1020: Method marked override must override another method.
+   OverrideErr2.as, Ln 8, Col 21: 
+   		override function g() {}
+   ....................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1153: A constructor can only be declared public.
+   dynpubClassWithPrivConsErr.as, Ln 6, Col 34: 
+                   private function dynpubClassWithPrivCons(){
+   .................................^
+
+1 error found

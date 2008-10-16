@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before extends.
+   EmptyNameErr50.as, Ln 5, Col 14: 
+       function extends() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr50.as, Ln 5, Col 24: 
+       function extends() {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr50.as, Ln 5, Col 24: 
+       function extends() {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr50.as, Ln 5, Col 24: 
+       function extends() {}
+   .......................^
+
+4 errors found

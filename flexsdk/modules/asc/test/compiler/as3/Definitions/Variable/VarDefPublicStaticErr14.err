@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute public, not static.
+   VarDefPublicStaticErr14.as, Ln 15, Col 31: 
+       		public static idIdAssign, idIdTypeExprAAssign:Array, idIdTypeExp...
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before semicolon.
+   VarDefPublicStaticErr14.as, Ln 15, Col 94: 
+       		public static idIdAssign, idIdTypeExprAAssign:Array, idIdTypeExprBAssign:Boolean = true;
+   .............................................................................................^
+
+2 errors found

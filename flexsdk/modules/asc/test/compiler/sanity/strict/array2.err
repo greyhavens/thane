@@ -1,0 +1,36 @@
+
+array2.abc, \d+ bytes written
+a,b,c,d,
+a,b,c,d,e \(MyClass: 5\)
+a,b,c,d,e \(Array: 5\)
+reverse: e,d,c,b,a \(MyClass: 5\)
+reverse: e,d,c,b,a \(Array: 5\)
+pop: e,d,c,b \(MyClass: 4\)
+pop: e,d,c,b \(Array: 4\)
+push: e,d,c,b,10 \(MyClass: 5\)
+push: e,d,c,b,10 \(Array: 5\)
+sort: 10,b,c,d,e \(MyClass: 5\)
+sort: 10,b,c,d,e \(Array: 5\)
+unshift: f,10,b,c,d,e \(MyClass: 6\)
+unshift: f,10,b,c,d,e \(Array: 6\)
+shift: 10,b,c,d,e \(MyClass: 5\), result: f
+shift: 10,b,c,d,e \(Array: 5\), result: f
+3
+2
+1
+ret1 : \[object Object\],\[object Object\],\[object Object\]
+1
+2
+3
+ret2 : \[object Object\],\[object Object\],\[object Object\]
+3
+2
+1
+ret3 : 2,1,0
+1
+2
+3
+ret4 : 0
+3
+2
+1

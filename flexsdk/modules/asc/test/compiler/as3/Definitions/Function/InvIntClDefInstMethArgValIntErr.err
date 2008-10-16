@@ -1,0 +1,7 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute ackage, not Errors.
+   InvIntClDefInstMethArgValIntErr.as, Ln 1, Col 14: 
+   ackage Errors{
+   .............^
+
+1 error found

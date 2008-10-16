@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before implements.
+   EmptyNameErr54.as, Ln 5, Col 18: 
+       function get implements() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr54.as, Ln 5, Col 31: 
+       function get implements() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr54.as, Ln 5, Col 31: 
+       function get implements() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr54.as, Ln 5, Col 31: 
+       function get implements() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before implements.
+   EmptyNameErr54.as, Ln 6, Col 18: 
+       function set implements\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr54.as, Ln 6, Col 32: 
+       function set implements\(e\) {}
+   ...............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr54.as, Ln 6, Col 32: 
+       function set implements\(e\) {}
+   ...............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr54.as, Ln 6, Col 32: 
+       function set implements\(e\) {}
+   ...............................^
+
+8 errors found

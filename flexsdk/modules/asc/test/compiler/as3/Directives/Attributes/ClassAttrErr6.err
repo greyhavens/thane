@@ -1,0 +1,7 @@
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   ClassAttrErr6.as, Ln 3, Col 16: 
+   	public public static class ClassAttrErr6
+   ...............^
+
+1 error found

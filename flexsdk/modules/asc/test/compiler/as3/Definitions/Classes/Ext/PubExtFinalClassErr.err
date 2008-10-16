@@ -1,0 +1,52 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   PubExtFinalClassErr.as, Ln 30, Col 2: 
+   	final NS class PubExtFinalNSClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   PubExtFinalClassErr.as, Ln 50, Col 2: 
+   	dynamic final NS class PubExtDynamicFinalNSClassErr {
+   .^
+
+[Compiler] Error #1016: Base class is final.
+   PubExtFinalClassErr.as, Ln 55, Col 26: 
+   	public class B1 extends PubExtFinalClassErr {
+   .........................^
+
+[Compiler] Error #1016: Base class is final.
+   PubExtFinalClassErr.as, Ln 64, Col 26: 
+   	public class B2 extends PubExtFinalInternalClassErr {
+   .........................^
+
+[Compiler] Error #1016: Base class is final.
+   PubExtFinalClassErr.as, Ln 73, Col 26: 
+   	public class B3 extends PubExtFinalPublicClassErr {
+   .........................^
+
+[Compiler] Error #1017: The definition of base class PubExtFinalNSClassErr was not found.
+   PubExtFinalClassErr.as, Ln 82, Col 30: 
+   	public class B4 extends NS::PubExtFinalNSClassErr {
+   .............................^
+
+[Compiler] Error #1016: Base class is final.
+   PubExtFinalClassErr.as, Ln 91, Col 26: 
+   	public class B5 extends PubExtDynamicFinalClassErr {
+   .........................^
+
+[Compiler] Error #1016: Base class is final.
+   PubExtFinalClassErr.as, Ln 100, Col 26: 
+   	public class B6 extends PubExtDynamicFinalInternalClassErr {
+   .........................^
+
+[Compiler] Error #1016: Base class is final.
+   PubExtFinalClassErr.as, Ln 109, Col 26: 
+   	public class B7 extends PubExtDynamicFinalPublicClassErr {
+   .........................^
+
+[Compiler] Error #1017: The definition of base class PubExtDynamicFinalNSClassErr was not found.
+   PubExtFinalClassErr.as, Ln 118, Col 30: 
+   	public class B8 extends NS::PubExtDynamicFinalNSClassErr {
+   .............................^
+
+10 errors found

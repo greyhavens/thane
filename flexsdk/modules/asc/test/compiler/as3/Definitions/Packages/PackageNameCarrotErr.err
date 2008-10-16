@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before bitwisexor.
+as3.Definitions.Packages.PackageNameCarrotErr.as, Ln 23, Col 9:
+package \^foo.*
+........^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+1021-DuplicateMethodDef.as, Ln 6, Col 12:
+function a():void {}
+...........^
+
+1 error found

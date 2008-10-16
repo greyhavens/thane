@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   OverrideReturnTypeErr2.as, Ln 7, Col 21: 
+   		override function foo() : String{ return "foo" }
+   ....................^
+
+1 error found

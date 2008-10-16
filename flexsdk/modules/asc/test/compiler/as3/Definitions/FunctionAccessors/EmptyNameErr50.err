@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before extends.
+   EmptyNameErr50.as, Ln 5, Col 18: 
+       function get extends() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr50.as, Ln 5, Col 28: 
+       function get extends() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr50.as, Ln 5, Col 28: 
+       function get extends() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr50.as, Ln 5, Col 28: 
+       function get extends() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before extends.
+   EmptyNameErr50.as, Ln 6, Col 18: 
+       function set extends\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr50.as, Ln 6, Col 29: 
+       function set extends\(e\) {}
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr50.as, Ln 6, Col 29: 
+       function set extends\(e\) {}
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr50.as, Ln 6, Col 29: 
+       function set extends\(e\) {}
+   ............................^
+
+8 errors found

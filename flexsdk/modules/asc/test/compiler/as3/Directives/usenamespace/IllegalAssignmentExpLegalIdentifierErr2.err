@@ -1,0 +1,7 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   IllegalAssignmentExpLegalIdentifierErr2.as, Ln 9, Col 9: 
+     N1::v1:5;
+   ........^
+
+1 error found

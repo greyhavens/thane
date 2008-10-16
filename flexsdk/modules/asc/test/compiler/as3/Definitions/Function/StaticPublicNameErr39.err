@@ -1,0 +1,10 @@
+
+[Compiler] Error #1093: Syntax error.
+   StaticPublicNameErr39.as, Ln 5, Col 29: 
+       static public function a#() {}
+   ............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before end of program.
+   StaticPublicNameErr39.as, Ln 7, Col 1: 
+
+2 errors found

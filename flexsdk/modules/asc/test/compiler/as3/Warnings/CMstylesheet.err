@@ -1,0 +1,30 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMstylesheet.as\(16\): Migration issue: The method getStyleNames is no longer supported.  Use the StyleSheet.styleNames property instead..
+styl.getStyleNames()
+......^
+
+.*CMstylesheet.as\(17\): Migration issue: The method load is no longer supported.  Use an instance of URLLoader to load the StyleSheet data, and then pass the loaders data to the StyleSheet.parseCSS method. For more information, see the URLLoader and EventDispatcher classes..
+styl.load()
+......^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*CMstylesheet.as\(18\): Migration issue: The onLoad event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'load', callback_handler\).
+styl.onLoad = function():void{}
+......^
+
+-------------------------------------------------------------------------
+
+
+
+CMstylesheet.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

@@ -1,0 +1,38 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMtimeout.as\(8\): Migration issue: The method play is no longer supported.  For more information, see MovieClip.play()..
+play();
+^
+
+.*CMtimeout.as\(9\): Migration issue: The method stop is no longer supported.  For more information, see MovieClip.stop()..
+stop();
+^
+
+.*CMtimeout.as\(10\): Migration issue: The method startDrag is no longer supported.  For more information, see MovieClip.startDrag()..
+startDrag();
+^
+
+.*CMtimeout.as\(11\): Migration issue: The method stopDrag is no longer supported.  For more information, see MovieClip.stopDrag()..
+stopDrag();
+^
+
+.*CMtimeout.as\(13\): Migration issue: The method stopAllSounds is no longer supported.  For more information, see Sound.stopAllSounds()..
+stopAllSounds()
+^
+
+.*CMtimeout.as\(14\): Migration issue: The method toggleHighQuality is no longer supported.  For more information, see DisplayObject.stage and Stage.quality..
+toggleHighQuality()
+^
+
+-------------------------------------------------------------------------
+
+
+
+CMtimeout.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

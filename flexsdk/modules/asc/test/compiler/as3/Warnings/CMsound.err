@@ -1,0 +1,62 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMsound.as\(20\): Migration issue: The method attachSound is no longer supported.  Use SWF class to create sounds from library.
+sd.attachSound()
+...........^
+
+.*CMsound.as\(21\): Migration issue: The method getBytesLoaded is no longer supported.  Use the bytesLoaded property instead..
+sd.getBytesLoaded()
+...........^
+
+.*CMsound.as\(22\): Migration issue: The method getBytesTotal is no longer supported.  Use the bytesTotal property instead..
+sd.getBytesTotal()
+...........^
+
+.*CMsound.as\(23\): Migration issue: The method getPan is no longer supported.  Use the SoundTransform.pan property instead..
+sd.getPan()
+...........^
+
+.*CMsound.as\(24\): Migration issue: The method getTransform is no longer supported.  Use the soundTransform property instead..
+sd.getTransform()
+...........^
+
+.*CMsound.as\(25\): Migration issue: The method getVolume is no longer supported.  Use flash.media.SoundChannel.leftPeak and flash.media.SoundChannel.rightPeak to monitor and control the amplitude of a sound channel..
+sd.getVolume()
+...........^
+
+.*CMsound.as\(26\): Migration issue: The method loadSound is no longer supported.  Use the load() method instead..
+sd.loadSound()
+...........^
+
+.*CMsound.as\(42\): Migration issue: The method setPan is no longer supported.  Use the SoundTransform.pan property instead..
+sd.setPan()
+....^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*CMsound.as\(27\): Migration issue: The onID3 event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'id3', callback_handler\).
+sd.onID3 = function():void{
+...........^
+
+.*CMsound.as\(32\): Migration issue: The onLoad event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'load', callback_handler\).
+sd.onLoad = function\(success:Boolean\):void{
+...........^
+
+.*CMsound.as\(38\): Migration issue: The onSoundComplete event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'soundComplete', callback_handler\).
+sd.onSoundComplete = function():void{
+...........^
+
+-------------------------------------------------------------------------
+
+
+
+CMsound.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

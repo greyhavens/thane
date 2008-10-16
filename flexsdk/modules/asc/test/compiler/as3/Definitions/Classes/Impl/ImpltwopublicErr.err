@@ -1,0 +1,17 @@
+
+[Compiler] Error #1008: Attribute is invalid.
+   ImpltwopublicErr.as, Ln 12, Col 26: 
+                            public I function deffunc():String{          ...
+   .........................^
+
+[Compiler] Error #1008: Attribute is invalid.
+   ImpltwopublicErr.as, Ln 16, Col 26: 
+                            public F function deffunc():String{          ...
+   .........................^
+
+[Compiler] Error #1021: Duplicate function definition.
+   ImpltwopublicErr.as, Ln 16, Col 44: 
+                            public F function deffunc():String{          ...
+   ...........................................^
+
+3 errors found

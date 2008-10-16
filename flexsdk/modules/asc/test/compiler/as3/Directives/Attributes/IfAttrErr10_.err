@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr10 was not found.
+   IfAttrErr10_.as, Ln 6, Col 39: 
+   	public class IfAttrErr10_ implements IfAttrErr10
+   ......................................^
+
+1 error found

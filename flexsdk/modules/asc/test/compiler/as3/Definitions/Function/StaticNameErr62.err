@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before return.
+   StaticNameErr62.as, Ln 5, Col 21: 
+       static function return() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr62.as, Ln 5, Col 30: 
+       static function return() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr62.as, Ln 5, Col 30: 
+       static function return() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr62.as, Ln 5, Col 30: 
+       static function return() {}
+   .............................^
+
+4 errors found

@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*ScrollPropWarn.as\(9\): Migration issue: The property scroll is no longer supported.  For more information, see the scrollH and scrollV properties of flash.text.TextField class..
+scroll = true;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ScrollPropWarn.abc, [0-9]+ bytes written

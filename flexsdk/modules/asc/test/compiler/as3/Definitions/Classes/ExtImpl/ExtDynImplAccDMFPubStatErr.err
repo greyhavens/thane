@@ -1,0 +1,7 @@
+
+[Compiler] Error #1125: Methods defined in an interface must not have a body.
+   ExtDynImplAccDMFPubStatErr.as, Ln 21, Col 16: 
+   	     function foo() {
+   ...............^
+
+1 error found

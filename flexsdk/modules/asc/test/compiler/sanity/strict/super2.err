@@ -1,0 +1,14 @@
+
+super2.abc, \d+ bytes written
+get b
+get b
+get a
+get a
+set b
+set b
+set a
+set a
+call b
+call b
+call a
+call a

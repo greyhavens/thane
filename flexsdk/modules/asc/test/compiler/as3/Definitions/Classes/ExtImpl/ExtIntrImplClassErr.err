@@ -1,0 +1,12 @@
+
+[Compiler] Error #1141: A class can only extend another class, not an interface.
+   ExtIntrImplClassErr.as, Ln 18, Col 36: 
+   	class ExtIntrImplClassErr extends Ia implements Simple {}
+   ...................................^
+
+[Compiler] Error #1142: An interface can only extend other interfaces, but Simple is a class.
+   ExtIntrImplClassErr.as, Ln 18, Col 50: 
+   	class ExtIntrImplClassErr extends Ia implements Simple {}
+   .................................................^
+
+2 errors found

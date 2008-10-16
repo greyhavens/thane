@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute fucntion, not foo.
+.*b107194.as, Ln 1, Col 13:
+fucntion foo\( a, b, c \)\{ print\('hello'\) \} // notice fucntion not funct...
+............\^
+
+1 error found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1184: Incompatible default value of type int where uint is expected.
+   InvDefMethArgValuintErr.as, Ln 1, Col 35: 
+   function InvDefMethArgVal\(a:uint=-1\){}
+   ..................................^
+
+[Compiler] Error #1184: Incompatible default value of type int where uint is expected.
+   InvDefMethArgValuintErr.as, Ln 1, Col 35: 
+   function InvDefMethArgVal\(a:uint=-1\){}
+   ..................................^
+
+[Compiler] Error #1184: Incompatible default value of type int where uint is expected.
+   InvDefMethArgValuintErr.as, Ln 1, Col 35: 
+   function InvDefMethArgVal\(a:uint=-1\){}
+   ..................................^
+
+[Compiler] Error #1184: Incompatible default value of type int where uint is expected.
+   InvDefMethArgValuintErr.as, Ln 1, Col 35: 
+   function InvDefMethArgVal\(a:uint=-1\){}
+   ..................................^
+
+4 errors found

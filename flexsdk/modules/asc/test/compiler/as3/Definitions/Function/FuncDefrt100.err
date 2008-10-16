@@ -1,0 +1,12 @@
+
+[Compiler] Error #1145: Native methods cannot have a body.
+   FuncDefrt100.as, Ln 7, Col 33: 
+      public final native function foo() {}
+   ................................^
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+   FuncDefrt100.as, Ln 7, Col 33: 
+      public final native function foo() {}
+   ................................^
+
+2 errors found

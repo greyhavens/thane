@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before this.
+   VarKeyword_this_Err.as, Ln 14, Col 6: 
+   	var this;
+   .....^
+
+1 error found

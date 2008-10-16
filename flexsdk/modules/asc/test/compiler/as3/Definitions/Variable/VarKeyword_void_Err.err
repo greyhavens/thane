@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before void.
+   VarKeyword_void_Err.as, Ln 14, Col 6: 
+   	var void;
+   .....^
+
+1 error found

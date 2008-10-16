@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before void.
+   EmptyNameErr71.as, Ln 5, Col 14: 
+       function void() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr71.as, Ln 5, Col 21: 
+       function void() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr71.as, Ln 5, Col 21: 
+       function void() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr71.as, Ln 5, Col 21: 
+       function void() {}
+   ....................^
+
+4 errors found

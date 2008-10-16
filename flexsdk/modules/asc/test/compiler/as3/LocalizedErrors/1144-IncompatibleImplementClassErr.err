@@ -1,0 +1,7 @@
+
+[Compiler] Error #1144: Interface method myfunction in namespace IncompatibleImplementPackage:MyInterface is implemented with an incompatible signature in class IncompatibleImplementPackage:IncompatibleImplementClassErr.
+1144-IncompatibleImplementClassErr.as, Ln 11, Col 18:
+public class IncompatibleImplementClassErr implements MyInterface{
+.................^
+
+1 error found

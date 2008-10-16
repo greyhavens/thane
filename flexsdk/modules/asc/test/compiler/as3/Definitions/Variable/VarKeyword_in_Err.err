@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before in.
+   VarKeyword_in_Err.as, Ln 14, Col 6: 
+   	var in;
+   .....^
+
+1 error found

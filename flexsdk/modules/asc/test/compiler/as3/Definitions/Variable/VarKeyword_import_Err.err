@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before import.
+   VarKeyword_import_Err.as, Ln 14, Col 6: 
+   	var import;
+   .....^
+
+1 error found

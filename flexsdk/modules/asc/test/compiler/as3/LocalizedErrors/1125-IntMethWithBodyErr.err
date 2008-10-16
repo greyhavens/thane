@@ -1,0 +1,7 @@
+
+[Compiler] Error #1125: Methods defined in an interface must not have a body.
+1125-IntMethWithBodyErr.as, Ln 10, Col 18:
+function IntMethWithBody():void{}
+.................^
+
+1 error found

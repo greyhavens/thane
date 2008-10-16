@@ -1,0 +1,7 @@
+/*
+ *
+ *
+ */
+package Errors {
+	class interface {}
+}

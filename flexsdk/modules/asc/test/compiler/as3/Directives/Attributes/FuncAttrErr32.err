@@ -1,0 +1,17 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute private, not static.
+   FuncAttrErr32.as, Ln 6, Col 6: 
+    	   static f(){};
+   .....^
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute static, not f.
+   FuncAttrErr32.as, Ln 6, Col 14: 
+    	   static f(){};
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before leftbrace.
+   FuncAttrErr32.as, Ln 6, Col 16: 
+    	   static f(){};
+   ...............^
+
+3 errors found

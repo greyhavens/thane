@@ -1,0 +1,12 @@
+
+\[Compiler\] Error #1152: A conflict exists with inherited definition A.n in namespace public.
+.*override_err.as, Ln 8, Col 7:
+var n:Number
+......\^
+
+\[Compiler\] Error #1024: Overriding a function that is not marked for override.
+.*override_err.as, Ln 9, Col 12:
+function f\( n:Number \) \{ \}
+...........\^
+
+2 errors found

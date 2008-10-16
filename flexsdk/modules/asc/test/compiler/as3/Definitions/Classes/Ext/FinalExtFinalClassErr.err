@@ -1,0 +1,52 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   FinalExtFinalClassErr.as, Ln 30, Col 2: 
+   	final NS class FinalExtFinalNSClassErr {
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   FinalExtFinalClassErr.as, Ln 50, Col 2: 
+   	dynamic final NS class FinalExtDynamicFinalNSClassErr {
+   .^
+
+[Compiler] Error #1016: Base class is final.
+   FinalExtFinalClassErr.as, Ln 55, Col 25: 
+   	final class B1 extends FinalExtFinalClassErr {
+   ........................^
+
+[Compiler] Error #1016: Base class is final.
+   FinalExtFinalClassErr.as, Ln 64, Col 25: 
+   	final class B2 extends FinalExtFinalInternalClassErr {
+   ........................^
+
+[Compiler] Error #1016: Base class is final.
+   FinalExtFinalClassErr.as, Ln 73, Col 25: 
+   	final class B3 extends FinalExtFinalPublicClassErr {
+   ........................^
+
+[Compiler] Error #1017: The definition of base class FinalExtFinalNSClassErr was not found.
+   FinalExtFinalClassErr.as, Ln 82, Col 29: 
+   	final class B4 extends NS::FinalExtFinalNSClassErr {
+   ............................^
+
+[Compiler] Error #1016: Base class is final.
+   FinalExtFinalClassErr.as, Ln 91, Col 25: 
+   	final class B5 extends FinalExtDynamicFinalClassErr {
+   ........................^
+
+[Compiler] Error #1016: Base class is final.
+   FinalExtFinalClassErr.as, Ln 100, Col 25: 
+   	final class B6 extends FinalExtDynamicFinalInternalClassErr {
+   ........................^
+
+[Compiler] Error #1016: Base class is final.
+   FinalExtFinalClassErr.as, Ln 109, Col 25: 
+   	final class B7 extends FinalExtDynamicFinalPublicClassErr {
+   ........................^
+
+[Compiler] Error #1017: The definition of base class FinalExtDynamicFinalNSClassErr was not found.
+   FinalExtFinalClassErr.as, Ln 118, Col 29: 
+   	final class B8 extends NS::FinalExtDynamicFinalNSClassErr {
+   ............................^
+
+10 errors found

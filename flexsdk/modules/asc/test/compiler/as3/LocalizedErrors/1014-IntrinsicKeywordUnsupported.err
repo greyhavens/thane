@@ -1,0 +1,7 @@
+
+[Compiler] Error #1014: The intrinsic attribute is no longer supported.
+1014-IntrinsicKeywordUnsupported.as, Ln 5, Col 1:
+intrinsic var a;
+^
+
+1 error found

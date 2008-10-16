@@ -1,0 +1,7 @@
+
+[Compiler] Error #1139: Variable declarations are not permitted in interfaces.
+   InterfaceWithVariableErr.as, Ln 10, Col 14: 
+   		public var string:String;
+   .............^
+
+1 error found

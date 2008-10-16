@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before in.
+   StaticNameErr57.as, Ln 5, Col 21: 
+       static function in() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr57.as, Ln 5, Col 26: 
+       static function in() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr57.as, Ln 5, Col 26: 
+       static function in() {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr57.as, Ln 5, Col 26: 
+       static function in() {}
+   .........................^
+
+4 errors found

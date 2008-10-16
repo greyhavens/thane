@@ -1,0 +1,12 @@
+
+[Compiler] Error #1201: A super statement cannot occur after a this, super, return, or throw statement.
+   SuperAfterThrowErr.as, Ln 11, Col 4: 
+   			super() // illegal: after throw
+   ...^
+
+[Compiler] Error #1201: A super statement cannot occur after a this, super, return, or throw statement.
+   SuperAfterThrowErr.as, Ln 20, Col 4: 
+   			super() // illegal: after \(potential\) throw
+   ...^
+
+2 errors found

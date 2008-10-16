@@ -1,0 +1,7 @@
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+1024-MissingOverride.as, Ln 10, Col 12:
+function a():void {
+...........^
+
+1 error found

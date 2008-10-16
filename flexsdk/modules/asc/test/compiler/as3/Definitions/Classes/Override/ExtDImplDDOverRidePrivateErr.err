@@ -1,0 +1,22 @@
+
+[Compiler] Error #1023: Incompatible override.
+   ExtDImplDDOverRidePrivateErr.as, Ln 47, Col 23: 
+   	    private function getBoolean() : Boolean { return true; }
+   ......................^
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   ExtDImplDDOverRidePrivateErr.as, Ln 47, Col 23: 
+   	    private function getBoolean() : Boolean { return true; }
+   ......................^
+
+[Compiler] Error #1023: Incompatible override.
+   ExtDImplDDOverRidePrivateErr.as, Ln 54, Col 23: 
+   	    private function setPubBoolean\( b:Boolean \) { return b; }
+   ......................^
+
+[Compiler] Error #1024: Overriding a function that is not marked for override.
+   ExtDImplDDOverRidePrivateErr.as, Ln 54, Col 23: 
+   	    private function setPubBoolean\( b:Boolean \) { return b; }
+   ......................^
+
+4 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+1078-LabelMustBeSimpleErr.as, Ln 6, Col 9:
+my,label: var myVar;
+........^
+
+1 error found

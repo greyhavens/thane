@@ -1,0 +1,74 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CMvideo.as\(12\): Migration issue: The property _alpha is no longer supported.  Use the DisplayObject.alpha property instead..
+vid._alpha;
+.....^
+
+.*CMvideo.as\(13\): Migration issue: The property _name is no longer supported.  Use the DisplayObject.name property instead..
+vid._name;
+.....^
+
+.*CMvideo.as\(14\): Migration issue: The property _parent is no longer supported.  Use the DisplayObject.parent property instead..
+vid._parent;
+.....^
+
+.*CMvideo.as\(15\): Migration issue: The property _visible is no longer supported.  Use the DisplayObject.visible property instead..
+vid._visible;
+.....^
+
+.*CMvideo.as\(16\): Migration issue: The property _rotation is no longer supported.  Use the DisplayObject.rotation property instead..
+vid._rotation;
+.....^
+
+.*CMvideo.as\(17\): Migration issue: The property _height is no longer supported.  Use the DisplayObject.height property instead..
+vid._height;
+.....^
+
+.*CMvideo.as\(18\): Migration issue: The property _width is no longer supported.  Use the DisplayObject.width property instead..
+vid._width;
+.....^
+
+.*CMvideo.as\(19\): Migration issue: The property _x is no longer supported.  Use the DisplayObject.x property instead..
+vid._x;
+.....^
+
+.*CMvideo.as\(20\): Migration issue: The property _y is no longer supported.  Use the DisplayObject.y property instead..
+vid._y;
+.....^
+
+.*CMvideo.as\(21\): Migration issue: The property _xmouse is no longer supported.  Use the DisplayObject.mouseX property instead..
+vid._xmouse;
+.....^
+
+.*CMvideo.as\(22\): Migration issue: The property _ymouse is no longer supported.  Use the DisplayObject.mouseY property instead..
+vid._ymouse;
+.....^
+
+.*CMvideo.as\(23\): Migration issue: The property _xscale is no longer supported.  Use the DisplayObject.scaleX property instead..
+vid._xscale;
+.....^
+
+.*CMvideo.as\(24\): Migration issue: The property _yscale is no longer supported.  Use the DisplayObject.scaleY property instead..
+vid._yscale;
+.....^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMvideo.as\(27\): Migration issue: The method attachVideo is no longer supported.  For more information, see Video.attachNetStream, Video.attachCamera..
+vid.attachVideo\("vid",6\)
+.....^
+
+-------------------------------------------------------------------------
+
+
+
+CMvideo.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

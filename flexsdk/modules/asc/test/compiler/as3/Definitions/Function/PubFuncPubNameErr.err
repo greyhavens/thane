@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftparen.
+   PubFuncPubNameErr.as, Ln 5, Col 30: 
+       public a public function () {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   PubFuncPubNameErr.as, Ln 5, Col 33: 
+       public a public function () {}
+   ................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   PubFuncPubNameErr.as, Ln 5, Col 33: 
+       public a public function () {}
+   ................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   PubFuncPubNameErr.as, Ln 5, Col 33: 
+       public a public function () {}
+   ................................^
+
+4 errors found

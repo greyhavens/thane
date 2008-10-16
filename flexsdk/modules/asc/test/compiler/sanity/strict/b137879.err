@@ -1,0 +1,9 @@
+
+b137879.abc, \d+ bytes written
+charAt\(Infinity\) ==
+a.charAt\(4294967296\) ==
+a.charAt\(4294967296\+1\) ==
+a.indexOf\('2',4294967296\) == -1
+a.charCodeAt\(4294967296\) == NaN
+a.substring\(4294967296,4294967296\+2\) ==
+a.substring\(NaN,Infinity\) == abcdefg

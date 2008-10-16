@@ -1,0 +1,7 @@
+
+[Compiler] Error #1166: Namespace declarations are not permitted in interfaces.
+1166-NamespaceInInterfaceErr.as, Ln 10, Col 17:
+namespace N1;
+................^
+
+1 error found

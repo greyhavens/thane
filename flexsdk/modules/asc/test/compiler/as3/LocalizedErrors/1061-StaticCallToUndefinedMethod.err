@@ -1,0 +1,7 @@
+
+[Compiler] Error #1061: Call to a possibly undefined method g through a reference with static type Class.
+1061-StaticCallToUndefinedMethod.as, Ln 10, Col 3:
+A.g();
+..^
+
+1 error found

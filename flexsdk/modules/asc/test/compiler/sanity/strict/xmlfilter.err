@@ -1,0 +1,8 @@
+
+xmlfilter.abc, \d+ bytes written
+<a>
+<b>hello</b>
+</a>
+<c>
+<b>goodbye</b>
+</c>

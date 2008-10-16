@@ -1,0 +1,12 @@
+
+[Compiler] Error #1155: Accessors cannot be nested inside other functions.
+1155-AccErr.as, Ln 4, Col 26:
+function get myacc():String{
+.........................^
+
+[Compiler] Error #1155: Accessors cannot be nested inside other functions.
+1155-AccErr.as, Ln 4, Col 26:
+function get myacc():String{
+.........................^
+
+2 errors found

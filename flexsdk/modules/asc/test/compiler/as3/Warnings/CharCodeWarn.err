@@ -1,0 +1,26 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CharCodeWarn.as\(8\): Migration issue: The property Key is no longer supported.  The Key class has been renamed Keyboard..
+Key.getAscii();
+.........^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CharCodeWarn.as\(9\): Migration issue: The method getAscii is no longer supported.  Use KeyboardEvent.charCode instead..
+Keyboard.getAscii();
+...........^
+
+-------------------------------------------------------------------------
+
+
+
+CharCodeWarn.abc, 180 bytes written
+ReferenceError: Error #1065
+

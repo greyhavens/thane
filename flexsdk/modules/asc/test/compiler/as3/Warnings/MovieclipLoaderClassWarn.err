@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*MovieclipLoaderClassWarn.as\(7\): Migration issue: The method MovieClipLoader is no longer supported.  The MovieClipLoader class has been replaced by the flash.display.Loader class..
+new MovieClipLoader();
+........^
+
+-------------------------------------------------------------------------
+
+
+
+MovieclipLoaderClassWarn.abc, [0-9]+ bytes written
+.*Error.*
+

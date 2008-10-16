@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr11 was not found.
+   IfAttrErr11_.as, Ln 6, Col 39: 
+   	public class IfAttrErr11_ implements IfAttrErr11
+   ......................................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before b.
+   EmptyNameErr18.as, Ln 5, Col 15: 
+       function a"b"c () {}
+   ..............^
+
+1 error found

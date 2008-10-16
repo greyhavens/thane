@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*LoadVariablesWarn.as\(13\): Migration issue: The method loadVariables is no longer supported.  For more information, see Loader.load()..
+a.loadVariables\("test.txt"\);
+...^
+
+-------------------------------------------------------------------------
+
+
+
+LoadVariablesWarn.abc, [0-9]+ bytes written
+.*Error.*
+

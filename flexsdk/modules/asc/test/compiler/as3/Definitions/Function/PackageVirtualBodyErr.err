@@ -1,0 +1,7 @@
+
+[Compiler] Error #1011: The virtual attribute may be used only on class property definitions.
+   PackageVirtualBodyErr.as, Ln 4, Col 2: 
+   	virtual function thisShouldNotCompiler(){}
+   .^
+
+1 error found

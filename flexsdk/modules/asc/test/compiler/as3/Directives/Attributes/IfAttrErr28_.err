@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr28 was not found.
+   IfAttrErr28_.as, Ln 6, Col 39: 
+   	public class IfAttrErr28_ implements IfAttrErr28
+   ......................................^
+
+1 error found

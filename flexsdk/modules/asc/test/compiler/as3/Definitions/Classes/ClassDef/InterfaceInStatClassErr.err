@@ -1,0 +1,7 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   InterfaceInStatClassErr.as, Ln 4, Col 12: 
+   	   static class A {
+   ...........^
+
+1 error found

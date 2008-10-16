@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before protected.
+   IllegalIdentifiersProtectedErr.as, Ln 1, Col 11: 
+   namespace protected;
+   ..........^
+
+1 error found

@@ -1,0 +1,7 @@
+ERROR:   file = sanity.as\(2:7\)
+mesg = code=1046; arg1=String; arg2=; arg3=
+srce = var s:String="string";
+ERROR:   file = sanity.as\(3:7\)
+mesg = code=1046; arg1=uint; arg2=; arg3=
+srce = var i:uint=10;
+2 errors found

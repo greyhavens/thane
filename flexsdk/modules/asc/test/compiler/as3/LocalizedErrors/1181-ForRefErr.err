@@ -1,0 +1,7 @@
+
+[Compiler] Error #1181: Forward reference to base class B.
+1181-ForRefErr.as, Ln 9, Col 27:
+public class A extends B{
+..........................^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1018: Duplicate class definition: a.
+as3.Definitions.Packages.MultiPackSameNameClassErr.as, Ln 27, Col 8:
+class a{}
+.......^
+
+1 error found

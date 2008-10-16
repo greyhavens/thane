@@ -1,0 +1,7 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Definitions.Packages.mypublicexplicitconstantsErr.as, Ln 45, Col 17:
+public explicit const g:Number=10;
+................^
+
+1 error found

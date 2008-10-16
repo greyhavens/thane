@@ -1,0 +1,7 @@
+
+[Compiler] Error #1038: Target of break statement was not found.
+ecma3.e12_8_1_Err.as, Ln 35, Col 10:
+break;
+.........^
+
+1 error found

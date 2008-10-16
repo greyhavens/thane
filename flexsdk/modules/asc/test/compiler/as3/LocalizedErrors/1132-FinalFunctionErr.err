@@ -1,0 +1,7 @@
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+1132-FinalFunctionErr.as, Ln 8, Col 20:
+final function FinalFunctionErr(){}
+...................^
+
+1 error found

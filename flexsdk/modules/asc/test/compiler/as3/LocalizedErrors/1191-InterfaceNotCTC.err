@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftbrace before leftparen.
+1191-InterfaceNotCTC.as, Ln 30, Col 52:
+interface goo extends nonCompileTimeConstantFunc() { }
+...................................................^
+
+1 error found

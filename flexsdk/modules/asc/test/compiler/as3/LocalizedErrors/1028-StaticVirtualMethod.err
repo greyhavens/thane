@@ -1,0 +1,7 @@
+
+[Compiler] Error #1028: Functions cannot be both static and virtual.
+1028-StaticVirtualMethod.as, Ln 5, Col 5:
+static virtual function a():void {}
+....^
+
+1 error found

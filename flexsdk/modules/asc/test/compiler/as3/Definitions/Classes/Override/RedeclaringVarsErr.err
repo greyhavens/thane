@@ -1,0 +1,52 @@
+
+[Compiler] Error #1023: Incompatible override.
+   RedeclaringVarsErr.as, Ln 8, Col 20: 
+   		private function foo(){}
+   ...................^
+
+[Compiler] Error #1023: Incompatible override.
+   RedeclaringVarsErr.as, Ln 8, Col 20: 
+   		private function foo(){}
+   ...................^
+
+[Compiler] Error #1021: Duplicate function definition.
+   RedeclaringVarsErr.as, Ln 8, Col 20: 
+   		private function foo(){}
+   ...................^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   RedeclaringVarsErr.as, Ln 12, Col 23: 
+   		override public var prop:String;
+   ......................^
+
+[Compiler] Error #1152: A conflict exists with inherited definition Errors:BaseClass.prop in namespace public.
+   RedeclaringVarsErr.as, Ln 12, Col 23: 
+   		override public var prop:String;
+   ......................^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   RedeclaringVarsErr.as, Ln 13, Col 16: 
+   		override var foo:String;
+   ...............^
+
+[Compiler] Error #1152: A conflict exists with inherited definition Errors:BaseClass.foo in namespace internal.
+   RedeclaringVarsErr.as, Ln 13, Col 16: 
+   		override var foo:String;
+   ...............^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   RedeclaringVarsErr.as, Ln 14, Col 24: 
+   		override private var bar:Number;
+   .......................^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   RedeclaringVarsErr.as, Ln 15, Col 25: 
+   		override internal var b:Boolean;
+   ........................^
+
+[Compiler] Error #1152: A conflict exists with inherited definition Errors:BaseClass.b in namespace internal.
+   RedeclaringVarsErr.as, Ln 15, Col 25: 
+   		override internal var b:Boolean;
+   ........................^
+
+10 errors found

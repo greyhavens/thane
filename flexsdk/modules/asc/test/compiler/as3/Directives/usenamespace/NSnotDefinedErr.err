@@ -1,0 +1,7 @@
+
+[Compiler] Error #1004: Namespace was not found or is not a compile-time constant.
+   NSnotDefinedErr.as, Ln 1, Col 15: 
+   use namespace thisNSisnotdefined;
+   ..............^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   bug110837Err.as, Ln 10, Col 19: 
+   override function doSomething():void
+   ..................^
+
+1 error found

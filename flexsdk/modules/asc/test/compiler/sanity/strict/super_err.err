@@ -1,0 +1,13 @@
+\[Compiler\] Error #1007: A super statement can be used only inside class instance constructors.
+.*super_err.as, Ln 2, Col 1:
+super()
+^
+\[Compiler\] Error #1006: A super expression can be used only inside class instance methods.
+.*super_err.as, Ln 3, Col 8:
+return super;
+.......^
+\[Compiler\] Error #1007: A super statement can be used only inside class instance constructors.
+.*super_err.as, Ln 5, Col 1:
+super()
+^
+3 errors found

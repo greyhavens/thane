@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before var.
+   EmptyNameErr70.as, Ln 5, Col 14: 
+       function var() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr70.as, Ln 5, Col 20: 
+       function var() {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr70.as, Ln 5, Col 20: 
+       function var() {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr70.as, Ln 5, Col 20: 
+       function var() {}
+   ...................^
+
+4 errors found

@@ -1,0 +1,17 @@
+
+xmlname.abc, \d+ bytes written
+1: <ns:a xmlns:ns="foo">10</ns:a>
+<b xmlns:ns="foo"/>
+<ns:c xmlns:ns="foo"/>
+2: <ns:a xmlns:ns="foo">10</ns:a>
+<ns:c xmlns:ns="foo"/>
+3: 10
+4: 20
+6: 10
+7: 10203040
+8: 3040
+9: 200
+10: 103040
+11: <b xmlns:ns="foo"/>
+<ns:c xmlns:ns="foo"/>
+<class>foo</class>

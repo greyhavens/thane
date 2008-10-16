@@ -1,0 +1,7 @@
+
+[Compiler] Error #1122: A setter definition must have exactly one parameter.
+   setter2ParamsErr.as, Ln 5, Col 25: 
+   		public function set x\(v1:int,v2:int\){
+   ........................^
+
+1 error found

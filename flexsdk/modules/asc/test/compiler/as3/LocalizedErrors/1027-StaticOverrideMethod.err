@@ -1,0 +1,12 @@
+
+[Compiler] Error #1027: Functions cannot be both static and override.
+1027-StaticOverrideMethod.as, Ln 9, Col 5:
+static override function a():void {}
+....^
+
+[Compiler] Error #1020: Method marked override must override another method.
+1027-StaticOverrideMethod.as, Ln 9, Col 30:
+static override function a():void {}
+.............................^
+
+2 errors found

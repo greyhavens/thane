@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*StartDragWarn.as\(12\): Migration issue: The method startDrag is no longer supported.  For more information, see MovieClip.startDrag()..
+startDrag\(a\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+StartDragWarn.abc, [0-9]+ bytes written
+.*Error.*
+

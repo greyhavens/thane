@@ -1,0 +1,12 @@
+
+[Compiler] Error #1125: Methods defined in an interface must not have a body.
+   ExtDImplDDAccDMFPrivStatErr.as, Ln 21, Col 16: 
+   	     function foo() {
+   ...............^
+
+[Compiler] Error #1125: Methods defined in an interface must not have a body.
+   ExtDImplDDAccDMFPrivStatErr.as, Ln 26, Col 16: 
+   	     function goo() {
+   ...............^
+
+2 errors found

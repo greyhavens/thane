@@ -1,0 +1,12 @@
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+as3.Definitions.Packages.StaticPackageErr.as, Ln 23, Col 1:
+static package foo {}
+^
+
+[Compiler] Error #1198: Attributes are not allowed on package definition.
+as3.Definitions.Packages.StaticPackageErr.as, Ln 23, Col 8:
+static package foo {}
+.......^
+
+2 errors found

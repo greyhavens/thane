@@ -1,0 +1,7 @@
+
+[Compiler] Error #1167: Class ImplMultiSameIntMethErr implements interface I multiple times.
+1167-ImplMultiSameIntMethErr.as, Ln 11, Col 55:
+public class ImplMultiSameIntMethErr implements I,I{
+......................................................^
+
+1 error found

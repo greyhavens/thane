@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*OpenTypeWarn.as\(11\): Migration issue: The property OPEN_TYPE is no longer supported.  Use the Event.OPEN constant instead..
+trace\(Event.OPEN_TYPE\);  // should be EventType.Open
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+OpenTypeWarn.abc, [0-9]+ bytes written
+.*Error.*
+

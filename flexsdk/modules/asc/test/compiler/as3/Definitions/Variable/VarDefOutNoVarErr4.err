@@ -1,0 +1,22 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr4.as, Ln 82, Col 61:
+id1TypeExprAssignExpr:Boolean = true, id2TypeExprAssignExpr:Boolean =...
+............................................................^
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr4.as, Ln 82, Col 100:
+id1TypeExprAssignExpr:Boolean = true, id2TypeExprAssignExpr:Boolean = false, id3TypeExprAssignExpr:Boolean = ...
+...................................................................................................^
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr4.as, Ln 83, Col 56:
+id1TypeExprAssignExprB:Boolean, id2TypeExprAssignExprB:Boolean, id3Ty...
+.......................................................^
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr4.as, Ln 83, Col 88:
+id1TypeExprAssignExprB:Boolean, id2TypeExprAssignExprB:Boolean, id3TypeExprAssignExprB:Boolean = ...
+.......................................................................................^
+
+4 errors found

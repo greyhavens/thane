@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before import.
+   EmptyNameErr55.as, Ln 5, Col 18: 
+       function set import\(e\) {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr55.as, Ln 5, Col 28: 
+       function set import\(e\) {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr55.as, Ln 5, Col 28: 
+       function set import\(e\) {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr55.as, Ln 5, Col 28: 
+       function set import\(e\) {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before import.
+   EmptyNameErr55.as, Ln 6, Col 18: 
+       function get import() {}
+   .................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr55.as, Ln 6, Col 27: 
+       function get import() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr55.as, Ln 6, Col 27: 
+       function get import() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr55.as, Ln 6, Col 27: 
+       function get import() {}
+   ..........................^
+
+8 errors found

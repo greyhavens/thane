@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface A was not found.
+   ImplementNonInterfaceErr.as, Ln 8, Col 21: 
+   	class B implements A {}
+   ....................^
+
+1 error found

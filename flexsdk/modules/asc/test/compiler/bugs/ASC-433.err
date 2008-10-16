@@ -1,0 +1,5 @@
+\[Compiler\] Error #1050: Cannot assign to a non-reference value.
+.*ASC-433.as, Ln 7, Col 1:
+o.\(foo\) = "hello";
+^
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before 0.
+ecma3.e7_5_2_Err.as, Ln 39, Col 9:
+var 0abc;
+........^
+
+1 error found

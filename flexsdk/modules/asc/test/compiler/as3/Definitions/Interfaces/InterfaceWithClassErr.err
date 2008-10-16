@@ -1,0 +1,7 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   InterfaceWithClassErr.as, Ln 10, Col 10: 
+   		public class MyClass {}
+   .........^
+
+1 error found

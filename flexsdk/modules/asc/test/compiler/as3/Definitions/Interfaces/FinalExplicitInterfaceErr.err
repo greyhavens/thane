@@ -1,0 +1,12 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   FinalExplicitInterfaceErr.as, Ln 8, Col 2: 
+   	final explicit interface I {
+   .^
+
+[Compiler] Error #1165: Interface attribute final is invalid.
+   FinalExplicitInterfaceErr.as, Ln 8, Col 27: 
+   	final explicit interface I {
+   ..........................^
+
+2 errors found

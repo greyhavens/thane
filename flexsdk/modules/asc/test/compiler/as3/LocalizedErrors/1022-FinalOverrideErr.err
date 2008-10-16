@@ -1,0 +1,7 @@
+
+[Compiler] Error #1022: Cannot override a final accessor.
+1022-FinalOverrideErr.as, Ln 21, Col 31:
+override final function get val():Number
+..............................^
+
+1 error found

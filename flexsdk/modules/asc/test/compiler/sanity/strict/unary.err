@@ -1,0 +1,8 @@
+
+unary.abc, \d+ bytes written
+void 0: undefined
+typeof true: boolean
+\+10: 10
+-20: -20
+~0x01: -2
+!false: true

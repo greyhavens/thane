@@ -1,0 +1,12 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   PubOverLoadFuncErr.as, Ln 6, Col 21: 
+       public function thisFunction \(x\) {}
+   ....................^
+
+[Compiler] Error #1021: Duplicate function definition.
+   PubOverLoadFuncErr.as, Ln 7, Col 21: 
+       public function thisFunction \(x,y\) {}
+   ....................^
+
+2 errors found

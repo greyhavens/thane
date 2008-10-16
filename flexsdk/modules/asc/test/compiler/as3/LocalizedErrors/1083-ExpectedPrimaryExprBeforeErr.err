@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1083: Syntax error: package is unexpected.
+.*1083-ExpectedPrimaryExprBeforeErr.as, Ln 9, Col 5:
+package hello \{\}
+....\^
+
+1 error found

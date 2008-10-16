@@ -1,0 +1,7 @@
+
+[Compiler] Error #1153: A constructor can only be declared public.
+1153-PublicConstructor.as, Ln 5, Col 20:
+private function A() {}
+...................^
+
+1 error found

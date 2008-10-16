@@ -1,0 +1,7 @@
+
+RestExpressionNode not yet implemented
+.*restarg.as, Ln 1, Col 23:
+foo\(one,two,three,...rest\)
+......................\^
+
+1 error found

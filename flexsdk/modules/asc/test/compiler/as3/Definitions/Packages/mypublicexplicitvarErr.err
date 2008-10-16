@@ -1,0 +1,7 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Definitions.Packages.mypublicexplicitvarErr.as, Ln 45, Col 5:
+public explicit var MyVar:String="Hi!!! there";
+....^
+
+1 error found

@@ -1,0 +1,10 @@
+
+xml_dynamic.abc, \d+ bytes written
+<employee>
+<name>
+<first/>
+<last>Wong</last>
+</name>
+</employee>
+first:
+last: Wong

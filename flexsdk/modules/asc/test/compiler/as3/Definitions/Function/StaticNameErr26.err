@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before rightbracket.
+   StaticNameErr26.as, Ln 5, Col 22: 
+       static function a]b() {}
+   .....................^
+
+1 error found

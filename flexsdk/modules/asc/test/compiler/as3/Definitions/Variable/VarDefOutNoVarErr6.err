@@ -1,0 +1,12 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr6.as, Ln 81, Col 34:
+idAAssign = false, idBAssign:Boolean = true;
+.................................^
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr6.as, Ln 82, Col 28:
+idAAssignB, idBAssignB:Boolean = true;
+...........................^
+
+2 errors found

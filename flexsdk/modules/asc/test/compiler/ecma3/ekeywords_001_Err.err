@@ -1,0 +1,5 @@
+\[Compiler\] Error #1006: A super expression can be used only inside class instance methods.
+.*ekeywords_001_Err.as, Ln 38, Col 3:
+super;
+..^
+1 error found

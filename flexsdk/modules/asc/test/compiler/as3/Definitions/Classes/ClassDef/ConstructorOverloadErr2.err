@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   ConstructorOverloadErr2.as, Ln 23, Col 12: 
+   		function Bar(){}
+   ...........^
+
+1 error found

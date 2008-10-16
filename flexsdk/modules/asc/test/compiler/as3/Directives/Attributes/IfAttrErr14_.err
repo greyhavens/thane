@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr14 was not found.
+   IfAttrErr14_.as, Ln 6, Col 39: 
+   	public class IfAttrErr14_ implements IfAttrErr14
+   ......................................^
+
+1 error found

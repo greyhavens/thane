@@ -1,0 +1,32 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Directives.Attributes.CTA.AssignNonBoolErr.as, Ln 45, Col 1:
+debug function assert\(x, y\) {
+^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Directives.Attributes.CTA.AssignNonBoolErr.as, Ln 52, Col 1:
+debug1 function assert\(x, y\) {
+^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Directives.Attributes.CTA.AssignNonBoolErr.as, Ln 61, Col 1:
+debug123 function assert\(x, y\) {
+^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Directives.Attributes.CTA.AssignNonBoolErr.as, Ln 69, Col 1:
+debug_abc function assert\(x, y\) {
+^
+
+[Compiler] Error #1151: A conflict exists with definition debug in namespace internal.
+as3.Directives.Attributes.CTA.AssignNonBoolErr.as, Ln 50, Col 7:
+const debug = 1;
+......^
+
+[Compiler] Error #1151: A conflict exists with definition debug in namespace internal.
+as3.Directives.Attributes.CTA.AssignNonBoolErr.as, Ln 58, Col 7:
+const debug = 123;
+......^
+
+6 errors found

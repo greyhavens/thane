@@ -1,0 +1,7 @@
+
+[Compiler] Error #1165: Interface attribute dynamic is invalid.
+   DynamicInterfaceErr.as, Ln 8, Col 20: 
+   	dynamic interface I {
+   ...................^
+
+1 error found

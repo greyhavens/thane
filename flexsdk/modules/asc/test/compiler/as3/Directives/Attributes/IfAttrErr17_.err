@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr17 was not found.
+   IfAttrErr17_.as, Ln 6, Col 39: 
+   	public class IfAttrErr17_ implements IfAttrErr17
+   ......................................^
+
+1 error found

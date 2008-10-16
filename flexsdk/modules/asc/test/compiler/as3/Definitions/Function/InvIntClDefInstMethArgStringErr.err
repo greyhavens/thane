@@ -1,0 +1,7 @@
+
+[Compiler] Error #1184: Incompatible default value of type Boolean where String is expected.
+   InvIntClDefInstMethArgStringErr.as, Ln 3, Col 48: 
+           function InvDefInstMethArgVal\(a:String=false\){
+   ...............................................^
+
+1 error found

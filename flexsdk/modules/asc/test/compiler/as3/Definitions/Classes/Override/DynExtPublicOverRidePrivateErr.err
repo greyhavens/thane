@@ -1,0 +1,7 @@
+
+[Compiler] Error #1020: Method marked override must override another method.
+   DynExtPublicOverRidePrivateErr.as, Ln 10, Col 29: 
+   		override private function foo(){}
+   ............................^
+
+1 error found

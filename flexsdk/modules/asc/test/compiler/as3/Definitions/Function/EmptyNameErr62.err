@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before return.
+   EmptyNameErr62.as, Ln 5, Col 14: 
+       function return() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr62.as, Ln 5, Col 23: 
+       function return() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr62.as, Ln 5, Col 23: 
+       function return() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr62.as, Ln 5, Col 23: 
+       function return() {}
+   ......................^
+
+4 errors found

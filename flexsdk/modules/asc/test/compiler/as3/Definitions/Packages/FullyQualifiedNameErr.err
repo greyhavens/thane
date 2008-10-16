@@ -1,0 +1,7 @@
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before doublecolon.
+as3.Definitions.Packages.FullyQualifiedNameErr.as, Ln 42, Col 9:
+import A::B;
+........^
+
+1 error found

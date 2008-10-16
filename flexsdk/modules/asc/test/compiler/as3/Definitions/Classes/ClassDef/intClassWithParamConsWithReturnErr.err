@@ -1,0 +1,7 @@
+
+[Compiler] Error #1051: Return value must be undefined.
+   intClassWithParamConsWithReturnErr.as, Ln 10, Col 86: 
+                                                                            return z=x\+y; 
+   .....................................................................................^
+
+1 error found

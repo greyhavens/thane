@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*ParentPropWarn.as\(9\): Migration issue: The property _parent is no longer supported.  Use the parent property instead..
+_parent = true;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ParentPropWarn.abc, [0-9]+ bytes written

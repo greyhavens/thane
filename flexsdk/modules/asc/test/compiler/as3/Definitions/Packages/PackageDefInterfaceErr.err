@@ -1,0 +1,7 @@
+
+[Compiler] Error #1083: Syntax error: package is unexpected.
+as3.Definitions.Packages.PackageDefInterfaceErr.as, Ln 24, Col 1:
+package foo {}
+^
+
+1 error found

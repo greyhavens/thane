@@ -1,0 +1,7 @@
+
+[Compiler] Error #1093: Syntax error.
+   StaticNameErr3.as, Ln 5, Col 22: 
+       static function a#() {}
+   .....................^
+
+1 error found

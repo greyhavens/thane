@@ -1,0 +1,2 @@
+IllegalOverrideInterfaceSetter.abc, \d+ bytes written
+set interface_prop: bar

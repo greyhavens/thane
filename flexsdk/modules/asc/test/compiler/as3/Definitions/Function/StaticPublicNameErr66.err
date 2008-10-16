@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before this.
+   StaticPublicNameErr66.as, Ln 5, Col 28: 
+       static public function this() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr66.as, Ln 5, Col 35: 
+       static public function this() {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr66.as, Ln 5, Col 35: 
+       static public function this() {}
+   ..................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr66.as, Ln 5, Col 35: 
+       static public function this() {}
+   ..................................^
+
+4 errors found

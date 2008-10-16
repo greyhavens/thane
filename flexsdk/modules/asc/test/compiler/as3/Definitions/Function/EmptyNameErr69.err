@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before typeof.
+   EmptyNameErr69.as, Ln 5, Col 14: 
+       function typeof() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr69.as, Ln 5, Col 23: 
+       function typeof() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr69.as, Ln 5, Col 23: 
+       function typeof() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr69.as, Ln 5, Col 23: 
+       function typeof() {}
+   ......................^
+
+4 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1042: The this keyword can not be used in static methods. It can only be used in instance methods, function closures, and global code.
+1042-ThisInStaticMethod.as, Ln 7, Col 9:
+this.a = 0;
+........^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1050: Cannot assign to a non-reference value.
+1050-AssignNonReference.as, Ln 4, Col 1:
+7 = 9
+^
+
+1 error found

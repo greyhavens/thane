@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before semicolon.
+   asOperatorErr.as, Ln 2, Col 10: 
+   Number as;
+   .........^
+
+1 error found

@@ -1,0 +1,270 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1012: Illogical comparison with undefined.  Only untyped variables \(or variables of type \*\) can be undefined.
+-------------------------------------------------------------------------
+.*DiffDataTypesWithNullUndefinedWarn.as\(13\): Variables of type int cannot be undefined. The value undefined will be type coerced to int before comparison.
+if \(i == undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(17\): Variables of type int cannot be undefined. The value undefined will be type coerced to int before comparison.
+if \(i === undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(21\): Variables of type int cannot be undefined. The value undefined will be type coerced to int before comparison.
+if \(i != undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(25\): Variables of type int cannot be undefined. The value undefined will be type coerced to int before comparison.
+if \(i >= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(29\): Variables of type int cannot be undefined. The value undefined will be type coerced to int before comparison.
+if \(i <= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(33\): Variables of type int cannot be undefined. The value undefined will be type coerced to int before comparison.
+if \(i > undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(37\): Variables of type int cannot be undefined. The value undefined will be type coerced to int before comparison.
+if \(i < undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(70\): Variables of type Boolean cannot be undefined. The value undefined will be type coerced to Boolean before comparison.
+if \(b == undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(74\): Variables of type Boolean cannot be undefined. The value undefined will be type coerced to Boolean before comparison.
+if \(b === undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(78\): Variables of type Boolean cannot be undefined. The value undefined will be type coerced to Boolean before comparison.
+if \(b != undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(82\): Variables of type Boolean cannot be undefined. The value undefined will be type coerced to Boolean before comparison.
+if \(b >= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(86\): Variables of type Boolean cannot be undefined. The value undefined will be type coerced to Boolean before comparison.
+if \(b <= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(90\): Variables of type Boolean cannot be undefined. The value undefined will be type coerced to Boolean before comparison.
+if \(b > undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(94\): Variables of type Boolean cannot be undefined. The value undefined will be type coerced to Boolean before comparison.
+if \(b < undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(129\): Variables of type uint cannot be undefined. The value undefined will be type coerced to uint before comparison.
+if \(u == undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(133\): Variables of type uint cannot be undefined. The value undefined will be type coerced to uint before comparison.
+if \(u === undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(137\): Variables of type uint cannot be undefined. The value undefined will be type coerced to uint before comparison.
+if \(u != undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(141\): Variables of type uint cannot be undefined. The value undefined will be type coerced to uint before comparison.
+if \(u >= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(145\): Variables of type uint cannot be undefined. The value undefined will be type coerced to uint before comparison.
+if \(u <= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(149\): Variables of type uint cannot be undefined. The value undefined will be type coerced to uint before comparison.
+if \(u > undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(153\): Variables of type uint cannot be undefined. The value undefined will be type coerced to uint before comparison.
+if \(u < undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(186\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if \(n == undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(190\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if \(n === undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(194\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if \(n != undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(198\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if \(n >= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(202\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if \(n <= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(206\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if \(n > undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(210\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if \(n < undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(218\): Variables of type Number cannot be undefined. The value undefined will be type coerced to Number before comparison.
+if \(n === undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(243\): Variables of type aClass cannot be undefined. The value undefined will be type coerced to aClass before comparison.
+if \(a == undefined\)
+.............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(247\): Variables of type aClass cannot be undefined. The value undefined will be type coerced to aClass before comparison.
+if \(a === undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(251\): Variables of type aClass cannot be undefined. The value undefined will be type coerced to aClass before comparison.
+if \(a != undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(255\): Variables of type aClass cannot be undefined. The value undefined will be type coerced to aClass before comparison.
+if \(a >= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(259\): Variables of type aClass cannot be undefined. The value undefined will be type coerced to aClass before comparison.
+if \(a <= undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(263\): Variables of type aClass cannot be undefined. The value undefined will be type coerced to aClass before comparison.
+if \(a > undefined\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(267\): Variables of type aClass cannot be undefined. The value undefined will be type coerced to aClass before comparison.
+if \(a < undefined\)
+............................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1096: Illogical comparison with null.
+-------------------------------------------------------------------------
+.*DiffDataTypesWithNullUndefinedWarn.as\(42\): Illogical comparison with null.  Variables of type int cannot be null.
+if \(i == null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(46\): Illogical comparison with null.  Variables of type int cannot be null.
+if \(i === null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(50\): Illogical comparison with null.  Variables of type int cannot be null.
+if \(i != null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(54\): Illogical comparison with null.  Variables of type int cannot be null.
+if \(i >= null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(58\): Illogical comparison with null.  Variables of type int cannot be null.
+if \(i <= null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(62\): Illogical comparison with null.  Variables of type int cannot be null.
+if \(i > null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(66\): Illogical comparison with null.  Variables of type int cannot be null.
+if \(i < null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(98\): Illogical comparison with null.  Variables of type Boolean cannot be null.
+if \(b == null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(102\): Illogical comparison with null.  Variables of type Boolean cannot be null.
+if \(b === null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(106\): Illogical comparison with null.  Variables of type Boolean cannot be null.
+if \(b != null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(110\): Illogical comparison with null.  Variables of type Boolean cannot be null.
+if \(b >= null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(114\): Illogical comparison with null.  Variables of type Boolean cannot be null.
+if \(b <= null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(118\): Illogical comparison with null.  Variables of type Boolean cannot be null.
+if \(b > null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(122\): Illogical comparison with null.  Variables of type Boolean cannot be null.
+if \(b < null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(158\): Illogical comparison with null.  Variables of type uint cannot be null.
+if \(u == null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(162\): Illogical comparison with null.  Variables of type uint cannot be null.
+if \(u === null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(166\): Illogical comparison with null.  Variables of type uint cannot be null.
+if \(u != null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(170\): Illogical comparison with null.  Variables of type uint cannot be null.
+if \(u >= null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(174\): Illogical comparison with null.  Variables of type uint cannot be null.
+if \(u <= null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(178\): Illogical comparison with null.  Variables of type uint cannot be null.
+if \(u > null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(182\): Illogical comparison with null.  Variables of type uint cannot be null.
+if \(u < null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(214\): Illogical comparison with null.  Variables of type Number cannot be null.
+if \(n == null\)
+.............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(222\): Illogical comparison with null.  Variables of type Number cannot be null.
+if \(n != null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(226\): Illogical comparison with null.  Variables of type Number cannot be null.
+if \(n >= null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(230\): Illogical comparison with null.  Variables of type Number cannot be null.
+if \(n <= null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(234\): Illogical comparison with null.  Variables of type Number cannot be null.
+if \(n > null\)
+............................^
+
+.*DiffDataTypesWithNullUndefinedWarn.as\(238\): Illogical comparison with null.  Variables of type Number cannot be null.
+if \(n < null\)
+............................^
+
+-------------------------------------------------------------------------
+
+
+
+DiffDataTypesWithNullUndefinedWarn.abc, [0-9]+ bytes written
+TypeError: Error #1034 
+

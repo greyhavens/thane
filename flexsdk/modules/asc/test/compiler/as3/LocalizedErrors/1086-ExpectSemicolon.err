@@ -1,0 +1,7 @@
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before comma.
+1086-ExpectSemicolon.as, Ln 6, Col 22:
+use namespace ns1, ns2
+.....................^
+
+1 error found

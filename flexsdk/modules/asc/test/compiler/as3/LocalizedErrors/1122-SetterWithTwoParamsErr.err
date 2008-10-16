@@ -1,0 +1,7 @@
+
+[Compiler] Error #1122: A setter definition must have exactly one parameter.
+1122-SetterWithTwoParamsErr.as, Ln 12, Col 40:
+public function set myfunction\(a:int,b:int\){}
+.......................................^
+
+1 error found

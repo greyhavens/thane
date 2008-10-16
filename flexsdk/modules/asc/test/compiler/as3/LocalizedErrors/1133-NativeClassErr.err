@@ -1,0 +1,7 @@
+
+[Compiler] Error #1133: The native attribute can only be used with function definitions.
+1133-NativeClassErr.as, Ln 7, Col 16:
+native class NativeClassErr{}
+...............^
+
+1 error found

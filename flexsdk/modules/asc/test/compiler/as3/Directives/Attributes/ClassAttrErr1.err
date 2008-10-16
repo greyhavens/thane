@@ -1,0 +1,7 @@
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+   ClassAttrErr1.as, Ln 3, Col 9: 
+   	public private class ClassAttrErr1
+   ........^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1004: Namespace was not found or is not a compile-time constant.
+   UNSOutofScopeErr.as, Ln 17, Col 15: 
+   use namespace Licorice;
+   ..............^
+
+1 error found

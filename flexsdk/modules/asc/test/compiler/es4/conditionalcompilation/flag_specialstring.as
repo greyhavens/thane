@@ -1,0 +1,1 @@
+print ("emptystring="+CONFIG::emptystring)

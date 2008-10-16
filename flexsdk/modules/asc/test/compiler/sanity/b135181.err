@@ -1,0 +1,4 @@
+
+b135181.abc, \d+ bytes written
+A.ns1::foo\(\) override
+ReferenceError: Error #1070

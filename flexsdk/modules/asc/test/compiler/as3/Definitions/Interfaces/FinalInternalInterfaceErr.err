@@ -1,0 +1,7 @@
+
+[Compiler] Error #1165: Interface attribute final is invalid.
+   FinalInternalInterfaceErr.as, Ln 8, Col 27: 
+   	final internal interface I {
+   ..........................^
+
+1 error found

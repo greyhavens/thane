@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before colon.
+   IsXMLNameErr.as, Ln 2, Col 13: 
+   	isXMLName\(p:String\);
+   ............^
+
+1 error found

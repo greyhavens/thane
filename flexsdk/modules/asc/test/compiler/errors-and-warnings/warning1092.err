@@ -1,0 +1,44 @@
+
+
+Warning Report:
+---------------
+
+\[Coach\] Warning #1008: Missing type declaration.
+-------------------------------------------------------------------------
+.*warning1092.as\(6\): return value for function 'f' has no type declaration.
+\{
+.\^
+
+-------------------------------------------------------------------------
+
+\[Coach\] Warning #1084: Missing namespace declaration \(e.g. variable is not defined to be public, private, etc.\).
+-------------------------------------------------------------------------
+.*warning1092.as\(5\): function 'f' will be scoped to the default namespace: C: internal.  It will not be visible outside of this package.
+function f\(v:uint\)
+............\^
+
+-------------------------------------------------------------------------
+
+\[Coach\] Warning #1092: Negative value will become a large positive value when assigned to a uint data type.
+-------------------------------------------------------------------------
+.*warning1092.as\(7\): Negative value used where a uint \(non-negative\) value is expected.
+var x:uint = -1;
+..........\^
+
+.*warning1092.as\(8\): Negative value used where a uint \(non-negative\) value is expected.
+x = -1;
+...........\^
+
+.*warning1092.as\(9\): Negative value used where a uint \(non-negative\) value is expected.
+v = -1;
+...........\^
+
+.*warning1092.as\(13\): Negative value used where a uint \(non-negative\) value is expected.
+\(new C\).f\(-1\);
+...........\^
+
+-------------------------------------------------------------------------
+
+
+
+warning1092.abc, \d+ bytes written

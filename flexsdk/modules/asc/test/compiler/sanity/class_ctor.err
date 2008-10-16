@@ -1,0 +1,20 @@
+class_ctor.abc, \d+ bytes written
+A\$A 1
+verify B\(\)
+stack:
+scope: \[global Object\$ A\$ B\$\]
+locals: B \*
+0:getlocal0
+stack: B
+scope: \[global Object\$ A\$ B\$\]
+locals: B \*
+1:pushscope
+stack:
+scope: \[global Object\$ A\$ B\$\] B
+locals: B \*
+2:getlocal0
+stack: B
+scope: \[global Object\$ A\$ B\$\] B
+locals: B \*
+3:constructsuper 0
+caught exception: VerifyError: Error #1063.*$

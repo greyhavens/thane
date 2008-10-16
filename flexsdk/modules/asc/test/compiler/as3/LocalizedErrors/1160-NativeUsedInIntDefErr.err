@@ -1,0 +1,7 @@
+
+[Compiler] Error #1160: The native attribute cannot be used in interface definitions.
+1160-NativeUsedInIntDefErr.as, Ln 14, Col 25:
+native function myfunc():string;
+........................^
+
+1 error found

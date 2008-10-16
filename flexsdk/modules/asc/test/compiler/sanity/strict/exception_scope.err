@@ -1,0 +1,6 @@
+
+exception_scope.abc, \d+ bytes written
+value of e is 3.14
+caught Error: Error
+caught TypeError: TypeError
+value of e is 3.14

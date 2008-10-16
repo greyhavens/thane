@@ -1,0 +1,7 @@
+
+[Compiler] Error #1151: A conflict exists with definition uint in namespace internal.
+   uintErr.as, Ln 1, Col 5: 
+   var uint;
+   ....^
+
+1 error found

@@ -1,0 +1,17 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+as3\Warnings\TextExtentsPropWarn.as(9): Migration issue: The method TextExtents is no longer supported.  Use the TextField.getLineMetrics property instead..
+TextExtents();
+..^
+
+-------------------------------------------------------------------------
+
+
+
+TextExtentsPropWarn.abc, 157 bytes written
+ReferenceError: Error #1065

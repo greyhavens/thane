@@ -1,0 +1,7 @@
+
+[Compiler] Error #1017: The definition of base class Import was not found.
+   ImportNonExistantPackageErr.as, Ln 3, Col 19: 
+   class ABC extends Import {
+   ..................^
+
+1 error found

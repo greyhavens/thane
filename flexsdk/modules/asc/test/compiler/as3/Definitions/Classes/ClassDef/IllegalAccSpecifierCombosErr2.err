@@ -1,0 +1,122 @@
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 8, Col 3:
+public private var pp1;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 9, Col 3:
+public protected var pp2;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 10, Col 3:
+public internal var pi3;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 11, Col 3:
+private protected var pp4;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 12, Col 3:
+private internal var pi5;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 13, Col 3:
+protected internal var pp6;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 14, Col 3:
+static public private var spp1;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 15, Col 3:
+static public protected var spp2;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 16, Col 3:
+static public internal var spi3;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 17, Col 3:
+static private protected var spp4;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 18, Col 3:
+static private internal var spi5;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 19, Col 3:
+static protected internal var spp6;
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 20, Col 3:
+public private function fpp1() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 21, Col 3:
+public protected function fpp2() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 22, Col 3:
+public internal function fpi3() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 23, Col 3:
+private protected function fpp4() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 24, Col 3:
+private internal function fpi5() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 25, Col 3:
+protected internal function fpp6() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 26, Col 3:
+static public private function fspp1() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 27, Col 3:
+static public protected function fspp2() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 28, Col 3:
+static public internal function fspi3() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 29, Col 3:
+static private protected function fspp4() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 30, Col 3:
+static private internal function fspi5() { }
+..^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+.*\IllegalAccSpecifierCombosErr2.as, Ln 31, Col 3:
+static protected internal function fspp6() { }
+..^
+
+24 errors found

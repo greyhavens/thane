@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ContextMenuItemCopyWarn.as\(12\): Migration issue: The method copy is no longer supported.  Use the ContextMenuItem.clone() method instead..
+a.copy();
+...^
+
+-------------------------------------------------------------------------
+
+
+
+ContextMenuItemCopyWarn.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

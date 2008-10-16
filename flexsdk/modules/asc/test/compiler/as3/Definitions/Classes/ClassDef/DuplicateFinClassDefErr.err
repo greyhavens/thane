@@ -1,0 +1,7 @@
+
+[Compiler] Error #1018: Duplicate class definition: A.
+   DuplicateFinClassDefErr.as, Ln 5, Col 14: 
+   	final class A{}
+   .............^
+
+1 error found

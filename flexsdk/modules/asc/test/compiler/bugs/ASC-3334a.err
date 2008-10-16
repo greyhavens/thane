@@ -1,0 +1,7 @@
+
+[Compiler] Error #1046: Type was not found or was not a compile-time constant: Vector.
+bugs.ASC-3334a.as, Ln 1, Col 7:
+var v:Vector.<int> = new Vector.<int>\(\);
+......^
+
+1 error found

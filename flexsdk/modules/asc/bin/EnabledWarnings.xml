@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8' standalone='no' ?>
+
+<!--
+
+	ADOBE SYSTEMS INCORPORATED
+	Copyright 2005-2007 Adobe Systems Incorporated
+	All Rights Reserved.
+
+	NOTICE: Adobe permits you to use, modify, and distribute this file
+	in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<AS2LintWarnings>
+	
+<warnings>
+	<!-- General warnings for things which might be legal code, but are likely not what the author inteded -->
+    <warning id="1100" enabled="true" label="kWarning_AssignmentWithinConditional">Assignment within conditional.</warning>
+    <warning id="1112" enabled="true" label="kWarning_BadArrayCast">Possibly invalid Array cast operation.</warning>
+    <warning id="3590" enabled="true" label="kWarning_BadBoolAssignment">Non-Boolean value used where a Boolean value was expected.</warning>
+    <warning id="3575" enabled="true" label="kWarning_BadDateCast">Invalid Date cast operation.</warning>
+    <warning id="3594" enabled="true" label="kWarning_BadES3TypeMethod">Unknown method.</warning>
+    <warning id="3592" enabled="true" label="kWarning_BadES3TypeProp">Unknown property.</warning>
+    <warning id="1098" enabled="true" label="kWarning_BadNaNComparision">Illogical comparison with NaN. Any comparison operation involving NaN will evaluate to false because NaN != NaN.</warning>
+    <warning id="1102" enabled="true" label="kWarning_BadNullAssignment">Impossible assignment to null.</warning>
+    <warning id="1096" enabled="true" label="kWarning_BadNullComparision">Illogical comparison with null.</warning>
+    <warning id="1012" enabled="true" label="kWarning_BadUndefinedComparision">Illogical comparison with undefined.  Only untyped variables (or variables of type *) can be undefined.</warning>
+    <warning id="3583" enabled="true" label="kWarning_DuplicateArgumentNames">More than one argument has the same name.</warning>
+    <warning id="3596" enabled="true" label="kWarning_DuplicateVariableDef">Duplicate variable definition.</warning>
+    <warning id="1092" enabled="true" label="kWarning_NegativeUintLiteral">Negative value will become a large positive value when assigned to a uint data type.</warning>
+    <warning id="3553" enabled="true" label="kWarning_UnlikelyFunctionValue">Possible missing parentheses.</warning>
+
+    <!-- Coding style preference warnings. Use these warnings if you want to be reminded to always use type declarations, acess/namespace attributes, etc. -->
+    <warning id="1008" enabled="false" label="kWarning_NoTypeDecl">Missing type declaration.</warning>
+    <warning id="1084" enabled="false" label="kWarning_MissingNamespaceDecl">Missing namespace declaration (e.g. variable is not defined to be public, private, etc.).</warning>
+    <warning id="1110" enabled="true"  label="kWarning_ConstNotInitialized">Constant not initialized.</warning>
+    <warning id="1114" enabled="false" label="kWarning_NoExplicitSuperCallInConstructor">The super() statement was not called within the constructor.</warning>
+    <warning id="1104" enabled="false" label="kWarning_NoConstructor">Missing constructor.</warning>
+    
+    <!-- Warnings to aid migrating code from AS2 to AS3 -->
+    <warning id="1090" enabled="true"  label="kWarning_DepricatedEventHandlerError">EventHandler was not added as a listener.</warning>
+    <warning id="1060" enabled="true"  label="kWarning_DepricatedFunctionError">Unsupported ActionScript 2.0 function.</warning>
+    <warning id="1058" enabled="true"  label="kWarning_DepricatedPropertyError">Unsupported ActionScript 2.0 property.</warning>
+    <warning id="1044" enabled="false" label="kWarning_ArrayToStringChanges">Array.toString() format has changed.</warning>
+    <warning id="1034" enabled="false" label="kWarning_BooleanConstructorWithNoArgs">Boolean() with no arguments returns false in ActionScript 3.0.  Boolean() returned undefined in ActionScript 2.0.</warning>
+    <warning id="1066" enabled="true"  label="kWarning_ChangesInResolve">__resolve is no longer supported.</warning>
+    <warning id="1072" enabled="true"  label="kWarning_ClassIsSealed">Class is sealed.  It cannot have members added to it dynamically.</warning>
+    <warning id="1030" enabled="false" label="kWarning_ConstructorReturnsValue">Function used in new expression returns a value.  Result will be what the function returns, rather than a new instance of that function.</warning>
+    <warning id="1086" enabled="false" label="kWarning_ForVarInChanges">ActionScript 3.0 iterates over an object's properties within a "for x in target" statement in random order.</warning>
+    <warning id="3555" enabled="true"  label="kWarning_InstanceOfChanges">Use of the instanceof operator.</warning>
+    <warning id="1070" enabled="true"  label="kWarning_LevelNotSupported">_level is no longer supported. For more information, see the flash.display package.</warning>
+    <warning id="1038" enabled="false" label="kWarning_NumberFromStringChanges">In ActionScript 3.0, white space is ignored and '' returns 0. Number() returns NaN in ActionScript 2.0 when the parameter is '' or contains white space.</warning>
+    <warning id="1082" enabled="false" label="kWarning_ScopingChangeInThis">Change in scoping for the this keyword.  Class methods extracted from an instance of a class will always resolve this back to that instance.  In ActionScript 2.0 this is looked up dynamically based on where the method is invoked from.</warning>
+    <warning id="3551" enabled="true"  label="kWarning_SlowTextFieldAddition">Inefficient use of += on a TextField.</warning>
+    <warning id="3573" enabled="false" label="kWarning_XML_ClassHasChanged">Possible usage of the ActionScript 2.0 XML class.</warning>
+</warnings>
+
+</AS2LintWarnings>

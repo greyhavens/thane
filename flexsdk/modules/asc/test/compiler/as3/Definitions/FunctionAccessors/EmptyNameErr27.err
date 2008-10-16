@@ -1,0 +1,42 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr27.as, Ln 5, Col 19: 
+       function set a{b \(e\) {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr27.as, Ln 5, Col 19: 
+       function set a{b \(e\) {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr27.as, Ln 5, Col 19: 
+       function set a{b \(e\) {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before leftbrace.
+   EmptyNameErr27.as, Ln 5, Col 26: 
+       function set a{b \(e\) {}
+   .........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr27.as, Ln 6, Col 19: 
+       function get a{b () {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr27.as, Ln 6, Col 19: 
+       function get a{b () {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr27.as, Ln 6, Col 19: 
+       function get a{b () {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before leftbrace.
+   EmptyNameErr27.as, Ln 6, Col 25: 
+       function get a{b () {}
+   ........................^
+
+8 errors found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1184: Incompatible default value of type String where Number is expected.
+   InvDefMethArgValNumberErr.as, Ln 1, Col 36: 
+   function InvDefMethArgVal\(a:Number="false"\){}
+   ...................................^
+
+[Compiler] Error #1184: Incompatible default value of type String where Number is expected.
+   InvDefMethArgValNumberErr.as, Ln 1, Col 36: 
+   function InvDefMethArgVal\(a:Number="false"\){}
+   ...................................^
+
+[Compiler] Error #1184: Incompatible default value of type String where Number is expected.
+   InvDefMethArgValNumberErr.as, Ln 1, Col 36: 
+   function InvDefMethArgVal\(a:Number="false"\){}
+   ...................................^
+
+[Compiler] Error #1184: Incompatible default value of type String where Number is expected.
+   InvDefMethArgValNumberErr.as, Ln 1, Col 36: 
+   function InvDefMethArgVal\(a:Number="false"\){}
+   ...................................^
+
+4 errors found

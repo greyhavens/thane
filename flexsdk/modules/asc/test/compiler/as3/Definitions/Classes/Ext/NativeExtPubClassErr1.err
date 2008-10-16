@@ -1,0 +1,7 @@
+
+[Compiler] Error #1133: The native attribute can only be used with function definitions.
+   NativeExtPubClassErr1.as, Ln 18, Col 15: 
+   	native class B extends NativeExtPubClassErr1 {
+   ..............^
+
+1 error found

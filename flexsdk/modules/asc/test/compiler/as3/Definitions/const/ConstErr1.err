@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before const.
+as3.Definitions.const.ConstErr1.as, Ln 76, Col 5:
+var const myVar = 10;
+....^
+
+1 error found

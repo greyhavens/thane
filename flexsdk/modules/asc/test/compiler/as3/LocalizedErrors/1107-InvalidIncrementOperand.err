@@ -1,0 +1,7 @@
+
+[Compiler] Error #1107: Increment operand is invalid.
+1107-InvalidIncrementOperand.as, Ln 6, Col 2:
+f\+\+;
+.^
+
+1 error found

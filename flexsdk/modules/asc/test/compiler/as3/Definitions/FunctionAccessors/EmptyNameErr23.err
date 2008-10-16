@@ -1,0 +1,27 @@
+
+[Compiler] Error #1093: Syntax error.
+   EmptyNameErr23.as, Ln 5, Col 19: 
+       function get a/b () {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before function.
+   EmptyNameErr23.as, Ln 6, Col 5: 
+       function set a/b\(e\) {}
+   ....^
+
+[Compiler] Error #1093: Syntax error.
+   EmptyNameErr23.as, Ln 6, Col 19: 
+       function set a/b\(e\) {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before rightbrace.
+   EmptyNameErr23.as, Ln 7, Col 2: 
+    }
+   .^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before rightbrace.
+   EmptyNameErr23.as, Ln 7, Col 2: 
+    }
+   .^
+
+5 errors found

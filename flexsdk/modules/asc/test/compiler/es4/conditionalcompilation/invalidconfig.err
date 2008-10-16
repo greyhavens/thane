@@ -1,0 +1,12 @@
+
+[Compiler] Error #1208: The initializer for a configuration value must be a compile time constant.
+.*invalidconfig.as, Ln 1, Col 19:
+CONFIG const var1=var2\+1
+..................^
+
+[Compiler] Error #1120: Access of undefined property unset.
+.*invalidconfig.as, Ln 4, Col 15:
+print\(CONFIG::unset\)
+..............^
+
+2 errors found

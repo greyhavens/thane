@@ -1,0 +1,7 @@
+
+[Compiler] Error #1004: Namespace was not found or is not a compile-time constant.
+as3.Definitions.Packages.QualifiedRefWithoutImport1Err.as, Ln 26, Col 29:
+use namespace OtherPackage.Kitty;
+............................^
+
+1 error found

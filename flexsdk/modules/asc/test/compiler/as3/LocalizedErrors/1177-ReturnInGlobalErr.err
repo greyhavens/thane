@@ -1,0 +1,7 @@
+
+[Compiler] Error #1177: The return statement cannot be used in global initialization code.
+1177-ReturnInGlobalErr.as, Ln 7, Col 9:
+return 1;
+........^
+
+1 error found

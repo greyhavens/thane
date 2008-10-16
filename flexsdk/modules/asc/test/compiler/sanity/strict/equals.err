@@ -1,0 +1,34 @@
+
+equals.abc, \d+ bytes written
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+true
+array is non null
+array is null
+array is undefined
+array is null
+array is undefined
+TypeError: Error #1034: Type Coercion failed: cannot convert "a" to Array.
+at global\$init\(\)

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before 4.
+   StaticNameErr74.as, Ln 5, Col 21: 
+       static function 4startswithnumber() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr74.as, Ln 5, Col 41: 
+       static function 4startswithnumber() {}
+   ........................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr74.as, Ln 5, Col 41: 
+       static function 4startswithnumber() {}
+   ........................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr74.as, Ln 5, Col 41: 
+       static function 4startswithnumber() {}
+   ........................................^
+
+4 errors found

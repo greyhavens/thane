@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<!--
+
+	ADOBE SYSTEMS INCORPORATED
+	Copyright 2005-2007 Adobe Systems Incorporated
+	All Rights Reserved.
+
+	NOTICE: Adobe permits you to use, modify, and distribute this file
+	in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<ErrorGenerator>
+  <Ifdef>__asc_ErrorConstants__</Ifdef>
+  <InputFileBase>../../src/localized_strings/</InputFileBase>
+  <Language>EN</Language>
+  <Language>CN</Language>
+  <Language>CS</Language>
+  <Language>DE</Language>
+  <Language>ES</Language>
+  <Language>FR</Language>
+  <Language>IT</Language>
+  <Language>JP</Language>
+  <Language>KR</Language>
+  <Language>NL</Language>
+  <Language>PL</Language>
+  <Language>PT</Language>
+  <Language>RU</Language>
+  <Language>SV</Language>
+  <Language>TR</Language>
+  <Language>TW</Language>
+  <XmlInputFile>/ErrorConstants.xml</XmlInputFile>
+  <OutputCppFile>../../src/cpp/embedding/ErrorConstants.cpp</OutputCppFile>
+  <OutputJavaFile>../../src/java/macromedia/asc/embedding/ErrorConstants.java</OutputJavaFile>
+  <OutputHFile>../../src/cpp/embedding/ErrorConstants.h</OutputHFile>
+  <ArrayName>allErrorConstants</ArrayName>
+  <LangCountName>kNumLanguages</LangCountName>
+  <CountName>kNumErrorConstants</CountName>
+  <NamespaceName>ErrorConstants</NamespaceName>
+  <MainInclude>Context.h</MainInclude>
+</ErrorGenerator>
+

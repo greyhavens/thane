@@ -1,0 +1,5 @@
+
+harnessASC.abc, \d+ bytes written
+BUGNUMBER: BUGNUMBER:
+SMOKE Test harness for mozilla tests
+test\(\) = true PASSED!

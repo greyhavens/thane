@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1094: Syntax error: A string literal must be terminated before the line break.
+.*1094-LineTerminatorInSingleQuotes.as, Ln 5, Col 16:
+var x:String = '
+...............\^
+
+1 error found

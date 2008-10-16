@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ToggleHighQualityWarn.as\(9\): Migration issue: The method toggleHighQuality is no longer supported.  For more information, see DisplayObject.stage and Stage.quality..
+toggleHighQuality();
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ToggleHighQualityWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

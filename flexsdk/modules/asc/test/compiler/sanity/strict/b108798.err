@@ -1,0 +1,13 @@
+
+b108798.abc, \d+ bytes written
+testing A.constructor\(\)
+false
+true
+testing new A\(\)
+ctor
+testing a.constructor
+\[class A\]
+true
+true
+\[class Boolean\]
+true

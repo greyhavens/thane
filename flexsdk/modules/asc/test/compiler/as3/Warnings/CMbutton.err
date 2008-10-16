@@ -1,0 +1,138 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CMbutton.as\(14\): Migration issue: The property _alpha is no longer supported.  Use the DisplayObject.alpha property instead..
+btn._alpha;
+....^
+
+.*CMbutton.as\(15\): Migration issue: The property _focusrect is no longer supported.  Use the InteractiveObject.focusRect property instead..
+btn._focusrect;
+....^
+
+.*CMbutton.as\(16\): Migration issue: The property _height is no longer supported.  Use the DisplayObject.height property instead..
+btn._height;
+....^
+
+.*CMbutton.as\(17\): Migration issue: The property _highquality is no longer supported.  For more information, see Stage.quality..
+trace\(btn._highquality\);
+..........^
+
+.*CMbutton.as\(18\): Migration issue: The property _name is no longer supported.  Use the DisplayObject.name property instead..
+btn._name;
+....^
+
+.*CMbutton.as\(19\): Migration issue: The property _parent is no longer supported.  Use the DisplayObject.parent property instead..
+btn._parent;
+....^
+
+.*CMbutton.as\(20\): Migration issue: The property _quality is no longer supported.  For more information, see Stage.quality..
+trace\(btn._quality\);
+..........^
+
+.*CMbutton.as\(21\): Migration issue: The property _rotation is no longer supported.  Use the DisplayObject.rotation property instead..
+btn._rotation;
+....^
+
+.*CMbutton.as\(23\): Migration issue: The property _soundbuftime is no longer supported.  Use the static propery flash.media.SoundMixer.bufferTime instead..
+trace\(btn._soundbuftime\);
+..........^
+
+.*CMbutton.as\(24\): Migration issue: The property _target is no longer supported.  This functionality is no longer supported..
+trace\(btn._target\)
+..........^
+
+.*CMbutton.as\(25\): Migration issue: The property _url is no longer supported.  For more information, see LoaderInfo.url and the Loader class..
+btn._url;
+....^
+
+.*CMbutton.as\(26\): Migration issue: The property _visible is no longer supported.  Use the DisplayObject.visible property instead..
+btn._visible;
+....^
+
+.*CMbutton.as\(27\): Migration issue: The property _width is no longer supported.  Use the DisplayObject.width property instead..
+btn._width;
+....^
+
+.*CMbutton.as\(28\): Migration issue: The property _x is no longer supported.  Use the DisplayObject.x property instead..
+btn._x;
+....^
+
+.*CMbutton.as\(29\): Migration issue: The property _xmouse is no longer supported.  Use the DisplayObject.mouseX property instead..
+btn._xmouse;
+....^
+
+.*CMbutton.as\(30\): Migration issue: The property _xscale is no longer supported.  Use the DisplayObject.scaleX property instead..
+btn._xscale;
+....^
+
+.*CMbutton.as\(31\): Migration issue: The property _y is no longer supported.  Use the DisplayObject.y property instead..
+btn._y;
+....^
+
+.*CMbutton.as\(32\): Migration issue: The property _ymouse is no longer supported.  Use the DisplayObject.mouseY property instead..
+btn._ymouse;
+....^
+
+.*CMbutton.as\(33\): Migration issue: The property _yscale is no longer supported.  Use the DisplayObject.scaleY property instead..
+btn._yscale;
+....^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMbutton.as\(35\): Migration issue: The method getDepth is no longer supported.  Use DisplayObjectContainer.parent.getChildIndex instead. See help for the DisplayObjectContainer class, which is extended by MovieClip..
+trace\(btn.getDepth()\)
+..........^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*CMbutton.as\(36\): Migration issue: The onDragOut event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseOut', callback_handler\).
+btn.onDragOut = function():void{
+....^
+
+.*CMbutton.as\(39\): Migration issue: The onDragOver event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseOver', callback_handler\).
+btn.onDragOver = function():void{
+....^
+
+.*CMbutton.as\(42\): Migration issue: The onKeyDown event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'keyDown', callback_handler\).
+btn.onKeyDown = function():void{
+....^
+
+.*CMbutton.as\(45\): Migration issue: The onSetFocus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'focusIn', callback_handler\).
+btn.onSetFocus = function():void{
+....^
+
+.*CMbutton.as\(48\): Migration issue: The onKillFocus event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'focusOut', callback_handler\).
+btn.onKillFocus = function():void{
+....^
+
+.*CMbutton.as\(51\): Migration issue: The onPress event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseDown', callback_handler\).
+btn.onPress = function():void{
+....^
+
+.*CMbutton.as\(54\): Migration issue: The onRelease event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'click', callback_handler\).
+btn.onRelease = function():void{
+....^
+
+.*CMbutton.as\(57\): Migration issue: The onReleaseOutside event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseUp', callback_handler\).
+btn.onReleaseOutside = function():void{
+....^
+
+.*CMbutton.as\(60\): Migration issue: The onRollOut event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( 'mouseOut', callback_handler\).
+btn.onRollOut = function():void{
+....^
+
+-------------------------------------------------------------------------
+
+
+
+CMbutton.abc, [0-9]+ bytes written
+VerifyError: Error #1014
+

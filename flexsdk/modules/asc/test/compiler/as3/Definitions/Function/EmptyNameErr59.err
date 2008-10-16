@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before new.
+   EmptyNameErr59.as, Ln 5, Col 14: 
+       function new() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr59.as, Ln 5, Col 20: 
+       function new() {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr59.as, Ln 5, Col 20: 
+       function new() {}
+   ...................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr59.as, Ln 5, Col 20: 
+       function new() {}
+   ...................^
+
+4 errors found

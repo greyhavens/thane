@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before default.
+ecma3.e7_4_3_6_Err.as, Ln 46, Col 9:
+var default = true;
+........^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1050: Cannot assign to a non-reference value.
+ecma3.e12_6_3_6_Err.as, Ln 71, Col 11:
+for \( this in o\) {
+..........^
+
+1 error found

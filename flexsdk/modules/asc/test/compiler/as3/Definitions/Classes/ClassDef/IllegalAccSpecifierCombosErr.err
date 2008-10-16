@@ -1,0 +1,92 @@
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   IllegalAccSpecifierCombosErr.as, Ln 5, Col 2: 
+   	public internal class pi { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 6, Col 2: 
+   	public internal explicit class pie { }
+   .^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   IllegalAccSpecifierCombosErr.as, Ln 6, Col 2: 
+   	public internal explicit class pie { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 7, Col 2: 
+   	public explicit class pe { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 8, Col 2: 
+   	public explicit internal class pei { }
+   .^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   IllegalAccSpecifierCombosErr.as, Ln 8, Col 2: 
+   	public explicit internal class pei { }
+   .^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   IllegalAccSpecifierCombosErr.as, Ln 9, Col 2: 
+   	internal public class ip { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 10, Col 2: 
+   	internal public explicit class ipe { }
+   .^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   IllegalAccSpecifierCombosErr.as, Ln 10, Col 2: 
+   	internal public explicit class ipe { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 11, Col 2: 
+   	internal explicit class ie { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 12, Col 2: 
+   	internal explicit public class iep { }
+   .^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   IllegalAccSpecifierCombosErr.as, Ln 12, Col 2: 
+   	internal explicit public class iep { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 13, Col 2: 
+   	explicit internal class ei { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 14, Col 2: 
+   	explicit internal public class eip { }
+   .^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   IllegalAccSpecifierCombosErr.as, Ln 14, Col 2: 
+   	explicit internal public class eip { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 15, Col 2: 
+   	explicit public class ep { }
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalAccSpecifierCombosErr.as, Ln 16, Col 2: 
+   	explicit public internal class epi { }
+   .^
+
+[Compiler] Error #1154: Only one of public, private, protected, or internal can be specified on a definition.
+   IllegalAccSpecifierCombosErr.as, Ln 16, Col 2: 
+   	explicit public internal class epi { }
+   .^
+
+18 errors found

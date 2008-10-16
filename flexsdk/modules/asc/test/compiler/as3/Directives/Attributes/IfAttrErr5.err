@@ -1,0 +1,7 @@
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+   IfAttrErr5.as, Ln 3, Col 16: 
+   	public public private interface IfAttrErr5
+   ...............^
+
+1 error found

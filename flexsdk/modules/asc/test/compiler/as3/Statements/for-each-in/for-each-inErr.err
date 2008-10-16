@@ -1,0 +1,7 @@
+
+[Compiler] Error #1075: Syntax error: the 'each' keyword is not allowed without an 'in' operator.
+   for-each-inErr.as, Ln 3, Col 21: 
+   	for each \(var a = 0; a < a.length; a\+\+\) {
+   ....................^
+
+1 error found

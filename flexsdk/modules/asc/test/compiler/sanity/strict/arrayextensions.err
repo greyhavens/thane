@@ -1,0 +1,63 @@
+
+arrayextensions.abc, \d+ bytes written
+indexOf
+0
+1
+2
+3
+1
+2
+-1
+-1
+5
+lastIndexOf
+3
+4
+5
+0
+1
+-1
+3
+4
+5
+every
+false
+true
+true
+filter
+1,4,9
+1,4
+
+forEach
+14
+map
+1,4,9
+1,2,3
+
+some
+true
+true
+false
+false
+MyClass
+\[object Object\]
+10
+foo
+3
+0
+0
+object every
+false
+true
+object filter
+\[object MyClass\]
+1,4
+object forEach
+14
+object map
+\[object MyClass\]
+1,2,3
+object some
+true
+true
+false

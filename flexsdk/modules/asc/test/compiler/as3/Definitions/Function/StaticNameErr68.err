@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before try.
+   StaticNameErr68.as, Ln 5, Col 21: 
+       static function try() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr68.as, Ln 5, Col 27: 
+       static function try() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr68.as, Ln 5, Col 27: 
+       static function try() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr68.as, Ln 5, Col 27: 
+       static function try() {}
+   ..........................^
+
+4 errors found

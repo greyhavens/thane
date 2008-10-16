@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before for.
+ecma3.e7_4_2_2_Err.as, Ln 51, Col 9:
+var for = true;
+........^
+
+1 error found

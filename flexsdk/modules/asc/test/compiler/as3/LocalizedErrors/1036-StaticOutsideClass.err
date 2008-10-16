@@ -1,0 +1,17 @@
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+1036-StaticOutsideClass.as, Ln 5, Col 2:
+static var a;
+.^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+1036-StaticOutsideClass.as, Ln 7, Col 3:
+static var b;
+..^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+1036-StaticOutsideClass.as, Ln 10, Col 1:
+static var c;
+^
+
+3 errors found

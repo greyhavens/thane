@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ImageSpriteMethWarn.as\(8\): Migration issue: The method ImageSprite is no longer supported.  The ImageSprite class has been renamed Bitmap..
+ImageSprite();
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ImageSpriteMethWarn.abc, [0-9]+ bytes written
+.*Error.*
+

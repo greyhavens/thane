@@ -1,0 +1,17 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+as3\Warnings\TabChildrenChangeTypeWarn.as(13): Migration issue: The property TAB_CHILDREN_CHANGE_TYPE is no longer supported.  Use the Event.TAB_CHILDREN_CHANGE constant instead..
+trace(Event.TAB_CHILDREN_CHANGE_TYPE);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+TabChildrenChangeTypeWarn.abc, 253 bytes written
+ReferenceError: Error #1065

@@ -1,0 +1,11 @@
+
+getset.abc, \d+ bytes written
+set x 20
+get x 20
+true
+set y 30
+get y 30
+true
+set z 40
+get z 40
+true

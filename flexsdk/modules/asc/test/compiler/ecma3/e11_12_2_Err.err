@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting colon before comma.
+ecma3.e11_12_2_Err.as, Ln 45, Col 25:
+MYVAR = \( true \? 'EXPR1', 'EXPR2', 'EXPR2' : 'EXPR3'\);
+........................^
+
+1 error found

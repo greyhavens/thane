@@ -1,0 +1,7 @@
+
+[Compiler] Error #1145: Native methods cannot have a body.
+   FuncDefrt94.as, Ln 9, Col 27: 
+      public native function foo() {}
+   ..........................^
+
+1 error found

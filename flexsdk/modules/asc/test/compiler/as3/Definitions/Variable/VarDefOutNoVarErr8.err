@@ -1,0 +1,12 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr8.as, Ln 81, Col 70:
+idTypeExprAAssign : Array = new Array\(1,2,3\), idTypeExprBAssign :...
+.....................................................................^
+
+[Compiler] Error #1078: Label must be a simple identifier.
+as3.Definitions.Variable.VarDefOutNoVarErr8.as, Ln 82, Col 53:
+idTypeExprAAssignB : Array, idTypeExprBAssignB : Boolean = true; ...
+....................................................^
+
+2 errors found

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   PrivOverLoadFuncErr.as, Ln 6, Col 22: 
+       private function thisFunction \(x\) {}
+   .....................^
+
+[Compiler] Error #1021: Duplicate function definition.
+   PrivOverLoadFuncErr.as, Ln 7, Col 22: 
+       private function thisFunction \(x,y\) {}
+   .....................^
+
+2 errors found

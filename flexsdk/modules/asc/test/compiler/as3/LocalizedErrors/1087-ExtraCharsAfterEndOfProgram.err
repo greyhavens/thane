@@ -1,0 +1,7 @@
+
+[Compiler] Error #1087: Syntax error: extra characters found after end of program.
+1087-ExtraCharsAfterEndOfProgram.as, Ln 6, Col 7:
+trace "hello";
+......^
+
+1 error found

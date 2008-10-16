@@ -1,0 +1,5 @@
+IllegalOverrideInterfaceGetter_fail.abc, \d+ bytes written
+return types dont match
+virt Object BaseInterfaceGetter/get BaseInterfaceGetter::interface_prop\(\)
+over String IllegalInterfaceOverride/get interface_prop\(\)
+VerifyError: Error #1053.*$

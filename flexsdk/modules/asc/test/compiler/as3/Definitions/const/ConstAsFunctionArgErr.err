@@ -1,0 +1,12 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before const.
+as3.Definitions.const.ConstAsFunctionArgErr.as, Ln 35, Col 24:
+function myConstArg\( const arg1 \) {
+.......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+as3.Definitions.const.ConstAsFunctionArgErr.as, Ln 35, Col 37:
+function myConstArg\( const arg1 \) {
+....................................^
+
+2 errors found

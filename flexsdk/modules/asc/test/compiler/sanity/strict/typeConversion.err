@@ -1,0 +1,528 @@
+
+typeConversion.abc, \d+ bytes written
+To String:
+from: Number
+String\( 1.1 \) -> '1.1'
+1.1 as String -> null
+var x:String = 1.1; x -> '1.1'
+from: Number
+String\( NaN \) -> 'NaN'
+NaN as String -> null
+var x:String = NaN; x -> 'NaN'
+from: Number
+String\( 0 \) -> '0'
+0 as String -> null
+var x:String = 0; x -> '0'
+from: int
+String\( -1 \) -> '-1'
+-1 as String -> null
+var x:String = -1; x -> '-1'
+from: uint
+String\( 1 \) -> '1'
+1 as String -> null
+var x:String = 1; x -> '1'
+from: String
+String\( 'string' \) -> 'string'
+'string' as String -> 'string'
+var x:String = 'string'; x -> 'string'
+from: String
+String\( '22' \) -> '22'
+'22' as String -> '22'
+var x:String = '22'; x -> '22'
+from: String
+String\( 'false' \) -> 'false'
+'false' as String -> 'false'
+var x:String = 'false'; x -> 'false'
+from: String
+String\( 'Infinity' \) -> 'Infinity'
+'Infinity' as String -> 'Infinity'
+var x:String = 'Infinity'; x -> 'Infinity'
+from: Boolean
+String\( false \) -> 'false'
+false as String -> null
+var x:String = false; x -> 'false'
+from: Boolean
+String\( true \) -> 'true'
+true as String -> null
+var x:String = true; x -> 'true'
+from: Date
+String\( \{Date value\} \) -> the timezone dependant result of Date.prototype.toString
+\{Date value\} as String -> null
+var x:String = \{Date value\}; x -> the timezone dependant result of Date.prototype.toString
+from: Array
+String\( \[ 1, 2, 3 \] \) -> '1,2,3'
+\[ 1, 2, 3 \] as String -> null
+var x:String = \[ 1, 2, 3 \]; x -> '1,2,3'
+from: Class instance
+String\( \[object aClass\] \) -> '\[object aClass\]'
+\[object aClass\] as String -> null
+var x:String = \[object aClass\]; x -> '\[object aClass\]'
+from: null
+String\( null \) -> 'null'
+null as String -> null
+var x:String = null; x -> null
+from: undefined
+String\( undefined \) -> 'undefined'
+undefined as String -> null
+var x:String = undefined; x -> null
+------------------------------------------------------------------
+To Boolean:
+from: Number
+Boolean\( 1.1 \) -> true
+1.1 as Boolean -> null
+var x:Boolean = 1.1; x -> true
+from: Number
+Boolean\( NaN \) -> false
+NaN as Boolean -> null
+var x:Boolean = NaN; x -> false
+from: Number
+Boolean\( 0 \) -> false
+0 as Boolean -> null
+var x:Boolean = 0; x -> false
+from: int
+Boolean\( -1 \) -> true
+-1 as Boolean -> null
+var x:Boolean = -1; x -> true
+from: uint
+Boolean\( 1 \) -> true
+1 as Boolean -> null
+var x:Boolean = 1; x -> true
+from: String
+Boolean\( 'string' \) -> true
+'string' as Boolean -> null
+var x:Boolean = 'string'; x -> true
+from: String
+Boolean\( '22' \) -> true
+'22' as Boolean -> null
+var x:Boolean = '22'; x -> true
+from: String
+Boolean\( 'false' \) -> true
+'false' as Boolean -> null
+var x:Boolean = 'false'; x -> true
+from: String
+Boolean\( 'Infinity' \) -> true
+'Infinity' as Boolean -> null
+var x:Boolean = 'Infinity'; x -> true
+from: Boolean
+Boolean\( false \) -> false
+false as Boolean -> false
+var x:Boolean = false; x -> false
+from: Boolean
+Boolean\( true \) -> true
+true as Boolean -> true
+var x:Boolean = true; x -> true
+from: Date
+Boolean\( \{Date value\} \) -> true
+\{Date value\} as Boolean -> null
+var x:Boolean = \{Date value\}; x -> true
+from: Array
+Boolean\( \[ 1, 2, 3 \] \) -> true
+\[ 1, 2, 3 \] as Boolean -> null
+var x:Boolean = \[ 1, 2, 3 \]; x -> true
+from: Class instance
+Boolean\( \[object aClass\] \) -> true
+\[object aClass\] as Boolean -> null
+var x:Boolean = \[object aClass\]; x -> true
+from: null
+Boolean\( null \) -> false
+null as Boolean -> null
+var x:Boolean = null; x -> false
+from: undefined
+Boolean\( undefined \) -> false
+undefined as Boolean -> null
+var x:Boolean = undefined; x -> false
+------------------------------------------------------------------
+To Number:
+from: Number
+Number\( 1.1 \) -> 1.1
+1.1 as Number -> 1.1
+var x:Number = 1.1; x -> 1.1
+from: Number
+Number\( NaN \) -> NaN
+NaN as Number -> NaN
+var x:Number = NaN; x -> NaN
+from: Number
+Number\( 0 \) -> 0
+0 as Number -> 0
+var x:Number = 0; x -> 0
+from: int
+Number\( -1 \) -> -1
+-1 as Number -> -1
+var x:Number = -1; x -> -1
+from: uint
+Number\( 1 \) -> 1
+1 as Number -> 1
+var x:Number = 1; x -> 1
+from: String
+Number\( 'string' \) -> NaN
+'string' as Number -> null
+var x:Number = 'string'; x -> NaN
+from: String
+Number\( '22' \) -> 22
+'22' as Number -> null
+var x:Number = '22'; x -> 22
+from: String
+Number\( 'false' \) -> NaN
+'false' as Number -> null
+var x:Number = 'false'; x -> NaN
+from: String
+Number\( 'Infinity' \) -> Infinity
+'Infinity' as Number -> null
+var x:Number = 'Infinity'; x -> Infinity
+from: Boolean
+Number\( false \) -> 0
+false as Number -> null
+var x:Number = false; x -> 0
+from: Boolean
+Number\( true \) -> 1
+true as Number -> null
+var x:Number = true; x -> 1
+from: Date
+Number\( \{Date value\} \) -> \{large number result of Date.prototype.valueOf\(\)\}
+\{Date value\} as Number -> null
+var x:Number = \{Date value\}; x -> \{large number result of Date.prototype.valueOf\(\)\}
+from: Array
+Number\( \[ 1, 2, 3 \] \) -> NaN
+\[ 1, 2, 3 \] as Number -> null
+var x:Number = \[ 1, 2, 3 \]; x -> NaN
+from: Class instance
+Number\( \[object aClass\] \) -> NaN
+\[object aClass\] as Number -> null
+var x:Number = \[object aClass\]; x -> NaN
+from: null
+Number\( null \) -> 0
+null as Number -> null
+var x:Number = null; x -> 0
+from: undefined
+Number\( undefined \) -> NaN
+undefined as Number -> null
+var x:Number = undefined; x -> NaN
+------------------------------------------------------------------
+To int:
+from: Number
+int\( 1.1 \) -> 1
+1.1 as int -> null
+var x:int = 1.1; x -> 1
+from: Number
+int\( NaN \) -> 0
+NaN as int -> null
+var x:int = NaN; x -> 0
+from: Number
+int\( 0 \) -> 0
+0 as int -> 0
+var x:int = 0; x -> 0
+from: int
+int\( -1 \) -> -1
+-1 as int -> -1
+var x:int = -1; x -> -1
+from: uint
+int\( 1 \) -> 1
+1 as int -> 1
+var x:int = 1; x -> 1
+from: String
+int\( 'string' \) -> 0
+'string' as int -> null
+var x:int = 'string'; x -> 0
+from: String
+int\( '22' \) -> 22
+'22' as int -> null
+var x:int = '22'; x -> 22
+from: String
+int\( 'false' \) -> 0
+'false' as int -> null
+var x:int = 'false'; x -> 0
+from: String
+int\( 'Infinity' \) -> 0
+'Infinity' as int -> null
+var x:int = 'Infinity'; x -> 0
+from: Boolean
+int\( false \) -> 0
+false as int -> null
+var x:int = false; x -> 0
+from: Boolean
+int\( true \) -> 1
+true as int -> null
+var x:int = true; x -> 1
+from: Date
+int\( \{Date value\} \) -> \{large int result of int\(Date.prototype.valueOf\(\)\)\}
+\{Date value\} as int -> null
+var x:int = \{Date value\}; x -> \{large int result of int\(Date.prototype.valueOf\(\)\)\}
+from: Array
+int\( \[ 1, 2, 3 \] \) -> 0
+\[ 1, 2, 3 \] as int -> null
+var x:int = \[ 1, 2, 3 \]; x -> 0
+from: Class instance
+int\( \[object aClass\] \) -> 0
+\[object aClass\] as int -> null
+var x:int = \[object aClass\]; x -> 0
+from: null
+int\( null \) -> 0
+null as int -> null
+var x:int = null; x -> 0
+from: undefined
+int\( undefined \) -> 0
+undefined as int -> null
+var x:int = undefined; x -> 0
+------------------------------------------------------------------
+To uint:
+from: Number
+uint\( 1.1 \) -> 1
+1.1 as uint -> null
+var x:uint = 1.1; x -> 1
+from: Number
+uint\( NaN \) -> 0
+NaN as uint -> null
+var x:uint = NaN; x -> 0
+from: Number
+uint\( 0 \) -> 0
+0 as uint -> 0
+var x:uint = 0; x -> 0
+from: int
+uint\( -1 \) -> 4294967295
+-1 as uint -> null
+var x:uint = -1; x -> 4294967295
+from: uint
+uint\( 1 \) -> 1
+1 as uint -> 1
+var x:uint = 1; x -> 1
+from: String
+uint\( 'string' \) -> 0
+'string' as uint -> null
+var x:uint = 'string'; x -> 0
+from: String
+uint\( '22' \) -> 22
+'22' as uint -> null
+var x:uint = '22'; x -> 22
+from: String
+uint\( 'false' \) -> 0
+'false' as uint -> null
+var x:uint = 'false'; x -> 0
+from: String
+uint\( 'Infinity' \) -> 0
+'Infinity' as uint -> null
+var x:uint = 'Infinity'; x -> 0
+from: Boolean
+uint\( false \) -> 0
+false as uint -> null
+var x:uint = false; x -> 0
+from: Boolean
+uint\( true \) -> 1
+true as uint -> null
+var x:uint = true; x -> 1
+from: Date
+uint\( \{Date value\} \) -> \{large int result of int\(Date.prototype.valueOf\(\)\)\}
+\{Date value\} as uint -> null
+var x:uint = \{Date value\}; x -> \{large int result of int\(Date.prototype.valueOf\(\)\)\}
+from: Array
+uint\( \[ 1, 2, 3 \] \) -> 0
+\[ 1, 2, 3 \] as uint -> null
+var x:uint = \[ 1, 2, 3 \]; x -> 0
+from: Class instance
+uint\( \[object aClass\] \) -> 0
+\[object aClass\] as uint -> null
+var x:uint = \[object aClass\]; x -> 0
+from: null
+uint\( null \) -> 0
+null as uint -> null
+var x:uint = null; x -> 0
+from: undefined
+uint\( undefined \) -> 0
+undefined as uint -> null
+var x:uint = undefined; x -> 0
+------------------------------------------------------------------
+to Array:
+from: Number
+Array\( 1.1 \) ->  Error!
+1.1 as Array = null
+var x:Array = 1.1;  Error!
+from: Number
+Array\( NaN \) ->  Error!
+NaN as Array = null
+var x:Array = NaN;  Error!
+from: Number
+Array\( 0 \) -> \[  \]
+0 as Array = null
+var x:Array = 0;  Error!
+from: int
+Array\( -1 \) ->  Error!
+-1 as Array = null
+var x:Array = -1;  Error!
+from: uint
+Array\( 1 \) -> \[ undefined \]
+1 as Array = null
+var x:Array = 1;  Error!
+from: String
+Array\( 'string' \) -> \[ 'string' \]
+'string' as Array = null
+var x:Array = 'string';  Error!
+from: String
+Array\( '22' \) -> \[ '22' \]
+'22' as Array = null
+var x:Array = '22';  Error!
+from: String
+Array\( 'false' \) -> \[ 'false' \]
+'false' as Array = null
+var x:Array = 'false';  Error!
+from: String
+Array\( 'Infinity' \) -> \[ 'Infinity' \]
+'Infinity' as Array = null
+var x:Array = 'Infinity';  Error!
+from: Boolean
+Array\( false \) -> \[ false \]
+false as Array = null
+var x:Array = false;  Error!
+from: Boolean
+Array\( true \) -> \[ true \]
+true as Array = null
+var x:Array = true;  Error!
+from: Date
+Array\( \{Date value\} \) -> \[ \{Date value\} \]
+\{Date value\} as Array = null
+var x:Array = \{Date value\};  Error!
+from: Array
+Array\( \[ 1, 2, 3 \] \) -> \[ \[ 1, 2, 3 \] \]
+\[ 1, 2, 3 \] as Array = \[ 1, 2, 3 \]
+var x:Array = \[ 1, 2, 3 \]; x -> \[ 1, 2, 3 \]
+from: Class instance
+Array\( \[object aClass\] \) -> \[ \[object aClass\] \]
+\[object aClass\] as Array = null
+var x:Array = \[object aClass\];  Error!
+from: null
+Array\( null \) -> \[ null \]
+null as Array = null
+var x:Array = null; x -> null
+from: undefined
+Array\( undefined \) -> \[ undefined \]
+undefined as Array = null
+var x:Array = undefined; x -> null
+------------------------------------------------------------------
+To Date:
+from: Number
+Date\( 1.1 \) -> the timezone dependant result of Date.prototype.toString
+1.1 as Date -> null
+var x:Date = 1.1;  Error!
+from: Number
+Date\( NaN \) -> the timezone dependant result of Date.prototype.toString
+NaN as Date -> null
+var x:Date = NaN;  Error!
+from: Number
+Date\( 0 \) -> the timezone dependant result of Date.prototype.toString
+0 as Date -> null
+var x:Date = 0;  Error!
+from: int
+Date\( -1 \) -> the timezone dependant result of Date.prototype.toString
+-1 as Date -> null
+var x:Date = -1;  Error!
+from: uint
+Date\( 1 \) -> the timezone dependant result of Date.prototype.toString
+1 as Date -> null
+var x:Date = 1;  Error!
+from: String
+Date\( 'string' \) -> the timezone dependant result of Date.prototype.toString
+'string' as Date -> null
+var x:Date = 'string';  Error!
+from: String
+Date\( '22' \) -> the timezone dependant result of Date.prototype.toString
+'22' as Date -> null
+var x:Date = '22';  Error!
+from: String
+Date\( 'false' \) -> the timezone dependant result of Date.prototype.toString
+'false' as Date -> null
+var x:Date = 'false';  Error!
+from: String
+Date\( 'Infinity' \) -> the timezone dependant result of Date.prototype.toString
+'Infinity' as Date -> null
+var x:Date = 'Infinity';  Error!
+from: Boolean
+Date\( false \) -> the timezone dependant result of Date.prototype.toString
+false as Date -> null
+var x:Date = false;  Error!
+from: Boolean
+Date\( true \) -> the timezone dependant result of Date.prototype.toString
+true as Date -> null
+var x:Date = true;  Error!
+from: Date
+Date\( \{Date value\} \) -> the timezone dependant result of Date.prototype.toString
+\{Date value\} as Date -> \{Date value\}
+var x:Date = \{Date value\}; x -> \{Date value\}
+from: Array
+Date\( \[ 1, 2, 3 \] \) -> the timezone dependant result of Date.prototype.toString
+\[ 1, 2, 3 \] as Date -> null
+var x:Date = \[ 1, 2, 3 \];  Error!
+from: Class instance
+Date\( \[object aClass\] \) -> the timezone dependant result of Date.prototype.toString
+\[object aClass\] as Date -> null
+var x:Date = \[object aClass\];  Error!
+from: null
+Date\( null \) -> the timezone dependant result of Date.prototype.toString
+null as Date -> null
+var x:Date = null; x -> null
+from: undefined
+Date\( undefined \) -> the timezone dependant result of Date.prototype.toString
+undefined as Date -> null
+var x:Date = undefined; x -> null
+To Unreleated type bClass:
+from: Number
+bClass\( 1.1 \) ->  Error!
+1.1 as bClass -> null
+var x:bClass = 1.1;  Error!
+from: Number
+bClass\( NaN \) ->  Error!
+NaN as bClass -> null
+var x:bClass = NaN;  Error!
+from: Number
+bClass\( 0 \) ->  Error!
+0 as bClass -> null
+var x:bClass = 0;  Error!
+from: int
+bClass\( -1 \) ->  Error!
+-1 as bClass -> null
+var x:bClass = -1;  Error!
+from: uint
+bClass\( 1 \) ->  Error!
+1 as bClass -> null
+var x:bClass = 1;  Error!
+from: String
+bClass\( 'string' \) ->  Error!
+'string' as bClass -> null
+var x:bClass = 'string';  Error!
+from: String
+bClass\( '22' \) ->  Error!
+'22' as bClass -> null
+var x:bClass = '22';  Error!
+from: String
+bClass\( 'false' \) ->  Error!
+'false' as bClass -> null
+var x:bClass = 'false';  Error!
+from: String
+bClass\( 'Infinity' \) ->  Error!
+'Infinity' as bClass -> null
+var x:bClass = 'Infinity';  Error!
+from: Boolean
+bClass\( false \) ->  Error!
+false as bClass -> null
+var x:bClass = false;  Error!
+from: Boolean
+bClass\( true \) ->  Error!
+true as bClass -> null
+var x:bClass = true;  Error!
+from: Date
+bClass\( \{Date value\} \) ->  Error!
+\{Date value\} as bClass -> null
+var x:bClass = \{Date value\};  Error!
+from: Array
+bClass\( \[ 1, 2, 3 \] \) ->  Error!
+\[ 1, 2, 3 \] as bClass -> null
+var x:bClass = \[ 1, 2, 3 \];  Error!
+from: Class instance
+bClass\( \[object aClass\] \) ->  Error!
+\[object aClass\] as bClass -> null
+var x:bClass = \[object aClass\];  Error!
+from: null
+bClass\( null \) -> null
+null as bClass -> null
+var x:bClass = null; x -> null
+from: undefined
+bClass\( undefined \) -> null
+undefined as bClass -> null
+var x:bClass = undefined; x -> null

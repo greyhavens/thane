@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*CompleteTypeWarn.as\(12\): Migration issue: The property COMPLETE_TYPE is no longer supported.  Use the Event.COMPLETE constant instead..
+trace\(Event.COMPLETE_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+CompleteTypeWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

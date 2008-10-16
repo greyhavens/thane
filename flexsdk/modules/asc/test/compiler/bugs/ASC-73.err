@@ -1,0 +1,7 @@
+
+[Compiler] Error #1205: Syntax Error: expecting a left brace\({\)or string literal\(""\).
+ASC-73.as, Ln 1, Col 13:
+a = <node l=a />;
+............^
+
+1 error found

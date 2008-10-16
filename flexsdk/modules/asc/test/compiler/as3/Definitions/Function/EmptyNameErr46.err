@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before do.
+   EmptyNameErr46.as, Ln 5, Col 14: 
+       function do() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr46.as, Ln 5, Col 19: 
+       function do() {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr46.as, Ln 5, Col 19: 
+       function do() {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr46.as, Ln 5, Col 19: 
+       function do() {}
+   ..................^
+
+4 errors found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before public.
+   EmptyNameErr61.as, Ln 5, Col 14: 
+       function public() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr61.as, Ln 5, Col 23: 
+       function public() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr61.as, Ln 5, Col 23: 
+       function public() {}
+   ......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr61.as, Ln 5, Col 23: 
+       function public() {}
+   ......................^
+
+4 errors found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before implements.
+   EmptyNameErr54.as, Ln 5, Col 14: 
+       function implements() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr54.as, Ln 5, Col 27: 
+       function implements() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr54.as, Ln 5, Col 27: 
+       function implements() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr54.as, Ln 5, Col 27: 
+       function implements() {}
+   ..........................^
+
+4 errors found

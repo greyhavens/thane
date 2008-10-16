@@ -1,0 +1,12 @@
+
+[Compiler] Error #1020: Method marked override must override another method.
+   OverrideVarWithGetterSetterErr.as, Ln 7, Col 32: 
+   		override public function get string() : String { return _string; }
+   ...............................^
+
+[Compiler] Error #1020: Method marked override must override another method.
+   OverrideVarWithGetterSetterErr.as, Ln 8, Col 32: 
+   		override public function set string\( s:String \) { _string=s; }	
+   ...............................^
+
+2 errors found

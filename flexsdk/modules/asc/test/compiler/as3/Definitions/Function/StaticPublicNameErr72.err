@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before while.
+   StaticPublicNameErr72.as, Ln 5, Col 28: 
+       static public function while() {}
+   ...........................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticPublicNameErr72.as, Ln 5, Col 36: 
+       static public function while() {}
+   ...................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticPublicNameErr72.as, Ln 5, Col 36: 
+       static public function while() {}
+   ...................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticPublicNameErr72.as, Ln 5, Col 36: 
+       static public function while() {}
+   ...................................^
+
+4 errors found

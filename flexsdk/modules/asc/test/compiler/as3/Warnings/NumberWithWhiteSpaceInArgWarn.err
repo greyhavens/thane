@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1038: In ActionScript 3.0, white space is ignored and '' returns 0. Number() returns NaN in ActionScript 2.0 when the parameter is '' or contains white space.
+-------------------------------------------------------------------------
+.*NumberWithWhiteSpaceInArgWarn.as\(10\): Migration issue: When the Number\(''\) function is called with an empty string argument it returns 0 in ActionScript 3.0, and NaN in ActionScript 2.0.
+var num:Number = new Number\(" "\);
+.......................^
+
+-------------------------------------------------------------------------
+
+
+
+NumberWithWhiteSpaceInArgWarn.abc, [0-9]+ bytes written

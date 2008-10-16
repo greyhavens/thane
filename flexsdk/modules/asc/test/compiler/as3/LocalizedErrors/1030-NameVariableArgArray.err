@@ -1,0 +1,7 @@
+
+[Compiler] Error #1030: Must specify name of variable arguments array.
+1030-NameVariableArgArray.as, Ln 5, Col 28:
+function a\(x:String, ...\):void {}
+...........................^
+
+1 error found

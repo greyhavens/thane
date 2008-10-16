@@ -1,0 +1,7 @@
+
+[Compiler] Error #1169: Namespace attributes are not permitted on interface methods.
+1169-NSIntMethErr.as, Ln 10, Col 21:
+N1 function m():String;
+....................^
+
+1 error found

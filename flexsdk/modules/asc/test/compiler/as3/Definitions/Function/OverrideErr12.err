@@ -1,0 +1,7 @@
+
+[Compiler] Error #1023: Incompatible override.
+   OverrideErr12.as, Ln 8, Col 21: 
+   		override function f\(... rest\) {}
+   ....................^
+
+1 error found

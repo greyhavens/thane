@@ -1,0 +1,17 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*PrintWarn.as\(9\): Migration issue: The method print is no longer supported.  For more information, see PrintJob.start()..
+print\("Hello"\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+PrintWarn.abc, [0-9]+ bytes written
+Hello

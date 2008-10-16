@@ -1,0 +1,12 @@
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+   ClassAttrErr9.as, Ln 3, Col 9: 
+   	public private static class ClassAttrErr9
+   ........^
+
+[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
+   ClassAttrErr9.as, Ln 3, Col 17: 
+   	public private static class ClassAttrErr9
+   ................^
+
+2 errors found

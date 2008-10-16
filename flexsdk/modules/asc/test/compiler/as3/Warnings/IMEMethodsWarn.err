@@ -1,0 +1,54 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*\IMEMethodsWarn.as\(11\): Migration issue: The method addListener is no longer supported.  For more information, see addEventListener\(eventName, listener, useCapture, priority \)..
+IME.addListener();
+........^
+
+.*\IMEMethodsWarn.as\(12\): Migration issue: The method getConversionMode is no longer supported.  Use the IME.conversionMode property instead..
+IME.getConversionMode();
+........^
+
+.*\IMEMethodsWarn.as\(13\): Migration issue: The method getEnabled is no longer supported.  Use the IME.enabled property instead..
+IME.getEnabled();
+........^
+
+.*\IMEMethodsWarn.as\(14\): Migration issue: The method removeListener is no longer supported.  For more information, see removeEventListener\(eventName, listener, useCapture\)..
+IME.removeListener();
+........^
+
+.*\IMEMethodsWarn.as\(15\): Migration issue: The method setConversionMode is no longer supported.  Use the IME.conversionMode property instead..
+IME.setConversionMode()
+........^
+
+.*\IMEMethodsWarn.as\(16\): Migration issue: The method setEnabled is no longer supported.  Use the IME.enabled property instead..
+IME.setEnabled();
+........^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1072: Class is sealed.  It cannot have members added to it dynamically.
+-------------------------------------------------------------------------
+.*\IMEMethodsWarn.as\(17\): Migration issue: Class is not a dynamic class.  Instances cannot have members added to them dynamically.
+IME.onIMEComposition = function():void{}
+......................................^
+
+-------------------------------------------------------------------------
+
+[Coach] Warning #1090: EventHandler was not added as a listener.
+-------------------------------------------------------------------------
+.*\IMEMethodsWarn.as\(17\): Migration issue: The onIMEComposition event handler is not triggered automatically by Flash Player at run time in ActionScript 3.0.  You must first register this handler for the event using addEventListener \( imeComposition, handlerName\).
+IME.onIMEComposition = function():void{}
+........^
+
+-------------------------------------------------------------------------
+
+
+
+IMEMethodsWarn.abc, [0-9]+ bytes written
+.*Error.*
+

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1131: Classes must not be nested.
+   InnerClassExtendsOuter.as, Ln 3, Col 24: 
+   class B{ public static class C extends A{} }
+   .......................^
+
+1 error found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before typeof.
+   StaticNameErr69.as, Ln 5, Col 21: 
+       static function typeof() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr69.as, Ln 5, Col 30: 
+       static function typeof() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr69.as, Ln 5, Col 30: 
+       static function typeof() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr69.as, Ln 5, Col 30: 
+       static function typeof() {}
+   .............................^
+
+4 errors found

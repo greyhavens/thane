@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*ChangeTypeWarn.as\(13\): Migration issue: The property CHANGE_TYPE is no longer supported.  Use the Event.CHANGE constant instead..
+Event.CHANGE_TYPE;
+..............^
+
+-------------------------------------------------------------------------
+
+
+
+ChangeTypeWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

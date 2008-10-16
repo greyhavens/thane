@@ -1,0 +1,17 @@
+
+[Compiler] Error #1113: Circular type reference was detected in A.
+1113-CircularTypeRefErr.as, Ln 5, Col 7:
+class A extends B { }
+......^
+
+[Compiler] Error #1113: Circular type reference was detected in B.
+1113-CircularTypeRefErr.as, Ln 6, Col 7:
+class B extends A { }
+......^
+
+[Compiler] Error #1113: Circular type reference was detected in C.
+1113-CircularTypeRefErr.as, Ln 7, Col 7:
+class C extends C {
+......^
+
+3 errors found

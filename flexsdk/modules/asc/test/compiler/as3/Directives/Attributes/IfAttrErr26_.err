@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr26 was not found.
+   IfAttrErr26_.as, Ln 6, Col 39: 
+   	public class IfAttrErr26_ implements IfAttrErr26
+   ......................................^
+
+1 error found

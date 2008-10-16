@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1113: Circular type reference was detected in der.
+.*b109751.as, Ln 1, Col 7:
+class der extends der \{\}
+......\^
+
+1 error found

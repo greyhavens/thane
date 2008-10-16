@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*ImageFilterPropWarn.as\(8\): Migration issue: The property ImageFilter is no longer supported.  The ImageFilter class has been renamed BitmapFilter..
+ImageFilter = true;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ImageFilterPropWarn.abc, [0-9]+ bytes written

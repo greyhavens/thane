@@ -1,0 +1,12 @@
+
+[Compiler] Error #1010: The override attribute may be used only on class property definitions.
+   CreateOverridePackageVariableErr.as, Ln 3, Col 5: 
+       override var item1;
+   ....^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   CreateOverridePackageVariableErr.as, Ln 3, Col 18: 
+       override var item1;
+   .................^
+
+2 errors found

@@ -1,0 +1,22 @@
+
+optionalargs.abc, \d+ bytes written
+1
+-1
+-1.2
+s
+null
+undefined
+false
+true
+1
+-1
+-1.2
+s
+null
+undefined
+false
+true
+4294967295 2147483647 true  1e\+300
+0 0 false null NaN
+NaN Infinity undefined
+1.79769313486231e\+308 4.9406564584124654e-324 NaN -Infinity Infinity

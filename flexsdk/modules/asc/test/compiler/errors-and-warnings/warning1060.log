@@ -1,0 +1,7 @@
+WARNING: file = warning1060.as(5:4)
+         mesg = code=1060; arg1=instanceof; arg2=Use the 'is' method instead.
+         srce = (a instanceof A);
+WARNING: file = warning1060.as(8:1)
+         mesg = code=1060; arg1=registerClass; arg2=Check help for the new ' ?'
+         srce = registerClass();
+

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before instanceof.
+   EmptyNameErr58.as, Ln 5, Col 14: 
+       function instanceof() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr58.as, Ln 5, Col 27: 
+       function instanceof() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr58.as, Ln 5, Col 27: 
+       function instanceof() {}
+   ..........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr58.as, Ln 5, Col 27: 
+       function instanceof() {}
+   ..........................^
+
+4 errors found

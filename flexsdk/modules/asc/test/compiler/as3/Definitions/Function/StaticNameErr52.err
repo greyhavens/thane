@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before finally.
+   StaticNameErr52.as, Ln 5, Col 21: 
+       static function finally() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr52.as, Ln 5, Col 31: 
+       static function finally() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr52.as, Ln 5, Col 31: 
+       static function finally() {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr52.as, Ln 5, Col 31: 
+       static function finally() {}
+   ..............................^
+
+4 errors found

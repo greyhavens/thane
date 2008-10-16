@@ -1,0 +1,7 @@
+
+[Compiler] Error #1150: The protected attribute can only be used on class property definitions.
+1150-ProtectedErr.as, Ln 8, Col 5:
+protected var protectedvar:int = 0;
+....^
+
+1 error found

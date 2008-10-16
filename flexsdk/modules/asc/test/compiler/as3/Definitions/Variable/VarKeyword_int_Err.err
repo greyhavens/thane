@@ -1,0 +1,7 @@
+
+[Compiler] Error #1152: A conflict exists with inherited definition \*.int in namespace public.
+   VarKeyword_int_Err.as, Ln 14, Col 6: 
+   	var int;
+   .....^
+
+1 error found

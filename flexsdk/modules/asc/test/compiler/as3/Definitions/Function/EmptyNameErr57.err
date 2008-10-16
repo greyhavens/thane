@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before in.
+   EmptyNameErr57.as, Ln 5, Col 14: 
+       function in() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr57.as, Ln 5, Col 19: 
+       function in() {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr57.as, Ln 5, Col 19: 
+       function in() {}
+   ..................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr57.as, Ln 5, Col 19: 
+       function in() {}
+   ..................^
+
+4 errors found

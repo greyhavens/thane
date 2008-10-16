@@ -1,0 +1,7 @@
+
+[Compiler] Error #1017: The definition of base class C was not found.
+as3.Definitions.CircularReference.CRClassesErr.as, Ln 46, Col 17:
+class B extends C {
+................^
+
+1 error found

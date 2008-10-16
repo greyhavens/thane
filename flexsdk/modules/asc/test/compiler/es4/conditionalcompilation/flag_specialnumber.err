@@ -1,0 +1,9 @@
+
+flag_specialnumber.abc, [0-9]+ bytes written
+matching 1000
+actual   1000
+matching 1.5e-12
+actual   1.5e-12
+matching 0.1
+actual   0.1
+hex form 255

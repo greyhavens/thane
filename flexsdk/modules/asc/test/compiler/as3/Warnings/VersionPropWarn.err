@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*VersionPropWarn.as\(8\): Migration issue: The property \$version is no longer supported.  Use Capabilities.version instead..
+var str:String = \$version;
+..................^
+
+-------------------------------------------------------------------------
+
+
+
+VersionPropWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

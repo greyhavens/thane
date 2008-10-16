@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr2 was not found.
+   IfAttrErr2_.as, Ln 6, Col 38: 
+   	public class IfAttrErr2_ implements IfAttrErr2
+   .....................................^
+
+1 error found

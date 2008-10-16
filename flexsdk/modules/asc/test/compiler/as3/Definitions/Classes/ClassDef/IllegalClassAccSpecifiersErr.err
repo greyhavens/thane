@@ -1,0 +1,27 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalClassAccSpecifiersErr.as, Ln 4, Col 2: 
+   	publicfinal class c1 {}
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalClassAccSpecifiersErr.as, Ln 5, Col 2: 
+   	Final class c2 {}
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalClassAccSpecifiersErr.as, Ln 6, Col 2: 
+   	Public class c3 {}
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalClassAccSpecifiersErr.as, Ln 7, Col 2: 
+   	Static class c4 {}
+   .^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+   IllegalClassAccSpecifiersErr.as, Ln 8, Col 2: 
+   	priv class c5 {}
+   .^
+
+5 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1041: Attributes are not callable.
+1041-IncorrectAttributeCall.as, Ln 9, Col 5:
+x.@nast();
+....^
+
+1 error found

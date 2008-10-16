@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*RootPropWarn.as\(9\): Migration issue: The property _root is no longer supported.  This property has been removed. The closest equivalent is the Stage, which serves as the root of the ActionScript 3.0 display list..
+_root = true;
+.^
+
+-------------------------------------------------------------------------
+
+
+
+RootPropWarn.abc, [0-9]+ bytes written

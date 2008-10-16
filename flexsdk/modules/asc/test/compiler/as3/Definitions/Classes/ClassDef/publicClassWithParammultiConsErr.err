@@ -1,0 +1,7 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   publicClassWithParammultiConsErr.as, Ln 11, Col 33: 
+                   public function publicClassWithParammultiConsErr\(a:Num...
+   ................................^
+
+1 error found

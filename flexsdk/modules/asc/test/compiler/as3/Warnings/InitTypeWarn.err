@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*InitTypeWarn.as\(12\): Migration issue: The property INIT_TYPE is no longer supported.  Use the Event.INIT constant instead..
+trace\(Event.INIT_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+InitTypeWarn.abc, [0-9]+ bytes written
+.*Error.*
+

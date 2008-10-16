@@ -1,0 +1,7 @@
+
+[Compiler] Error #1146: A constructor cannot be a getter or setter method.
+   SetterAsConstructorErr.as, Ln 5, Col 23: 
+   		public function set SetterName\(s\) { 
+   ......................^
+
+1 error found

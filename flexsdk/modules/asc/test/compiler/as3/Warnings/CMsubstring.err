@@ -1,0 +1,19 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMsubstring.as\(9\): Migration issue: The method substring is no longer supported.  Use the String.substr method instead..
+var s2:String = substring\(str,3,7\)
+................^
+
+-------------------------------------------------------------------------
+
+
+
+CMsubstring.abc, [0-9]+ bytes written
+ngst
+ReferenceError: Error #1065
+

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before continue.
+   EmptyNameErr42.as, Ln 5, Col 14: 
+       function continue() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr42.as, Ln 5, Col 25: 
+       function continue() {}
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr42.as, Ln 5, Col 25: 
+       function continue() {}
+   ........................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr42.as, Ln 5, Col 25: 
+       function continue() {}
+   ........................^
+
+4 errors found

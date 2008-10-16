@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before else.
+ecma3.e7_4_2_13_Err.as, Ln 52, Col 9:
+var else = true;
+........^
+
+1 error found

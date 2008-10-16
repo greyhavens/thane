@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before switch.
+ecma3.e7_4_3_8_Err.as, Ln 46, Col 9:
+var switch = true;
+........^
+
+1 error found

@@ -1,0 +1,12 @@
+
+[Compiler] Error #1021: Duplicate function definition.
+   PubStaticBodyErr4.as, Ln 5, Col 28: 
+       public static function setX\(x\) {}
+   ...........................^
+
+[Compiler] Error #1021: Duplicate function definition.
+   PubStaticBodyErr4.as, Ln 6, Col 28: 
+       public static function setX\(x,y\) {}
+   ...........................^
+
+2 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before import.
+   ImportAsVariableInClassErr.as, Ln 3, Col 13: 
+   	public var import:Number = 2;
+   ............^
+
+1 error found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   RedeclaringVarsNotInParentErr.as, Ln 7, Col 23: 
+   		override public var prop:String;
+   ......................^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   RedeclaringVarsNotInParentErr.as, Ln 8, Col 16: 
+   		override var foo:String;
+   ...............^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   RedeclaringVarsNotInParentErr.as, Ln 9, Col 24: 
+   		override private var bar:Number;
+   .......................^
+
+[Compiler] Error #1143: The override attribute can only be used on a method defined in a class.
+   RedeclaringVarsNotInParentErr.as, Ln 10, Col 25: 
+   		override internal var b:Boolean;
+   ........................^
+
+4 errors found

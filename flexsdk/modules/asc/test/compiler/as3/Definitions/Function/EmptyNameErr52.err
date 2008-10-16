@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before finally.
+   EmptyNameErr52.as, Ln 5, Col 14: 
+       function finally() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr52.as, Ln 5, Col 24: 
+       function finally() {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr52.as, Ln 5, Col 24: 
+       function finally() {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr52.as, Ln 5, Col 24: 
+       function finally() {}
+   .......................^
+
+4 errors found

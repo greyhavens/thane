@@ -1,0 +1,7 @@
+
+[Compiler] Error #1004: Namespace was not found or is not a compile-time constant.
+1004-NamespaceNotFoundErr.as, Ln 7, Col 5:
+ns var x
+....^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before interface.
+   InterfacedirecErr.as, Ln 1, Col 20: 
+   class A implements interface X{
+   ...................^
+
+1 error found

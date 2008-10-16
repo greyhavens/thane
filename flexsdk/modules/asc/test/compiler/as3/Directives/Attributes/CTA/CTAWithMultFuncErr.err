@@ -1,0 +1,17 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before public.
+as3.Directives.Attributes.CTA.CTAWithMultFuncErr.as, Ln 43, Col 7:
+const public debug = true;
+......^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before private.
+as3.Directives.Attributes.CTA.CTAWithMultFuncErr.as, Ln 45, Col 7:
+const private debug1 = false;
+......^
+
+[Compiler] Error #1086: Syntax error: expecting semicolon before debug2.
+as3.Directives.Attributes.CTA.CTAWithMultFuncErr.as, Ln 47, Col 16:
+const internal debug2 = true;
+...............^
+
+3 errors found

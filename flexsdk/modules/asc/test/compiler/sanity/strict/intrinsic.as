@@ -1,0 +1,1 @@
+print(parseInt("10"))

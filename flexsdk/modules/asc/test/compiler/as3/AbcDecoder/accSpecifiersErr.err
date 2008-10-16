@@ -1,0 +1,7 @@
+
+[Compiler] Error #1017: The definition of base class privClass was not found.
+as3.AbcDecoder.accSpecifiersErr.as, Ln 44, Col 24:
+class accSpecs extends privClass {
+.......................^
+
+1 error found

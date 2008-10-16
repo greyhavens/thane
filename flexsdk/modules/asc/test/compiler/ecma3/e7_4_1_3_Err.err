@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before false.
+ecma3.e7_4_1_3_Err.as, Ln 42, Col 5:
+var false = true;
+....^
+
+1 error found

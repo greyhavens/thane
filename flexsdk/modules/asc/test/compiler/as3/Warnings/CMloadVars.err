@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*CMloadVars.as\(10\): Migration issue: The method LoadVars is no longer supported.  For more information, see the URLVariables class, the URLRequest.urlVariables and URLRequest.postData properties, and the URLLoader.dataFormat property..
+new LoadVars();
+.....^
+
+-------------------------------------------------------------------------
+
+
+
+CMloadVars.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

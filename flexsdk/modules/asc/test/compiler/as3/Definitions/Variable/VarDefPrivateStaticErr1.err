@@ -1,0 +1,12 @@
+
+[Compiler] Error #1071: Syntax error: expected a definition keyword \(such as function\) after attribute private, not static.
+   VarDefPrivateStaticErr1.as, Ln 14, Col 37: 
+       		private static identifierEmpty;
+   ....................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before semicolon.
+   VarDefPrivateStaticErr1.as, Ln 14, Col 37: 
+       		private static identifierEmpty;
+   ....................................^
+
+2 errors found

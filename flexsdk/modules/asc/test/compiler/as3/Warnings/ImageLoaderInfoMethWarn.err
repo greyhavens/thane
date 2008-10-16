@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*ImageLoaderInfoMethWarn.as\(8\): Migration issue: The method ImageLoaderInfo is no longer supported.  The ImageLoaderInfo class has been renamed BitmapLoaderInfo..
+ImageLoaderInfo();
+.^
+
+-------------------------------------------------------------------------
+
+
+
+ImageLoaderInfoMethWarn.abc, [0-9]+ bytes written
+.*Error.*
+

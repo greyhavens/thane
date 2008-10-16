@@ -1,0 +1,3 @@
+namespace 5startswithnumber;
+ 
+

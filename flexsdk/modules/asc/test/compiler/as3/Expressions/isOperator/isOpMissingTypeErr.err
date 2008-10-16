@@ -1,0 +1,10 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before rightparen.
+   isOpMissingTypeErr.as, Ln 2, Col 14: 
+   var y = \(x is\);
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before end of program.
+   isOpMissingTypeErr.as, Ln 3, Col 1: 
+
+2 errors found

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before break.
+   EmptyNameErr36.as, Ln 5, Col 14: 
+       function break() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr36.as, Ln 5, Col 22: 
+       function break() {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr36.as, Ln 5, Col 22: 
+       function break() {}
+   .....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr36.as, Ln 5, Col 22: 
+       function break() {}
+   .....................^
+
+4 errors found

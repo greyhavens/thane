@@ -1,0 +1,7 @@
+
+[Compiler] Error #1146: A constructor cannot be a getter or setter method.
+1146-ConsAsGetterErr.as, Ln 9, Col 31:
+public function get ConsAsGetterErr(){}
+..............................^
+
+1 error found

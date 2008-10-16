@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftparen.
+   StatFuncPrivNameErr.as, Ln 5, Col 31: 
+       static a private function () {}
+   ..............................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StatFuncPrivNameErr.as, Ln 5, Col 34: 
+       static a private function () {}
+   .................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StatFuncPrivNameErr.as, Ln 5, Col 34: 
+       static a private function () {}
+   .................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StatFuncPrivNameErr.as, Ln 5, Col 34: 
+       static a private function () {}
+   .................................^
+
+4 errors found

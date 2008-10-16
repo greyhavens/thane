@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before public.
+   StaticNameErr61.as, Ln 5, Col 21: 
+       static function public() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr61.as, Ln 5, Col 30: 
+       static function public() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr61.as, Ln 5, Col 30: 
+       static function public() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr61.as, Ln 5, Col 30: 
+       static function public() {}
+   .............................^
+
+4 errors found

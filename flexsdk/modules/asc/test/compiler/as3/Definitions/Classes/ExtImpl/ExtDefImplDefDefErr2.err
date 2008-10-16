@@ -1,0 +1,17 @@
+
+[Compiler] Error #1125: Methods defined in an interface must not have a body.
+   ExtDefImplDefDefErr2.as, Ln 20, Col 16: 
+   	     function foo() {
+   ...............^
+
+[Compiler] Error #1125: Methods defined in an interface must not have a body.
+   ExtDefImplDefDefErr2.as, Ln 25, Col 23: 
+   	     public function goo() {
+   ......................^
+
+[Compiler] Error #1157: Interface members cannot be declared public, private, protected, or internal.
+   ExtDefImplDefDefErr2.as, Ln 25, Col 23: 
+   	     public function goo() {
+   ......................^
+
+3 errors found

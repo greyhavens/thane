@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting leftbrace before extends.
+   ImplExtErr.as, Ln 18, Col 33: 
+   	class ImplExtErr implements Ia extends Simple {}
+   ................................^
+
+1 error found

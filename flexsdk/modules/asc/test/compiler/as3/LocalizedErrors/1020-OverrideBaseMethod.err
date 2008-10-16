@@ -1,0 +1,7 @@
+
+[Compiler] Error #1020: Method marked override must override another method.
+1020-OverrideBaseMethod.as, Ln 7, Col 21:
+override function a():void {}
+....................^
+
+1 error found

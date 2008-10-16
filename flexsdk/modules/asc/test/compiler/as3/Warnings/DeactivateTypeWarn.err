@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1058: Unsupported ActionScript 2.0 property.
+-------------------------------------------------------------------------
+.*DeactivateTypeWarn.as\(12\): Migration issue: The property DEACTIVATE_TYPE is no longer supported.  Use the Event.DEACTIVATE constant instead..
+trace\(Event.DEACTIVATE_TYPE\);
+.............^
+
+-------------------------------------------------------------------------
+
+
+
+DeactivateTypeWarn.abc, [0-9]+ bytes written
+ReferenceError: Error #1065
+

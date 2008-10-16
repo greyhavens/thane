@@ -1,0 +1,9 @@
+\[Compiler\] Error #1094: Syntax error: A string literal must be terminated before the line break.
+.*StaticPublicNameErr17.as, Ln 5, Col 29:
+static public function a'b \(\) \{\}
+............................^
+\[Compiler\] Error #1084: Syntax error: expecting rightbrace before end of program.
+.*StaticPublicNameErr17.as, Ln 8, Col 1:
+\[Compiler\] Error #1084: Syntax error: expecting rightbrace before end of program.
+.*StaticPublicNameErr17.as, Ln 8, Col 1:
+3 errors found

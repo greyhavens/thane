@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IClickable was not found.
+as3.Definitions.Packages.QualifiedRefWithoutImport2Err.as, Ln 25, Col 41:
+public class C implements OtherPackage.IClickable {
+........................................^
+
+1 error found

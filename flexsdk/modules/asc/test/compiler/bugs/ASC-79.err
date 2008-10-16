@@ -1,0 +1,7 @@
+
+[Compiler] Error #1182: Package cannot be used as a value: p.
+bugs.ASC-79.as, Ln 2, Col 14:
+var k:String=p;
+.............^
+
+1 error found

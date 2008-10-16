@@ -1,0 +1,12 @@
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   VarDefEmptyErr13.as, Ln 15, Col 26: 
+       		idId, idIdTypeExprA:Array, idIdTypeExprB:Boolean;
+   .........................^
+
+[Compiler] Error #1078: Label must be a simple identifier.
+   VarDefEmptyErr13.as, Ln 15, Col 47: 
+       		idId, idIdTypeExprA:Array, idIdTypeExprB:Boolean;
+   ..............................................^
+
+2 errors found

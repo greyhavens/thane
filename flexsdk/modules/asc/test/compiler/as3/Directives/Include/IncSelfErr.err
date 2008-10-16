@@ -1,0 +1,7 @@
+
+[Compiler] Error #1112: Possible infinite recursion due to this file include: .*IncSelfErr.as.
+   .*\IncSelfErr.as, Ln 5, Col 9: 
+   include "IncSelfErr.as";
+   ........^
+
+1 error found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1093: Syntax error.
+as3.Definitions.Packages.PackageNamePoundErr.as, Ln 23, Col 9:
+package #foo {}
+........^
+
+1 error found

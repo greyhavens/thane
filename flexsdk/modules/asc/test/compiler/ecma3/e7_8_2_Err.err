@@ -1,0 +1,12 @@
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before 2.
+ecma3.e7_8_2_Err.as, Ln 42, Col 7:
+{1 2 } 3;
+......^
+
+[Compiler] Error #1084: Syntax error: expecting rightbrace before 3.
+ecma3.e7_8_2_Err.as, Ln 42, Col 11:
+{1 2 } 3;
+..........^
+
+2 errors found

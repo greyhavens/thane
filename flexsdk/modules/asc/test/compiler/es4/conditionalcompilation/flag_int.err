@@ -1,0 +1,5 @@
+
+flag_int.abc, [0-9]+ bytes written
+print CONFIG::flag=101
+statement block: CONFIG::flag==true
+conditional: CONFIG::flag==true

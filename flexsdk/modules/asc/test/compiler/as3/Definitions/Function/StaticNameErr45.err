@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before delete.
+   StaticNameErr45.as, Ln 5, Col 21: 
+       static function delete() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StaticNameErr45.as, Ln 5, Col 30: 
+       static function delete() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StaticNameErr45.as, Ln 5, Col 30: 
+       static function delete() {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StaticNameErr45.as, Ln 5, Col 30: 
+       static function delete() {}
+   .............................^
+
+4 errors found

@@ -1,0 +1,7 @@
+
+[Compiler] Error #1029: Functions cannot be both final and virtual.
+1029-FinalVirtualMethod.as, Ln 5, Col 5:
+final virtual function a():void {}
+....^
+
+1 error found

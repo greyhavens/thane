@@ -1,0 +1,7 @@
+
+[Compiler] Error #1200: Syntax error: invalid for-in initializer, only 1 expression expected.
+ecma3.e12_6_3_5_Err.as, Ln 71, Col 20:
+for \( var i, p in this\) {
+...................^
+
+1 error found

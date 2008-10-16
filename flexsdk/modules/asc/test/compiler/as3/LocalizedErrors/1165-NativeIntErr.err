@@ -1,0 +1,12 @@
+
+[Compiler] Error #1133: The native attribute can only be used with function definitions.
+1165-NativeIntErr.as, Ln 8, Col 22:
+native interface NativeIntErr{}
+.....................^
+
+[Compiler] Error #1165: Interface attribute native is invalid.
+1165-NativeIntErr.as, Ln 8, Col 22:
+native interface NativeIntErr{}
+.....................^
+
+2 errors found

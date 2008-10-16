@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr6 was not found.
+   IfAttrErr6_.as, Ln 6, Col 38: 
+   	public class IfAttrErr6_ implements IfAttrErr6
+   .....................................^
+
+1 error found

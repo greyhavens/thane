@@ -1,0 +1,7 @@
+
+\[Compiler\] Error #1046: Type was not found or was not a compile-time constant: B.
+.*b149448.as, Ln 4, Col 7:
+var B:B
+......\^
+
+1 error found

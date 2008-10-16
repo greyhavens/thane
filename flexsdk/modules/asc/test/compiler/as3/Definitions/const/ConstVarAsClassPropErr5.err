@@ -1,0 +1,7 @@
+
+[Compiler] Error #1132: The attribute final can only be used on a method defined in a class.
+as3.Definitions.const.ConstVarAsClassPropErr5.as, Ln 48, Col 28:
+public final static const pubFinStatConst;
+...........................^
+
+1 error found

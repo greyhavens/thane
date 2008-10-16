@@ -1,0 +1,50 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*GlobalFunctionsWarn.as\(7\): Migration issue: The method asfunction is no longer supported.  For more information, see TextEvent.LINK and addEventListener()..
+asfunction();
+...^
+
+.*GlobalFunctionsWarn.as\(8\): Migration issue: The method call is no longer supported.  The global call() method is no longer supported..
+call();
+...^
+
+.*GlobalFunctionsWarn.as\(10\): Migration issue: The method eval is no longer supported.  This functionality has been removed..
+eval();
+...^
+
+.*GlobalFunctionsWarn.as\(11\): Migration issue: The method fscommand is no longer supported.  Moved to flash.system package. Also, please see flash.external.ExternalInterface class for Javascript/ActionScript communication..
+fscommand();
+...^
+
+.*GlobalFunctionsWarn.as\(12\): Migration issue: The method getURL is no longer supported.  For equivalent functionality, see flash.net.URLLoader.  The flash.net package also contains package-level functions navigateToURL() and sendToURL()..
+getURL();
+...^
+
+.*GlobalFunctionsWarn.as\(13\): Migration issue: The method getVersion is no longer supported.  This functionality has been replaced by the flash.system.Capabilities.version property..
+getVersion();
+...^
+
+.*GlobalFunctionsWarn.as\(14\): Migration issue: The method ifFrameLoaded is no longer supported.  This functionality has been replaced by the flash.display.MovieClip.framesLoaded property..
+ifFrameLoaded();
+...^
+
+.*GlobalFunctionsWarn.as\(16\): Migration issue: The method loadVariablesNum is no longer supported.  For more information, see Loader.load()..
+loadVariablesNum();
+...^
+
+.*GlobalFunctionsWarn.as\(23\): Migration issue: The method tellTarget is no longer supported.  Use the dot \(.\) operator or the with statement instead..
+tellTarget();
+...^
+
+-------------------------------------------------------------------------
+
+
+
+GlobalFunctionsWarn.abc, [0-9]+ bytes written
+.*Error.*
+

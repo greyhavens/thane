@@ -1,0 +1,22 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*\MouseClassEventsMethodsWarn.as\(9\): Migration issue: The method addListener is no longer supported.  For more information, see addEventListener \( eventName, listener, useCapture, priority \)..
+Mouse.addListener\(listener\);
+...........^
+
+.*\MouseClassEventsMethodsWarn.as\(17\): Migration issue: The method removeListener is no longer supported.  For more information, see removeEventListener \( eventName, listener, useCapture\)..
+Mouse.removeListener\(listener\);
+...........^
+
+-------------------------------------------------------------------------
+
+
+
+MouseClassEventsMethodsWarn.abc, [0-9]+ bytes written
+.*Error.*
+

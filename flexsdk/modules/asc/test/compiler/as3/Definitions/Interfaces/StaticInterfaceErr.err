@@ -1,0 +1,7 @@
+
+[Compiler] Error #1193: Interface definitions must not be nested within class or other interface definitions.
+   StaticInterfaceErr.as, Ln 4, Col 18: 
+   static interface B {}
+   .................^
+
+1 error found

@@ -1,0 +1,91 @@
+# fields are test names, setting name, configurations, values
+# available setting names:
+#     asc.args       : specify asc command line arguments in the values field. 
+#     avm.args       : specify avm command line args or include files in the values field.
+#     skip           : skip the specified tests,  Place reason in values field.
+#     expectedfailure: Test is expected to fail.  Place bug number in the values field.
+#
+# see README.txt for details
+#
+# Test Name                                              ,  Setting Name       , Configuration         ,     Values
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
+# requires -strict to produce error
+as3/LocalizedErrors/1049-IllegalAssignmentToConst        ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1118-ImplicitCoercionToSubtype       ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1129-DuplicateInterfaceDefErr        ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1136-IncorrectArgsErr                ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1137-IncorrectArgsNoMoreThanErr      ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1061-StaticCallToUndefinedMethod     ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1180-UndefinedMethodErr              ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1188-IllegalAssgnErr                 ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1195-InaccessibleMethodErr           ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+as3/LocalizedErrors/1087-ExtraCharsAfterEndOfProgram     ,    skip             , asc-full|asc-smokes   ,    cpeyer: investigating
+as3/Warnings/.*                                          ,    asc.args         , asc-full|asc-smokes   ,    -warnings -AS3 -import global.abc -import playerglobal.abc
+sanity/strict/.*                                         ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc -import toplevel.abc
+sanity/strict/xml_dynamic                                ,    asc.args         , asc-full|asc-smokes   ,    -strict -AS3 -import global.abc -import toplevel.abc
+sanity/strict/toStringRadix                              ,    asc.args         , asc-full|asc-smokes   ,    -strict -AS3 -import global.abc -import toplevel.abc
+sanity/strict/doubleToInt                                ,    asc.args         , asc-full|asc-smokes   ,    -strict -AS3 -import global.abc -import toplevel.abc
+sanity/strict/boidshack                                  ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc -avmtarget 1 -import toplevel.abc
+#import order tests
+sanity/importorder-b                                     ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/importorder-a.as
+sanity/importorder-b                                     ,    avm.args         , asc-full|asc-smokes   ,    sanity/importorder-a.abc
+sanity/importorder                                       ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/importorder-b.as -import sanity/importorder-a.as
+sanity/importorder                                       ,    avm.args         , asc-full|asc-smokes   ,    sanity/importorder-a.abc sanity/importorder-b.abc
+sanity/importorder_abc                                   ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/importorder-a.abc -import sanity/importorder-b.abc
+sanity/importorder_abc                                   ,    avm.args         , asc-full|asc-smokes   ,    sanity/importorder-a.abc sanity/importorder-b.abc
+sanity/bug123884                                         ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc -import toplevel.abc -import sanity/bug123884-import.abc
+sanity/bug123884                                         ,    avm.args         , asc-full|asc-smokes   ,    sanity/bug123884-import.abc
+sanity/strict/b191112                                    ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc -import toplevel.abc -import sanity/strict/b191112-import.abc
+sanity/strict/b191112                                    ,    avm.args         , asc-full|asc-smokes   ,    sanity/strict/b191112-import.abc
+#illegal-override tests
+sanity/IllegalOverrideClass                              ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideClass                              ,    avm.args         , asc-full|asc-smokes   ,    sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceMethod                    ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceMethod                    ,    avm.args         , asc-full|asc-smokes   ,    sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceGetter                    ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceGetter                    ,    avm.args         , asc-full|asc-smokes   ,    sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceSetter                    ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceSetter                    ,    avm.args         , asc-full|asc-smokes   ,    sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideClass_fail                         ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideClass_fail                         ,    avm.args         , asc-full|asc-smokes   ,    sanity/IllegalOverrideBaseNew.abc
+sanity/IllegalOverrideInterfaceMethod_fail               ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceMethod_fail               ,    avm.args         , asc-full|asc-smokes   ,    sanity/IllegalOverrideBaseNew.abc
+sanity/IllegalOverrideInterfaceGetter_fail               ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceGetter_fail               ,    avm.args         , asc-full|asc-smokes   ,    sanity/IllegalOverrideBaseNew.abc
+sanity/IllegalOverrideInterfaceSetter_fail               ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import sanity/IllegalOverrideBaseOld.abc
+sanity/IllegalOverrideInterfaceSetter_fail               ,    avm.args         , asc-full|asc-smokes   ,    sanity/IllegalOverrideBaseNew.abc
+# include (-in) smoke test
+sanity/hello                                             ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -in sanity/hello.as -in sanity/hello.as -in sanity/hello.as
+sanity/metadata2                                         ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -md
+sanity/strict/unused/.*                                  ,    skip             , asc-full|asc-smokes   ,    unused feature test that may be needed in the future
+# requires -coach
+errors-and-warnings/.*                                   ,    asc.args         , asc-full|asc-smokes   ,    -warnings -import global.abc -import playerglobal.abc
+# expected failures, under investigating
+as3/LocalizedErrors/1190-BaseClassNotCTCErr              ,    expectedfailure  , asc-full|asc-smokes   ,
+errors-and-warnings/warning1060                          ,    expectedfailure  , asc-full|asc-smokes   ,    cpeyer: investigating
+# bug regressions
+bugs/ASC-96                                              ,    asc.args         , asc-full|asc-smokes   ,    -coach -import global.abc
+bugs/ASC-1564                                            ,    asc.args         , asc-full|asc-smokes   ,    -md -import global.abc
+bugs/ASC-3250                                            ,    asc.args         , asc-full|asc-smokes   ,    -warnings -import global.abc
+bugs/ASC-3310                                            ,    asc.args         , asc-full|asc-smokes   ,    -warnings -import global.abc -import playerglobal.abc -swf MainPocket,100,100
+bugs/ASC-3334a                                           ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -avmtarget 1
+bugs/ASC-3334b                                           ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -avmtarget 2
+bugs/ASC-3384                                            ,    asc.args         , asc-full|asc-smokes   ,    -strict -import global.abc
+bugs/ASC-3414                                            ,    asc.args         , asc-full|asc-smokes   ,    -warnings -import global.abc
+cmdline/help1                                            ,    asc.args         , asc-full|asc-smokes   ,    -help
+cmdline/help2                                            ,    asc.args         , asc-full|asc-smokes   ,    -
+cmdline/static_semantics                                 ,    asc.args         , asc-full|asc-smokes   ,    -! -import global.abc
+cmdline/show_bytes                                       ,    asc.args         , asc-full|asc-smokes   ,    -b -import global.abc
+cmdline/show_flow                                        ,    asc.args         , asc-full|asc-smokes   ,    -f -import global.abc
+cmdline/show_parse_trees                                 ,    asc.args         , asc-full|asc-smokes   ,    -p -import global.abc
+cmdline/show_instructions                                ,    asc.args         , asc-full|asc-smokes   ,    -i -import global.abc
+cmdline/movieclip                                        ,    asc.args         , asc-full|asc-smokes   ,    -movieclip -import global.abc
+cmdline/metadata                                         ,    asc.args         , asc-full|asc-smokes   ,    -md -import global.abc
+cmdline/m                                                ,    asc.args         , asc-full|asc-smokes   ,    -m -import global.abc
+cmdline/abcfuture                                        ,    asc.args         , asc-full|asc-smokes   ,    -abcfuture -import global.abc
+cmdline/avmtarget                                        ,    asc.args         , asc-full|asc-smokes   ,    -avmtarget 3 -import global.abc
+cmdline/avmtargetn                                       ,    asc.args         , asc-full|asc-smokes   ,    -avmtarget n -import global.abc
+cmdline/config                                           ,    asc.args         , asc-full|asc-smokes   ,    -config 1 -import global.abc
+cmdline/sanity                                           ,    asc.args         , asc-full|asc-smokes   ,    -sanity
+cmdline/exe                                              ,    asc.args         , asc-full|asc-smokes   ,    -exe avmshell
+cmdline/swf                                              ,    asc.args         , asc-full|asc-smokes   ,    -import global.abc -import playerglobal.abc -swf swf,550,400,-g,-usenetwork

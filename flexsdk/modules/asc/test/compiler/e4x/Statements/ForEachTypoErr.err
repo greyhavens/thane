@@ -1,0 +1,7 @@
+
+[Compiler] Error #1076: Syntax error: expecting left parenthesis before the identifier.
+   ForEachTypoErr.as, Ln 6, Col 5: 
+   for ech\(i in x1.z\) {
+   ....^
+
+1 error found

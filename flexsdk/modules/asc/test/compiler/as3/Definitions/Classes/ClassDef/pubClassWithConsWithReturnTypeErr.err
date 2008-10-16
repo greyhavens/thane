@@ -1,0 +1,7 @@
+
+[Compiler] Error #1130: A constructor cannot specify a return type.
+   pubClassWithConsWithReturnTypeErr.as, Ln 7, Col 33: 
+                   public function pubClassWithConsWithReturnTypeErr\(a:Nu...
+   ................................^
+
+1 error found

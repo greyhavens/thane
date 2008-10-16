@@ -1,0 +1,17 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1114: The super\(\) statement was not called within the constructor.
+-------------------------------------------------------------------------
+bugs.ASC-3414.as\(3\): The super\(\) statement will be executed prior to entering this constructor.  Add a call to super\(\) within the constructor if you want to explicitly control when it is executed.
+public function Test\(\) {
+....................^
+
+-------------------------------------------------------------------------
+
+
+
+ASC-3414.abc, 307 bytes written
+valOfBarInObject

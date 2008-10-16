@@ -1,0 +1,7 @@
+
+[Compiler] Error #1045: Interface IfAttrErr18 was not found.
+   IfAttrErr18_.as, Ln 6, Col 39: 
+   	public class IfAttrErr18_ implements IfAttrErr18
+   ......................................^
+
+1 error found

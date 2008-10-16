@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before with.
+ecma3.e7_4_2_17_Err.as, Ln 52, Col 9:
+var with:Boolean = true;
+........^
+
+1 error found

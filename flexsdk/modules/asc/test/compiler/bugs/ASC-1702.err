@@ -1,0 +1,7 @@
+
+[Compiler] Error #1037: Packages cannot be nested.
+bugs.ASC-1702.as, Ln 2, Col 12:
+class x.y {}
+...........^
+
+1 error found

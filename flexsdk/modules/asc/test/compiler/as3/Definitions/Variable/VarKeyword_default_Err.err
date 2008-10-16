@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before default.
+   VarKeyword_default_Err.as, Ln 14, Col 6: 
+   	var default;
+   .....^
+
+1 error found

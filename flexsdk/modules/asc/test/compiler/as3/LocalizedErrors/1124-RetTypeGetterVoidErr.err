@@ -1,0 +1,7 @@
+
+[Compiler] Error #1124: Return type of a getter definition must not be void.
+1124-RetTypeGetterVoidErr.as, Ln 11, Col 40:
+public function get mygetter():void{}
+.......................................^
+
+1 error found

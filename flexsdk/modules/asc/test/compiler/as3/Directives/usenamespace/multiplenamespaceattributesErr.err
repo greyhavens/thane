@@ -1,0 +1,12 @@
+
+[Compiler] Error #1162: Only one namespace attribute can be used per definition.
+   multiplenamespaceattributesErr.as, Ln 4, Col 3: 
+     A B function method()
+   ..^
+
+[Compiler] Error #1126: Function does not have a body.
+   multiplenamespaceattributesErr.as, Ln 4, Col 16: 
+     A B function method()
+   ...............^
+
+2 errors found

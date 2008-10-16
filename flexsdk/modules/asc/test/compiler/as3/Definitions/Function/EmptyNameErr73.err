@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before with.
+   EmptyNameErr73.as, Ln 5, Col 14: 
+       function with() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr73.as, Ln 5, Col 21: 
+       function with() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr73.as, Ln 5, Col 21: 
+       function with() {}
+   ....................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr73.as, Ln 5, Col 21: 
+       function with() {}
+   ....................^
+
+4 errors found

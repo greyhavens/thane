@@ -1,0 +1,22 @@
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Directives.Attributes.CTA.IllegalBoolErr.as, Ln 46, Col 1:
+debug function assert\(x, y\) {
+^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Directives.Attributes.CTA.IllegalBoolErr.as, Ln 53, Col 1:
+debug1 function assert\(x, y\) {
+^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Directives.Attributes.CTA.IllegalBoolErr.as, Ln 62, Col 1:
+debug123 function assert\(x, y\) {
+^
+
+[Compiler] Error #1116: A user-defined namespace attribute can only be used at the top level of a class definition.
+as3.Directives.Attributes.CTA.IllegalBoolErr.as, Ln 70, Col 1:
+debug_abc function assert\(x, y\) {
+^
+
+4 errors found

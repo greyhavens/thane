@@ -1,0 +1,7 @@
+
+[Compiler] Error #1181: Forward reference to base class B.
+   ForwardReference.as, Ln 2, Col 17: 
+   class A extends B {
+   ................^
+
+1 error found

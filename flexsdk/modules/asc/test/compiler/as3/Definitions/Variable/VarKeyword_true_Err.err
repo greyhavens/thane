@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before true.
+   VarKeyword_true_Err.as, Ln 14, Col 6: 
+   	var true;
+   .....^
+
+1 error found

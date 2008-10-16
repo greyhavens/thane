@@ -1,0 +1,7 @@
+
+[Compiler] Error #1037: Packages cannot be nested.
+   ExtDImplDDAccDPFPrivStatErr.as, Ln 18, Col 71: 
+   	class Definitions.Classes.ExtImpl.Errors.ExtDImplDDAccDPFPrivStatErr extends Dyn...
+   ......................................................................^
+
+1 error found

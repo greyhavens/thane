@@ -1,0 +1,7 @@
+
+[Compiler] Error #1000: Ambiguous reference to b.
+   AmbiguousReference3Err.as, Ln 16, Col 7: 
+   trace\(b\);
+   ......^
+
+1 error found

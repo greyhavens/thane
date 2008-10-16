@@ -1,0 +1,16 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1086: ActionScript 3.0 iterates over an object's properties within a "for x in target" statement in random order.
+-------------------------------------------------------------------------
+.*ForInOrderingWarn.as\(15\): Migration issue: ActionScript 3.0 iterates over an object's properties within a "for x in target" statement in random order.
+for \(name in myObject\) {}
+......................^
+
+-------------------------------------------------------------------------
+
+
+
+ForInOrderingWarn.abc, [0-9]+ bytes written

@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftparen.
+   StatFuncStatNameErr.as, Ln 5, Col 30: 
+       static a static function () {}
+   .............................^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   StatFuncStatNameErr.as, Ln 5, Col 33: 
+       static a static function () {}
+   ................................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   StatFuncStatNameErr.as, Ln 5, Col 33: 
+       static a static function () {}
+   ................................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   StatFuncStatNameErr.as, Ln 5, Col 33: 
+       static a static function () {}
+   ................................^
+
+4 errors found

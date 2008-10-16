@@ -1,0 +1,7 @@
+
+[Compiler] Error #1046: Type was not found or was not a compile-time constant: Integer.
+   VarAttrErr31.as, Ln 6, Col 25: 
+   		public static var v : Integer;
+   ........................^
+
+1 error found

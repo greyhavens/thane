@@ -1,0 +1,7 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before package.
+   VarKeyword_package_Err.as, Ln 14, Col 6: 
+   	var package;
+   .....^
+
+1 error found

@@ -1,0 +1,18 @@
+
+
+Warning Report:
+---------------
+
+[Coach] Warning #1060: Unsupported ActionScript 2.0 function.
+-------------------------------------------------------------------------
+.*SetIntervalWarn.as\(9\): Migration issue: The method setInterval is no longer supported.  Moved to the flash.utils package.  Consider using the Timer class instead..
+setInterval\(2000\);
+.^
+
+-------------------------------------------------------------------------
+
+
+
+SetIntervalWarn.abc, [0-9]+ bytes written
+.*Error.*
+

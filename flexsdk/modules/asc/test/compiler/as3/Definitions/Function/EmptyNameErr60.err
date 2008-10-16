@@ -1,0 +1,22 @@
+
+[Compiler] Error #1084: Syntax error: expecting identifier before package.
+   EmptyNameErr60.as, Ln 5, Col 14: 
+       function package() {}
+   .............^
+
+[Compiler] Error #1084: Syntax error: expecting leftparen before leftbrace.
+   EmptyNameErr60.as, Ln 5, Col 24: 
+       function package() {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting identifier before leftbrace.
+   EmptyNameErr60.as, Ln 5, Col 24: 
+       function package() {}
+   .......................^
+
+[Compiler] Error #1084: Syntax error: expecting rightparen before leftbrace.
+   EmptyNameErr60.as, Ln 5, Col 24: 
+       function package() {}
+   .......................^
+
+4 errors found

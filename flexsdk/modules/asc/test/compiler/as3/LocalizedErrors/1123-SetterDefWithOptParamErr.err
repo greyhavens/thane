@@ -1,0 +1,7 @@
+
+[Compiler] Error #1123: A setter definition cannot have optional parameters.
+1123-SetterDefWithOptParamErr.as, Ln 11, Col 40:
+public function set myfunction\(mystring:String="String"\){}
+.......................................^
+
+1 error found

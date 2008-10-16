@@ -1,0 +1,12 @@
+
+[Compiler] Error #1013: The private attribute may be used only on class property definitions.
+as3.Definitions.Packages.PrivatePackageErr.as, Ln 23, Col 1:
+private package foo {}
+^
+
+[Compiler] Error #1198: Attributes are not allowed on package definition.
+as3.Definitions.Packages.PrivatePackageErr.as, Ln 23, Col 9:
+private package foo {}
+........^
+
+2 errors found
