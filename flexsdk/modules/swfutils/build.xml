@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<!--
+
+	ADOBE SYSTEMS INCORPORATED
+	Copyright 2005-2007 Adobe Systems Incorporated
+	All Rights Reserved.
+
+	NOTICE: Adobe permits you to use, modify, and distribute this file
+	in accordance with the terms of the license agreement accompanying it.
+
+-->
+
+<project name="swfutils" default="main" basedir="../..">
+
+    <!-- properties -->
+    <property file="${basedir}/build.properties" />
+
+    <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="module.dir" value="${basedir}/modules/swfutils"/>
+    <property name="module.src" value="${module.dir}/src/java"/>
+	<property name="javac.src" value="1.5"/>
+	<property name="module.classes" value="${module.dir}/classes"/>
+	<property name="build.number" value=""/>
+             
+    <target name="main" depends="clean,dev" description="cleans and runs the full build"/>
+    <target name="dev" depends="jar" description="runs src.depend build for development"/>
+
+    <path id="swfutils.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="compile" depends="prepare,run-depend" description="compile">
+        <javac source="${javac.src}" target="${javac.src}" debug="${src.debug}" destdir="${module.classes}" srcdir="${module.src}"
+            includes="**/*.java" >
+            <classpath refid="swfutils.classpath"/>
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile" description="compile and create swfutils.jar">
+        <mkdir dir="${lib.dir}" />
+		<echo message="Building lib/swfutils.jar"/>
+        <jar file="${lib.dir}/swfutils.jar" basedir="${module.classes}" includes="**/*">
+            <manifest>
+                <attribute name="Sealed" value="${manifest.sealed}"/>
+                <attribute name="Implementation-Title" value="${manifest.Implementation-Title} - SWF Kit"/>
+                <attribute name="Implementation-Version" value="${manifest.Implementation-Version}.${build.number}"/> 
+                <attribute name="Implementation-Vendor" value="${manifest.Implementation-Vendor}"/>
+            </manifest>
+        </jar>
+		<echo message="Building lib/swfdump.jar"/>
+        <jar file="${lib.dir}/swfdump.jar">
+            <manifest>
+                <attribute name="Sealed" value="${manifest.sealed}"/>
+                <attribute name="Implementation-Title" value="${manifest.Implementation-Title} - SWF Dump"/>
+                <attribute name="Implementation-Version" value="${manifest.Implementation-Version}.${build.number}"/> 
+                <attribute name="Implementation-Vendor" value="${manifest.Implementation-Vendor}"/>
+                <attribute name="Main-Class" value="flash.swf.tools.SwfxPrinter"/>
+                <attribute name="Class-Path" value="asc.jar swfutils.jar"/>
+            </manifest>
+        </jar>
+
+    </target>
+
+    <target name="clean" description="clean">
+        <delete failonerror="false" includeEmptyDirs="true">
+            <fileset file="${lib.dir}/swfutils.jar"/>
+            <fileset file="${lib.dir}/swfdump.jar"/>
+            <fileset dir="${module.classes}">
+                <include name="**/*"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <!-- private helper targets -->
+
+    <target name="prepare">
+        <mkdir dir="${lib.dir}"/>
+        <mkdir dir="${module.classes}"/>
+    </target>
+
+    <!-- if src.depend is specified, delete the stuff which has changed so it can be recompiled -->
+    <target name="run-depend" if="src.depend">
+        <echo level="info" message="Removing class files that changed and dependent class files."/>
+        <depend cache="${module.classes}" srcdir="${module.src}" destdir="${module.classes}"/>
+    </target>
+
+
+</project>
