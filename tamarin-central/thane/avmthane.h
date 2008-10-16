@@ -66,6 +66,7 @@ namespace avmplus
 	class Dictionary;
 }
 
+#include "Debugger.h"
 #include "FileInputStream.h"
 #include "ConsoleOutputStream.h"
 #include "SystemClass.h"

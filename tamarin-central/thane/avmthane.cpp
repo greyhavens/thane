@@ -565,6 +565,9 @@ namespace thane
 #endif
 
 #ifdef DEBUGGER
+			// Create the debugger
+			debugger = new (GetGC()) thane::Debugger(this);
+
 			// Create the profiler
             profiler = new (GetGC()) avmshell::Profiler(this);
 #endif
