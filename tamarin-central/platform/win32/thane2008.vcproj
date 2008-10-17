@@ -73,7 +73,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="winmm.lib DbgHelp.lib"
+				AdditionalDependencies="winmm.lib DbgHelp.lib ws2_32.lib"
 				OutputFile="$(OutDir)/avmthane_d.exe"
 				GenerateDebugInformation="true"
 				GenerateMapFile="true"
@@ -156,7 +156,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/SAFESEH:NO"
-				AdditionalDependencies="winmm.lib"
+				AdditionalDependencies="winmm.lib ws2_32.lib"
 				OutputFile="$(OutDir)/avmthane.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -242,7 +242,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/SAFESEH:NO"
-				AdditionalDependencies="winmm.lib"
+				AdditionalDependencies="winmm.lib ws2_32.lib"
 				OutputFile="$(OutDir)/avmthane_s.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -327,7 +327,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="winmm.lib DbgHelp.lib"
+				AdditionalDependencies="winmm.lib DbgHelp.lib ws2_32.lib"
 				OutputFile="$(OutDir)/avmthane_sd.exe"
 				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
@@ -781,6 +781,10 @@
 			</File>
 			<File
 				RelativePath="..\..\thane\DataIO.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\thane\Debugger.h"
 				>
 			</File>
 			<File
