@@ -656,7 +656,11 @@ namespace thane
             while (true) {
                 fun->coerceEnter(0, args);
                 // call heartbeat() no more than 50 times per second
+# ifdef WIN32
+				Sleep(20);
+# else
                 usleep(20 * 1000);
+# endif
             }
 
 #ifdef DEBUGGER
