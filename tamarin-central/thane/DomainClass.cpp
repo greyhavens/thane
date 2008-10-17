@@ -201,7 +201,7 @@ namespace thane
         if (traits->itraits != NULL) {
             traits = traits->itraits;
         }
-        return traits->containsInterface(asClass->traits()->itraits);
+        return traits->containsInterface(asClass->traits()->itraits) != 0;
     }
 
     bool DomainObject::isDynamic (Atom a)

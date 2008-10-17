@@ -53,7 +53,7 @@ namespace thane
 		~Debugger() {;}
 		
 		void enterDebugger() {;}
-		bool filterException(Exception *exception) {return false;}
+		bool filterException(Exception *) {return false;}
 		bool hitWatchpoint() {return false;}
 		// Note: avmplus::Debugger::debugLine() is a fairly "heavy" function
 		// given all we need is core->callStack->linenum updated
