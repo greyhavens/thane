@@ -593,6 +593,19 @@ namespace thane
 			SystemClass::user_argc = argc-endFilenamePos-1; 
 			SystemClass::user_argv = &argv[endFilenamePos+1];
 		
+#ifdef WIN32
+		    WSADATA wsaData;
+			int err;
+
+		    err = WSAStartup(MAKEWORD(2, 2), &wsaData);
+			if (err != 0 || LOBYTE(wsaData.wVersion) != 2 ||
+				HIBYTE(wsaData.wVersion) != 2) {
+			    printf("This system lacks a usable Winsock\n");
+				WSACleanup();
+				return 1;
+			}
+# endif
+
 			// init toplevel internally
 			Toplevel* toplevel = initShellBuiltins();
 
@@ -685,6 +698,10 @@ namespace thane
 			// see bug #121382
 			console << string(exception->atom) << "\n";
 			#endif
+
+# ifdef WIN32
+		    WSACleanup();
+# endif
 			exit(1);
 		}
 		END_CATCH
