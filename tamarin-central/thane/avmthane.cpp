@@ -594,16 +594,16 @@ namespace thane
 			SystemClass::user_argv = &argv[endFilenamePos+1];
 		
 #ifdef WIN32
-		    WSADATA wsaData;
-			int err;
+            WSADATA wsaData;
+            int err;
 
-		    err = WSAStartup(MAKEWORD(2, 2), &wsaData);
-			if (err != 0 || LOBYTE(wsaData.wVersion) != 2 ||
-				HIBYTE(wsaData.wVersion) != 2) {
-			    printf("This system lacks a usable Winsock\n");
-				WSACleanup();
-				return 1;
-			}
+            err = WSAStartup(MAKEWORD(2, 2), &wsaData);
+            if (err != 0 || LOBYTE(wsaData.wVersion) != 2 ||
+                HIBYTE(wsaData.wVersion) != 2) {
+                printf("This system lacks a usable Winsock\n");
+                WSACleanup();
+                return 1;
+            }
 # endif
 
 			// init toplevel internally
@@ -700,7 +700,7 @@ namespace thane
 			#endif
 
 # ifdef WIN32
-		    WSACleanup();
+            WSACleanup();
 # endif
 			exit(1);
 		}
