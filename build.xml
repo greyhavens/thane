@@ -13,7 +13,6 @@
   <property name="thane.dir"    value="${tamarin.dir}/thane"/>
   <property name="thanedist.dir" value="${tamdist.dir}/${lib.name}"/>
   <property name="builtin.name" value="builtin"/>
-  <property name="http.name"    value="http"/>
 
   <!-- declare our classpath business -->
   <path id="classpath">
@@ -82,30 +81,6 @@
     </java>
   </target>
 
-  <!-- checks whether our HTTP library needs building -->
-  <target name="checkhttplib">
-    <condition property="no_build_httplib">
-      <uptodate targetfile="${deploy.dir}/http.swc">
-        <srcfiles dir="${deploy.dir}" includes="*.swc"/>
-        <srcfiles dir="${bin.dir}" includes="*.swc"/>
-        <srcfiles dir="http/src" includes="**/*.as"/>
-      </uptodate>
-    </condition>
-  </target>
-
-  <!-- builds the HTTP library -->
-  <target name="httplib" unless="no_build_httplib" depends="prepare,checkhttplib,distbinaries">
-    <java jar="flexsdk/lib/compc.jar" fork="true" failonerror="true">
-      <arg value="-load-config"/>
-      <arg value="dist/thane-config.xml"/>
-      <arg value="-compiler.external-library-path"/>
-      <arg value="${deploy.dir}/thane.swc"/>
-      <arg value="-include-sources=http/src"/>
-      <arg value="-output"/>
-      <arg value="${deploy.dir}/${http.name}.swc"/>
-    </java>
-  </target>
-
   <!-- detect make command -->
   <condition property="isunix"><os family="unix"/></condition>
   <if><os name="FreeBSD"/><then>
@@ -156,7 +131,7 @@
   <target name="distclean" depends="clean"/>
 
   <!-- copies to the dist directory -->
-  <target name="dist" depends="prepare,distbinaries,httplib"/>
+  <target name="dist" depends="prepare,distbinaries"/>
 
   <!-- deploys our built libraries to maven -->
   <target name="deploy" depends="dist">
