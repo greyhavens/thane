@@ -111,12 +111,20 @@ public class AMF3Encoder
             return;
         }
 
-        encodeInteger(1 | (str.length << 1));
-        if (str.length > 0) {
-            _ctx.bytes.writeUTFBytes(str);
+        if (str.length == 0) {
             // spec says we do not add the empty string to the reference table
-            _ctx.sRef.table[str] = _ctx.sRef.ix ++;
+            encodeInteger(1);
+            return;
         }
+
+        // encode the string as UTF bytes
+        var encoded :ByteArray = new ByteArray();
+        encoded.writeUTFBytes(str);
+
+        // mark the number of bytes (not characters) we're about to write
+        encodeInteger(1 | (encoded.length << 1));
+        _ctx.bytes.writeBytes(encoded);
+        _ctx.sRef.table[str] = _ctx.sRef.ix ++;
     }
 
     private static function encodeArray (arr :Array) :void
