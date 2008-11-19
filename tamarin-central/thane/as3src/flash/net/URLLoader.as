@@ -86,7 +86,9 @@ public class URLLoader extends EventDispatcher
      */
     public function set dataFormat (format :String) :void
     {
-        throw new Error("Only the binary data format is implemented");
+        if (format != URLLoaderDataFormat.BINARY) {
+            throw new Error("Only the binary data format is implemented");
+        }
     }
 
     /**
