@@ -1,7 +1,0 @@
-
-[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
-   OutsideStaticBodyErr.as, Ln 1, Col 1: 
-   static function thisShouldNotCompile(){}
-   ^
-
-1 error found

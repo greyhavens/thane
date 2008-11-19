@@ -1,7 +1,0 @@
-
-[Compiler] Error #1012: The static attribute may be used only on definitions inside a class.
-   PackageStaticBodyErr.as, Ln 3, Col 2: 
-   	static function thisShouldNotCompiler(){}
-   .^
-
-1 error found

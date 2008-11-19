@@ -1,7 +1,0 @@
-
-[Compiler] Error #1184: Incompatible default value of type String where int is expected.
-1184-NotDefaultValueTypeErr.as, Ln 11, Col 26:
-public var j:int = " ";
-.........................^
-
-1 error found

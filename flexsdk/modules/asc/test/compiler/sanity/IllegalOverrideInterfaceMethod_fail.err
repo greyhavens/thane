@@ -1,5 +1,0 @@
-IllegalOverrideInterfaceMethod_fail.abc, \d+ bytes written
-param count mismatch
-virt params=2 optional=0 BaseInterfaceMethod/BaseInterfaceMethod::interface_method\(\)
-over params=1 optional=0 BaseInterfaceMethod/BaseInterfaceMethod::interface_method\(\)
-VerifyError: Error #1053.*$

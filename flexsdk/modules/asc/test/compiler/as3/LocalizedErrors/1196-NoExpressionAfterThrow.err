@@ -1,7 +1,0 @@
-
-[Compiler] Error #1196: Syntax error: expecting an expression after the throw.
-1196-NoExpressionAfterThrow.as, Ln 13, Col 5:
-}
-....^
-
-1 error found

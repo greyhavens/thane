@@ -1,7 +1,0 @@
-
-[Compiler] Error #1184: Incompatible default value of type int where uint is expected.
-   InvDefStaticMethArgValUintErr.as, Ln 3, Col 54: 
-           static function InvDefStatMethArgVal\(a:uint=-1\){
-   .....................................................^
-
-1 error found

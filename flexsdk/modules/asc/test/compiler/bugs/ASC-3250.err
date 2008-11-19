@@ -1,5 +1,0 @@
-\[Compiler\] Error #1177: The return statement cannot be used in global initialization code.
-.*ASC-3250.as, Ln 12, Col 58:
-return elemChildren.\(@lang == langArray\[0\]\)\[0\].toString\(\);
-.........................................................^
-1 error found

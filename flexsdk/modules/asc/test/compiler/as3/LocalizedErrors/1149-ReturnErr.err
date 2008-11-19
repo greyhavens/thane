@@ -1,7 +1,0 @@
-
-[Compiler] Error #1149: The return statement cannot be used in static initialization code.
-1149-ReturnErr.as, Ln 9, Col 19:
-return 'a';
-..................^
-
-1 error found

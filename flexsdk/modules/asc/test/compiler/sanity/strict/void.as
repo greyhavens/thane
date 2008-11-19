@@ -1,1 +1,0 @@
-print(void print('hello'))

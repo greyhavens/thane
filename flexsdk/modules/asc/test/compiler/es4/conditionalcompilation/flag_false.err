@@ -1,4 +1,0 @@
-
-flag_false.abc, [0-9]+ bytes written
-print CONFIG::flag=false
-conditional: CONFIG::flag==false

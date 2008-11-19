@@ -1,7 +1,0 @@
-
-[Compiler] Error #1184: Incompatible default value of type Number where int is expected.
-   InvDefClPrivInstMethArgValIntErr.as, Ln 3, Col 53: 
-           private function InvDefInstMethArgVal\(a:int=0xFFFFFFFF\){
-   ....................................................^
-
-1 error found

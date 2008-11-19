@@ -1,1 +1,0 @@
-for(i=1000;i;--i) print(i)

@@ -1,7 +1,0 @@
-
-[Compiler] Error #1084: Syntax error: expecting identifier before catch.
-ecma3.e7_4_3_5_Err.as, Ln 46, Col 9:
-var catch = true;
-........^
-
-1 error found

@@ -1,7 +1,0 @@
-
-[Compiler] Error #1184: Incompatible default value of type Number where int is expected.
-   InvDefPackMethArgValErr.as, Ln 3, Col 45: 
-           function InvDefPackMethArgVal\(a:int=0xFFFFFFFF\){
-   ............................................^
-
-1 error found

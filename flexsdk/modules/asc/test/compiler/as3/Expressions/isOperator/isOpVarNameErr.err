@@ -1,7 +1,0 @@
-
-[Compiler] Error #1084: Syntax error: expecting identifier before is.
-   isOpVarNameErr.as, Ln 1, Col 5: 
-   var is = 34;
-   ....^
-
-1 error found

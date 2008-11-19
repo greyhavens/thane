@@ -1,5 +1,0 @@
-
-flag_string.abc, 248 bytes written
-print CONFIG::flag=string
-statement block: CONFIG::flag==true
-conditional: CONFIG::flag==true

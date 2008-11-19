@@ -1,6 +1,0 @@
-/**
-*
-*/
-package p {
-print("hello")
-}

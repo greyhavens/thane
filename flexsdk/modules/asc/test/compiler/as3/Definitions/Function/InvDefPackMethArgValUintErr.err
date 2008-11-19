@@ -1,7 +1,0 @@
-
-[Compiler] Error #1184: Incompatible default value of type int where uint is expected.
-   InvDefPackMethArgValUintErr.as, Ln 3, Col 47: 
-           function InvDefPackMethArgVal\(a:uint=-1\){
-   ..............................................^
-
-1 error found

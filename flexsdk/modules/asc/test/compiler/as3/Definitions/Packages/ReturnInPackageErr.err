@@ -1,7 +1,0 @@
-
-[Compiler] Error #1159: The return statement cannot be used in package initialization code.
-as3.Definitions.Packages.ReturnInPackageErr.as, Ln 24, Col 14:
-return false;
-.............^
-
-1 error found

@@ -1,7 +1,0 @@
-
-[Compiler] Error #1084: Syntax error: expecting identifier before import.
-   ImportAsPackageNameErr.as, Ln 1, Col 9: 
-   package import {
-   ........^
-
-1 error found

@@ -1,3 +1,0 @@
-package ReturnInPackageErr{
-   return 'a';
-}

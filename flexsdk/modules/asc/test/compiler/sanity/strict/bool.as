@@ -1,2 +1,0 @@
-print(false);
-print(true);

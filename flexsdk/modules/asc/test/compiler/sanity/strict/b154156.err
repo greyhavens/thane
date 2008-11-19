@@ -1,7 +1,0 @@
-
-b154156.abc, \d+ bytes written
-p:N1
-foo
-p:N1
-20
-B.\(A.N2\)::g\(\)

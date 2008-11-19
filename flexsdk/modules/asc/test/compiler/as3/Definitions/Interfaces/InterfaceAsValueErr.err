@@ -1,7 +1,0 @@
-
-[Compiler] Error #1156: Interfaces cannot be instantiated with the new operator.
-   InterfaceAsValueErr.as, Ln 10, Col 14: 
-   	var x = new I;
-   .............^
-
-1 error found

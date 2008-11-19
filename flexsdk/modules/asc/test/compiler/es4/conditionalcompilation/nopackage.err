@@ -1,5 +1,0 @@
-
-nopackage.abc, [0-9]+ bytes written
-print CONFIG::flag=true
-statement block: CONFIG::flag true
-conditional: CONFIG::flag true

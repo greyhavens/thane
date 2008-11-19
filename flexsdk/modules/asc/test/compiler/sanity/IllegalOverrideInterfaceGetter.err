@@ -1,3 +1,0 @@
-IllegalOverrideInterfaceGetter.abc, \d+ bytes written
-get interface_prop: foo
-foo

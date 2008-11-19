@@ -1,1 +1,0 @@
-class der extends der {}
