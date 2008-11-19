@@ -61,7 +61,7 @@
             -->
          </languages>
          <!-- compiler.fonts.local-fonts-snapshot: File containing system font data produced by flex2.tools.FontSnapshot.-->
-         <local-fonts-snapshot>@ooothane@/flexsdk/frameworks/localFonts.ser</local-fonts-snapshot>
+         <local-fonts-snapshot>@flex_sdk_dir@/frameworks/localFonts.ser</local-fonts-snapshot>
          <!-- compiler.fonts.managers: Compiler font manager classes, in policy resolution order-->
          <managers>
             <manager-class>flash.fonts.JREFontManager</manager-class>
@@ -118,7 +118,7 @@
          <!-- compiler.namespaces.namespace: Specify a URI to associate with a manifest of components for use as MXML elements-->
          <namespace>
             <uri>http://www.adobe.com/2006/mxml</uri>
-            <manifest>@ooothane@/flexsdk/frameworks/mxml-manifest.xml</manifest>
+            <manifest>@flex_sdk_dir@/frameworks/mxml-manifest.xml</manifest>
          </namespace>
       </namespaces>
       <!-- compiler.optimize: Enable post-link SWF optimization-->

@@ -29,7 +29,7 @@
     </copy>
     <copy file="etc/thane-config.xml.in" tofile="${deploy.dir}/thane-config.xml">
       <filterset>
-        <filter token="ooothane" value="${basedir}"/>
+        <filter token="flex_sdk_dir" value="${flexsdk.dir}"/>
       </filterset>
     </copy>
   </target>
@@ -62,7 +62,7 @@
       </filespec>
     </asclib>
 
-    <java jar="flexsdk/lib/compc.jar" fork="true" failonerror="true">
+    <java jar="${flexsdk.dir}/lib/compc.jar" fork="true" failonerror="true">
       <arg value="-load-config"/>
       <arg value="dist/thane-config.xml"/>
       <arg value="-compiler.strict=false"/>
