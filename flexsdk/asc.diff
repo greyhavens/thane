@@ -1,0 +1,41 @@
+--- modules/asc/src/java/macromedia/abc/Optimizer.java	2008-10-30 15:14:51.000000000 -0500
++++ modules/asc/src/java/macromedia/abc/Optimizer.java	2008-10-17 09:57:03.000000000 -0500
+@@ -51,7 +51,7 @@
+ 
+             }
+         }
+-        byte[] abc = optimize(byte_codes);
++        byte[] abc = optimize(byte_codes, false);
+ 
+         try
+         {
+@@ -80,13 +80,13 @@
+     {
+         BytecodeBuffer[] byte_codes = new BytecodeBuffer[1];
+         byte_codes[0] = new BytecodeBuffer(bytes.toByteArray());
+-        byte[] temp = optimize(byte_codes);
++        byte[] temp = optimize(byte_codes, false);
+         ByteList new_bytes = new ByteList(temp.length);
+         new_bytes.addAll(temp);
+         return new_bytes;
+     }
+ 
+-    public static byte[] optimize(BytecodeBuffer[] byte_codes)
++    public static byte[] optimize(BytecodeBuffer[] byte_codes, boolean keepDebugOpcodes)
+     {
+         int abcSize = byte_codes.length;
+         Decoder[] decoders = new Decoder[abcSize];
+@@ -123,11 +123,11 @@
+         try
+         {
+             encoder.addConstantPools(pools);
+-            //if (!keepDebugOpcodes)
++            if (!keepDebugOpcodes)
+             {
+                 encoder.disableDebugging();
+             }
+-            // always remove metadata...
++            // Always remove metadata...
+             encoder.removeMetadata();
+             encoder.configure(decoders);
+         }

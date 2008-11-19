@@ -1,0 +1,179 @@
+Index: modules/antTasks/src/flex/ant/FlexTask.java
+===================================================================
+--- modules/antTasks/src/flex/ant/FlexTask.java	(revision 3971)
++++ modules/antTasks/src/flex/ant/FlexTask.java	(working copy)
+@@ -206,24 +206,8 @@
+      */
+     public final void execute() throws BuildException
+     {
+-        String flexHomeProperty = getProject().getProperty("FLEX_HOME");
+-
+-        if (flexHomeProperty == null)
+-        {
+-            throw new BuildException("FLEX_HOME must be set to use the Flex Ant Tasks");
+-        }
+-
+-        System.setProperty("FLEX_HOME", flexHomeProperty);
+-
+-        cmdl.createArgument().setValue("+flexlib=" + flexHomeProperty + "/frameworks");
+-        
+         prepareCommandline();
+-
+-        if (fork)
+-            executeOutOfProcess();
+-        else
+-            executeInProcess();
+-
++        executeOutOfProcess();
+     }
+ 
+     /**
+@@ -234,12 +218,7 @@
+     {
+         try
+         {
+-            Class toolClass = resolveClass(toolClassName);
+-            URL url = toolClass.getProtectionDomain().getCodeSource().getLocation();
+-            String fileName = url.getFile();
+-
+             super.setClassname(toolClassName);
+-            super.setClasspath(new Path(getProject(), fileName));
+ 
+             // convert arguments into a string for use by executeJava()
+             // also auto-quotes arguments with spaces
+Index: modules/antTasks/src/flex/ant/types/FlexFileSet.java
+===================================================================
+--- modules/antTasks/src/flex/ant/types/FlexFileSet.java	(revision 3971)
++++ modules/antTasks/src/flex/ant/types/FlexFileSet.java	(working copy)
+@@ -75,7 +75,7 @@
+         }
+         else if (spec != null)
+         {
+-            cmdl.createArgument().setValue("-" + spec.getFullName() + "=");
++            cmdl.createArgument().setValue("-" + spec.getFullName() + " ");
+         }
+     }
+ 
+@@ -94,14 +94,9 @@
+         {
+             for (int i = 0; i < files.length; i++)
+             {
+-                cmdl.createArgument().setValue("-" + spec.getFullName() + equalString() +
++                cmdl.createArgument().setValue("-" + spec.getFullName() + " " +
+                                                utils.resolveFile(base, files[i]).getAbsolutePath());
+             }
+         }
+     }
+-
+-    private String equalString()
+-    {
+-        return append ? "+=" : "=";
+-    }
+ } //End of FlexFileSet
+Index: modules/antTasks/src/flex/ant/config/NestedAttributeElement.java
+===================================================================
+--- modules/antTasks/src/flex/ant/config/NestedAttributeElement.java	(revision 3971)
++++ modules/antTasks/src/flex/ant/config/NestedAttributeElement.java	(working copy)
+@@ -107,7 +107,7 @@
+                 }
+             }
+             
+-            cmdl.createArgument().setValue("-" + spec.getFullName() + "=" + stringBuffer);
++            cmdl.createArgument().setValue("-" + spec.getFullName() + " " + stringBuffer);
+         }
+     }
+ } //End of NestedAttributeElement
+Index: modules/antTasks/src/flex/ant/config/RepeatableConfigString.java
+===================================================================
+--- modules/antTasks/src/flex/ant/config/RepeatableConfigString.java	(revision 3971)
++++ modules/antTasks/src/flex/ant/config/RepeatableConfigString.java	(working copy)
+@@ -38,7 +38,7 @@
+     public void addToCommandline(Commandline cmdl)
+     {
+        if (values.size() != 0)
+-            cmdl.createArgument().setValue("-" + spec.getFullName() + "=" + makeArgString());
++            cmdl.createArgument().setValue("-" + spec.getFullName() + " " + makeArgString());
+     }
+ 
+     private String makeArgString()
+Index: modules/antTasks/src/flex/ant/config/ConfigAppendString.java
+===================================================================
+--- modules/antTasks/src/flex/ant/config/ConfigAppendString.java	(revision 3971)
++++ modules/antTasks/src/flex/ant/config/ConfigAppendString.java	(working copy)
+@@ -34,7 +34,7 @@
+ 
+         if ((value != null) && (value.length() > 0))
+         {
+-            cmdl.createArgument().setValue("+" + spec.getFullName() + "=" + value);
++            cmdl.createArgument().setValue("+" + spec.getFullName() + " " + value);
+         }
+     }
+ }
+Index: modules/antTasks/src/flex/ant/config/ConfigBoolean.java
+===================================================================
+--- modules/antTasks/src/flex/ant/config/ConfigBoolean.java	(revision 3971)
++++ modules/antTasks/src/flex/ant/config/ConfigBoolean.java	(working copy)
+@@ -51,8 +51,8 @@
+ 
+     public void addToCommandline(Commandline cmdl)
+     {
+-        if (isSet)
+-            cmdl.createArgument(true).setValue("-" + spec.getFullName() + "=" + enabled);
++        if (isSet && enabled)
++            cmdl.createArgument(true).setValue("-" + spec.getFullName());
+     }
+ 
+     private boolean parseValue(String value)
+Index: modules/antTasks/src/flex/ant/config/ConfigString.java
+===================================================================
+--- modules/antTasks/src/flex/ant/config/ConfigString.java	(revision 3971)
++++ modules/antTasks/src/flex/ant/config/ConfigString.java	(working copy)
+@@ -46,11 +46,11 @@
+         {
+             if (value.length() > 0)
+             {
+-                cmdl.createArgument().setValue("-" + spec.getFullName() + "=" + value);
++                cmdl.createArgument().setValue("-" + spec.getFullName() + " " + value);
+             }
+             else
+             {
+-                cmdl.createArgument().setValue("-" + spec.getFullName() + "=");
++                cmdl.createArgument().setValue("-" + spec.getFullName() + " ");
+             }
+         }
+     }
+Index: modules/antTasks/src/flex/ant/AscTask.java
+===================================================================
+--- modules/antTasks/src/flex/ant/AscTask.java	(revision 3971)
++++ modules/antTasks/src/flex/ant/AscTask.java	(working copy)
+@@ -46,7 +46,7 @@
+     {
+         ASC_VARIABLES = new ConfigVariable[] {
+             //Boolean Variables
+-            new ConfigBoolean(new OptionSpec("as3")),
++            new ConfigBoolean(new OptionSpec(null, "AS3", "as3")),
+             new ConfigBoolean(new OptionSpec("es")),
+             new ConfigBoolean(new OptionSpec("d")),
+             new ConfigBoolean(new OptionSpec("f")),
+@@ -59,6 +59,7 @@
+             new ConfigBoolean(new OptionSpec("sanity")),
+             new ConfigBoolean(new OptionSpec("optimize")),
+             //String Variables
++            new ConfigString(new OptionSpec("use")),
+             new ConfigString(new OptionSpec("log")),
+             new ConfigString(new OptionSpec("exe")),
+             new ConfigString(new OptionSpec("language")),
+Index: modules/antTasks/build.xml
+===================================================================
+--- modules/antTasks/build.xml	(revision 3971)
++++ modules/antTasks/build.xml	(working copy)
+@@ -38,8 +38,7 @@
+             <fileset dir="${module.dir}"
+                      includes="flexTasks.tasks" />
+             <fileset dir="${module.classes}"
+-                     includes="**/*.class"
+-                     excludes="flex/ant/AscTask*.class" />
++                     includes="**/*.class" />
+             <fileset dir="${basedir}"
+                      includes="templates/**"
+                      excludes="templates/metadata/**" />

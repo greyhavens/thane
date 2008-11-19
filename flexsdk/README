@@ -1,0 +1,20 @@
+We have two modifications to the Flex SDK. The upstream source can be gotten thus:
+
+  svn checkout http://opensource.adobe.com/svn/opensource/flex/sdk/trunk flexsdk
+
+The two modifications are:
+
+ - The ASC ant task in the SDK irritatingly requires FLEX_HOME set. We remove that requirement,
+   and change the switch syntax to conform more to what we're used to. More importantly, we add
+   an AscLibTask class.
+
+ - To extract all the .abc from a .swf, we have a lightly patched version of SwfxPrinter,
+   including a patch to ASC's optimizer so it doesn't automatically remove all debug symbols
+   without being asked to do so.
+
+Apply the diffs:
+
+   patch -p0 < *.diff
+
+Then just 'ant' to rebuild the SDK.
+
