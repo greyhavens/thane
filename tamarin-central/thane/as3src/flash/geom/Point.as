@@ -17,8 +17,9 @@ public class Point
     {
         f = Math.max(0, Math.min(f, 1));
 
-        return new Point(a.x + f*(b.x - a.x),
-                         a.y + f*(b.y - a.y));
+        // note: bizarrely, we interolate from b to a as f goes from 0 to 1
+        return new Point(b.x + f*(a.x - b.x),
+                         b.y + f*(a.y - b.y));
     }
 
     public static function polar (len :Number, angle :Number) :Point
