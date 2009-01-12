@@ -142,7 +142,11 @@
   <target name="detect-arch">
     <!-- apparently Java uses both amd64 and x86_64 -->
     <condition property="arch" value="64" else="32">
-      <or><os arch="amd64"/><os arch="x86_64"/></or>
+      <and>
+        <!-- Mac binaries all get called '32-bit' -->
+        <not><os name="Mac OS X"/></not>
+        <or><os arch="amd64"/><os arch="x86_64"/></or>
+      </and>
     </condition>
     <property name="arch.id" value="${os.name}-${arch}"/>
     <echo>Architecture is ${arch.id}</echo>
