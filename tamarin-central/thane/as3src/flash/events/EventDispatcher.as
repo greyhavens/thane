@@ -49,7 +49,7 @@ public class EventDispatcher implements IEventDispatcher
             return true;
         }
 
-        for each (var listener :Function in listeners) {
+        for each (var listener :Function in listeners.concat()) {
             try {
                 listener(event);
             } catch (err :Error) {
