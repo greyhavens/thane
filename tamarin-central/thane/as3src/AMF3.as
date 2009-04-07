@@ -24,8 +24,6 @@
 
 package {
 
-import avmplus.*;
-
 import flash.utils.Dictionary;
 import flash.utils.getQualifiedClassName;
 

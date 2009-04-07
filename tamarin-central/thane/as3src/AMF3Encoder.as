@@ -24,7 +24,6 @@
 
 package {
 
-import avmplus.*;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.IDataOutput;
