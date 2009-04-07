@@ -52,15 +52,6 @@
   <target name="thanelib" unless="no_build_thanelib" depends="prepare,checkthanelib">
     <taskdef name="asclib" classname="flex.ant.AscLibTask" classpathref="classpath"/>
     <dirname property="abs.thane.out.dir" file="${tamarin.dir}/thane/somefile.txt"/>
-    <asclib as3="true" strict="true" classpathref="classpath"
-            outdir="${abs.thane.out.dir}" out="thane">
-      <import dir="${tamarin.dir}">
-        <include name="core/builtin.abc"/>
-      </import>
-      <filespec dir="${tamarin.dir}/thane/as3src">
-        <include name="**/*.as"/>
-      </filespec>
-    </asclib>
 
     <java jar="${flexsdk.dir}/lib/compc.jar" fork="true" failonerror="true">
       <arg value="-load-config"/>
@@ -98,6 +89,9 @@
     <echo level="info" message="Doing native compilation on ${os.name}..."/>
     <exec dir="${tamdist.dir}" executable="python" failonerror="true">
        <arg line="${tamarin.dir}/configure.py --enable-thane ${tamarin-debugger}"/>
+    </exec>
+    <exec dir="${thane.dir}" executable="python" failonerror="true">
+       <arg line="thanelib.py"/>
     </exec>
     <exec dir="${tamdist.dir}" executable="${make}" failonerror="true">
        <arg line="-j4"/>
