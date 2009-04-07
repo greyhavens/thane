@@ -38,21 +38,54 @@
 # format for testconfig:
 # name,operation,description
 # name=regular expression matching testname 
-# operation=skip is only supported operation
+# operation:
+#    skip - the test/dir is not run, for example the configuration does not support a feature or the file is not a test and is a helper file to another test
+#    include - includes a specific testcase/dir even if the parent has been skipped
+#    largerValuesFaster - test metric larger values indicate faster execution
 
-jsbench/.*                      ,	sunspider	,	skip	,	skip jsbench
-misc/.*                      	,	sunspider	,	skip	,	skip misc
 
-sunspider/.*                    ,	jsbench		,	skip	,	skip sunspider
-misc/.*                    		,	jsbench		,	skip	,	skip misc
+sunspider/.*          , sunspider , include , sunspider testsuite
+jsbench/.*            , jsbench   , include , jsbench testsuite
+v8/.*                 , v8        , include , v8 testsuite 
+scimark/.*            , scimark   , include , scimark testsuite
 
-sunspider/.*                    ,	misc		,	skip	, 	skip sunspider
-jsbench/.*                      ,	misc		,	skip	, 	skip jsbench
+canaries/.*           , canaries  , include , canaries testsuite
+.*/canaries/.*        , canaries  , include , canaries testsuite
 
-sunspider/(typed/|)regexp-dna.as	,.*       ,skip, large string.match(regexp) verifier error:1068 https://bugzilla.mozilla.org/show_bug.cgi?id=409206
-sunspider/(typed/|)date-format-tofte.as	,.*       ,skip, contains eval
-sunspider/(typed/|)date-format-xparb.as	,.*       ,skip, contains eval
-sunspider/(typed/|)string-unpack-code.as,.*       ,skip, too slow: javascript compressor code runs slowly https://bugzilla.mozilla.org/show_bug.cgi?id=409225
-sunspider/(typed/|)string-base64.as	,.*       ,skip, string indexing throws ReferenceError "z"[0] https://bugzilla.mozilla.org/show_bug.cgi?id=409210
-sunspider/(typed/|)string-tagcloud.as	,.*       ,skip, contains eval
+sunspider/.*          , misc    , skip  , skip sunspider
+jsbench/.*            , misc    , skip  , skip jsbench
+v8/.*                 , misc    , skip  , skip v8
 
+misc/.*               , miscdir    , include  , misc testsuite
+
+## misc-mobile : required since the canaries tests require access to additional abc files which will not be on the device
+sunspider/.*          , misc-mobile    , skip  , skip sunspider
+sunspider/.*          , misc-mobile    , skip  , skip sunspider
+jsbench/.*            , misc-mobile    , skip  , skip jsbench
+v8/.*                 , misc-mobile    , skip  , skip v8
+canaries/.*           , misc-mobile    , skip  , skip canaries as they require additional files to run which will not be on the device
+.*/canaries/.*        , misc-mobile    , skip  , skip canaries as they require additional files to run which will not be on the device
+
+## sunspider-mobile : required because controlflow-recursive overflows the stack https://bugzilla.mozilla.org/show_bug.cgi?id=458055
+sunspider/.*                , sunspider-mobile , include , sunspider testsuite
+.*/controlflow-recursive.*  , sunspider-mobile , skip , sunspider testsuite
+
+jsbench/Search.as               ,       .*              ,       skip    ,       skip test runs too long and times out buildbot
+.*util.*                        ,       .*              ,       skip    ,       ship internal files
+sunspider/(as3/|)regexp-dna.as  ,.*       ,skip, large string.match(regexp) verifier error:1068 https://bugzilla.mozilla.org/show_bug.cgi?id=409206
+#sunspider/(as3/|)date-format-tofte.as  ,.*       ,skip, contains eval
+sunspider/(as3/|)date-format-xparb.as ,.*       ,skip, contains eval
+#sunspider/(as3/|)string-unpack-code.as,.*       ,skip, too slow: javascript compressor code runs slowly https://bugzilla.mozilla.org/show_bug.cgi?id=409225
+sunspider/(as3/|)string-base64.as ,.*       ,skip, string indexing throws ReferenceError "z"[0] https://bugzilla.mozilla.org/show_bug.cgi?id=409210
+sunspider/(as3/|)string-tagcloud.as ,.*       ,skip, contains eval
+
+# util files for v8 tests
+v8/base.as,         .*, skip, included by test files
+v8/run.as ,         .*, skip, file used to run entire suite at once
+v8/earley-boyer.as, .*, skip, VerifyError - https://bugzilla.mozilla.org/show_bug.cgi?id=464134
+v8/typed/base.as,   .*, skip, included by test files
+v8/typed/run.as ,   .*, skip, file used to run entire suite at once
+v8/typed/earley-boyer.as, .*, skip, VerifyError - https://bugzilla.mozilla.org/show_bug.cgi?id=464134
+
+# v8 tests: larger values are faster
+v8/.*           ,  .*  , largerValuesFaster, reports v8 metric: http://v8.googlecode.com/svn/data/benchmarks/v3/run.html

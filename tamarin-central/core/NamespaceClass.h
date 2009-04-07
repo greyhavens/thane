@@ -47,7 +47,6 @@ namespace avmplus
 	class NamespaceClass : public ClassClosure
 	{
 	public:
-		DECLARE_NATIVE_MAP(NamespaceClass)
 		NamespaceClass(VTable* cvtable);
 
 		// this = argv[0] (ignored)

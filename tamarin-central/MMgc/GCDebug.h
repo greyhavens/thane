@@ -42,41 +42,23 @@
 
 #include "GCTypes.h"
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#ifdef _MAC
-typedef const unsigned char* ConstStr255Param;
-extern "C"
-{
-#if defined(TARGET_RT_MAC_MACHO)	// DBC
-	//extern pascal void DebugStr(ConstStr255Param aStr);
-#else
-	// extern pascal void DebugStr(ConstStr255Param aStr) = 0xABFF;
-	extern pascal void SysBreakStr(ConstStr255Param aStr) = {0x303C, 0xFE15, 0xA9C9};
-#endif
-}
-#endif
-
 namespace MMgc
 {
 	void MMGC_API GCDebugMsg(bool debuggerBreak, const char* format, ...);
 	void MMGC_API GCDebugMsg(const char* msg, bool debuggerBreak);
-	void MMGC_API GCDebugMsg(const wchar* msg, bool debuggerBreak);
 
 	#ifdef _DEBUG
-		inline void _GCAssertMsg(int32 assertion, const char* msg)
+		inline void _GCAssertMsg(int32_t assertion, const char* msg)
 		{
 			if (assertion == 0)
-				GCDebugMsg(msg, true);
+				MMgc::GCDebugMsg(msg, true);
 		}
 
-		#define GCAssertMsg(x,y)			do { _GCAssertMsg((x), (y)); } while (0) /* no semi */
+		#define GCAssertMsg(x,y)			do { MMgc::_GCAssertMsg((x), (y)); } while (0) /* no semi */
 
 		#define GCAssert(x)					_GCAssert((x), __LINE__,__FILE__)
 		#define _GCAssert(x, line_, file_)	__GCAssert((x), line_, file_)
-		#define __GCAssert(x, line_, file_)	do { _GCAssertMsg((x), "Assertion failed: \"" #x "\" (" #file_ ":" #line_ ")"); } while (0) /* no semi */
+		#define __GCAssert(x, line_, file_)	do { MMgc::_GCAssertMsg((x), "Assertion failed: \"" #x "\" (" #file_ ":" #line_ ")"); } while (0) /* no semi */
 		
 	#else
 		#define GCAssertMsg(x,y)	do { } while (0) /* no semi */

@@ -67,8 +67,11 @@ package flash.utils
  * @see ../../operators.html#strict_equality === (strict equality)
  * 
  */
+[native(cls="DictionaryClass", instance="DictionaryObject", methods="auto")]
 dynamic public class Dictionary
 {
+	private native function init(weakKeys:Boolean):void;
+
 	/**
 	 * Creates a new Dictionary object. To remove a key from a Dictionary object, use the <code>delete</code> operator.
   	 *
@@ -79,6 +82,9 @@ dynamic public class Dictionary
   	 * @playerversion Flash 9
  	 * @langversion 3.0
  	 */
-	public native function Dictionary(weakKeys:Boolean=false);
+	public function Dictionary(weakKeys:Boolean=false)
+	{
+		init(weakKeys);
+	}
 };
 }

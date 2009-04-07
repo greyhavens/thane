@@ -41,39 +41,37 @@
 namespace avmplus
 {
 
-	Stringp DateObject::dateToString(int index)
+	Stringp DateObject::_toString(int index)
 	{
 		wchar buffer[256];
 		int len;
 		date.toString(buffer, index, len);
-		return new (gc()) String(buffer,len);
+		return core()->newStringUTF16(buffer, len);
 	}
 
-	double DateObject::valueOf()
+	double DateObject::AS3_valueOf()
 	{
 		return date.getTime();
 	}
 
-	double DateObject::setTime(double value)
+	double DateObject::_setTime(double value)
 	{
 		date.setTime(value);
 		return date.getTime();
 	}
 
-	double DateObject::get(int index)
+	double DateObject::_get(int index)
 	{
 		return date.getDateProperty(index);
 	}
 
-	double DateObject::set(int index, Atom *argv, int argc)
+	double DateObject::_set(int index, Atom *argv, int argc)
 	{
-		AvmCore* core = this->core();
-
 		double num[7];
 		int i;
 
 		for (i=0; i<7; i++) {
-			num[i] = MathUtils::nan();
+			num[i] = MathUtils::kNaN;
 		}
 		bool utcFlag = (index < 0); 
 		index = (int)MathUtils::abs(index);
@@ -83,10 +81,10 @@ namespace avmplus
 			if (j >= 7) {
 				break;
 			}
-			num[j++] = core->number(argv[i]);
+			num[j++] = AvmCore::number(argv[i]);
 			if (MathUtils::isNaN(num[j-1])) // actually specifying NaN results in a NaN date. Don't pass Nan, however, because we use 
 			{							    //  that value to denote that an optional arg was not supplied.
-				date.setTime(MathUtils::nan());
+				date.setTime(MathUtils::kNaN);
 				return date.getTime();
 			}
 		}
@@ -117,10 +115,10 @@ namespace avmplus
 		wchar buffer[256];
 		int len;
 		date.toString(buffer, Date::kToString, len);
-		Stringp result = core->newString("<");
-		result = core->concatStrings(result, new (core->GetGC()) String(buffer,len));
-		result = core->concatStrings(result, core->newString(">@"));
-		result = core->concatStrings(result, core->formatAtomPtr(atom()));
+		Stringp result = core->newConstantStringLatin1("<");
+		result = String::concatStrings(result, core->newStringUTF16(buffer, len));
+		result = String::concatStrings(result, core->newConstantStringLatin1(">@"));
+		result = String::concatStrings(result, core->formatAtomPtr(atom()));
 		return result;
 	}
 #endif

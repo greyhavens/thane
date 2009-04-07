@@ -39,7 +39,6 @@
 #ifndef __Malloc__
 #define __Malloc__
 
-
 namespace MMgc
 {
 	/**
@@ -47,19 +46,13 @@ namespace MMgc
 	 */
 	class MMGC_API FixedMalloc : public GCAllocObject
 	{
-		friend class GC;
+		friend class GCHeap;
 	public:
-		static void Init();
-		static void Destroy();
-		/**
-		* return the number of bytes of memory issued
-		*/
-		size_t Allocated();
+		// FixedMalloc is controlled by GCHeap now, these are just API compat stubs
+		static void Init() {}
+		static void Destroy() {}
 
-		static FixedMalloc *GetInstance() { 
-			GCAssert(instance != NULL);
-			return instance;
-		}
+		static FixedMalloc *GetInstance();
 
 		inline void* Alloc(size_t size)
 		{
@@ -99,7 +92,7 @@ namespace MMgc
 			} else {		
 				size = FixedAlloc::Size(item);
 			}
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 			size -= DebugSize();
 #endif
 			return size;
@@ -107,7 +100,7 @@ namespace MMgc
 
 		void *Calloc(size_t num, size_t elsize)
 		{
-			uint64 size = (uint64)num * (uint64)elsize;
+			uint64_t size = (uint64_t)num * (uint64_t)elsize;
 			if(size > 0xfffffff0) 
 			{
 				GCAssertMsg(false, "Attempted allocation overflows size_t\n");
@@ -116,64 +109,37 @@ namespace MMgc
 			return Alloc(num * elsize);
 		}
 
-//	private:
-		FixedMalloc(GCHeap* heap);
-		~FixedMalloc();
-		static FixedMalloc *instance;
-#ifdef MMGC_AMD64
+		size_t GetTotalSize();
+		size_t GetBytesInUse();
+		
+	private:
+		void _Init(GCHeap *heap);
+		void _Destroy();
+#ifdef MMGC_64BIT
 		const static int kLargestAlloc = 2016;	
 #else
 		const static int kLargestAlloc = 2032;	
 #endif
 		const static int kNumSizeClasses = 41;
-		const static int kPageUsableSpace = GCHeap::kBlockSize - offsetof(MMgc::FixedAlloc::FixedBlock, items);
-
-		const static int16 kSizeClasses[kNumSizeClasses];
-		const static uint8 kSizeClassIndex[32];
+		const static int16_t kSizeClasses[kNumSizeClasses];
+		const static uint8_t kSizeClassIndex[32];
 
 		GCHeap *m_heap;
 		FixedAllocSafe *m_allocs[kNumSizeClasses];	
+		size_t numLargeChunks;
+
 		FixedAllocSafe *FindSizeClass(size_t size) const;
 
 		static bool IsLargeAlloc(const void *item)
 		{
 			// space made in ctor
 			item = GetRealPointer(item);
-			return ((uintptr) item & 0xFFF) == 0;
+			return ((uintptr_t) item & 0xFFF) == 0;
 		}
 
-		inline void *LargeAlloc(size_t size)
-		{
-			size += DebugSize();
-			size_t blocksNeeded = ((size+0xfff)&~0xfff) >> 12;
-			void *item = m_heap->Alloc((int)blocksNeeded, true, false);
-			if(!item)
-			{
-				GCAssertMsg(item != NULL, "Large allocation of %d blocks failed!");
-			}
-			else
-			{
-#ifdef MEMORY_INFO
-				item = DebugDecorate(item, size, 5);
-				memset(item, 0xfb, size - DebugSize());
-#endif
-			}
-			return item;
-		}
-
-	
-		inline void LargeFree(void *item)
-		{
-#ifdef MEMORY_INFO
-			item = DebugFree(item, 0xed, 5);
-#endif
-			m_heap->Free(item);
-		}
-
-		size_t LargeSize(const void *item)
-		{
-			return m_heap->Size(item) * GCHeap::kBlockSize;
-		}
+		void *LargeAlloc(size_t size);	
+		void LargeFree(void *item);
+		size_t LargeSize(const void *item);
 	};
 }
 #endif /* __Malloc__ */

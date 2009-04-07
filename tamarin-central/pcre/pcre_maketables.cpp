@@ -83,11 +83,11 @@ p = yield;
 
 /* First comes the lower casing table */
 
-for (i = 0; i < 256; i++) *p++ = tolower(i);
+for (i = 0; i < 256; i++) *p++ = VMPI_tolower(i);
 
 /* Next the case-flipping table */
 
-for (i = 0; i < 256; i++) *p++ = islower(i)? toupper(i) : tolower(i);
+for (i = 0; i < 256; i++) *p++ = VMPI_islower(i)? VMPI_toupper(i) : VMPI_tolower(i);
 
 /* Then the character class tables. Don't try to be clever and save effort on
 exclusive ones - in some locales things may be different. Note that the table
@@ -98,20 +98,20 @@ such as "male and female ordinals" (\xAA and \xBA) in the fr_FR locale (at
 least under Debian Linux's locales as of 12/2005). So we must test for alnum
 specially. */
 
-memset(p, 0, cbit_length);
+VMPI_memset(p, 0, cbit_length);
 for (i = 0; i < 256; i++)
   {
-  if (isdigit(i)) p[cbit_digit  + i/8] |= 1 << (i&7);
-  if (isupper(i)) p[cbit_upper  + i/8] |= 1 << (i&7);
-  if (islower(i)) p[cbit_lower  + i/8] |= 1 << (i&7);
-  if (isalnum(i)) p[cbit_word   + i/8] |= 1 << (i&7);
+  if (VMPI_isdigit(i)) p[cbit_digit  + i/8] |= 1 << (i&7);
+  if (VMPI_isupper(i)) p[cbit_upper  + i/8] |= 1 << (i&7);
+  if (VMPI_islower(i)) p[cbit_lower  + i/8] |= 1 << (i&7);
+  if (VMPI_isalnum(i)) p[cbit_word   + i/8] |= 1 << (i&7);
   if (i == '_')   p[cbit_word   + i/8] |= 1 << (i&7);
-  if (isspace(i)) p[cbit_space  + i/8] |= 1 << (i&7);
-  if (isxdigit(i))p[cbit_xdigit + i/8] |= 1 << (i&7);
-  if (isgraph(i)) p[cbit_graph  + i/8] |= 1 << (i&7);
-  if (isprint(i)) p[cbit_print  + i/8] |= 1 << (i&7);
-  if (ispunct(i)) p[cbit_punct  + i/8] |= 1 << (i&7);
-  if (iscntrl(i)) p[cbit_cntrl  + i/8] |= 1 << (i&7);
+  if (VMPI_isspace(i)) p[cbit_space  + i/8] |= 1 << (i&7);
+  if (VMPI_isxdigit(i))p[cbit_xdigit + i/8] |= 1 << (i&7);
+  if (VMPI_isgraph(i)) p[cbit_graph  + i/8] |= 1 << (i&7);
+  if (VMPI_isprint(i)) p[cbit_print  + i/8] |= 1 << (i&7);
+  if (VMPI_ispunct(i)) p[cbit_punct  + i/8] |= 1 << (i&7);
+  if (VMPI_iscntrl(i)) p[cbit_cntrl  + i/8] |= 1 << (i&7);
   }
 p += cbit_length;
 
@@ -122,18 +122,18 @@ within regexes. */
 for (i = 0; i < 256; i++)
   {
   int x = 0;
-  if (i != 0x0b && isspace(i)) x += ctype_space;
-  if (isalpha(i)) x += ctype_letter;
-  if (isdigit(i)) x += ctype_digit;
-  if (isxdigit(i)) x += ctype_xdigit;
-  if (isalnum(i) || i == '_') x += ctype_word;
+  if (i != 0x0b && VMPI_isspace(i)) x += ctype_space;
+  if (VMPI_isalpha(i)) x += ctype_letter;
+  if (VMPI_isdigit(i)) x += ctype_digit;
+  if (VMPI_isxdigit(i)) x += ctype_xdigit;
+  if (VMPI_isalnum(i) || i == '_') x += ctype_word;
 
   /* Note: strchr includes the terminating zero in the characters it considers.
   In this instance, that is ok because we want binary zero to be flagged as a
   meta-character, which in this sense is any character that terminates a run
   of data characters. */
 
-  if (strchr("\\*+?{^.$|()[", i) != 0) x += ctype_meta;
+  if (VMPI_strchr("\\*+?{^.$|()[", i) != 0) x += ctype_meta;
   *p++ = x;
   }
 

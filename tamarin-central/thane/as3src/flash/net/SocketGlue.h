@@ -25,15 +25,15 @@
 #ifndef SOCKETGLUE_INCLUDED
 #define SOCKETGLUE_INCLUDED
 
-namespace thane
-{
-
 # ifdef WIN32
 # include <winsock2.h>
 # else
 # include <netinet/in.h>
 # include <sys/socket.h>
 # endif
+
+namespace avmthane
+{
 
 # define SOCK_BUF_SZ 0x1000
 
@@ -64,10 +64,10 @@ namespace thane
 	public:
 		SocketObject(VTable *ivtable, ScriptObject *delegate);
 
-		int connect (Stringp host, int port);
-        void disconnect ();
-        int read (ByteArrayObject *bytes);
-        int write (ByteArrayObject *bytes);
+		int nb_connect (Stringp host, int port);
+        void nb_disconnect ();
+        int nb_read (ByteArrayObject *bytes);
+        int nb_write (ByteArrayObject *bytes);
 
 		Socket& GetSocket() { return m_socket; }
 
@@ -88,8 +88,6 @@ namespace thane
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
 
 		SocketObject *readFile(Stringp filename);
-
-		DECLARE_NATIVE_MAP(SocketClass)
     };
 }
 

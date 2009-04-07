@@ -39,25 +39,44 @@
 
 namespace avmplus
 {
+	AbcEnv::AbcEnv(PoolObject* _pool,
+		   DomainEnv* _domainEnv,
+		   CodeContext * _codeContext)
+		: m_pool(_pool),
+		  m_domainEnv(_domainEnv),
+		  m_codeContext(_codeContext),
+		  m_privateScriptEnvs(new(_pool->core->GetGC()) MultinameHashtable())
+#ifdef DEBUGGER
+		  , m_invocationCounts(NULL)
+#endif
+	{
+#ifdef DEBUGGER
+		if (_pool->core->debugger())
+		{
+			m_invocationCounts = (uint64_t*)_pool->core->GetGC()->Alloc(_pool->methodCount() * sizeof(uint64_t), MMgc::GC::kZero);
+		}
+#endif		
+	}
+
 	ScriptEnv* AbcEnv::getScriptEnv(Stringp name, Namespacep ns)
 	{		
-		if(ns->isPrivate())
+		if (ns->isPrivate())
 		{
-			return (ScriptEnv*)privateScriptEnvs.get(name, ns);
+			return (ScriptEnv*)m_privateScriptEnvs->get(name, ns);
 		}
 		else
 		{
-			return (ScriptEnv*)domainEnv->getScriptInit(ns, name);
+			return (ScriptEnv*)m_domainEnv->getScriptInit(ns, name);
 		}
 	}
 
-	ScriptEnv* AbcEnv::getScriptEnv(Multiname *multiname)
+	ScriptEnv* AbcEnv::getScriptEnv(const Multiname& multiname)
 	{
-		ScriptEnv *se = (ScriptEnv*)domainEnv->getScriptInit(multiname);
+		ScriptEnv *se = (ScriptEnv*)m_domainEnv->getScriptInit(multiname);
 		if(!se)
 		{	
 			// check privates
-			se = (ScriptEnv*)privateScriptEnvs.getMulti(multiname);
+			se = (ScriptEnv*)m_privateScriptEnvs->getMulti(multiname);
 		}
 		return se;
 	}

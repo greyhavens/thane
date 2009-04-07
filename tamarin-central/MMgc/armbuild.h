@@ -36,8 +36,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-#define MMGC_ARM
+#if !defined(MMGC_ARM)
+	#define MMGC_ARM
+#endif
 
 #ifdef DEBUG
 #ifndef _DEBUG
@@ -46,22 +47,16 @@
 #endif
 
 /**
- * Critical section on GCHeap allocations.
+ * Critical sections needed
  */
-//#define GCHEAP_LOCK
+#define MMGC_LOCKING
 
 /**
  * Define this to get stack traces.  Helps with memory leaks.
  */
 #ifdef DEBUG
-#define MEMORY_INFO
+//#define MMGC_MEMORY_INFO
 #endif
-
-/**
- * This turns on incremental collection as well as all of
- * the write barriers.
- */
-//#define WRITE_BARRIERS
 
 /**
  * Define this if MMgc is being integrated with avmplus.
@@ -69,18 +64,11 @@
  */
 #define MMGC_AVMPLUS
 
-/**
- *
- */
-#define DECOMMIT_MEMORY
+#if !defined(AVMPLUS_NO_JIT_READONLY)
+	#define AVMPLUS_JIT_READONLY
+#endif
 
-/**
- * USE_MMAP not used for ARM skunkworks
- */
-//#define USE_MMAP
-
-/**
- * Controls whether DRC is in use
- */
-
-//#define MMGC_DRC
+#ifdef _MSC_VER
+    #pragma warning(disable:4611) // interaction between '_setjmp' and C++ object destruction is non-portable
+	#pragma warning(disable:4512) //assignment operator could not be generated
+#endif

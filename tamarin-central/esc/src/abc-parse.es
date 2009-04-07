@@ -45,7 +45,7 @@ use namespace Asm;
 function parseAbcFile(b : ABCByteStream) : ABCFile {
     b.position = 0;
     magic = b.readInt();
-        
+
     if (magic != (46<<16|16))
         throw new Error("not an abc file.  magic=" + magic.toString(16));
         

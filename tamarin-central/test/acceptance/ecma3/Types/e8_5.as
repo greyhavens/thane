@@ -123,7 +123,7 @@ function getTestCases() {
 
     array[item++] = new TestCase( SECTION,"Negative finite Non zero values where e is -1074",-2.2250738585072014e-308,(-1*(Math.pow(2,52))*(Math.pow(2,-1074))) );
 
-    array[item++] = new TestCase( SECTION,"Negative finite Non zero values where e is 971", "-e+308",(-1*(Math.pow(2,52))*(Math.pow(2,971)))+"" );
+    array[item++] = new TestCase( SECTION,"Negative finite Non zero values where e is 971", "-1e+308",(-1*(Math.pow(2,52))*(Math.pow(2,971)))+"" );
 
 
     //Finite nonzero values  that are denormalised having the form s*m*2**e

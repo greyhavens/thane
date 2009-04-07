@@ -85,7 +85,7 @@ namespace MMgc
 		void* Alloc(size_t size, int flags);
 		static void Free(const void *ptr);
 		void Finalize();
-		uint32 GetItemSize() { return m_itemSize; }
+		uint32_t GetItemSize() { return m_itemSize; }
 		void ClearMarks();
 #ifdef _DEBUG
 		void CheckMarks();
@@ -93,11 +93,10 @@ namespace MMgc
 
 		static int SetMark(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			int index = GetIndex(block, item);
 			int mask = kMark << ((index&7)<<2);
-			uint32 *bits = &block->GetBits()[index>>3];
+			uint32_t *bits = &block->GetBits()[index>>3];
 			int set = *bits & mask;
 			*bits |= mask;
 			*bits &= ~(kQueued << ((index&7)<<2));
@@ -106,23 +105,19 @@ namespace MMgc
 
 		static int SetQueued(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			return SetBit(block, GetIndex(block, item), kQueued);
 		}
 		
 		static int SetFinalize(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			return SetBit(block, GetIndex(block, item), kFinalize);
 		}
 		
 		static int IsWhite(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
-
+			GCBlock *block = GetBlock(item);
 			// not a real item
 			if(item < block->items)
 				return false;
@@ -136,52 +131,42 @@ namespace MMgc
 
 		static int GetMark(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
-		
-			// Return the "marked" bit
+			GCBlock *block = GetBlock(item);
 			return GetBit(block, GetIndex(block, item), kMark);
 		}
 
 		static void *FindBeginning(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
-
+			GCBlock *block = GetBlock(item);
 			return block->items + block->size * GetIndex(block, item);
 		}
 
 		static void ClearFinalized(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			ClearBits(block, GetIndex(block, item), kFinalize);
 		}		
 
 		static int IsFinalized(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			return GetBit(block, GetIndex(block, item), kFinalize);
 		}		
 		static int HasWeakRef(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			return GetBit(block, GetIndex(block, item), kHasWeakRef);
 		}		
 		
 		static bool ContainsPointers(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			return block->alloc->ContainsPointers();
 		}
 
 		static bool IsRCObject(const void *item)
 		{
-			// Zero low 12 bits of address to get to the Block header
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			return item >= block->items && block->alloc->IsRCObject();
 		}
 
@@ -198,13 +183,15 @@ namespace MMgc
 
 		static void SetHasWeakRef(const void *item, bool to)
 		{
-			GCBlock *block = (GCBlock*) ((uintptr)item & ~0xFFF);
+			GCBlock *block = GetBlock(item);
 			if(to) {
 				SetBit(block, GetIndex(block, item), kHasWeakRef);
 			} else {
 				ClearBits(block, GetIndex(block, item), kHasWeakRef);
 			}
 		}
+
+		size_t GetBytesInUse();
 
 	private:
 		const static int kBlockSize = 4096;
@@ -217,14 +204,14 @@ namespace MMgc
 		{
 			GC *gc;
 			GCBlock* next;
-			uint32 size;
+			uint32_t size;
 			GCAlloc *alloc;			
 			GCBlock* prev;
 			char*  nextItem;
 			void*  firstFree;        // first item on free list
 			GCBlock *prevFree;
 			GCBlock *nextFree;
-			uint32* bits;
+			uint32_t* bits;
 			short numItems;
 			bool needsSweeping:1; 
 			bool finalizeState:1;  // whether we've been visited during the Finalize stage
@@ -239,7 +226,7 @@ namespace MMgc
 				}
 			}
 
-			uint32 *GetBits() const
+			uint32_t *GetBits() const
 			{
 				return bits;
 			}
@@ -256,7 +243,9 @@ namespace MMgc
 				return full;
 			}
 		};
-
+		
+		static GCBlock *GetBlock(const void *item) { return (GCBlock*) ((uintptr_t)item & ~0xFFF); }
+		
 		// The list of chunk blocks
 		GCBlock* m_firstBlock; 
 		GCBlock* m_lastBlock;
@@ -268,7 +257,7 @@ namespace MMgc
 		GCBlock* m_needsSweeping;
 
 		int    m_itemsPerBlock;
-		uint32    m_itemSize;
+		uint32_t    m_itemSize;
 		int m_numBitmapBytes;
 		int m_sizeClassIndex;
 
@@ -279,8 +268,8 @@ namespace MMgc
 		int    m_numBlocks;
 
 		// fast divide numbers
-		uint16 multiple;
-		uint16 shift;
+		uint16_t multiple;
+		uint16_t shift;
 
 		bool containsPointers;
 		bool containsRCObjects;
@@ -361,7 +350,7 @@ namespace MMgc
 		{
 			int index = (int)((((char*) item - block->items) * block->alloc->multiple) >> block->alloc->shift);
 #ifdef _DEBUG
-			GCAssert(((char*) item - block->items) / block->size == (uint32) index);
+			GCAssert(((char*) item - block->items) / block->size == (uint32_t) index);
 #endif
 			return index;
 		}			
@@ -391,7 +380,7 @@ namespace MMgc
 			block->GetBits()[index>>3] &= ~mask;
 		}
 
-		void ComputeMultiplyShift(uint16 d, uint16 &muli, uint16 &shft);
+		void ComputeMultiplyShift(uint16_t d, uint16_t &muli, uint16_t &shft);
 
 	protected:
 		GC *m_gc;

@@ -38,7 +38,6 @@
 #ifndef __avmplus_Verifier__
 #define __avmplus_Verifier__
 
-
 namespace avmplus
 {
 	/**
@@ -57,14 +56,15 @@ namespace avmplus
 	 * incompatible frame states cause verify errors.
 	 */
 
+	#if defined FEATURE_NANOJIT
+	class CodegenLIR;
+	#endif
+
 	class Verifier
 	{
 	public:
 
-		#ifdef AVMPLUS_MIR
-		CodegenMIR *mir;
-		#endif // AVMPLUS_MIR
-
+	    CodeWriter* coder;
 		AvmCore *core;
 		SortedIntMap<FrameState*>* blockStates;
 		FrameState *state;
@@ -84,6 +84,7 @@ namespace avmplus
 		const byte* exceptions_pos;
 
 		MethodInfo *info;
+		const MethodSignaturep ms;
 		PoolObject *pool;
 		int labelCount;
 
@@ -99,58 +100,53 @@ namespace avmplus
 		 * an exception will be thrown, of type VerifyError.
 		 * @param info the method to verify
 		 */
-		void verify(CodegenMIR *mir);
+		void verify(CodeWriter *coder);
 		FrameState* getFrameState(sintptr targetpc);
+
+		// provide access to known jitters
+		#if defined FEATURE_NANOJIT
+		Toplevel* getToplevel (CodegenLIR* jit) {
+		    (void)jit;
+		    return toplevel;
+		}
+        #endif
 
 	private:
 		Toplevel* toplevel;
-		#ifdef FEATURE_BUFFER_GUARD
-		#ifdef AVMPLUS_MIR
-		GrowthGuard *growthGuard;
-		#endif
-		#endif
-
 		FrameState* newFrameState();
 		Value& checkLocal(int local);
-		AbstractFunction*  checkDispId(Traits* traits, uint32 disp_id);
-		AbstractFunction*  checkMethodInfo(uint32 method_id);
-		Traits*            checkClassInfo(uint32 class_id);
-		Traits*            checkTypeName(uint32 name_index);
-		void verifyFailed(int errorID, Stringp a1=0, Stringp a2=0, Stringp a3=0) const;
+		MethodInfo*  checkDispId(Traits* traits, uint32_t disp_id);
+		MethodInfo*  checkMethodInfo(uint32_t method_id);
+		Traits*            checkClassInfo(uint32_t class_id);
 		void checkTarget(const byte* target);
-		Atom checkCpoolOperand(uint32 index, int requiredAtomType);
-		void checkConstantMultiname(uint32 index, Multiname &m);
+		Atom checkCpoolOperand(uint32_t index, int requiredAtomType);
+		void checkConstantMultiname(uint32_t index, Multiname &m);
 		bool canAssign(Traits* lhs, Traits* rhs) const;
 		Traits* checkSlot(Traits* traits, int slot_id);
 		Traits* findCommonBase(Traits* t1, Traits* t2);
-		void emitCoerceArgs(AbstractFunction* m, int argc);
 		void printValue(Value& v);
-		Traits* readBinding(Traits* traits, Binding b);
 		void checkEarlySlotBinding(Traits* traits);
-		void checkEarlyMethodBinding(Traits* traits);
 		Traits* peekType(Traits* requiredType, int n=1);
 		Traits* emitCoerceSuper(int index);
 		void checkCallMultiname(AbcOpcode opcode, Multiname* multiname) const;
-		void checkPropertyMultiname(uint32 &depth, Multiname& multiname);
+		void checkPropertyMultiname(uint32_t &depth, Multiname& multiname);
 		void parseExceptionHandlers();
-		void checkStack(uint32 pop, uint32 push);
-		void checkStackMulti(uint32 pop, uint32 push, Multiname* m);
+		void checkStack(uint32_t pop, uint32_t push);
+		void checkStackMulti(uint32_t pop, uint32_t push, Multiname* m);
+		void emitToString(AbcOpcode opcode, int index, const byte *pc);
+		void emitFindProperty(AbcOpcode opcode, Multiname& multiname, uint32_t imm30, const byte *pc);
+		void emitGetProperty(Multiname &multiname, int n, uint32_t imm30, const byte *pc);
+		void checkGetGlobalScope();
+		void emitNip();
 
-		void emitCoerce(Traits* target, int i);
-		void emitToString(AbcOpcode opcode, int index);
-		void emitCheckNull(int index);
-		void emitCompare(AbcOpcode opcode);
-		void emitFindProperty(AbcOpcode opcode, Multiname& multiname);
-		void emitGetProperty(Multiname &multiname, int n);
-		void emitGetGlobalScope();
-		void emitGetOuterScope(int scope_idx);
-		void emitGetSlot(int slot);
-		void emitSetSlot(int slot);
-		void emitSwap();
-
-		Binding findMathFunction(Traits* math, Multiname* name, Binding b, int argc);
-
-		Binding findStringFunction(Traits* string, Multiname* name, Binding b, int argc);
+		void emitCallproperty(AbcOpcode opcode, int& sp, Multiname& multiname, uint32_t multiname_index, uint32_t argc, const byte* pc);
+		bool emitCallpropertyMethod(AbcOpcode opcode, Traits* t, Binding b, Multiname& multiname, uint32_t multiname_index, uint32_t argc, const byte* pc);
+		bool emitCallpropertySlot(AbcOpcode opcode, int& sp, Traits* t, Binding b, uint32_t argc, const byte *pc);
+#ifdef AVMPLUS_WORD_CODE
+		uint32_t allocateCacheSlot(uint32_t imm30);
+#endif
+		Binding findMathFunction(TraitsBindingsp math, const Multiname& name, Binding b, int argc);
+		Binding findStringFunction(TraitsBindingsp string, const Multiname& name, Binding b, int argc);
 
 		#ifdef AVMPLUS_VERBOSE
 	public:
@@ -159,7 +155,84 @@ namespace avmplus
 		void showState(FrameState* state, const byte* pc, bool unreachable);
 		void verifyWarn(int errorId, ...);
 		#endif
+
+	private:
+		bool blockEnd;  // share between methods
+
+	public: 
+		// NOTE these methods used to be private but the jit needs access to 
+		// them for now. further refactoring should attempt to remove such back
+		// references
+		void verifyFailed(int errorID, Stringp a1=0, Stringp a2=0, Stringp a3=0) const;
+		void emitCoerceArgs(MethodInfo* m, int argc, bool isctor=false);
+		Traits* readBinding(Traits* traits, Binding b);
+		void emitCoerce(Traits* target, int i);
+		void emitCheckNull(int index);
+		Traits* checkTypeName(uint32_t name_index);
     };
+
+#if defined FEATURE_CFGWRITER
+	class Block {
+	public:
+	  uint32_t label;
+	  sintptr begin;
+	  sintptr end;
+	  Block* succ;
+	  List<uint32_t>* succs;
+	  List<uint32_t>* preds;
+	  int pred_count;
+	  Block (MMgc::GC *gc, uint32_t label, sintptr begin) 
+		: label(label), begin(begin), pred_count(0)
+		, succs(new (gc) List<uint32_t>())
+		, preds(new (gc) List<uint32_t>()) {}
+	  ~Block() {}
+	};
+
+	class Edge {
+	public:
+	  uint32_t src;
+	  uint32_t snk;
+	  Edge(uint32_t src, uint32_t snk)
+		: src(src), snk(snk) {}
+	};
+
+	class CFGWriter : public CodeWriter {
+		AvmCore *core;
+	    SortedIntMap<Block*>* blocks;
+	    SortedIntMap<Edge*>* edges;
+		uint32_t label;
+		uint32_t edge;
+		CodeWriter* coder;       // the next leg of the pipeline
+		Block* current;
+	public:
+
+		CFGWriter (AvmCore *core, CodeWriter* coder);
+		~CFGWriter ();
+
+		void write (FrameState* state, const byte* pc, AbcOpcode opcode);
+		void writeOp1(FrameState* state, const byte *pc, AbcOpcode opcode, uint32_t opd1, Traits *type = NULL);
+		void writeOp2 (FrameState* state, const byte *pc, AbcOpcode opcode, uint32_t opd1, uint32_t opd2, Traits* type = NULL);
+		void writePrologue(FrameState* state);
+		void writeEpilogue(FrameState* state);
+	};
+#endif // FEATURE_CFGWRITER
+}
+
+namespace nanojit {
+    class Fragment;
+    struct GuardRecord {
+        int calldepth;
+        Fragment *from, *target;
+        void *jmp, *origTarget;
+        GuardRecord *next, *outgoing;
+    };
+    #define GuardRecordSize(r) sizeof(GuardRecord)
+
+    struct SideExit {
+        int sid;
+        Fragment *target;
+    };
+    #define SideExitSize(x) sizeof(SideExit)
 }
 
 #endif /* __avmplus_Verifier__ */

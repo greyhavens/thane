@@ -135,21 +135,23 @@ namespace avmplus
 		// Get (getProperty)
 		// HasProperty 
 		// Put (setProperty)
-		Atom callProperty(Multiname* name, int argc, Atom* argv);
+		Atom toString ();
+
+		Atom callProperty(const Multiname* name, int argc, Atom* argv);
 
 		Atom getAtomProperty(Atom name) const;		
 		void setAtomProperty(Atom name, Atom value);
 		bool deleteAtomProperty(Atom name);
 
-		Atom getMultinameProperty(Multiname* name) const;
-		void setMultinameProperty(Multiname* name, Atom value);
-		bool deleteMultinameProperty(Multiname* name);
+		Atom getMultinameProperty(const Multiname* name) const;
+		void setMultinameProperty(const Multiname* name, Atom value);
+		bool deleteMultinameProperty(const Multiname* name);
 
-		bool hasMultinameProperty(Multiname* name) const;
+		bool hasMultinameProperty(const Multiname* name) const;
 		bool hasAtomProperty(Atom name) const;
 		bool hasUintProperty(uint32 i) const;
 
-		Atom getDescendants(Multiname* name) const;
+		Atom getDescendants(const Multiname* name) const;
 
 		Atom getUintProperty(uint32 i) const;
 		void setUintProperty(uint32 i, Atom value);
@@ -163,53 +165,94 @@ namespace avmplus
 		Atom _resolveValue ();
 
 		// Exposed routines to AS (NATIVE_METHODs)
-		XMLObject *addNamespace (Atom _namespace);
-		XMLObject * appendChild (Atom child);
-		XMLListObject *attribute (Atom arg);
-		XMLListObject *attributes ();
-		XMLListObject *child (Atom propertyName);
-		int childIndex();
-		XMLListObject *children ();
-		XMLListObject *comments ();
-		bool contains (Atom value);
-		XMLObject *copy ();
-		XMLListObject *descendants (Atom PropertyName) const;
-		XMLListObject *elements (Atom name); 
-		bool hasOwnProperty (Atom P);
-		bool hasComplexContent ();
-		bool hasSimpleContent ();
-		ArrayObject *inScopeNamespaces ();
-		Atom insertChildAfter (Atom child1, Atom child2);
-		Atom insertChildBefore (Atom child1, Atom child2);
+		XMLObject* AS3_addNamespace (Atom _namespace);
+		XMLObject*  AS3_appendChild (Atom child);
+		XMLListObject* AS3_attribute (Atom arg);
+		XMLListObject* AS3_attributes ();
+		XMLListObject* AS3_child (Atom propertyName);
+		int AS3_childIndex();
+		XMLListObject* AS3_children ();
+		XMLListObject* AS3_comments ();
+		bool AS3_contains (Atom value);
+		XMLObject* AS3_copy ();
+		XMLListObject* AS3_descendants (Atom PropertyName) const;
+		XMLListObject* AS3_elements (Atom name); 
+		bool XML_AS3_hasOwnProperty (Atom P);
+		bool AS3_hasComplexContent ();
+		bool AS3_hasSimpleContent ();
+		ArrayObject* AS3_inScopeNamespaces ();
+		Atom AS3_insertChildAfter (Atom child1, Atom child2);
+		Atom AS3_insertChildBefore (Atom child1, Atom child2);
 
 		// non-E4X extensions
-		ScriptObject* getNotification();
-		void setNotification(ScriptObject* f);
+		ScriptObject* AS3_notification();
+		void AS3_setNotification(ScriptObject* f);
 
-		Atom localName ();
-		Atom name ();
-		Atom getNamespace (Atom *argv, int argc); // prefix is optional (was previously called namespace)
-		ArrayObject *namespaceDeclarations ();
-		String *nodeKind () const;
-		XMLObject *normalize ();
-		Atom parent ();
-		XMLListObject *processingInstructions (Atom name); 
-		XMLObject *prependChild (Atom value);
-		bool xmlPropertyIsEnumerable(Atom P);	// NOT virtual, NOT an override
-		XMLObject *removeNamespace (Atom _namespace);
-		XMLObject *replace (Atom propertyName, Atom value);
-		XMLObject *setChildren (Atom value);
-		void setLocalName (Atom name);
-		void setName (Atom name);
-		void setNamespace (Atom ns);
-		XMLListObject *text ();
-		Atom toString ();
-		Stringp toStringMethod();
-		String *toXMLString ();
+		Atom AS3_localName ();
+		Atom AS3_name ();
+		Atom _namespace (Atom prefix, int argc); // prefix is optional (was previously called namespace)
+		ArrayObject* AS3_namespaceDeclarations ();
+		String* AS3_nodeKind () const;
+		XMLObject* AS3_normalize ();
+		Atom AS3_parent ();
+		XMLListObject* AS3_processingInstructions (Atom name); 
+		XMLObject* AS3_prependChild (Atom value);
+		bool XML_AS3_propertyIsEnumerable(Atom P);	// NOT virtual, NOT an override
+		XMLObject* AS3_removeNamespace (Atom _namespace);
+		XMLObject* AS3_replace (Atom propertyName, Atom value);
+		XMLObject* AS3_setChildren (Atom value);
+		void AS3_setLocalName (Atom name);
+		void AS3_setName (Atom name);
+		void AS3_setNamespace (Atom ns);
+		XMLListObject* AS3_text ();
+		Stringp AS3_toString();
+		String* AS3_toXMLString ();
+
+		// inline wrappers for legacy code
+		inline XMLObject* addNamespace (Atom _namespace) { return AS3_addNamespace (_namespace); }
+		inline XMLObject*  appendChild (Atom child) { return AS3_appendChild (child); }
+		inline XMLListObject* attribute (Atom arg) { return AS3_attribute (arg); }
+		inline XMLListObject* attributes () { return AS3_attributes (); }
+		inline XMLListObject* child (Atom propertyName) { return AS3_child (propertyName); }
+		inline int childIndex() { return AS3_childIndex(); }
+		inline XMLListObject* children () { return AS3_children (); }
+		inline XMLListObject* comments () { return AS3_comments (); }
+		inline bool contains (Atom value) { return AS3_contains (value); }
+		inline XMLObject* copy () { return AS3_copy (); }
+		inline XMLListObject* descendants (Atom PropertyName) const { return AS3_descendants (PropertyName); }
+		inline XMLListObject* elements (Atom name) { return AS3_elements (name); } 
+		inline bool hasOwnProperty (Atom P) { return XML_AS3_hasOwnProperty(P); }
+		inline bool hasComplexContent () { return AS3_hasComplexContent (); }
+		inline bool hasSimpleContent () { return AS3_hasSimpleContent (); }
+		inline ArrayObject* inScopeNamespaces () { return AS3_inScopeNamespaces (); }
+		inline Atom insertChildAfter (Atom child1, Atom child2) { return AS3_insertChildAfter (child1, child2); }
+		inline Atom insertChildBefore (Atom child1, Atom child2) { return AS3_insertChildBefore (child1, child2); }
+
+		// non-E4X extensions
+		inline ScriptObject* notification() { return AS3_notification(); }
+		inline void setNotification(ScriptObject* f) { return AS3_setNotification(f); }
+
+		inline Atom localName () { return AS3_localName (); }
+		inline Atom name () { return AS3_name (); }
+		inline ArrayObject* namespaceDeclarations () { return AS3_namespaceDeclarations (); }
+		inline String* nodeKind () const { return AS3_nodeKind (); }
+		inline XMLObject* normalize () { return AS3_normalize (); }
+		inline Atom parent () { return AS3_parent (); }
+		inline XMLListObject* processingInstructions (Atom name) { return AS3_processingInstructions (name); } 
+		inline XMLObject* prependChild (Atom value) { return AS3_prependChild (value); }
+		inline bool propertyIsEnumerable (Atom P) { return XML_AS3_propertyIsEnumerable(P); }
+		inline XMLObject* removeNamespace (Atom _namespace) { return AS3_removeNamespace (_namespace); }
+		inline XMLObject* replace (Atom propertyName, Atom value) { return AS3_replace (propertyName, value); }
+		inline XMLObject* setChildren (Atom value) { return AS3_setChildren (value); }
+		inline void setLocalName (Atom name) { return AS3_setLocalName (name); }
+		inline void setName (Atom name) { return AS3_setName (name); }
+		inline void setNamespace (Atom ns) { return AS3_setNamespace (ns); }
+		inline XMLListObject* text () { return AS3_text (); }
+		inline String* toXMLString () { return AS3_toXMLString (); }
 
 		// E4X support routines
 		void __toXMLString(StringBuffer &s, AtomArray *AncestorNamespace, int indentLevel = 0, bool includeChildren = true) const;
-		XMLObject *_deepCopy () const;
+		XMLObject* _deepCopy () const;
 
 		Namespace *GenerateUniquePrefix (Namespace *ns, const AtomArray *namespaces) const;
 
@@ -222,7 +265,7 @@ namespace avmplus
 		// accessors to node functions
 		int getClass() const; 
 		uint32 _length() const;
-		XMLObject *getParent();
+		XMLObject* getParent();
 		void setValue(Stringp s);
 		Stringp getValue();
 		bool getQName(Multiname *m);
@@ -230,8 +273,8 @@ namespace avmplus
 		Namespace *GetNamespace (const Multiname &mn, const AtomArray *nsArray) const;
 
 #ifdef XML_FILTER_EXPERIMENT
-		XMLListObject *filter (Atom propertyName, Atom value);
-		void _filter (XMLListObject *, const Multiname &m, Atom value);
+		XMLListObject* filter (Atom propertyName, Atom value);
+		void _filter (XMLListObject* , const Multiname &m, Atom value);
 #endif
 
 	public:
@@ -249,9 +292,8 @@ namespace avmplus
 		 * Conversion routine to verify XML related flags of Multiname
 		 * (strips @ from strings and marks multiname as attribute)
 		 */
-		void CoerceE4XMultiname (Multiname *m, Multiname &out) const;
-
-		bool NodeNameEquals (const wchar *NodeName, int len, Stringp parentName, Namespace *ns);
+		void CoerceE4XMultiname(const Multiname *m, Multiname &out) const;
+		bool NodeNameEquals(Stringp odeName, Stringp parentName, Namespace *ns);
 	};
 
 	/**
@@ -274,12 +316,12 @@ namespace avmplus
 		friend class QNameClass;
 
 	public:
-		QNameObject(QNameClass *type, Multiname &mn);
+		QNameObject(QNameClass *type, const Multiname &mn);
 		QNameObject(QNameClass *type, Atom name, bool bAttribute=false);
 		QNameObject(QNameClass *type, Namespace *nameSpace, Atom name, bool bAttribute=false);
 
-		Stringp getLocalName() const;
-		Atom getURI() const;
+		Stringp get_localName() const;
+		Atom get_uri() const;
 
 		bool isAttr() const { return m_mn.isAttr(); };
 

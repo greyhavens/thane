@@ -120,10 +120,13 @@ namespace avmplus
 		PrintWriter& operator<< (const wchar *str);
 		PrintWriter& operator<< (char value);
 		PrintWriter& operator<< (wchar value);		
-		PrintWriter& operator<< (int value);
-		PrintWriter& operator<< (uint64 value);
-		PrintWriter& operator<< (int64 value);
-		PrintWriter& operator<< (uint32 value);
+		PrintWriter& operator<< (int32_t value);
+		PrintWriter& operator<< (uint32_t value);
+		PrintWriter& operator<< (uint64_t value);
+		PrintWriter& operator<< (int64_t value);
+#if defined AVMPLUS_MAC && defined AVMPLUS_64BIT
+		PrintWriter& operator<< (ptrdiff_t value);
+#endif
 		PrintWriter& operator<< (double value);
 		PrintWriter& operator<< (Stringp str);
 		PrintWriter& operator<< (tabstop tabs);
@@ -154,9 +157,11 @@ namespace avmplus
 	public:
 		PrintWriter& operator<< (ScriptObject* obj);
 		PrintWriter& operator<< (const Traits* obj);
-		PrintWriter& operator<< (AbstractFunction* obj);
-		PrintWriter& operator<< (Multiname* obj);
-		PrintWriter& operator<< (Namespace* str);
+		PrintWriter& operator<< (MethodInfo* obj);
+		PrintWriter& operator<< (const Multiname& obj);
+		PrintWriter& operator<< (Namespacep str);
+	private:
+		PrintWriter& operator<< (const Multiname* obj);	// not defined
 	};
 }
 

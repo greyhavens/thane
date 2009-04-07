@@ -116,7 +116,7 @@ pchars(const uschar *p, int length, BOOL is_subject, match_data *md)
 unsigned int c;
 if (is_subject && length > md->end_subject - p) length = md->end_subject - p;
 while (length-- > 0)
-  if (isprint(c = *(p++))) printf("%c", c); else printf("\\x%02x", c);
+  if (VMPI_isprint(c = *(p++))) printf("%c", c); else printf("\\x%02x", c);
 }
 #endif
 
@@ -699,7 +699,7 @@ for (;;)
 	  {							   //  (we only really need to reset all enclosed groups, but covering all groups > this is harmless because
 								   //   we interpret from left to right)
 			savedElems = (offset_top > offset ? offset_top - offset : 2);
-			memcpy(offsetStackSave, md->offset_vector+offset, (savedElems * sizeof(int)));
+			VMPI_memcpy(offsetStackSave, md->offset_vector+offset, (savedElems * sizeof(int)));
 			for(int resetOffset = offset+2; resetOffset < offset_top; resetOffset++)
 				md->offset_vector[resetOffset] = -1;
 	  }
@@ -730,7 +730,7 @@ for (;;)
 
 	  if (ES3_Compatible_Behavior) 
 	  {
-			memcpy(md->offset_vector+offset, offsetStackSave, (savedElems * sizeof(int)));
+			VMPI_memcpy(md->offset_vector+offset, offsetStackSave, (savedElems * sizeof(int)));
 	  }
 	  else
 	  {     
@@ -882,7 +882,7 @@ for (;;)
       recursion_info *rec = md->recursive;
       DPRINTF(("End of pattern in a (?0) recursion\n"));
       md->recursive = rec->prevrec;
-      memmove(md->offset_vector, rec->offset_save,
+      VMPI_memmove(md->offset_vector, rec->offset_save,
         rec->saved_max * sizeof(int));
       mstart = rec->save_start;
       ims = original_ims;
@@ -1063,7 +1063,7 @@ for (;;)
         if (new_recursive.offset_save == NULL) RRETURN(PCRE_ERROR_NOMEMORY);
         }
 
-      memcpy(new_recursive.offset_save, md->offset_vector,
+      VMPI_memcpy(new_recursive.offset_save, md->offset_vector,
             new_recursive.saved_max * sizeof(int));
       new_recursive.save_start = mstart;
       mstart = eptr;
@@ -1092,7 +1092,7 @@ for (;;)
           }
 
         md->recursive = &new_recursive;
-        memcpy(md->offset_vector, new_recursive.offset_save,
+        VMPI_memcpy(md->offset_vector, new_recursive.offset_save,
             new_recursive.saved_max * sizeof(int));
         callpat += GET(callpat, 1);
         }
@@ -1331,7 +1331,7 @@ for (;;)
         DPRINTF(("Recursion (%d) succeeded - continuing\n", number));
         md->recursive = rec->prevrec;
         mstart = rec->save_start;
-        memcpy(md->offset_vector, rec->offset_save,
+        VMPI_memcpy(md->offset_vector, rec->offset_save,
           rec->saved_max * sizeof(int));
         ecode = rec->after_call;
         ims = original_ims;
@@ -2356,13 +2356,13 @@ for (;;)
 
         for (i = 1; i <= min; i++)
           {
-          if (memcmp(eptr, charptr, length) == 0) eptr += length;
+          if (VMPI_memcmp(eptr, charptr, length) == 0) eptr += length;
 #ifdef SUPPORT_UCP
           /* Need braces because of following else */
           else if (oclength == 0) { RRETURN(MATCH_NOMATCH); }
           else
             {
-            if (memcmp(eptr, occhars, oclength) != 0) RRETURN(MATCH_NOMATCH);
+            if (VMPI_memcmp(eptr, occhars, oclength) != 0) RRETURN(MATCH_NOMATCH);
             eptr += oclength;
             }
 #else   /* without SUPPORT_UCP */
@@ -2379,13 +2379,13 @@ for (;;)
             RMATCH(eptr, ecode, offset_top, md, ims, eptrb, 0, RM22);
             if (rrc != MATCH_NOMATCH) RRETURN(rrc);
             if (fi >= max || eptr >= md->end_subject) RRETURN(MATCH_NOMATCH);
-            if (memcmp(eptr, charptr, length) == 0) eptr += length;
+            if (VMPI_memcmp(eptr, charptr, length) == 0) eptr += length;
 #ifdef SUPPORT_UCP
             /* Need braces because of following else */
             else if (oclength == 0) { RRETURN(MATCH_NOMATCH); }
             else
               {
-              if (memcmp(eptr, occhars, oclength) != 0) RRETURN(MATCH_NOMATCH);
+              if (VMPI_memcmp(eptr, occhars, oclength) != 0) RRETURN(MATCH_NOMATCH);
               eptr += oclength;
               }
 #else   /* without SUPPORT_UCP */
@@ -2401,12 +2401,12 @@ for (;;)
           for (i = min; i < max; i++)
             {
             if (eptr > md->end_subject - length) break;
-            if (memcmp(eptr, charptr, length) == 0) eptr += length;
+            if (VMPI_memcmp(eptr, charptr, length) == 0) eptr += length;
 #ifdef SUPPORT_UCP
             else if (oclength == 0) break;
             else
               {
-              if (memcmp(eptr, occhars, oclength) != 0) break;
+              if (VMPI_memcmp(eptr, occhars, oclength) != 0) break;
               eptr += oclength;
               }
 #else   /* without SUPPORT_UCP */
@@ -5017,7 +5017,7 @@ if (rc == MATCH_MATCH)
     {
     if (offsetcount >= 4)
       {
-      memcpy(offsets + 2, md->offset_vector + 2,
+      VMPI_memcpy(offsets + 2, md->offset_vector + 2,
         (offsetcount - 2) * sizeof(int));
       DPRINTF(("Copied offsets from temporary memory\n"));
       }

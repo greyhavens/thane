@@ -139,7 +139,7 @@ namespace axtam
 		#endif
 
 		// init toplevel internally
-		toplevel = initAXTamBuiltins();
+		toplevel = initAXTamBuiltins(true);
 	}
 
 	void AXTam::Close() {
@@ -155,11 +155,11 @@ namespace axtam
 	
 	void AXTam::initAXPool()
 	{
-		AbstractFunction *nativeMethods[axtoplevel_abc_method_count];
+		MethodInfo *nativeMethods[axtoplevel_abc_method_count];
 		NativeClassInfo *nativeClasses[axtoplevel_abc_class_count];
 		NativeScriptInfo *nativeScripts[axtoplevel_abc_script_count];
 
-		memset(nativeMethods, 0, sizeof(AbstractFunction*)*axtoplevel_abc_method_count);
+		memset(nativeMethods, 0, sizeof(MethodInfo*)*axtoplevel_abc_method_count);
 		memset(nativeClasses, 0, sizeof(NativeClassInfo*)*axtoplevel_abc_class_count);
 		memset(nativeScripts, 0, sizeof(NativeScriptInfo*)*axtoplevel_abc_script_count);
 
@@ -174,24 +174,18 @@ namespace axtam
 		#endif
 	}
 
-
-	Toplevel* AXTam::initAXTamBuiltins()
+	void AXTam::initESC(Toplevel *toplevel)
 	{
-		// Initialize a new Toplevel.  This will also create a new
-		// DomainEnv based on the builtinDomain.
-		Toplevel* toplevel = initTopLevel();
-
 		// load up the compiler (this list comes from esc/build/esc.sh)
 		// This is hacked in under the assumption we will come up with a
 		// better strategy.
 		static const wchar_t *abcs[] = {
-			L"debug.es.abc",           L"ast.es.abc",          L"ast-decode.es.abc",
-			L"util.es.abc",            L"lex-char.es.abc",
-			L"lex-token.es.abc",       L"lex-scan.es.abc",     L"parse.es.abc",
-			L"util-tamarin.es.abc",    L"bytes-tamarin.es.abc",L"util-tamarin.es.abc",
+			L"debug.es.abc",           L"util.es.abc",         L"bytes-tamarin.es.abc",
+			L"util-tamarin.es.abc",    L"lex-char.es.abc",     L"lex-token.es.abc",
+			L"lex-scan.es.abc",        L"ast.es.abc",          L"parse.es.abc",
 			L"asm.es.abc",             L"abc.es.abc",          L"emit.es.abc",
 			L"cogen.es.abc",           L"cogen-stmt.es.abc",   L"cogen-expr.es.abc",
-			L"esc-core.es.abc",        L"eval-support.es.abc",
+			L"esc-core.es.abc",        L"eval-support.es.abc", L"esc-env.es.abc",
 			NULL
 		};
 		// first of these directories with abcs[0] wins...
@@ -200,7 +194,13 @@ namespace axtam
 			// We don't want to search relative paths in real "release" builds
 			// but its early days, and without this, developers will get confused 
 			// XXX - work out a strategy for embedding esc!
+#if _MSC_VER < 1500
+			// vs2005 builds into 'vs8/{config_name}
 			L"..\\..\\..\\esc\\bin\\", // for running directly from the source tree
+#else
+			// vs2008 builds into 'vs2008/obj/{config_name}
+			L"..\\..\\..\\..\\esc\\bin\\", // for running directly from the source tree
+#endif
 			NULL
 		};
 		wchar_t fqname[MAX_PATH+100] = {L'\0'}; // space for candidate path too...
@@ -248,8 +248,18 @@ namespace axtam
 					wcscat_s(fqtail, tailsize, L"..\\build");
 				_wchdir(fqname);
 				break; // all done
-			}
-		}
+			} // if file exists
+		} // for candidate...
+	}
+
+	Toplevel* AXTam::initAXTamBuiltins(bool load_esc)
+	{
+		// Initialize a new Toplevel.  This will also create a new
+		// DomainEnv based on the builtinDomain.
+		Toplevel* toplevel = initTopLevel();
+
+		if (load_esc)
+			initESC(toplevel);
 
 		// Initialize the parser in our Toplevel
 		handleActionPool(pool,
@@ -413,11 +423,16 @@ namespace axtam
 		AvmAssert(0); // not reached
 	}
 
+	// As our error classes are created when our top-level implementation script is run,
+	// exceptions seen before that (ie, in the ESC bootstrap code or similar) will 
+	// encounter NULL error classes.
 	bool AXTam::isCOMProviderError(Exception *exc) {
-		return exc->isValid() && istype(exc->atom, comProviderErrorClass->traits()->itraits);
+		return exc->isValid() && comProviderErrorClass &&
+		       istype(exc->atom, comProviderErrorClass->traits()->itraits);
 	}
 	bool AXTam::isCOMConsumerError(Exception *exc) {
-		return exc->isValid() && istype(exc->atom, comConsumerErrorClass->traits()->itraits);
+		return exc->isValid() && comConsumerErrorClass &&
+		       istype(exc->atom, comConsumerErrorClass->traits()->itraits);
 	}
 
 	HRESULT AXTam::handleException(Exception *exception, EXCEPINFO *pei /*=NULL*/, int depth /* = 0 */)
@@ -545,7 +560,7 @@ namespace axtam
 						sub = intToAtom(elt);
 						break;
 					}
-//					case VT_UI1: - not done yet pending special support?
+//					case VT_UI1: - XXXX - not done yet pending special support?
 					case VT_UI2: {
 						unsigned short elt;
 						if (FAILED(hr = SafeArrayGetElement(psa, &i, &elt)))
@@ -726,7 +741,7 @@ namespace axtam
 	{
 		switch (val&7) {
 			case kDoubleType:
-				return doubleNumber(val);
+				return atomToDouble(val);
 			case kIntegerType:
 				// kIntegerType is signed - which is handy, as we should prefer
 				// signed values to unsigned - VBScript, for example, can't handle
@@ -898,3 +913,34 @@ STDAPI DllUnregisterServer(void)
 	return hr;
 }
 
+STDAPI DllInstall(BOOL bInstall, LPCWSTR pszCmdLine)
+{
+   HRESULT hr = E_FAIL;
+   // MSVC will call "regsvr32 /i:user" if "per-user registration" is set as a 
+   // linker option - so handle that here (its also handle for anyone else to
+   // be able to manually install just for themselves.)
+   static const wchar_t szUserSwitch[] = L"user";
+   if (pszCmdLine != NULL)
+   {
+       if (_wcsnicmp(pszCmdLine, szUserSwitch, _countof(szUserSwitch)) == 0)
+       {
+           AtlSetPerUserRegistration(true);
+		   // But ATL still barfs if you try and register a COM category, so
+		   // just arrange to not do that.
+		   _AtlComModule.m_ppAutoObjMapFirst = _AtlComModule.m_ppAutoObjMapLast;
+       }
+   }
+   if (bInstall)
+   {    
+       hr = DllRegisterServer();
+       if (FAILED(hr))
+       {    
+           DllUnregisterServer();
+       }
+   }
+   else
+   {
+       hr = DllUnregisterServer();
+   }
+   return hr;
+}

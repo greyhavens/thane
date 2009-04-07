@@ -38,17 +38,20 @@
 
 #include "avmplus.h"
 
+#if defined(AVMPLUS_AMD64) && defined(_WIN64)
+	extern "C"
+	{
+		_int64 __cdecl longjmp64(jmp_buf jmpbuf, _int64 arg);
+	}
+#endif
+
 namespace avmplus
 {
 	//
 	// Exception
 	//
 
-	Exception::Exception(Atom atom
-#ifdef DEBUGGER
-			, AvmCore* core
-#endif /* DEBUGGER */
-		)
+	Exception::Exception(AvmCore* core, Atom atom)
 	{
 		this->atom = atom;
 		this->flags = 0;
@@ -56,14 +59,16 @@ namespace avmplus
         #ifdef DEBUGGER
 		// If the exception atom is an Error object, copy its stack trace.
 		// Otherwise, generate a new stack trace.
-		if (core->istype(atom, core->traits.error_itraits))
+		if (AvmCore::istype(atom, core->traits.error_itraits))
 		{
-			stackTrace = ((ErrorObject*)AvmCore::atomToScriptObject(atom))->getStackTrace();
+			stackTrace = ((ErrorObject*)AvmCore::atomToScriptObject(atom))->getStackTraceObject();
 		}
 		else
 		{
 			stackTrace = core->newStackTrace();
 		}
+		#else
+		(void)core;
 		#endif
 	}
 	
@@ -79,12 +84,13 @@ namespace avmplus
 	ExceptionHandlerTable::ExceptionHandlerTable(int exception_count)
 	{
 		this->exception_count = exception_count;
-		memset(exceptions, 0, sizeof(ExceptionHandler)*exception_count);
+		VMPI_memset(exceptions, 0, sizeof(ExceptionHandler)*exception_count);
 	}
 	
 	//
 	// ExceptionFrame
 	//
+
 	void ExceptionFrame::beginTry(AvmCore* core)
 	{
 		this->core = core;
@@ -100,6 +106,7 @@ namespace avmplus
 
 #ifdef DEBUGGER
 		callStack = core->callStack;
+#endif /* DEBUGGER */
 
 		// beginTry() is called from both the TRY macro and from JIT'd code.  The TRY
 		// macro will immediately change the value of catchAction right after the
@@ -107,7 +114,8 @@ namespace avmplus
 		// we initialize catchAction to the value that it needs when we're called
 		// from JIT'd code, that is, kCatchAction_SearchForActionScriptExceptionHandler.
 		catchAction = kCatchAction_SearchForActionScriptExceptionHandler;
-#endif /* DEBUGGER */
+
+		this->stacktop = core->gc->allocaTop();
 
 		codeContextAtom = core->codeContextAtom;
 		dxnsAddr = core->dxnsAddr;
@@ -121,13 +129,19 @@ namespace avmplus
 
 			// Restore the code context to what it was before the try
 			core->codeContextAtom = codeContextAtom;
+			
+			core->gc->allocaPopTo(this->stacktop);
 		}
 	}
 	
 	void ExceptionFrame::throwException(Exception *exception)
 	{
 		core->exceptionAddr = exception;
-		longjmp(jmpbuf, (int)(uintptr)exception); // returning exception ptr still important for MIR 32-bit
+#if defined(_WIN64)
+		longjmp64(jmpbuf, (uintptr)exception); 
+#else
+		longjmp(jmpbuf, 1); 
+#endif
 	}
 
 	void ExceptionFrame::beginCatch()
@@ -136,12 +150,14 @@ namespace avmplus
 
 #ifdef DEBUGGER
 		//AvmAssert(callStack && callStack->env);
-		if (core->profiler->profilingDataWanted && callStack && callStack->env)
-			core->profiler->sendCatch(callStack->env->method);
+		Profiler* profiler = core->profiler();
+		if (profiler && profiler->profilingDataWanted && callStack && callStack->env())
+			profiler->sendCatch(callStack->env()->method);
 
 		core->callStack = callStack;
 #endif // DEBUGGER
 
+		core->gc->allocaPopTo(this->stacktop);
 		core->codeContextAtom = codeContextAtom;
 		core->dxnsAddr = dxnsAddr;
 	}

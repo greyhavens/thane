@@ -47,7 +47,7 @@ namespace avmplus
 	Debugger::TraceLevel	Debugger::astrace_console = Debugger::TRACE_OFF;
 	Debugger::TraceLevel	Debugger::astrace_callback = Debugger::TRACE_OFF;
 	bool					Debugger::in_trace = false;
-	uint64					Debugger::astraceStartTime = OSDep::currentTimeMillis();
+	uint64					Debugger::astraceStartTime = VMPI_getTime();
 
 	Debugger::Debugger(AvmCore *core)
 		: core(core)
@@ -69,21 +69,21 @@ namespace avmplus
 		// Check that core and core->callStack are non-null before dereferencing
 		// them, so that it's possible to call stepInto() even before there is
 		// a stackframe (so execution will stop at the first executed line of code).
-		stepState.startingDepth = (core && core->callStack) ? core->callStack->depth : 0;
+		stepState.startingDepth = (core && core->callStack) ? core->callStack->depth() : 0;
 	}
 
 	void Debugger::stepOver()
 	{
 		stepState.flag = true;
-		stepState.depth = core->callStack->depth;
-		stepState.startingDepth = core->callStack->depth;
+		stepState.depth = core->callStack->depth();
+		stepState.startingDepth = core->callStack->depth();
 	}
 
 	void Debugger::stepOut()
 	{
 		stepState.flag = true;
-		stepState.depth = core->callStack->depth - 1;
-		stepState.startingDepth = core->callStack->depth;
+		stepState.depth = core->callStack->depth() - 1;
+		stepState.startingDepth = core->callStack->depth();
 	}
 
 	void Debugger::stepContinue()
@@ -120,8 +120,8 @@ namespace avmplus
 
 		AvmAssert(linenum > 0);
 
-		int prev = core->callStack->linenum;
-		core->callStack->linenum = linenum;
+		int prev = core->callStack->linenum();
+		core->callStack->set_linenum(linenum);
 
 		int line = linenum;
 
@@ -130,20 +130,23 @@ namespace avmplus
 		bool exited =  (prev == -1) ? true : false; // are we being called as a result of function exit?
 		if (!changed && !exited) 
 			return;  // still on the same line in the same function?
-
-		if (core->profiler->profilingDataWanted && core->profiler->profileSwitch && !core->sampler()->sampling)
+		
+		Profiler* profiler = core->profiler();
+		Sampler* s = core->get_sampler();
+		if (profiler && profiler->profilingDataWanted && profiler->profileSwitch && !(s && s->sampling()))
 		{
-			core->profiler->sendLineTimestamp(line);
+			profiler->sendLineTimestamp(line);
 		}
 
 		// tracing information
-		traceLine(line);
+		if (!exited)
+			traceLine(line);
 
 		// check if we should stop due to breakpoint or step
 		bool stop = false;
 		if (stepState.flag)
 		{
-			if (stepState.startingDepth != -1 && core->callStack->depth < stepState.startingDepth)
+			if (stepState.startingDepth != -1 && core->callStack->depth() < stepState.startingDepth)
 			{
 				// We stepped out of whatever function was executing when the
 				// stepInto/stepOver/stepOut command was executed.  We may be
@@ -151,7 +154,7 @@ namespace avmplus
 				// immediately.  See bug 126633.
 				stop = true;
 			}
-			else if (!exited && (stepState.depth == -1 || core->callStack->depth <= stepState.depth) ) 
+			else if (!exited && (stepState.depth == -1 || core->callStack->depth() <= stepState.depth) ) 
 			{
 				// We reached the beginning of a new line of code.
 				stop = true;
@@ -161,14 +164,13 @@ namespace avmplus
 		// we didn't decide to stop due to a step, but check if we hit a breakpoint
 		if (!stop && !exited)
 		{
-			AbstractFunction* f = core->callStack->info;
-			if ( (f->flags & AbstractFunction::ABSTRACT_METHOD) == 0) 
+			MethodInfo* f = core->callStack->info();
+			if (f && f->hasMethodBody()) 
 			{
-				MethodInfo* m = (MethodInfo*)f;
-				AbcFile* abc = m->getFile();
+				AbcFile* abc = f->file();
 				if (abc)
 				{
-					SourceFile* source = abc->sourceNamed( core->callStack->filename );
+					SourceFile* source = abc->sourceNamed( core->callStack->filename() );
 					if (source && source->hasBreakpoint(line))
 					{
 						stop = true;
@@ -207,16 +209,17 @@ namespace avmplus
 
 		AvmAssert(filename != 0);
 
-		Stringp prev = core->callStack->filename;
-		core->callStack->filename = filename;
+		Stringp prev = core->callStack->filename();
+		core->callStack->set_filename(filename);
 
 		// filename changed
 		if (prev != filename) 
 		{
-			if (core->profiler->profilingDataWanted && !core->sampler()->sampling)
+			Profiler* profiler = core->profiler();
+			Sampler* s = core->get_sampler();
+			if (profiler && profiler->profilingDataWanted && !(s && s->sampling()))
 			{
-				UTF8String* sourceFile = filename->toUTF8String();
-				core->profiler->sendDebugFileUrl(sourceFile);
+				profiler->sendDebugFileURL(filename);
 			}
 		}
 	}
@@ -231,7 +234,7 @@ namespace avmplus
 		traceMethod(env->method);
 
 		// can't debug native methods
-		if ( !(env->method->flags & MethodInfo::NATIVE) )
+		if (!env->method->isNative())
 			debugMethod(env);
 	}
 
@@ -244,7 +247,7 @@ namespace avmplus
 		in_trace = false;
 	}
 	
-	void Debugger::traceMethod(AbstractFunction* fnc, bool ignoreArgs)
+	void Debugger::traceMethod(MethodInfo* fnc, bool ignoreArgs)
 	{
 		if (in_trace) return;
 		in_trace = true;
@@ -258,10 +261,11 @@ namespace avmplus
 			if (fnc)
 			{
 				// WARNING: don't change the format of output since outside utils depend on it
-				uint64 delta = OSDep::currentTimeMillis() - astraceStartTime;
+				uint64 delta = VMPI_getTime() - astraceStartTime;
 				core->console << (uint32)(delta) << " AVMINF: MTHD ";
-				if (fnc->name && (fnc->name->length() > 0) )
-					core->console << fnc->name;
+				Stringp fname = fnc->getMethodName();
+				if (fname && (fname->length() > 0) )
+					core->console << fname;
 				else
 					core->console << "<unknown>";
 				
@@ -271,10 +275,10 @@ namespace avmplus
 					core->console << traceArgumentsString();
 
 				core->console << ")";
-				if (!fnc->isFlagSet(AbstractFunction::SUGGEST_INTERP))
+				if (!fnc->suggestInterp())
 				{
 					core->console << " @ 0x";			
-					core->console.writeHexAddr( (uintptr)fnc->impl32);
+					core->console.writeHexAddr( (uintptr)fnc->impl32());
 				}
 				core->console << "\n";		
 			}
@@ -295,10 +299,10 @@ namespace avmplus
 		// console level trace
 		if (astrace_console >= TRACE_METHODS_AND_LINES)
 		{
-			Stringp file = core->callStack->filename;
+			Stringp file = core->callStack->filename();
 
 			// WARNING: don't change the format of output since outside utils depend on it
-			uint64 delta = OSDep::currentTimeMillis() - astraceStartTime;
+			uint64 delta = VMPI_getTime() - astraceStartTime;
 			core->console << (uint32)(delta) << " AVMINF: LINE ";
 			if (file)
 				core->console << "   " << line << "\t\t " << file << "\n";
@@ -310,17 +314,19 @@ namespace avmplus
 
 	void Debugger::traceCallback(int line)
 	{
-		if (!core->callStack && core->callStack->env)
+		if (!core->callStack && core->callStack->env())
 			return;
 			
-		Stringp file = ( core->callStack->filename ) ? Stringp(core->callStack->filename) : Stringp(core->kEmptyString);
+		Stringp file = ( core->callStack->filename() ) ? Stringp(core->callStack->filename()) : Stringp(core->kEmptyString);
 		Stringp name = core->kEmptyString;
 		Stringp args = core->kEmptyString;
 
-		MethodEnv* env = core->callStack->env;
+		MethodEnv* env = core->callStack->env();
 		if (env->method)
 		{
-			name = ( env->method->name != 0 ) ? Stringp(env->method->name) : Stringp(core->kEmptyString);
+			name = env->method->getMethodName();
+			if (!name)
+				name = core->kEmptyString;
 			if ((line == 0) && (astrace_callback == TRACE_METHODS_WITH_ARGS || astrace_callback == TRACE_METHODS_AND_LINES_WITH_ARGS))
 				args = traceArgumentsString();
 		}
@@ -331,13 +337,9 @@ namespace avmplus
 		TRY(core, kCatchAction_ReportAsError)
 		{
 			trace_callback->call(argc, argv);
-			if (core->dprof.dprofile)
-				core->dprof.endmark();
 		}
 		CATCH(Exception *exception)
 		{
-			if (core->dprof.dprofile)
-				core->dprof.endmark();
 			(void) exception;
 			//core->uncaughtException(exception);
 		}
@@ -353,7 +355,7 @@ namespace avmplus
 		Atom* arr;
 		if (frame && frame->arguments(arr, count))
 		{
-			Stringp comma = core->newString(",");
+			Stringp comma = core->newConstantStringLatin1(",");
 			for(int i=0; i<count; i++)
 			{
 				args = core->concatStrings(args, core->format(arr[i]));
@@ -378,8 +380,8 @@ namespace avmplus
 		scanResources(abc, pool);
 
 		// build a bridging table from pools to abcs
-        uintptr index = abcList.size();
-		pool2abcIndex.add(pool, (const void *)index);
+		uintptr index = abcList.size();
+		pool2abcIndex.add(pool, (const void*)index);
 
 		// at this point our abc object has been populated with
 		// source file objects and should ready to go. 
@@ -394,19 +396,17 @@ namespace avmplus
 	void Debugger::scanResources(AbcFile* file, PoolObject* pool)
 	{
 		// walk all methods 
-		int mCount = pool->methodCount;
-		for(int i=0; i<mCount; i++)
+		for(uint32_t i=0, n = pool->methodCount(); i<n; i++)
 		{
-			AbstractFunction* f = pool->methods[i];
+			MethodInfo* f = pool->getMethodInfo(i);
 			if (f->hasMethodBody())
 			{
 				// yes there is code for this method
-				MethodInfo* m = (MethodInfo*)f;
-				if (m->body_pos)
+				if (f->abc_body_pos())
 				{
 					// if body_pos is null we havent got the body yet or
 					// this is an interface method
-					scanCode(file, pool, m);
+					scanCode(file, pool, f);
 				}
 			}
 		}
@@ -418,16 +418,13 @@ namespace avmplus
 	 */
 	bool Debugger::scanCode(AbcFile* file, PoolObject* pool, MethodInfo* m)
 	{
-		const byte *abc_start = &m->pool->code()[0];
+		const byte *abc_start = &m->pool()->code()[0];
 
-		const byte *pos = m->body_pos;
+		const byte *pos = m->abc_body_pos();
 
 		m->setFile(file);
 
-		AvmCore::readU30(pos); // max_stack
-		AvmCore::readU30(pos); // local_count;
-		AvmCore::readU30(pos); // init_stack_depth;
-		AvmCore::readU30(pos); // max_stack_depth;
+		AvmCore::skipU30(pos, 4); // max_stack; local_count; init_stack_depth; max_stack_depth;
 		int code_len = AvmCore::readU30(pos);
 
 		const byte *start = pos;
@@ -438,7 +435,7 @@ namespace avmplus
 		SourceFile* active = NULL; // current source file
         for (const byte* pc=start; pc < end; pc += size)
         {
-            op_count = opOperandCount[*pc];
+            op_count = opcodeInfo[*pc].operandCount;
 			if (op_count == -1 && *pc != OP_lookupswitch)
 				return false; // ohh very bad, verifier will catch this
 
@@ -523,7 +520,7 @@ namespace avmplus
 		const int MAX_FRAMES = 500; // we need a max, for perf. reasons (bug 175526)
 		CallStackNode* trace = core->callStack;
 		int count = 1;
-		while( (trace = trace->next) != 0 && count < MAX_FRAMES )
+		while( (trace = trace->next()) != 0 && count < MAX_FRAMES )
 			count++;
 		return count;
 	}
@@ -554,7 +551,7 @@ namespace avmplus
 		int count = 0;
 		CallStackNode* trace = core->callStack;
 		while(count++ < frameNbr && trace != NULL)
-			trace = trace->next;
+			trace = trace->next();
 
 		return trace;
 	}
@@ -653,20 +650,13 @@ namespace avmplus
 
 		// line numbers for a given function don't always come in sequential
 		// order -- for example, I've seen them come out of order if a function
-		// contains an inner anonymous function -- so, compare the new line
-		// against firstSourceLine every time we get called
-		if (func->firstSourceLine == 0 || linenum < func->firstSourceLine)
-			func->firstSourceLine = linenum;
+		// contains an inner anonymous function -- so, update every time we get called
+		func->updateSourceLines(linenum, offset);
 
-		if (func->offsetInAbc == 0 || offset < func->offsetInAbc)
-			func->offsetInAbc = offset;
-
-		if (func->lastSourceLine == 0 || linenum > func->lastSourceLine)
-			func->lastSourceLine = linenum;
-
+        MMgc::GC *gc = core->GetGC();
 		if (sourceLines == NULL)
-			sourceLines = new (core->GetGC()) BitSet();
-		sourceLines->set(linenum);
+			sourceLines = new (gc) BitSet();
+		sourceLines->set(gc,linenum);
 	}
 
 	int SourceFile::functionCount() const 
@@ -684,9 +674,10 @@ namespace avmplus
 		if (sourceLines == NULL || !sourceLines->get(linenum))
 			return false;
 
+        MMgc::GC *gc = GC::GetGC(this);
 		if (breakpoints == NULL)
-			breakpoints = new (GC::GetGC(this)) BitSet();
-		breakpoints->set(linenum);
+			breakpoints = new (gc) BitSet();
+		breakpoints->set(gc, linenum);
 		return true;
 	}
 
@@ -708,6 +699,8 @@ namespace avmplus
 		, debugger(debug)
 		, frameNbr(nbr)
 	{
+		AvmAssert(tr != NULL);
+		AvmAssert(debug != NULL);
 	}
 
 	/**
@@ -717,15 +710,14 @@ namespace avmplus
 	bool DebugStackFrame::sourceLocation(SourceInfo*& source, int& linenum)
 	{
 		// use the method info to locate the abcfile / source 
-		AbstractFunction* m = trace->info;
-		if (trace->filename && debugger)
+		if (trace->info() && trace->filename() && debugger)
 		{
-			uintptr index = (uintptr)debugger->pool2abcIndex.get(Atom((PoolObject*)m->pool));
+			uintptr index = (uintptr)debugger->pool2abcIndex.get(Atom(trace->info()->pool()));
 
 			AbcFile* abc = (AbcFile*)debugger->abcAt((int)index);
-			source = abc->sourceNamed(trace->filename);
+			source = abc->sourceNamed(trace->filename());
 		}
-		linenum = trace->linenum;
+		linenum = trace->linenum();
 
 		// valid info?
 		return (source != NULL && linenum > 0);
@@ -737,10 +729,9 @@ namespace avmplus
 	bool DebugStackFrame::dhis(Atom& a)
 	{
 		bool worked = false;
-		if (trace->framep)
+		if (trace->framep() && trace->info())
 		{
-			MethodInfo* info = (MethodInfo*)trace->info;
-			info->boxLocals(trace->framep, 0, trace->traits, &a, 0, 1); // pull framep[0] = [this] 
+			trace->info()->boxLocals(trace->framep(), 0, trace->traits(), &a, 0, 1); // pull framep[0] = [this] 
 			worked = true;
 		}
 		else
@@ -757,7 +748,7 @@ namespace avmplus
 	bool DebugStackFrame::arguments(Atom*& ar, int& count)
 	{
 		bool worked = true;
-		if (trace->framep)
+		if (trace->framep() && trace->info())
 		{
 			int firstArgument, pastLastArgument;
 			argumentBounds(&firstArgument, &pastLastArgument);
@@ -766,8 +757,8 @@ namespace avmplus
 			{
 				// pull the args into an array -- skip [0] which is [this]
 				ar = (Atom*) debugger->core->GetGC()->Calloc(count, sizeof(Atom), GC::kContainsPointers|GC::kZero);
-				MethodInfo* info = (MethodInfo*)trace->info;
-				info->boxLocals(trace->framep, firstArgument, trace->traits, ar, 0, count);
+				MethodInfo* info = trace->info();
+				info->boxLocals(trace->framep(), firstArgument, trace->traits(), ar, 0, count);
 			}
 		}
 		else
@@ -781,7 +772,7 @@ namespace avmplus
 	bool DebugStackFrame::setArgument(int which, Atom& val)
 	{
 		bool worked = false;
-		if (trace->framep)
+		if (trace->framep() && trace->info())
 		{
 			int firstArgument, pastLastArgument;
 			argumentBounds(&firstArgument, &pastLastArgument);
@@ -789,8 +780,8 @@ namespace avmplus
 			if (count > 0 && which < count)
 			{
 				// copy the single arg over
-				MethodInfo* info = (MethodInfo*)trace->info;
-				info->unboxLocals(&val, 0, trace->traits, trace->framep, firstArgument+which, 1);
+				MethodInfo* info = trace->info();
+				info->unboxLocals(&val, 0, trace->traits(), trace->framep(), firstArgument+which, 1);
 				worked = true;
 			}
 		}
@@ -804,7 +795,7 @@ namespace avmplus
 	bool DebugStackFrame::locals(Atom*& ar, int& count)
 	{
 		bool worked = true;
-		if (trace->framep)
+		if (trace->framep() && trace->info())
 		{
 			int firstLocal, pastLastLocal;
 			localBounds(&firstLocal, &pastLastLocal);
@@ -814,14 +805,14 @@ namespace avmplus
 			{
 				// frame looks like [this][param0...paramN][local0...localN]
 				ar = (Atom*) debugger->core->GetGC()->Calloc(count, sizeof(Atom), GC::kContainsPointers|GC::kZero);
-				MethodInfo* info = (MethodInfo*)trace->info;
-				info->boxLocals(trace->framep, firstLocal, trace->traits, ar, 0, count);
+				MethodInfo* info = trace->info();
+				info->boxLocals(trace->framep(), firstLocal, trace->traits(), ar, 0, count);
 
-				// If NEED_REST or NEED_ARGUMENTS is set, and the MIR is being used, then the first
+				// If NEED_REST or NEED_ARGUMENTS is set, and the jit is being used, then the first
 				// local is actually not an atom at all -- it is an ArrayObject*.  So, we need to
-				// convert it to an atom.  (If the interpreter is being used instead of the MIR, then
+				// convert it to an atom.  (If the interpreter is being used instead of the jit, then
 				// it is stored as an atom.)
-				if (info->flags & (AbstractFunction::NEED_REST | AbstractFunction::NEED_ARGUMENTS))
+				if (info->needRestOrArguments())
 				{
 					int atomType = ar[0] & 7;
 					if (atomType == 0) // 0 is not a legal atom type, so ar[0] is not an atom
@@ -843,15 +834,15 @@ namespace avmplus
 	bool DebugStackFrame::setLocal(int which, Atom& val)
 	{
 		bool worked = false;
-		if (trace->framep)
+		if (trace->framep() && trace->info())
 		{
 			int firstLocal, pastLastLocal;
 			localBounds(&firstLocal, &pastLastLocal);
 			int count = pastLastLocal - firstLocal;
 			if (count > 0 && which < count)
 			{
-				MethodInfo* info = (MethodInfo*)trace->info;
-				if (which == 0 && (info->flags & (AbstractFunction::NEED_REST | AbstractFunction::NEED_ARGUMENTS)))
+				MethodInfo* info = trace->info();
+				if (which == 0 && info->needRestOrArguments())
 				{
 					// They are trying to modify the first local, but that is actually the special
 					// array for "...rest" or for "arguments".  That is too complicated to allow
@@ -860,7 +851,7 @@ namespace avmplus
 				else
 				{
 					// copy the single arg over
-					info->unboxLocals(&val, 0, trace->traits, trace->framep, firstLocal+which, 1);
+					info->unboxLocals(&val, 0, trace->traits(), trace->framep(), firstLocal+which, 1);
 					worked = true;
 				}
 			}
@@ -879,10 +870,10 @@ namespace avmplus
 	void DebugStackFrame::localBounds(int* firstLocal, int* pastLastLocal)
 	{
 		*firstLocal = indexOfFirstLocal();
-		if (trace->framep)
+		if (trace->framep() && trace->info())
 		{
-			MethodInfo* info = (MethodInfo*) trace->info;
-			*pastLastLocal = info->local_count;
+			const MethodSignature* ms = trace->info()->getMethodSignature();
+			*pastLastLocal = ms->local_count();
 		}
 		else
 		{
@@ -902,7 +893,10 @@ namespace avmplus
 		// (2) if the caller passed in too few args to a function that has some
 		//     default parameters, we want to display the args with their default
 		//     values.
-		return 1 + trace->info->param_count;
+		if (!trace->info())
+			return 0;
+		MethodSignaturep ms = trace->info()->getMethodSignature();
+		return 1 + ms->param_count();
 	}
 
 }

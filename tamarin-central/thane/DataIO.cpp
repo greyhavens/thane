@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -38,7 +39,7 @@
 
 #include "avmthane.h"
 
-namespace thane
+namespace avmthane
 {
     #define M_ERROR_CLASS(class_id) ((ErrorClass*)m_toplevel->getPlayerClass(avmplus::NativeID::abcclass_##class_id))
 	
@@ -109,7 +110,15 @@ namespace thane
 		Read(buffer, length);
 		buffer[length] = 0;
 		
-		String *out = m_toplevel->core()->newString(buffer);
+		// Since this is supposed to read UTF8 into a string, it really should ignore the UTF8 BOM that
+		// might reasonably occur at the head of the data.
+		char* utf8chars = buffer;
+		if (length >= 3 && (unsigned char)buffer[0] == 0xEF && (unsigned char)buffer[1] == 0xBB && (unsigned char)buffer[2] == 0xBF) 
+		{
+			utf8chars += 3;
+		}
+
+		String *out = m_toplevel->core()->newStringUTF8(utf8chars);
 		delete [] buffer;
 		
 		return out;
@@ -213,20 +222,20 @@ namespace thane
 
 	void DataOutput::WriteUTF(String *str)
 	{
-		UTF8String* utf8 = str->toUTF8String();
-		uint32 length = utf8->length();
+		StUTF8String utf8(str);
+		uint32 length = utf8.length();
 		if (length > 65535) {
 			ThrowRangeError();
 		}
 		WriteU16((unsigned short)length);
-		Write(utf8->c_str(), length*sizeof(char));
+		Write(utf8.c_str(), length*sizeof(char));
 	}
 
 	void DataOutput::WriteUTFBytes(String *str)
 	{
-		UTF8String* utf8 = str->toUTF8String();
-		int len = utf8->length();
-		Write(utf8->c_str(), len*sizeof(char));
+		StUTF8String utf8(str);
+		int len = utf8.length();
+		Write(utf8.c_str(), len*sizeof(char));
 	}
 	
 	void DataOutput::WriteByteArray(ByteArray& buffer,

@@ -107,7 +107,7 @@
 					tc++;
 					break;
 
-				case "0":
+				case 0:
             		testcases[tcZero] = new TestCase(
                 		SECTION,
                 		"object[" + PropertyArray[i] +"]",
@@ -177,7 +177,7 @@
 					tc++
 					break;
 
-				case "0":
+				case 0:
             		testcases[tcZero] = new TestCase(
                 		SECTION,
                 		"object[" + PropertyArray[i] +"]",

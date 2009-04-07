@@ -52,10 +52,11 @@ function getTestCases() {
     var item = 0;
 
     // Dates around jan 1, 2032
-    array[item++] = new TestCase( SECTION, "Date(2031,11,31,23,59,59)",     true, (new Date()).toString() == Date(2031,11,31,23,59,59));
-    array[item++] = new TestCase( SECTION, "Date(2032,0,1,0,0,0)",          true, (new Date()).toString() == Date(2032,0,1,0,0,0) );
-    array[item++] = new TestCase( SECTION, "Date(2032,0,1,0,0,1)",          true, (new Date()).toString() == Date(2032,0,1,0,0,1) );
-    array[item++] = new TestCase( SECTION, "Date(2031,11,31,16,0,0,0)",     true, (new Date()).toString() == Date(2031,11,31,16,0,0,0));
+    array[item++] = new TestCase( SECTION, "Date(2031,11,31,23,59,59)",     true, compareDate((new Date()).toString(), Date(2031,11,31,23,59,59)));
+    array[item++] = new TestCase( SECTION, "Date(2032,0,1,0,0,0)",          true, compareDate((new Date()).toString(), Date(2032,0,1,0,0,0) ));
+    array[item++] = new TestCase( SECTION, "Date(2032,0,1,0,0,1)",          true, compareDate((new Date()).toString(), Date(2032,0,1,0,0,1) ));
+    array[item++] = new TestCase( SECTION, "Date(2031,11,31,16,0,0,0)",     true, compareDate((new Date()).toString(), Date(2031,11,31,16,0,0,0)));
 
     return ( array );
 }
+

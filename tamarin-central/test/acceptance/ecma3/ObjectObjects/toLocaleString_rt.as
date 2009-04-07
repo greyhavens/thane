@@ -57,7 +57,7 @@ function getTestCases() {
 	// work around for bug 175820
     array[item++] = new TestCase( SECTION,  "myvar = MyObject; myvar.toLocaleString = Object.prototype.toLocaleString; myvar.toLocaleString()",
                                             true,
-                                            (myvar = MyObject, myvar.toLocaleString = Object.prototype.toLocaleString, myvar.toLocaleString())=="[object Function-4]" ||
+                                            (myvar = MyObject, myvar.toLocaleString = Object.prototype.toLocaleString, myvar.toLocaleString()).match(/\[object Function-[0-9]+\]/) != null ||
                                             (myvar = MyObject, myvar.toLocaleString = Object.prototype.toLocaleString, myvar.toLocaleString())=="[object null]" 
                                              );
 

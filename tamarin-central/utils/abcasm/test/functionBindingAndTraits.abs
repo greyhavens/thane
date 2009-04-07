@@ -1,0 +1,70 @@
+/*
+ *  Test trait definitions, function lookup by name,
+ *  explicit function-level metadata
+ */
+.script_info
+{
+	init : .function_id(main)
+	//  trait_count accumulated and set by the assembler, 
+	//  can also be specified
+	traits: {
+	.trait{ kind:Trait_Slot name:x slot_id:1 type_name:String}
+	.trait{ kind:Trait_Slot name:foo }
+	.trait{ kind:Trait_Slot name:three slot_id:3 type_name:int}
+	}
+}
+
+/*
+Equivalent syntactic sugar for the above traits:
+var x:String
+var one:int = 1
+var foo
+*/
+
+function main():*      
+{
+	getlocal0
+	pushscope
+	getglobalscope
+	debugfile "zuul"
+	newfunction         .function_id(foo)
+	setslot             .slot_id(foo)
+	pushstring          "hello, x-land"
+	getglobalscope
+	swap
+	setslot             .slot_id(x)
+	debugline 9
+	findpropstrict      foo
+	getlocal0
+	callproperty        foo 1
+	coerce_a
+	returnvalue
+}
+
+
+.method_info
+{
+	return_type:int
+	//param_count:2
+	//param_type:{int, int}
+	name:foo
+}
+
+.method_body_info {
+	max_stack:3 local_count:3 init_scope_depth:1 max_scope_depth:2 
+	method: .function_id(foo)
+	code:
+	{
+		getlocal0
+		pushscope
+		findpropstrict      {package,private}::print
+		getglobalscope
+		getslot             .slot_id(x)  //  NOTE: lexical scoping!
+		callpropvoid        {package,private}::print 1
+		returnvoid
+	}
+	traits : {
+		.trait { kind:Trait_Slot name:poot type_name:String slot_id:1}
+	}
+}
+

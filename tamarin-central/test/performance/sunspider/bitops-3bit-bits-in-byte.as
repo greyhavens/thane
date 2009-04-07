@@ -49,14 +49,23 @@ addr3,r3,r10
 function TimeFunc(func) {
 var x, y, t;
 for(var x=0; x<500; x++)
-for(var y=0; y<256; y++) func(y);
+ for(var y=0; y<256; y++) 
+  res=func(y);
+return res;
 }
 
-
-function runBitops3bitBitsInByte() {
-  var _sunSpiderStartDate = new Date();
-  TimeFunc(fast3bitlookup);
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+if (CONFIG::desktop) {
+    var start=new Date();
+    var res=TimeFunc(fast3bitlookup);
+    var totaltime=new Date()-start;
 }
-print("metric 3bit-bits-in-byte "+runBitops3bitBitsInByte());
+else { // mobile
+    var start=getTimer();
+    var res=TimeFunc(fast3bitlookup);
+    var totaltime=getTimer()-start;
+}
+print("fast3bitlookup="+res);
+if (res==8)
+   print("metric time "+totaltime);
+else
+   print("error fast3bitlookup expected 8 actual "+res);

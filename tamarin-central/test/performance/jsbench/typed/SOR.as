@@ -1,9 +1,10 @@
 var size:int;
 
-  var datasizes:Vector.<int> = new Vector.<int>(3,true);
+  var datasizes:Vector.<int> = new Vector.<int>(4,true);
   datasizes[0] = 1000;
   datasizes[1] = 1500;
   datasizes[2] = 2000;
+  datasizes[3] = 225;
 
   var JACOBI_NUM_ITER:int = 100;
 
@@ -20,10 +21,17 @@ var size:int;
   {
     return _randomInt()/16777216;
   }
-  var start=new Date();
-  JGFrun(0);
-  var elapsed=new Date()-start;
-  print("metric jsbench-sor "+elapsed);
+  if (CONFIG::desktop) {
+      var start = new Date();
+      JGFrun(0);
+      var elapsed = new Date() - start;
+  }
+  else { // mobile
+      var start = getTimer();
+      JGFrun(3);
+      var elapsed = getTimer() - start;
+  }
+  print("metric time "+elapsed);
   function JGFsetsize(sizel:int):void {
     size = sizel;
   }
@@ -42,10 +50,11 @@ var size:int;
 
   function JGFvalidate():void {
 
-    var refval:Vector.<Number> = new Vector.<Number>(3,true);
+    var refval:Vector.<Number> = new Vector.<Number>(4,true);
     refval[0] = 0.49819968382576163; //0.4984199298207158;
     refval[1] = 1.122043587235093;
     refval[2] = 1.9967774998523777;
+    refval[3] = 0.024878259186755635
     var dev:Number = Math.abs(Gtotal - refval[size]);
     if (dev > 1.0e-12) {
       print("Validation failed");

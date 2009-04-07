@@ -38,19 +38,8 @@
 
 #include "avmthane.h"
 
-namespace thane
+namespace avmthane
 {
-	BEGIN_NATIVE_MAP(DomainClass)
-		NATIVE_METHOD(avmplus_Domain_private_doLoadBytes, DomainObject::loadBytes)
-		NATIVE_METHOD(avmplus_Domain_currentDomain_get, DomainClass::get_currentDomain)
-		NATIVE_METHOD(avmplus_Domain_getClass, DomainObject::getClass)
-        NATIVE_METHOD(avmplus_Domain_getVariables, DomainObject::getVariables)
-		NATIVE_METHOD(avmplus_Domain_getClassName, DomainObject::getClassName)
-		NATIVE_METHOD(avmplus_Domain_isAssignableAs, DomainObject::isAssignableAs)
-		NATIVE_METHOD(avmplus_Domain_isDynamic, DomainObject::isDynamic)
-		NATIVE_METHOD(avmplus_Domain_private_initNewDomain, DomainObject::constructFromDomain)
-	END_NATIVE_MAP()
-	
 	DomainObject::DomainObject(VTable *vtable, ScriptObject *delegate)
 		: ScriptObject(vtable, delegate)
 	{
@@ -60,31 +49,17 @@ namespace thane
 	{
 	}
 
-	void DomainObject::constructFromDomain(DomainObject *parentDomain)
+    void DomainObject::initNewDomain()
 	{
 		Shell *core = (Shell*) this->core();
 
-		Domain* baseDomain;
-		if (parentDomain) {
-			baseDomain = parentDomain->domainEnv->getDomain();
-		} else {
-			baseDomain = core->builtinDomain;
-		}
-		
-		Domain* domain = new (core->GetGC()) Domain(core, baseDomain);
+        Domain* domain = new (core->GetGC()) Domain(core, core->builtinDomain);
 
-        DomainEnv *baseEnv;
-		if (parentDomain) {
-			domainToplevel = parentDomain->domainToplevel;
-            baseEnv = parentDomain->domainEnv;
-		} else {
-			domainToplevel = core->initShellBuiltins();
-            baseEnv = domainToplevel->domainEnv();
-		}
-        domainEnv = new (core->GetGC()) DomainEnv(core, domain, baseEnv);
+        domainToplevel = core->initShellBuiltins();
+        domainEnv = new (core->GetGC()) DomainEnv(core, domain, domainToplevel->domainEnv());
 	}
 
-	Atom DomainObject::loadBytes(ByteArrayObject *b)
+	Atom DomainObject::doLoadBytes(ByteArrayObject *b)
 	{
 		AvmCore* core = this->core();
 		if (!b)
@@ -96,15 +71,15 @@ namespace thane
 		// parse new bytecode
 		size_t len = b->get_length();
 		ScriptBuffer code = core->newScriptBuffer(len);
-		memcpy(code.getBuffer(), &b->GetByteArray()[0], len); 
+		VMPI_memcpy(code.getBuffer(), &b->GetByteArray()[0], len); 
 		Toplevel *toplevel = domainToplevel;
 		return core->handleActionBlock(code, 0,
 								  domainEnv,
 								  toplevel,
-								  NULL, NULL, NULL, codeContext);
+								  NULL, codeContext);
 	}
 
-	ScriptObject* DomainObject::finddef(Multiname* multiname,
+	ScriptObject* DomainObject::finddef(const Multiname& multiname,
 										DomainEnv* domainEnv)
 	{
 		Toplevel* toplevel = this->toplevel();
@@ -133,22 +108,20 @@ namespace thane
 		if (name == NULL) {
 			toplevel()->throwArgumentError(kNullArgumentError, core->toErrorString("name"));
 		}
+
 			
 		// Search for a dot from the end.
-		int dot;
-		for (dot=name->length()-1; dot >= 0; dot--)
-			if ((*name)[dot] == (wchar)'.')
-				break;
+        int dot = name->lastIndexOf(core->cachedChars[(int)'.']);
 		
 		// If there is a '.', this is a fully-qualified
 		// class name in a package.  Must turn it into
 		// a namespace-qualified multiname.
 		Namespace* ns;
 		Stringp className;
-		if (dot != -1) {
-			Stringp uri = core->internString(new (core->GetGC()) String(name, 0, dot));
+		if (dot >= 0) {
+            Stringp uri = core->internString(name->substring(0, dot));
 			ns = core->internNamespace(core->newNamespace(uri));
-			className = core->internString(new (core->GetGC()) String(name, dot+1, name->length()-(dot+1)));
+            className = core->internString(name->substring(dot+1, name->length()));
 		} else {
 			ns = core->publicNamespace;
 			className = core->internString(name);
@@ -156,7 +129,9 @@ namespace thane
 
 		Multiname multiname(ns, className);
 
-		ScriptObject *container = finddef(&multiname, domainEnv);
+        // OOO: In the distribution, we search core->codeContext()->domainEnv rather than
+        // our own domainEnv, which is surely a bug?
+        ScriptObject *container = finddef(multiname, domainEnv);
 		if (!container) {
 			toplevel()->throwTypeError(kClassNotFoundError, core->toErrorString(&multiname));
 		}
@@ -164,7 +139,7 @@ namespace thane
 											&multiname,
 											container->vtable);
 
-		if (!core->istype(atom, core->traits.class_itraits)) {
+		if (!AvmCore::istype(atom, core->traits.class_itraits)) {
 			toplevel()->throwTypeError(kClassNotFoundError, core->toErrorString(&multiname));
 		}
 		return (ClassClosure*)AvmCore::atomToScriptObject(atom);
@@ -174,7 +149,7 @@ namespace thane
     {
         ArrayObject *result = toplevel()->arrayClass->newArray(0);
 
-        Traits *traits = getTraits(a);
+        TraitsBindingsp traits = getTraits(a)->getTraitsBindings();
         int i = 0;
         while ((i = traits->next(i)) != 0) {
             Namespace *ns = traits->nsAt(i);
@@ -210,7 +185,7 @@ namespace thane
         if (traits->itraits != NULL) {
             traits = traits->itraits;
         }
-        return traits->needsHashtable;
+        return traits->needsHashtable();
     }
 
     Traits *DomainObject::getTraits (Atom a)
@@ -261,4 +236,20 @@ namespace thane
 		
 		return domainObject;
 	}
+
+      int DomainClass::get_MIN_DOMAIN_MEMORY_LENGTH()
+      {
+          return Domain::GLOBAL_MEMORY_MIN_SIZE;
+      }
+
+      ScriptObject *DomainObject::get_domainMemory() const
+      {
+          return domainEnv->domain()->globalMemory();
+      }
+
+      void DomainObject::set_domainMemory(ScriptObject *mem)
+      {
+          if(!domainEnv->domain()->setGlobalMemory(mem))
+              toplevel()->throwError(kEndOfFileError);
+      }
 }

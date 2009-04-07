@@ -41,6 +41,8 @@
 
 namespace avmshell
 {
+	class File;
+
 	/**
 	 * InputStream is an abstract base class for input streams.
 	 * Concrete subclasses must implement the available and read
@@ -50,8 +52,8 @@ namespace avmshell
 	{
 	public:
 		virtual ~InputStream() {}
-		virtual int available() = 0;
-		virtual int read(void *buffer, int count) = 0;
+		virtual int64_t available() = 0;
+		virtual size_t read(void *buffer, size_t count) = 0;
 	};
 
 	/**
@@ -62,16 +64,17 @@ namespace avmshell
 	{
 	public:
 		FileInputStream(const char *filename);
+
 		bool valid() const;
 		~FileInputStream();
-		int available();
-		int length() const { return len; }
-		void seek(int offset);
-		int read(void *buffer, int count);
+		int64_t available();
+		int64_t length() const { return len; }
+		void seek(int64_t offset);
+		size_t read(void *buffer, size_t count);
 
 	private:
-		FILE *file;
-		long len;
+		File *file;
+		int64_t len;
 	};
 }
 

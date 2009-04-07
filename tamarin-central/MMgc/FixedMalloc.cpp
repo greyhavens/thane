@@ -37,18 +37,13 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-// For memset
-#include <string.h>
-
 #include "MMgc.h"
 
 namespace MMgc
 {
-	FixedMalloc *FixedMalloc::instance = NULL;
-
 	// Size classes for our Malloc.  We start with a 4 byte allocator and then from
 	// 8 to 128, size classes are spaced evenly 8 bytes apart, then from 128 to 1968 they
-#ifdef MMGC_AMD64
+#ifdef MMGC_64BIT
 	// The upper entries of the table (>128) are sized to 
 	// match the kSizeClassIndex which uses the number-of-entries
 	// per block to pick an allocator.  For example, if you want to 
@@ -60,7 +55,7 @@ namespace MMgc
 	// lowest 8 bytes.  If someone was allocating 801 bytes, it would get rounded
 	// up to 808 and then go into the 4-per-block allocator (4032/808=4.99).
 
-	const int16 FixedMalloc::kSizeClasses[kNumSizeClasses] = {
+	const int16_t FixedMalloc::kSizeClasses[kNumSizeClasses] = {
 		8, 16, 24, 32, 40, 48, 56, 64, 72, 80, //0-9
 		88, 96, 104, 112, 120, 128,	136, 144, 152, 160, //10-19
 		168, 176, 192, 208, 224, 232, 248, 264, 288, 304, //20-29
@@ -70,14 +65,14 @@ namespace MMgc
 
 	// This is an index which indicates that allocator i should be used
 	// if kSizeClassIndex[i] items fit into a 4096 byte page.
-	const uint8 FixedMalloc::kSizeClassIndex[32] = {
+	const uint8_t FixedMalloc::kSizeClassIndex[32] = {
 		40, 40, 40, 39, 38, 37, 36, 35, 34, 33, //0-9
 		32, 31, 30, 29, 28, 27, 26, 25, 24, 23, //10-19
 		23, 22, 21, 20, 20, 19, 18, 17, 17, 16, //20-29
 		15, 15  //30-31
 	};
 	/*
-	const int16 FixedMalloc::kSizeClasses[kNumSizeClasses] = {
+	const int16_t FixedMalloc::kSizeClasses[kNumSizeClasses] = {
 		4, 8, 16, 24, 32, 40, 48, 56, 64, 72, //0-9
 		80, 88, 96, 104, 112, 120, 128,	144, 160, 168, //10-19
         183, 192, 201, 211, 224, 235, 251, 267, 288, 310, //20-29
@@ -85,7 +80,7 @@ namespace MMgc
 		2032, //40
 	};
 
-	const uint8 FixedMalloc::kSizeClassIndex[32] = {
+	const uint8_t FixedMalloc::kSizeClassIndex[32] = {
 		40, 40, 40, 39, 38, 37, 36, 35, 34, 33, //0-10
 		32, 31, 30, 29, 28, 27, 26, 25, 24, 23, //10-19
 		22, 21, 20, 19, 19, 18, 18, 18, 17, 17, //20-29
@@ -94,7 +89,7 @@ namespace MMgc
 	*/
 
 #else
-	const int16 FixedMalloc::kSizeClasses[kNumSizeClasses] = {
+	const int16_t FixedMalloc::kSizeClasses[kNumSizeClasses] = {
 		4, 8, 16, 24, 32, 40, 48, 56, 64, 72, //0-9
 		80, 88, 96, 104, 112, 120, 128,	144, 160, 176, //10-19
         184, 192, 200, 208, 224, 232, 248, 264, 288, 312, //20-29
@@ -104,7 +99,7 @@ namespace MMgc
 
 	// This is an index which indicates that allocator i should be used
 	// if kSizeClassIndex[i] items fit into a 4096 byte page.
-	const uint8 FixedMalloc::kSizeClassIndex[32] = {
+	const uint8_t FixedMalloc::kSizeClassIndex[32] = {
 		40, 40, 40, 39, 38, 37, 36, 35, 34, 33, //0-10
 		32, 31, 30, 29, 28, 27, 26, 25, 24, 23, //10-19
 		22, 21, 20, 19, 19, 18, 18, 18, 17, 17, //20-29
@@ -112,22 +107,17 @@ namespace MMgc
 	};
 
 #endif
-	void FixedMalloc::Init()
+	/*static*/
+	FixedMalloc* FixedMalloc::GetInstance()
 	{
-		GCAssert(instance == NULL);
-		instance = new FixedMalloc(GCHeap::GetGCHeap());
+		return GCHeap::GetGCHeap()->GetFixedMalloc(); 
 	}
 
-	void FixedMalloc::Destroy()
+	void FixedMalloc::_Init(GCHeap* heap)
 	{
-		GCAssert(instance != NULL);
-		delete instance;
-		instance = NULL;
-	}
 
-	FixedMalloc::FixedMalloc(GCHeap* heap)
-	{
 		m_heap = heap;
+		numLargeChunks = 0;
 		// Create all the allocators up front (not lazy)
 		// so that we don't have to check the pointers for
 		// NULL on every allocation.
@@ -140,6 +130,7 @@ namespace MMgc
 		}
 
 #ifdef _DEBUG 
+		const int kPageUsableSpace = GCHeap::kBlockSize - offsetof(MMgc::FixedAlloc::FixedBlock, items);
 		// sanity check our tables
 		for (int size8 = 136; size8 < 2016; size8 += 8)
 		{
@@ -159,7 +150,7 @@ namespace MMgc
 #endif
 	}
 
-	FixedMalloc::~FixedMalloc()
+	void FixedMalloc::_Destroy()
 	{
 		for (int i=0; i<kNumSizeClasses; i++) {
 			FixedAllocSafe *a = m_allocs[i];
@@ -167,14 +158,15 @@ namespace MMgc
 		}		
 	}
 
-	size_t FixedMalloc::Allocated()
+	size_t FixedMalloc::GetBytesInUse()
 	{
 		size_t bytes = 0;
 		for (int i=0; i<kNumSizeClasses; i++) {
 			FixedAllocSafe *a = m_allocs[i];
-			bytes += a->Allocated();
+			bytes += a->GetBytesInUse();
 		}
-		// FIXME: what about big blocks?
+		// not entirely accurate
+		bytes += numLargeChunks * GCHeap::kBlockSize;
 		return bytes;
 	}
 
@@ -182,11 +174,11 @@ namespace MMgc
 	{
 		GCAssertMsg(size > 0, "cannot allocate a 0 sized block\n");
 
-		uint32 size8 = (uint32)((size+7)&~7); // round up to multiple of 8
+		uint32_t size8 = (uint32_t)((size+7)&~7); // round up to multiple of 8
 
 		// Buckets up to 128 are spaced evenly at 8 bytes.
 		if (size <= 128) {
-#ifdef MMGC_AMD64
+#ifdef MMGC_64BIT
 			unsigned index = size8 ? ((size8 >> 3) - 1) : 0;
 #else
 			unsigned index = size > 4 ? size8 >> 3 : 0;
@@ -204,6 +196,7 @@ namespace MMgc
 		// This is the fast lookup table implementation to
 		// find the right allocator.
 		// FIXME: do this w/o division!
+		const int kPageUsableSpace = GCHeap::kBlockSize - offsetof(MMgc::FixedAlloc::FixedBlock, items);
 		unsigned index = kSizeClassIndex[kPageUsableSpace/size8];
 
 		// assert that I fit
@@ -212,7 +205,52 @@ namespace MMgc
 		// assert that I don't fit (makes sure we don't waste space
 		GCAssert(size > m_allocs[index-1]->GetItemSize());
 
-	    return m_allocs[index];
+	  return m_allocs[index];
+	}
+
+	void *FixedMalloc::LargeAlloc(size_t size)
+	{
+		size += DebugSize();
+		int blocksNeeded = (int)GCHeap::SizeToBlocks(size);
+		void *item = m_heap->Alloc(blocksNeeded, true, false);
+		if(!item)
+		{
+			GCAssertMsg(item != NULL, "Large allocation failed!");
+		}
+		else
+		{
+			numLargeChunks += blocksNeeded;
+		}
+		item = GetUserPointer(item);
+		if(m_heap->HooksEnabled())
+			m_heap->AllocHook(item, Size(item));
+		return item;
+	}
+	
+	
+	void FixedMalloc::LargeFree(void *item)
+	{
+		if(m_heap->HooksEnabled()) {
+			m_heap->FinalizeHook(item, Size(item));
+			m_heap->FreeHook(item, Size(item), 0xfa);
+		}
+		numLargeChunks -= GCHeap::SizeToBlocks(LargeSize(item));
+		m_heap->Free(GetRealPointer(item));
+	}
+	
+	size_t FixedMalloc::LargeSize(const void *item)
+	{
+		return m_heap->Size(item) * GCHeap::kBlockSize;
+	}
+
+	size_t FixedMalloc::GetTotalSize()
+	{
+		size_t total = numLargeChunks;
+		for (int i=0; i<kNumSizeClasses; i++) {
+			FixedAllocSafe *a = m_allocs[i];
+			total += a->GetNumChunks();
+		}	
+		return total;
 	}
 }
 

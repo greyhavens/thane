@@ -38,27 +38,25 @@
 #ifndef __avmshell__
 #define __avmshell__
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "avmplus.h"
-
-// interactive shell requires functional external compiler, not yet
-// present in Tamarin. commented out for now.
-// #define AVMPLUS_INTERACTIVE
+#include "Selftest.h"
+#include "Platform.h"
+#include "File.h"
 
 using namespace avmplus;
 
-// avmplus and NSPR both typedef some basic types: we must disambiguate
-using avmplus::uint64;
-using avmplus::uint32;
-using avmplus::uint16;
-using avmplus::uint8;
 
 namespace avmshell
 {
 	class ByteArrayObject;
 	class ByteArray;
+	// avmplus and NSPR both typedef some basic types: we must disambiguate
+	//using avmplus::uintptr;
+	//using avmplus::uint64;
+	//using avmplus::uint32;
+	//using avmplus::uint16;
+	//using avmplus::uint8;
+	//using avmplus::wchar;
 }
 
 namespace avmplus
@@ -69,7 +67,6 @@ namespace avmplus
 #include "FileInputStream.h"
 #include "ConsoleOutputStream.h"
 #include "SystemClass.h"
-#include "StringBuilderClass.h"
 #include "FileClass.h"
 #include "DomainClass.h"
 #include "DebugCLI.h"
@@ -80,6 +77,9 @@ namespace avmplus
 #include "SamplerScript.h"
 #include "JavaGlue.h"
 
+#define INT32_T_MAX		0x7FFFFFFF	//max value for a 32-bit integer
+#define UINT32_T_MAX	0xFFFFFFFF	//max value for a 32-bit unsigned integer
+
 #ifdef _MSC_VER
 #pragma warning(disable:4996)
 #endif
@@ -88,12 +88,17 @@ namespace avmplus
 {
 	namespace NativeID
 	{
-        #include "toplevel.h"
+        #include "shell_toplevel.h"
     }
 }
 
 namespace avmshell
-{
+{ 
+	// exit codes
+	enum {
+		OUT_OF_MEMORY = 128,
+	};
+	
 	class ShellCodeContext : public CodeContext
 	{
 	  public:
@@ -109,54 +114,75 @@ namespace avmshell
 	class Shell : public AvmCore
 	{
 	public:
-		Shell(MMgc::GC *gc);
-		void usage();
-		int main(int argc, char *argv[]);
+		static int run(int argc, char *argv[]);
 
 		void interrupt(MethodEnv *env);
 		void stackOverflow(MethodEnv *env);
 
-		void initShellPool();
-		Toplevel* initShellBuiltins();
-
 		void setEnv(Toplevel *toplevel, int argc, char *argv[]);
 
-		SystemClass* systemClass;
-		
-	private:
-		DECLARE_NATIVE_CLASSES()
-		DECLARE_NATIVE_SCRIPTS()			
+		virtual Toplevel* createToplevel(AbcEnv* abcEnv);
+		Toplevel* initShellBuiltins();
 
-		ConsoleOutputStream *consoleOutputStream;
-		bool gracePeriod;
-		bool inStackOverflow;
+		SystemClass* systemClass;
 		PoolObject* shellPool;
 
-		bool executeProjector(int argc, char *argv[], int& exitCode);
+	protected:
+		Shell(MMgc::GC *gc);
 		
-		void computeStackBase();
-		
-		#ifdef DEBUGGER
-		DebugCLI *debugCLI;
-		#endif
+		void initShellPool();
+		void usage();
 
-		// for interactive
-		#ifdef AVMPLUS_INTERACTIVE
-		int addToImports(char* imports, char* addition);
-		#endif //AVMPLUS_INTERACTIVE
+		bool executeProjector(int argc, char *argv[], int& exitCode);
+
+		static void interruptTimerCallback(void* data);
+#ifdef VMCFG_EVAL
+		void repl(Toplevel* toplevel, DomainEnv* domainEnv);
+		String* decodeBytesAsUTF16String(uint8_t* bytes, uint32_t nbytes, bool terminate=false);
+		virtual String* readFileForEval(String* referencing_filename, String* filename);
+#endif // VMCFG_EVAL
+
+	private:
+		OutputStream *consoleOutputStream;
+		bool gracePeriod;
+		bool inStackOverflow;
+		int allowDebugger;
+
+		int execute(int argc, char *argv[]);
+		
+	#ifdef DEBUGGER
+	protected:
+		virtual avmplus::Debugger* createDebugger() { AvmAssert(allowDebugger >= 0); return allowDebugger ? new (GetGC()) DebugCLI(this) : NULL; }
+		virtual avmplus::Profiler* createProfiler() { AvmAssert(allowDebugger >= 0); return allowDebugger ? new (GetGC()) Profiler(this) : NULL; }
+	private:
+		inline DebugCLI* debugCLI() { return (DebugCLI*)debugger(); }
+	#endif
 	};
 
-	class AvmplusScript : public ScriptObject
+	class ShellToplevel : public Toplevel
 	{
-
 	public:
-		AvmplusScript(VTable *vtable, ScriptObject* delegate)
-			: ScriptObject(vtable, delegate)
-		{
+		ShellToplevel(AbcEnv* abcEnv);
+
+		Shell* core() const {
+			return (Shell*)Toplevel::core();
 		}
 
+		virtual ClassClosure *getBuiltinExtensionClass(int class_id) 
+		{ 
+            return shellClasses[class_id] ? shellClasses[class_id] : resolveShellClass(class_id);
+		}
 
-		DECLARE_NATIVE_SCRIPT(AvmplusScript)
+	private:
+
+		ClassClosure* resolveShellClass(int class_id)
+		{
+			ClassClosure* cc = findClassInPool(class_id, core()->shellPool);
+			WBRC(core()->GetGC(), shellClasses, &shellClasses[class_id], cc);
+			return cc;
+		}
+
+		DWB(ClassClosure**) shellClasses;
 	};
 }
 

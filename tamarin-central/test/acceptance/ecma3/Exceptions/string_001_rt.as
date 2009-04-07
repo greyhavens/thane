@@ -68,7 +68,6 @@ function getTestCases() {
         " (threw " + typeError(exception) +")",
         expect,
         result );
-    trace(exception);
 
     return array;
 }

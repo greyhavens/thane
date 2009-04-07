@@ -45,21 +45,23 @@
 
 namespace avmplus
 {
-	uint64 OSDep::currentTimeMillis()
-	{
-		return timeGetTime();
-	}
-
 	void CALLBACK intWriteTimerProc(UINT, UINT, DWORD_PTR dwUser, DWORD_PTR, DWORD_PTR)
 	{
 		int *i = (int*)dwUser;
 		*i = 1;
 	}
 
+    // The constant TIME_KILL_SYNCHRONOUS is only available if WINVER >= 0x0501 (== WinXP)
+    static const UINT kTimeKillSynchronous = 0x0100;
+
 	uintptr OSDep::startIntWriteTimer(uint32 millis, int *addr)
 	{
 		return (uintptr) timeSetEvent(millis, millis, (LPTIMECALLBACK)intWriteTimerProc, (DWORD_PTR)addr, 
-			TIME_PERIODIC | TIME_CALLBACK_FUNCTION | TIME_KILL_SYNCHRONOUS);
+			TIME_PERIODIC | TIME_CALLBACK_FUNCTION
+#ifndef UNDER_CE
+			| kTimeKillSynchronous
+#endif
+			);
 	}
 
 	void OSDep::stopTimer(uintptr handle)

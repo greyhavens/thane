@@ -168,23 +168,22 @@ namespace avmplus
 		return outLen;		
 	}
 	
-	int UnicodeUtils::Utf8ToUtf16(const uint8 *in,
-								  int inLen,
-								  wchar *out,
-								  int outMax)
+	int32_t UnicodeUtils::Utf8ToUtf16(const uint8 *in,
+								      int32_t inLen,
+								      wchar *out,
+								      int32_t outMax, 
+									  bool strict)
 	{
-		int outLen = 0;
-		unsigned int outch;
+		int32_t outLen = 0;
+		uint32_t outch;
 		while (inLen > 0)
 		{
-			unsigned int c = *in;
+			uint32_t c = uint32_t (*in);
 
 			switch (c >> 4)
 			{
 			case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-			default:
 				// 0xxx xxxx
-				// OR not a valid utf-8 character
 				// Let the converted == false case handle this.
 				break;
 				
@@ -192,16 +191,16 @@ namespace avmplus
 				// 110xxxxx   10xxxxxx
 				if (inLen < 2) {
 					// Invalid
-					break;
+					goto invalid;
 				}
 				if ((in[1]&0xC0) != 0x80) {
 					// Invalid
-					break;
+					goto invalid;
 				}
 				outch = (c<<6 & 0x7C0 | in[1] & 0x3F);
 				if (outch < 0x80) {
 					// Overlong sequence, reject as invalid.
-					break;
+					goto invalid;
 				}
 				in += 2;
 				inLen -= 2;
@@ -218,16 +217,16 @@ namespace avmplus
 				// 1110xxxx  10xxxxxx  10xxxxxx
 				if (inLen < 3) {
 					// Invalid
-					break;
+					goto invalid;
 				}
 				if ((in[1]&0xC0) != 0x80 || (in[2]&0xC0) != 0x80) {
 					// Invalid
-					break;
+					goto invalid;
 				}
 				outch = (c<<12 & 0xF000 | in[1]<<6 & 0xFC0 | in[2] & 0x3F);
 				if (outch < 0x800) {
 					// Overlong sequence, reject as invalid.
-					break;
+					goto invalid;
 				}
 				in += 3;
 				inLen -= 3;
@@ -242,24 +241,26 @@ namespace avmplus
 
 			case 15:
 				// 11110xxx  10xxxxxx  10xxxxxx  10xxxxxx
-				if (inLen < 4) {
+				// 111110xx ... is always invalid
+				// 1111110x ... is always invalid
+				if ((c & 0x08) || (inLen < 4)) {
 					// Invalid
-					break;
+					goto invalid;
 				}
 				if ((in[1]&0xC0) != 0x80 ||
 					(in[2]&0xC0) != 0x80 ||
 					(in[3]&0xC0) != 0x80)
 				{
-					break;
+					goto invalid;
 				}
 				
 				outch = (c<<18     & 0x1C0000 |
-						in[1]<<12 & 0x3F000 &
-						in[2]<<6  & 0xFC0 |
-						in[3]     & 0x3F);
+						 in[1]<<12 & 0x3F000 |
+						 in[2]<<6  & 0xFC0 |
+						 in[3]     & 0x3F);
 				if (outch < 0x10000) {
 					// Overlong sequence, reject as invalid.
-					break;
+					goto invalid;
 				}
 
 				in += 4;
@@ -275,6 +276,11 @@ namespace avmplus
 				}
 				outLen += 2;
 				continue;
+			default:
+			invalid:
+				if (strict)
+					return -1;
+				// else fall thru
 			}
 
 			// ! converted
@@ -291,114 +297,9 @@ namespace avmplus
 		return outLen;
 	}
 
-	int UnicodeUtils::Utf8Count(const uint8 *in,
-								  int inLen)
-	{
-		int outLen = 0;
-		unsigned int outch;
-		while (inLen > 0)
-		{
-			unsigned int c = *in;
-			const uint8 *inbase = in;
-
-			while (c <= 0x7f)
-			{
-				if (--inLen == 0)
-					return outLen+(1+(int)(in-inbase));
-				c = *(++in);
-			}
-			outLen += (int)(in-inbase);
-
-			switch (c >> 4)
-			{
-			default:
-			case 8: case 9: case 10: case 11:
-				// 10xxxxxx
-				// not a valid utf-8 character
-				// Let the converted == false case handle this.
-				break;
-				
-			case 12: case 13:
-				// 110xxxxx   10xxxxxx
-				if (inLen < 2) {
-					// Invalid
-					break;
-				}
-				if ((in[1]&0xC0) != 0x80) {
-					// Invalid
-					break;
-				}
-				outch = (c<<6 & 0x7C0 | in[1] & 0x3F);
-				if (outch < 0x80) {
-					// Overlong sequence, reject as invalid.
-					break;
-				}
-				in += 2;
-				inLen -= 2;
-				outLen++;
-				continue;
-
-			case 14:
-				// 1110xxxx  10xxxxxx  10xxxxxx
-				if (inLen < 3) {
-					// Invalid
-					break;
-				}
-				if ((in[1]&0xC0) != 0x80 || (in[2]&0xC0) != 0x80) {
-					// Invalid
-					break;
-				}
-				outch = (c<<12 & 0xF000 | in[1]<<6 & 0xFC0 | in[2] & 0x3F);
-				if (outch < 0x800) {
-					// Overlong sequence, reject as invalid.
-					break;
-				}
-				in += 3;
-				inLen -= 3;
-				outLen++;
-				continue;
-
-			case 15:
-				// 11110xxx  10xxxxxx  10xxxxxx  10xxxxxx
-				if (inLen < 4) {
-					// Invalid
-					break;
-				}
-				if ((in[1]&0xC0) != 0x80 ||
-					(in[2]&0xC0) != 0x80 ||
-					(in[3]&0xC0) != 0x80)
-				{
-					break;
-				}
-				
-				outch =				  (c<<18     & 0x1C0000 |
-									   in[1]<<12 & 0x3F000 &
-									   in[2]<<6  & 0xFC0 |
-									   in[3]     & 0x3F);
-				if (outch < 0x10000) {
-					// Overlong sequence, reject as invalid.
-					break;
-				}
-
-				in += 4;
-				inLen -= 4;				
-
-				// Encode as UTF-16 surrogate sequence
-				outLen += 2;
-				continue;
-			}
-
-			// not converted if we get here
-			inLen--;
-			in++;
-			outLen++;
-		}
-		return outLen;
-	}
-								  
-	int UnicodeUtils::Utf8ToUcs4(const uint8 *chars,
-								 int len,
-								 uint32 *out)
+	int32_t UnicodeUtils::Utf8ToUcs4(const uint8 *chars,
+								     int32_t len,
+								     uint32_t *out)
 	{
 		// U-00000000 - U-0000007F: 	0xxxxxxx
 		// U-00000080 - U-000007FF: 	110xxxxx 10xxxxxx
@@ -418,8 +319,8 @@ namespace avmplus
 			0x00200000,
 			0x04000000
 		};
-		int n = 0;
-		uint32 b;
+		int32_t n = 0;
+		uint32_t b;
 		if (len < 1) {
 			return 0;
 		}
@@ -473,8 +374,8 @@ namespace avmplus
 		return n;
 	}
 
-	int UnicodeUtils::Ucs4ToUtf8(uint32 value,
-								 uint8 *chars)
+	int32_t UnicodeUtils::Ucs4ToUtf8(uint32_t value,
+								     uint8 *chars)
 	{
 		// U-00000000 - U-0000007F: 	0xxxxxxx
 		// U-00000080 - U-000007FF: 	110xxxxx 10xxxxxx

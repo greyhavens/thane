@@ -87,7 +87,7 @@ while (top > bot)
   {
   int mid = (top + bot) / 2;
   uschar *entry = nametable + entrysize*mid;
-  int c = strcmp(stringname, (char *)(entry + 2));
+  int c = VMPI_strcmp(stringname, (char *)(entry + 2));
   if (c == 0) return (entry[0] << 8) + entry[1];
   if (c > 0) bot = mid + 1; else top = mid;
   }
@@ -138,19 +138,19 @@ while (top > bot)
   {
   int mid = (top + bot) / 2;
   uschar *entry = nametable + entrysize*mid;
-  int c = strcmp(stringname, (char *)(entry + 2));
+  int c = VMPI_strcmp(stringname, (char *)(entry + 2));
   if (c == 0)
     {
     uschar *first = entry;
     uschar *last = entry;
     while (first > nametable)
       {
-      if (strcmp(stringname, (char *)(first - entrysize + 2)) != 0) break;
+      if (VMPI_strcmp(stringname, (char *)(first - entrysize + 2)) != 0) break;
       first -= entrysize;
       }
     while (last < lastentry)
       {
-      if (strcmp(stringname, (char *)(last + entrysize + 2)) != 0) break;
+      if (VMPI_strcmp(stringname, (char *)(last + entrysize + 2)) != 0) break;
       last += entrysize;
       }
     *firstptr = (char *)first;
@@ -241,7 +241,7 @@ if (stringnumber < 0 || stringnumber >= stringcount)
 stringnumber *= 2;
 yield = ovector[stringnumber+1] - ovector[stringnumber];
 if (size < yield + 1) return PCRE_ERROR_NOMEMORY;
-memcpy(buffer, subject + ovector[stringnumber], yield);
+VMPI_memcpy(buffer, subject + ovector[stringnumber], yield);
 buffer[yield] = 0;
 return yield;
 }
@@ -330,7 +330,7 @@ p = (char *)(stringlist + stringcount + 1);
 for (i = 0; i < double_count; i += 2)
   {
   int len = ovector[i+1] - ovector[i];
-  memcpy(p, subject + ovector[i], len);
+  VMPI_memcpy(p, subject + ovector[i], len);
   *stringlist++ = p;
   p += len;
   *p++ = 0;
@@ -398,7 +398,7 @@ stringnumber *= 2;
 yield = ovector[stringnumber+1] - ovector[stringnumber];
 substring = (char *)(pcre_malloc)(yield + 1);
 if (substring == NULL) return PCRE_ERROR_NOMEMORY;
-memcpy(substring, subject + ovector[stringnumber], yield);
+VMPI_memcpy(substring, subject + ovector[stringnumber], yield);
 substring[yield] = 0;
 *stringptr = substring;
 return yield;

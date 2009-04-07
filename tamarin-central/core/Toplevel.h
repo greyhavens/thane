@@ -41,60 +41,49 @@
 
 namespace avmplus
 {
+	class IntVectorClass;
+	class UIntVectorClass;
+	class DoubleVectorClass;
+	class ObjectVectorClass;
+	class VectorClass;
+
 	/**
 	 * class Toplevel
 	 */
-    class Toplevel : public ScriptObject
+    class Toplevel : public MMgc::GCObject 
     {
 	public:
-		/**
-		 * Constructor
-		 */
-		Toplevel(VTable* vtable, ScriptObject* delegate);
-		~Toplevel();
+		Toplevel(AbcEnv*);
+		virtual ~Toplevel() {} // silence compiler warnings
+		
+		inline AbcEnv* abcEnv() const { return _abcEnv; }
+		inline DomainEnv* domainEnv() const { return _abcEnv->domainEnv(); }
+		inline AvmCore* core() const { return _abcEnv->pool()->core; }
+		inline MMgc::GC* gc() const { return core()->GetGC(); }
+		inline ScriptObject* global() const { return _global; }
+		inline Atom atom() const { return _global->atom(); }
+		ScriptEnv* mainEntryPoint() const;
 
-		/**
-		 * @name actionscript.lang Classes
-		 * These are the toplevel class closures.
-		 */
-		/*@{*/
-		DRCWB(ArrayClass*)     arrayClass;
-		DRCWB(BooleanClass*)   booleanClass;
-		DRCWB(ClassClass*)     classClass;
-		DateClass*           dateClass() { return (DateClass*)getBuiltinClass(avmplus::NativeID::abcclass_Date); }
-		DRCWB(FunctionClass*)  functionClass;		
-		DRCWB(MethodClosureClass*)  methodClosureClass;		
-		DRCWB(NamespaceClass*) namespaceClass;
-		DRCWB(NumberClass*)    numberClass;
-		DRCWB(IntClass*)       intClass;
-		DRCWB(UIntClass*)      uintClass;
-		DRCWB(ObjectClass*)    objectClass;
-		DRCWB(IntVectorClass*) intVectorClass;
-		DRCWB(DoubleVectorClass*)    doubleVectorClass;
-		DRCWB(UIntVectorClass*)   uintVectorClass;
-		DRCWB(ObjectVectorClass*)    objectVectorClass;
-		DRCWB(VectorClass*)    vectorClass;
-		RegExpClass*         regexpClass() { return (RegExpClass*)getBuiltinClass(avmplus::NativeID::abcclass_RegExp); }
-		DRCWB(StringClass*)    stringClass;
-		XMLClass*            xmlClass() { return (XMLClass*)getBuiltinClass(avmplus::NativeID::abcclass_XML); }
-		XMLListClass*        xmlListClass() { return (XMLListClass*)getBuiltinClass(avmplus::NativeID::abcclass_XMLList); }
-		QNameClass*          qnameClass() { return (QNameClass*)getBuiltinClass(avmplus::NativeID::abcclass_QName); }
-		/*@}*/
-
+		DateClass* dateClass();
+		RegExpClass* regexpClass();
+		XMLClass* xmlClass();
+		XMLListClass* xmlListClass();
+		QNameClass* qnameClass();
 		/**
 		 * @name Error Subclasses
 		 * These are subclasses of Error used in the VM.
 		 */
 		/*@{*/
-		ErrorClass *errorClass() const { return getErrorClass(avmplus::NativeID::abcclass_Error); }
-		ErrorClass *argumentErrorClass() const { return getErrorClass(avmplus::NativeID::abcclass_ArgumentError); }
-		ErrorClass *evalErrorClass() const { return getErrorClass(avmplus::NativeID::abcclass_EvalError); }
-		ErrorClass *typeErrorClass() const { return getErrorClass(avmplus::NativeID::abcclass_TypeError); }
-		ErrorClass *rangeErrorClass() const { return getErrorClass(avmplus::NativeID::abcclass_RangeError); }
-		ErrorClass *uriErrorClass() const { return getErrorClass(avmplus::NativeID::abcclass_URIError); }
-		ErrorClass *referenceErrorClass() const { return getErrorClass(avmplus::NativeID::abcclass_ReferenceError); }
-		ErrorClass *securityErrorClass() const { return getErrorClass(avmplus::NativeID::abcclass_SecurityError); }
-		ErrorClass *verifyErrorClass() const { return getErrorClass(avmplus::NativeID::abcclass_VerifyError); }
+		ErrorClass* errorClass() const;
+		ErrorClass* argumentErrorClass() const;
+		ErrorClass* evalErrorClass() const;
+		ErrorClass* typeErrorClass() const;
+		ErrorClass* rangeErrorClass() const;
+		ErrorClass* uriErrorClass() const;
+		ErrorClass* referenceErrorClass() const;
+		ErrorClass* securityErrorClass() const;
+		ErrorClass* syntaxErrorClass() const;
+		ErrorClass* verifyErrorClass() const;
 		/*@}*/
 
 		void throwVerifyError(int id) const;
@@ -110,6 +99,7 @@ namespace avmplus
 		void throwTypeError(int id) const;
 		void throwTypeError(int id, Stringp arg1) const;
 		void throwTypeError(int id, Stringp arg1, Stringp arg2) const;
+		void throwTypeErrorWithName(int id, const char* namestr) const;
 
 		void throwError(int id) const;
 		void throwError(int id, Stringp arg1) const;
@@ -125,11 +115,11 @@ namespace avmplus
 		void throwRangeError(int id, Stringp arg1, Stringp arg2) const;
 		void throwRangeError(int id, Stringp arg1, Stringp arg2, Stringp arg3) const;
 
-		void throwReferenceError(int id, Multiname* multiname, const Traits* traits) const;
-		void throwReferenceError(int id, Multiname* multiname) const;
+		void throwReferenceError(int id, const Multiname* multiname, const Traits* traits) const;
+		void throwReferenceError(int id, const Multiname* multiname) const;
 
-		DWB(VTable*) object_vtable; // instance vtable
-		DWB(VTable*) class_vtable; // instance vtable
+		inline void throwReferenceError(int id, const Multiname& multiname, const Traits* traits) const { throwReferenceError(id, &multiname, traits); }
+		inline void throwReferenceError(int id, const Multiname& multiname) const { throwReferenceError(id, &multiname); }
 
 		// 
 		// methods that used to be on AvmCore but depend on the caller's environment
@@ -164,10 +154,10 @@ namespace avmplus
 
 
 		/** Implementation of OP_callproperty */
-		Atom callproperty(Atom base, Multiname* name, int argc, Atom* atomv, VTable* vtable);
+		Atom callproperty(Atom base, const Multiname* name, int argc, Atom* atomv, VTable* vtable);
 
 		/** Implementation of OP_constructprop */
-		Atom constructprop(Multiname* name, int argc, Atom* atomv, VTable* vtable);
+		Atom constructprop(const Multiname* name, int argc, Atom* atomv, VTable* vtable);
 		
 		/**
 		* OP_applytype.
@@ -196,13 +186,21 @@ namespace avmplus
 		/**
 		 * E4X support for coercing regular Multinames into E4X specific ones
 		 */
-		void CoerceE4XMultiname (Multiname *m, Multiname &out) const;
+		void CoerceE4XMultiname (const Multiname *m, Multiname &out);
 
 		/**
 		 * operator instanceof from ES3
 		 */
 		Atom instanceof(Atom atom, Atom ctor);
 
+		/** returns the instance traits of the factorytype of the passed atom */
+		Traits* toClassITraits(Atom atom);
+
+		/**
+		 * operator in from ES3
+		 */
+		Atom in_operator(Atom name, Atom obj);
+		
 		/**
 		 * This is the implicit coercion operator.  It is kind of like a
 		 * Java downcast, but because of how E4 works, there are some cases
@@ -230,22 +228,34 @@ namespace avmplus
 		 * @param b The binding of the property
 		 * @param traits The traits of the object
 		 */
-		Atom getproperty(Atom obj, Multiname* name, VTable* vtable);
+		Atom getproperty(Atom obj, const Multiname* name, VTable* vtable);
 
-	    void setproperty(Atom obj, Multiname* multiname, Atom value, VTable* vtable) const;
-	    void setproperty_b(Atom obj, Multiname* multiname, Atom value, VTable* vtable, Binding b) const;
+		/**
+		 * Determines if a specified object has a specified property
+		 * where the property is specified by a multiname.
+		 * @param obj Object on which to look for the property
+		 * @param multiname The name of the property
+		 * @param vtable The vtable of the object
+		 * @return	true if the object has a readable property with the
+					specified name, false otherwise.
+		 */
+		bool hasproperty(Atom obj, const Multiname* multiname, VTable* vtable);
 
-		bool isXmlBase(Atom obj) const
-		{
-			AvmCore* core = this->core();
-			if (AvmCore::isObject(obj))
-			{
-				ScriptObject* so = AvmCore::atomToScriptObject(obj);
-				Traits* t = so->traits();
-				return t == core->traits.xml_itraits || t == core->traits.xmlList_itraits;
-			}
-			return false;
-		}
+	    /**
+		 * Delete a specified property on a specified object,where the property is specified
+		 * by a multiname.
+		 * @param obj Object on which to look for the specified property.
+		 * @param multiname The name of the property
+		 * @param vtable The vtable of the object
+		 * @return	true if the property is deleted. false if the property cannot be deleted.
+		 */
+		bool deleteproperty( Atom obj, const Multiname* multiname, VTable* vtable ) const;
+
+	    void setproperty(Atom obj, const Multiname* multiname, Atom value, VTable* vtable) const;
+	    void setproperty_b(Atom obj, const Multiname* multiname, Atom value, VTable* vtable, Binding b) const;
+
+		bool isXmlBase(Atom obj) const { return AvmCore::isXMLorXMLList(obj); }
+
 		/**
 		 * operator +
 		 */
@@ -267,17 +277,22 @@ namespace avmplus
 		 * @param traits    The traits of the class
 		 * @param multiname The multiname of the property
 		 */
-		Atom getBinding(Traits* traits, Multiname* multiname) const;
+		Binding getBinding(Traits* traits, const Multiname* multiname) const;
 
 		/**
 		 * @name ECMA-262 Appendix B.2 extensions
 		 * Extensions to ECMAScript, in ECMA-262 Appendix B.2
 		 */
 		/*@{*/
-		Stringp escape(Stringp in);
-		Stringp unescape(Stringp in);
+		static Stringp escape(ScriptObject*, Stringp in);
+		static Stringp unescape(ScriptObject*, Stringp in);
 		/*@}*/
 
+		/**
+		 * E262-3 eval, but for the top level only (no lexical capture)
+		 */
+		static Atom eval(ScriptObject*, Atom in);
+		
 		/**
 		 * This is a variant of escape() which doesn't encode
 		 * Unicode characters using the %u sequence
@@ -289,24 +304,22 @@ namespace avmplus
 		 * Function properties of the global object (ECMA 15.1.2)
 		 */
 		/*@{*/
-		Stringp decodeURI(Stringp uri);
-		Stringp decodeURIComponent(Stringp uri);
-		Stringp encodeURI(Stringp uri);
-		Stringp encodeURIComponent(Stringp uri);
-		bool isNaN(double d);
-		bool isFinite(double d);
-		double parseInt(Stringp in, int radix);
-		double parseFloat(Stringp in);
+		static Stringp decodeURI(ScriptObject*, Stringp uri);
+		static Stringp decodeURIComponent(ScriptObject*, Stringp uri);
+		static Stringp encodeURI(ScriptObject*, Stringp uri);
+		static Stringp encodeURIComponent(ScriptObject*, Stringp uri);
+		static bool isNaN(ScriptObject*, double d);
+		static bool isFinite(ScriptObject*, double d);
+		static double parseInt(ScriptObject*, Stringp in, int radix);
+		static double parseFloat(ScriptObject*, Stringp in);
 		/*@}*/
 
 		// For E4X
-		bool isXMLName(Atom v);
-
-		DECLARE_NATIVE_SCRIPT(Toplevel)
+		static bool isXMLName(ScriptObject*, Atom v);
 
         ClassClosure* getBuiltinClass(int class_id) const
         {
-            return builtinClasses[class_id] ? builtinClasses[class_id] : const_cast<Toplevel*>(this)->resolveBuiltinClass(class_id);
+            return _builtinClasses[class_id] ? _builtinClasses[class_id] : const_cast<Toplevel*>(this)->resolveBuiltinClass(class_id);
         }
 		ErrorClass* getErrorClass(int class_id) const { return (ErrorClass*)getBuiltinClass(class_id); }
 
@@ -315,12 +328,19 @@ namespace avmplus
 		// implementations supporting any of our extensions should override this
 		virtual ClassClosure *getBuiltinExtensionClass(int /*clsid*/) { return NULL; }
 
+		// subclasses can override this to check for security violations
+		// and prohibit certain operations. default implementation always
+		// allows but FlashPlayer takes advantage of this.
+		virtual bool sampler_trusted(ScriptObject* /*sampler*/) { return true; }
+
+	protected:
+		ClassClosure* findClassInPool(int class_id, PoolObject* pool);
+
 	private:
 
-		int parseHexChar(wchar c);
-		wchar extractCharacter(const wchar*& src);
-		Stringp decode(Stringp in, bool decodeURIComponentFlag);
-		Stringp encode(Stringp in, bool encodeURIComponentFlag);
+		static int parseHexChar(wchar c);
+		static Stringp decode(AvmCore* core, Stringp in, bool decodeURIComponentFlag);
+		static Stringp encode(AvmCore* core, Stringp in, bool encodeURIComponentFlag);
 
 		static const uint32 unescaped[];
 		static const uint32 uriUnescaped[];
@@ -332,7 +352,33 @@ namespace avmplus
 		}
 
 		ClassClosure* resolveBuiltinClass(int class_id);
-		DWB(ClassClosure**) builtinClasses;
+
+	// ------------------------ DATA SECTION BEGIN
+	private:
+		DWB(AbcEnv*)				_abcEnv;
+		DWB(ClassClosure**)			_builtinClasses;
+		DRCWB(ScriptObject*)		_global; // the toplevel script that's run
+	public:
+		DWB(VTable*)				object_ivtable;
+		DWB(VTable*)				class_ivtable;
+	public:
+		DRCWB(ArrayClass*)			arrayClass;
+		DRCWB(BooleanClass*)		booleanClass;
+		DRCWB(ClassClass*)			classClass;
+		DRCWB(FunctionClass*)		functionClass;		
+		DRCWB(MethodClosureClass*)  methodClosureClass;		
+		DRCWB(NamespaceClass*)		namespaceClass;
+		DRCWB(NumberClass*)			numberClass;
+		DRCWB(IntClass*)			intClass;
+		DRCWB(UIntClass*)			uintClass;
+		DRCWB(ObjectClass*)			objectClass;
+		DRCWB(IntVectorClass*)		intVectorClass;
+		DRCWB(DoubleVectorClass*)	doubleVectorClass;
+		DRCWB(UIntVectorClass*)		uintVectorClass;
+		DRCWB(ObjectVectorClass*)	objectVectorClass;
+		DRCWB(VectorClass*)			vectorClass;
+		DRCWB(StringClass*)			stringClass;
+	// ------------------------ DATA SECTION END
 	};
 }
 

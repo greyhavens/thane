@@ -77,20 +77,20 @@ function warning(file, line, msg) {
     
 function map(fn, a) {
     var b = [];
-    for ( var i=0 ; i < a.length ; i++ )
+    for ( var i=0, limit=a.length ; i < limit ; i++ )
         if (i in a)
             b[i] = fn(a[i]);
     return b;
 }
 
 function forEach(fn, a) {
-    for ( var i=0 ; i < a.length ; i++ )
+    for ( var i=0, limit=a.length ; i < limit ; i++ )
         if (i in a)
             fn(a[i]);
 }
 
 function memberOf(x, ys) {
-    for ( var i=0 ; i < ys.length ; i++ ) {
+    for ( var i=0, limit=ys.length ; i < limit ; i++ ) {
         if (ys[i] === x)
             return true;
     }
@@ -99,7 +99,7 @@ function memberOf(x, ys) {
 
 function copyArray(c) {
     var a = new Array;
-    for ( var i=0 ; i < c.length ; i++ )
+    for ( var i=0, limit=c.length ; i < limit ; i++ )
         a[i] = c[i];
     return a;
 }
@@ -118,11 +118,14 @@ function hash_number(n) {
     return uint(n);                       // Fairly arbitrary
 }
 
-function hash_string(s) {
+// The type annotation and the explicit namespace has somewhat
+// dramatic effects on performance.
+
+function hash_string(s: String) {
     // See http://www.cse.yorku.ca/~oz/hash.html; this is the djb2 algorithm
     var h = 5381;
     for ( var i=0, limit=s.length ; i < limit ; i++ )
-        h = ((h << 5) + h) + s.charCodeAt(i);
+        h = ((h << 5) + h) + s."http://adobe.com/AS3/2006/builtin"::charCodeAt(i);
     return uint(h);
 }
 
@@ -259,14 +262,6 @@ class ENUM!
     }
 }
 
-// FIXME! The one in ast.es is more reliable.
-
-function eq_namespaces(n1, n2) {
-    if( n1 === n2 )
-        return true;
-    return n1.hash() == n2.hash();
-}
-
 // FIXME!  Does not belong in this file, probably.
     
 internal function printName() 
@@ -281,7 +276,7 @@ class Names
     const table;
 
     function Names() {
-        table = new Hashtable(hash_string, (function (a,b) a === b), null);
+        table = new Hashtable((function (sym) sym.hash), (function (a,b) a === b), null);
     }
         
     function toString()
@@ -294,7 +289,7 @@ class Names
         if(o) {
             for( let i=0, limit=o.length; i<limit; ++i) {
                 let entry = o[i];
-                if(eq_namespaces(entry.namespace, ns))
+                if(Ast::nsEquals(entry.namespace, ns))
                     ret = entry.val;
             } 
         }
@@ -310,7 +305,7 @@ class Names
         }
         let index = 0;
         for( let i = 0, limit=o.length; i < limit; ++i ) {
-            if( eq_namespaces(o[i].namespace, ns) ) {
+            if( Ast::nsEquals(o[i].namespace, ns) ) {
                 index = i;
                 break;
             }

@@ -38,7 +38,6 @@
 #ifndef __avmplus_FrameState__
 #define __avmplus_FrameState__
 
-
 namespace avmplus
 {
 	/**
@@ -48,13 +47,12 @@ namespace avmplus
 	{
 	public:
 		Traits* traits;
+	#if defined FEATURE_NANOJIT
+		LIns* ins;
+	#endif
 		bool notNull;
 		bool isWith;
 		bool killed;
-	#ifdef AVMPLUS_MIR
-		bool stored;  // set if codegen has already stored the OP
-		CodegenMIR::OP* ins;  // spot for codegen to hang data.
-	#endif //AVMPLUS_MIR
 	};
 
 	/**
@@ -66,16 +64,17 @@ namespace avmplus
 	{
 
 	public:
-		sintptr pc;
-		int scopeDepth;
-		int stackDepth;
-		Verifier * const verifier;
-		int withBase;
 		bool initialized;
 		bool targetOfBackwardsBranch;
 		bool insideTryBlock;
-	#ifdef AVMPLUS_MIR
-		CodegenMIR::MirLabel label;
+        bool unused1;
+		int scopeDepth;
+		int stackDepth;
+		int withBase;
+		sintptr pc;
+		Verifier * const verifier;
+	#if defined FEATURE_NANOJIT
+		CodegenLabel label;
 	#endif
 		
 	private:
@@ -97,7 +96,7 @@ namespace avmplus
 			scopeDepth = other->scopeDepth;
 			stackDepth = other->stackDepth;
 			withBase = other->withBase;
-			memcpy(locals, other->locals, verifier->frameSize*sizeof(Value));
+			VMPI_memcpy(locals, other->locals, verifier->frameSize*sizeof(Value));
 			return true;
 		}
 
@@ -106,7 +105,17 @@ namespace avmplus
 			return locals[i];
 		}
 
+		const Value& value(sintptr i) const
+		{
+			return locals[i];
+		}
+
 		Value& scopeValue(int i)
+		{
+			return locals[verifier->scopeBase+i];
+		}
+
+		const Value& scopeValue(int i) const
 		{
 			return locals[verifier->scopeBase+i];
 		}

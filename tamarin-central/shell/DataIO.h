@@ -123,10 +123,12 @@ namespace avmshell
 
 		Endian GetNativeEndian() const
 		{
-			#if defined(AVMPLUS_IA32) || defined(AVMPLUS_AMD64)
+			#if defined(AVMPLUS_LITTLE_ENDIAN)
 			return kLittleEndian;
-			#else
+			#elif defined(AVMPLUS_BIG_ENDIAN)
 			return kBigEndian;
+			#else
+			#error
 			#endif
 		}
 			
@@ -155,8 +157,7 @@ namespace avmshell
 		void ReadByteArray(ByteArray& buffer, uint32 offset, uint32 count);
 
 	protected:
-		// FIXME: make const
-		DRC(Toplevel *) m_toplevel;
+		Toplevel* const m_toplevel;
 
 		void ThrowEOFError();
 		void ThrowMemoryError();
@@ -181,8 +182,7 @@ namespace avmshell
 		void WriteByteArray(ByteArray& buffer, uint32 offset, uint32 count);
 
 	protected:
-		// FIXME: make const
-		DRC(Toplevel *) m_toplevel;
+		Toplevel* const m_toplevel;
 
 		void ThrowRangeError();
 

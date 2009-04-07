@@ -24,8 +24,6 @@
 
 package flash.events {
 
-import avmplus.StringBuilder;
-
 public class Event
 {
     public static const CONNECT :String = "connect";
@@ -89,17 +87,12 @@ public class Event
 
     public function formatToString (className :String, ... arguments) :String
     {
-        var s :StringBuilder = new StringBuilder();
-        s.append("[");
-        s.append(className);
+        var s :String = "[" + className;
         var self :Object = this;
         arguments.forEach (function (name :String, ... unused) {
-            s.append(" ");
-            s.append(name);
-            s.append("=");
-            s.append(self[name]);
+            s += " " + name + "=" + self[name];
         });
-        s.append("]");
+        s += "]";
         return s.toString();
     }
 

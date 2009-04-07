@@ -141,7 +141,7 @@ function toPrinted(value)
   }
 }
 
-function START(summary)
+START = function(summary)
 {
   if ( version ) {
       	//	JavaScript 1.3 is supposed to be compliant ecma	version	1.0
@@ -174,12 +174,12 @@ function START(summary)
   
 }
 
-function BUG(bug)
+BUG = function(bug)
 {
   printBugNumber(bug);
 }
 
-function TEST(section, expected, actual)
+TEST = function(section, expected, actual)
 {
     var expected_t = typeof expected;
     var actual_t = typeof actual;
@@ -187,7 +187,7 @@ function TEST(section, expected, actual)
     AddTestCase(section, expected, actual);
 }
 
-function TEST_XML(section, expected, actual)
+TEST_XML = function(section, expected, actual)
 {
   var actual_t = typeof actual;
   var expected_t = typeof expected;
@@ -207,17 +207,17 @@ function TEST_XML(section, expected, actual)
   }
 }
 
-function SHOULD_THROW(section)
+SHOULD_THROW = function(section)
 {
   reportFailure(section, "Expected to generate exception, actual behavior: no exception was thrown");   
 }
 
-function END()
+END = function()
 {
 	test();
 }
 
-function NL() 
+NL = function() 
 {
   //return java.lang.System.getProperty("line.separator");
   return "\n";
@@ -370,6 +370,7 @@ function grabError(err, str) {
 	}
 	return num;
 }
+
 function myGetNamespace (obj, ns) {
 	if (ns != undefined) {
 		return obj.namespace(ns);

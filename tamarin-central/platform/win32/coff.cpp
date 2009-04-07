@@ -110,7 +110,7 @@ namespace avmplus
 
 		void Coff::addSymbol(const char* s, int value)
 		{
-			int size = strlen(s);					 // the string size
+			int size = VMPI_strlen(s);					 // the string size
 			int allocSize = sizeof(int) + size + 1;  // string length + its content + null terminator
 
 			SymbolEntry_t* symbol = (SymbolEntry_t*) new char[sizeof(SymbolEntry_t)+allocSize]; 

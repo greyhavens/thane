@@ -643,7 +643,7 @@ class AVM2Assembler
 
         if (default_label === undefined) {
             default_label = newLabel();
-            for ( var i=0 ; i < case_labels.length ; i++ ) {
+            for ( var i=0, limit=case_labels.length ; i < limit ; i++ ) {
                 Util::assert( case_labels[i] === undefined );
                 case_labels[i] = newLabel();
             }
@@ -655,7 +655,7 @@ class AVM2Assembler
         code.uint8(0x1B);
         relativeOffset(base, default_label);
         code.uint30(case_labels.length-1);
-        for ( var i=0 ; i < case_labels.length ; i++ )
+        for ( var i=0, limit=case_labels.length ; i < limit ; i++ )
             relativeOffset(base, case_labels[i]);
 
         return default_label;
@@ -806,7 +806,7 @@ class AVM2Assembler
     }
 
     private function resolveBackpatches() {
-        for ( var i=0 ; i < backpatches.length ; i++ ) {
+        for ( var i=0, limit=backpatches.length ; i < limit ; i++ ) {
             var bp = backpatches[i];
             if (bp.label.address == -1)
                 Util::internalError("", 0, "Missing definition for label " + bp.label.name); // FIXME: source pos

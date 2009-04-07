@@ -1,5 +1,5 @@
 
-PUBLIC longjmp
+PUBLIC longjmp64
 PUBLIC _setjmp3
 PUBLIC modInternal
 
@@ -42,7 +42,7 @@ _setjmp3 : ; proc jmp_buf : qword arg : qword
 
 	
 	
-longjmp: ; proc jmp_buf : qword result qword)
+longjmp64: ; proc jmp_buf : qword result qword)
 			
   mov         rax,rdx 
 	

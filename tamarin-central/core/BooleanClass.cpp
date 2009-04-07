@@ -40,9 +40,6 @@
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(BooleanClass)
-	END_NATIVE_MAP()
-
 	BooleanClass::BooleanClass(VTable* cvtable)
 		: ClassClosure(cvtable)
     {
@@ -56,6 +53,6 @@ namespace avmplus
 		if (argc == 0)
 			return falseAtom;
 		else
-			return core()->booleanAtom(argv[1]);
+			return AvmCore::booleanAtom(argv[1]);
 	}
 }

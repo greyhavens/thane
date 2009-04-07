@@ -52,17 +52,28 @@ function nsieve(m, isPrime){
 }
 
 function sieve() {
+    var res;
     for (var i = 1; i <= 3; i++ ) {
         var m = (1<<i)*10000;
         var flags = Array(m+1);
-        nsieve(m, flags);
+        res=nsieve(m, flags);
     }
+    return res;
 }
 
-function runnsieve() {
-  var _sunSpiderStartDate = new Date();
-  sieve();
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+if (CONFIG::desktop) {
+    var start=new Date();
+    var res=sieve();
+    var totaltime=new Date()-start;
 }
-print("metric run-nsieve "+runnsieve());
+else {  // mobile
+    var start=getTimer();
+    var res=sieve();
+    var totaltime=getTimer()-start;
+}
+print("sieve()="+res);
+if (res==7837) {
+   print("metric time "+totaltime);
+} else {
+   print("error sieve() expecting 7837 got "+res);
+}

@@ -35,11 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef __thane_ConsoleOutputStream__
-#define __thane_ConsoleOutputStream__
+#ifndef __avmthane_ConsoleOutputStream__
+#define __avmthane_ConsoleOutputStream__
 
 
-namespace thane
+namespace avmthane
 {
 	/**
 	 * ConsoleOutputStream is a subclass of OutputStream
@@ -56,4 +56,4 @@ namespace thane
 	};
 }
 
-#endif /* __thane_ConsoleOutputStream__ */
+#endif /* __avmthane_ConsoleOutputStream__ */

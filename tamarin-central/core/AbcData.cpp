@@ -36,9 +36,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
+
 namespace avmplus
 {
-	namespace NativeID {
+	namespace NativeID 
+	{
 		#include "builtin.cpp"
 	}
 }

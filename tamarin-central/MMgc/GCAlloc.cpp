@@ -37,19 +37,15 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "MMgc.h"
 
 namespace MMgc
 {
 	GCAlloc::GCAlloc(GC* _gc, int _itemSize, bool _containsPointers, bool _isRC, int _sizeClassIndex) : 
-		m_gc(_gc),
+		m_sizeClassIndex(_sizeClassIndex),
 		containsPointers(_containsPointers), 
 		containsRCObjects(_isRC),
-		m_sizeClassIndex(_sizeClassIndex)
+		m_gc(_gc)
 	{
 		// Round itemSize to the nearest boundary of 8
 		_itemSize = (_itemSize+7)&~7;
@@ -88,7 +84,7 @@ namespace MMgc
 
 		// compute values that let us avoid division
 		GCAssert(m_itemSize <= 0xffff);
-		ComputeMultiplyShift((uint16)m_itemSize, multiple, shift);
+		ComputeMultiplyShift((uint16_t)m_itemSize, multiple, shift);
 	}
 
 	GCAlloc::~GCAlloc()
@@ -97,7 +93,7 @@ namespace MMgc
 		GCAssertMsg(GetNumAlloc() == 0, "You have leaks");
 
 		while (m_firstBlock) {
-			if(((uintptr)m_firstBlock->bits & 0xfff) == 0)
+			if(((uintptr_t)m_firstBlock->bits & 0xfff) == 0)
 				m_gc->GetGCHeap()->Free(m_firstBlock->bits);
 #ifdef _DEBUG
 			// go through every item on the free list and make sure it wasn't written to
@@ -106,13 +102,17 @@ namespace MMgc
 			while(item) {
 				for(int i=3, n=(m_firstBlock->size>>2)-1; i<n; i++)
 				{
-					int data = ((int*)item)[i];
-					if(data != (int32)0xbabababa && data != (int32)0xcacacaca)
+					uint32_t data = ((uint32_t*)item)[i];
+					if(data != 0xbabababa && data != 0xcacacaca)
 					{
 						GCDebugMsg(false, "Object 0x%x was written to after it was deleted, allocation trace:");
+#ifdef MMGC_MEMORY_INFO
 						PrintStackTrace((int*)item+2);
+#endif
 						GCDebugMsg(false, "Deletion trace:");
+#ifdef MMGC_MEMORY_INFO
 						PrintStackTrace((int*)item+3);
+#endif
 						GCDebugMsg(true, "Deleted item write violation!");
 					}
 				}
@@ -133,7 +133,7 @@ namespace MMgc
 		// Get space in the bitmap.  Do this before allocating the actual block,
 		// since we might call GC::AllocBlock for more bitmap space and thus
 		// cause some incremental marking.
-		uint32* bits = NULL;
+		uint32_t* bits = NULL;
 
 		if(!m_bitsInPage)
 			bits = m_gc->GetBits(m_numBitmapBytes, m_sizeClassIndex);
@@ -156,7 +156,7 @@ namespace MMgc
 			else 
 				b->finalizeState = !m_gc->finalizedValue;
 
-			b->bits = m_bitsInPage ? (uint32*)((char*)b + sizeof(GCBlock)) : bits;
+			b->bits = m_bitsInPage ? (uint32_t*)((char*)b + sizeof(GCBlock)) : bits;
 
 			// Link the block at the end of the list
 			b->prev = m_lastBlock;
@@ -221,7 +221,7 @@ namespace MMgc
 	{
 		GCAssert(b->numItems == 0);
 		if(!m_bitsInPage) {
-			memset(b->GetBits(), 0, m_numBitmapBytes);
+			VMPI_memset(b->GetBits(), 0, m_numBitmapBytes);
 			m_gc->FreeBits(b->GetBits(), m_sizeClassIndex);
 			b->bits = NULL;
 		}
@@ -241,7 +241,7 @@ start:
 				return NULL;
 			}
 		}
-	
+
 		GCBlock* b = m_firstFree ? m_firstFree : m_needsSweeping;
 
 		// lazy sweeping
@@ -265,8 +265,8 @@ start:
 			item = b->firstFree;
 			b->firstFree = *((void**)item);
 			// clear free list pointer, the rest was zero'd in free
-			*(sintptr*) item = 0;
-#ifdef MEMORY_INFO
+			*(intptr_t*) item = 0;
+#ifdef MMGC_MEMORY_INFO
 			// ensure previously used item wasn't written to
 			// -1 because write back pointer space isn't poisoned.
 #ifdef MMGC_64BIT			
@@ -275,8 +275,8 @@ start:
 			for(int i=3, n=(b->size>>2)-1; i<n; i++)
 #endif			
 			{
-				int data = ((int*)item)[i];
-				if(data != (int32)0xcacacaca && data != (int32)0xbabababa)
+				uint32_t data = ((uint32_t*)item)[i];
+				if(data != 0xcacacaca && data != 0xbabababa)
 				{
 					GCDebugMsg(false, "Object 0x%x was written to after it was deleted, allocation trace:", item);
 					PrintStackTrace((int*)item+2);
@@ -288,7 +288,7 @@ start:
 #endif
 		} else {
 			item = b->nextItem;
-			if(((uintptr)((char*)item + b->size) & 0xfff) != 0) {
+			if(((uintptr_t)((char*)item + b->size) & 0xfff) != 0) {
 				b->nextItem = (char*)item +  b->size;
 			} else {
 				b->nextItem = NULL;
@@ -311,7 +311,7 @@ start:
 		SetBit(b, index, flags & kFinalize);
 
 		b->numItems++;
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 		m_numAlloc++;
 #endif
 
@@ -336,13 +336,16 @@ start:
 				SetBit(b, index, kMark);
 		}
 
+		GCAssert((uintptr_t(item) & ~0xfff) == (uintptr_t) b);
+		GCAssert((uintptr_t(item) & 7) == 0);
+
 		return item;
 	}
 
 	/* static */
 	void GCAlloc::Free(const void *item)
 	{
-		GCBlock *b = (GCBlock*) ((uintptr) item & ~0xFFF);
+		GCBlock *b = GetBlock(item);
 		GCAlloc *a = b->alloc;
 	
 #ifdef _DEBUG		
@@ -359,6 +362,7 @@ start:
 			b->gc->ClearWeakRef(GetUserPointer(item));
 		}
 		
+
 		bool wasFull = b->IsFull();
 
 		if(b->needsSweeping) {
@@ -411,17 +415,17 @@ start:
 			int numMarkedItems = 0;
 
 			// TODO: MMX version for IA32
-			uint32 *bits = (uint32*) b->GetBits();
-			uint32 count = b->nextItem ? GetIndex(b, b->nextItem) : m_itemsPerBlock;
+			uint32_t *bits = (uint32_t*) b->GetBits();
+			uint32_t count = b->nextItem ? GetIndex(b, b->nextItem) : m_itemsPerBlock;
 			// round up to eight
-			uint32 numInts = ((count+7)&~7) >> 3;
-			for(uint32 i=0; i < numInts; i++) 
+			uint32_t numInts = ((count+7)&~7) >> 3;
+			for(uint32_t i=0; i < numInts; i++) 
 			{
-				uint32 marks = bits[i];					
+				uint32_t marks = bits[i];					
 				// hmm, is it better to screw around with exact counts or just examine
 				// 8 items on each pass, with the later we open the door to unrolling
-				uint32 subCount = i==(numInts-1) ? ((count-1)&7)+1 : 8;
-				for(uint32 j=0; j<subCount;j++,marks>>=4)
+				uint32_t subCount = i==(numInts-1) ? ((count-1)&7)+1 : 8;
+				for(uint32_t j=0; j<subCount;j++,marks>>=4)
 				{
 					int mq = marks & kFreelist;
 					if(mq == kFreelist)
@@ -434,19 +438,22 @@ start:
 
 					GCAssertMsg(mq != kQueued, "No queued objects should exist when finalizing");
 
+					void* item = (char*)b->items + m_itemSize*((i*8)+j);
+
+					if(m_gc->heap->HooksEnabled())
+ 						m_gc->heap->FinalizeHook(GetUserPointer(item), m_itemSize - DebugSize());
+  
 					if(!(marks & (kFinalize|kHasWeakRef)))
 						continue;
         
-					void* item = (char*)b->items + m_itemSize*((i*8)+j);
-
 					if (marks & kFinalize)
 					{     
 						GCFinalizable *obj = (GCFinalizedObject*)GetUserPointer(item);
-						GCAssert(*(int*)obj != 0);
+						GCAssert(*(intptr_t*)obj != 0);
 						obj->~GCFinalizable();
 						bits[i] &= ~(kFinalize<<(j*4));
 
-#if defined(_DEBUG) && defined(MMGC_DRC)
+#if defined(_DEBUG)
 						if(b->alloc->IsRCObject()) {
 							m_gc->RCObjectZeroCheck((RCObject*)obj);
 						}
@@ -491,17 +498,17 @@ start:
 	void GCAlloc::SweepGuts(GCBlock *b)
 	{	
 		// TODO: MMX version for IA32
-		uint32 *bits = (uint32*) b->GetBits();
-		uint32 count = b->nextItem ? GetIndex(b, b->nextItem) : m_itemsPerBlock;
+		uint32_t *bits = (uint32_t*) b->GetBits();
+		uint32_t count = b->nextItem ? GetIndex(b, b->nextItem) : m_itemsPerBlock;
 		// round up to eight
-		uint32 numInts = ((count+7)&~7) >> 3;
-		for(uint32 i=0; i < numInts; i++) 
+		uint32_t numInts = ((count+7)&~7) >> 3;
+		for(uint32_t i=0; i < numInts; i++) 
 		{
-			uint32 marks = bits[i];
+			uint32_t marks = bits[i];
 			// hmm, is it better to screw around with exact counts or just examine
 			// 8 items on each pass, with the later we open the door to unrolling
-			uint32 subCount = i==(numInts-1) ? ((count-1)&7)+1 : 8;
-			for(uint32 j=0; j<subCount;j++,marks>>=4)
+			uint32_t subCount = i==(numInts-1) ? ((count-1)&7)+1 : 8;
+			for(uint32_t j=0; j<subCount;j++,marks>>=4)
 			{
 				int mq = marks & kFreelist;
 				if(mq == kMark)
@@ -517,9 +524,9 @@ start:
 				// garbage, freelist it
 				void *item = (char*)b->items + m_itemSize*(i*8+j);
 
-#ifdef MEMORY_INFO 
-				DebugFreeReverse(item, 0xba, 4);
-#endif
+				if(m_gc->heap->HooksEnabled())
+					m_gc->heap->FreeHook(GetUserPointer(item), b->size - DebugSize(), 0xba);
+
 				b->FreeItem(item, (i*8+j));
 			}
 		}
@@ -558,8 +565,8 @@ start:
 	void GCAlloc::ClearMarks(GCAlloc::GCBlock* block)
 	{
         // Clear all the mark bits
-		uint32 *pbits =  (uint32*)block->GetBits();
-		const static uint32 mq32 = 0x33333333;
+		uint32_t *pbits = block->GetBits();
+		const static uint32_t mq32 = 0x33333333;
 		GCAssert((kMark|kQueued) == 0x3);
 		// TODO: MMX version for IA32
 		for(int i=0, n=m_numBitmapBytes>>2; i < n; i++) {
@@ -607,20 +614,20 @@ start:
 			GCAssertMsg(!b->needsSweeping, "All needsSweeping should have been swept at this point.");
 
 			// TODO: MMX version for IA32
-			uint32 *bits = (uint32*) b->GetBits();
-			uint32 count = b->nextItem ? GetIndex(b, b->nextItem) : m_itemsPerBlock;
+			uint32_t *bits = b->GetBits();
+			uint32_t count = b->nextItem ? GetIndex(b, b->nextItem) : m_itemsPerBlock;
 
 			// round up to eight
-			uint32 numInts = ((count+7)&~7) >> 3;
-			for(uint32 i=0; i < numInts; i++) 
+			uint32_t numInts = ((count+7)&~7) >> 3;
+			for(uint32_t i=0; i < numInts; i++) 
 			{
-				uint32 marks = bits[i];
+				uint32_t marks = bits[i];
 				// hmm, is it better to screw around with exact counts or just examine
 				// 8 items on each pass, with the later we open the door to unrolling
-				uint32 subCount = i==(numInts-1) ? ((count-1)&7)+1 : 8;
-				for(uint32 j=0; j<subCount;j++,marks>>=4)
+				uint32_t subCount = i==(numInts-1) ? ((count-1)&7)+1 : 8;
+				for(uint32_t j=0; j<subCount;j++,marks>>=4)
 				{
-					uint32 m = marks&kFreelist;
+					uint32_t m = marks&kFreelist;
 					GCAssertMsg(m == 0 || m == kFreelist, "All items should be free or clear, nothing should be marked or queued.");
 				}
 			}
@@ -634,9 +641,9 @@ start:
 	/*static*/
 	int GCAlloc::ConservativeGetMark(const void *item, bool bogusPointerReturnValue)
 	{
-		GCBlock *block = (GCBlock*) ((uintptr) item & ~0xFFF);
+		GCBlock *block = GetBlock(item);
 
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 		item = GetRealPointer(item);
 #endif
 
@@ -660,22 +667,24 @@ start:
 	}
 
 	// allows us to avoid division in GetItemIndex, kudos to Tinic
-	void GCAlloc::ComputeMultiplyShift(uint16 d, uint16 &muli, uint16 &shft) 
+	void GCAlloc::ComputeMultiplyShift(uint16_t d, uint16_t &muli, uint16_t &shft) 
 	{
-		uint32 s = 0;
-		uint32 n = 0;
-		uint32 m = 0;
+		uint32_t s = 0;
+		uint32_t n = 0;
+		uint32_t m = 0;
 		for ( ; n < ( 1 << 13 ) ; s++) {
 			m = n;
 			n = ( ( 1 << ( s + 1 ) ) / d ) + 1;
 		}
-		shft = (uint16) s - 1;
-		muli = (uint16) m;
+		shft = (uint16_t) s - 1;
+		muli = (uint16_t) m;
 	}
 
 	void GCAlloc::GCBlock::FreeItem(const void *item, int index)
 	{
+#ifdef MMGC_MEMORY_INFO
 		GCAssert(alloc->m_numAlloc != 0);
+#endif
 
 #ifdef _DEBUG		
 		// check that its not already been freed
@@ -688,7 +697,7 @@ start:
 
 		void *oldFree = firstFree;
 		firstFree = (void*)item;
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 		alloc->m_numAlloc--;
 #endif
 		numItems--;
@@ -700,9 +709,20 @@ start:
 		// we poison the memory (and clear in Alloc)
 		// FIXME: can we do something faster with MMX here?
 		if(!alloc->IsRCObject())
-			memset((char*)item, 0, size);
+			VMPI_memset((char*)item, 0, size);
 #endif
 		// Add this item to the free list
 		*((void**)item) = oldFree;	
+	}
+	
+	size_t GCAlloc::GetBytesInUse()
+	{
+		size_t bytes=0;
+		GCBlock *b=m_firstBlock;
+		while (b) {
+			bytes += b->numItems * m_itemSize;
+			b = b->next;
+		}		
+		return bytes;
 	}
 }

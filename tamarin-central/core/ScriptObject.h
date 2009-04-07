@@ -47,14 +47,8 @@ namespace avmplus
 	 */
 	class ScriptObject : public AvmPlusScriptableObject
 	{
-	private:
-		#ifdef AVMPLUS_MIR
-		friend class CodegenMIR;
-		#endif
-
 	public:
-		VTable* const vtable;
-		
+	
 		ScriptObject(VTable* vtable, ScriptObject* delegate,
 					 int capacity = Hashtable::kDefaultCapacity);
 		~ScriptObject();
@@ -83,30 +77,28 @@ namespace avmplus
 		}
 
 		Toplevel* toplevel() const {
-			return vtable->toplevel;
+			return vtable->toplevel();
 		}
 
-		DomainEnv* domainEnv() const {
-			return vtable->abcEnv->domainEnv;
-		}
+		DomainEnv* domainEnv() const;
 
 		virtual Hashtable* getTable() const {
-			AvmAssert(vtable->traits->hashTableOffset != -1);
-			return (Hashtable*)((byte*)this+vtable->traits->hashTableOffset);
+			AvmAssert(vtable->traits->getHashtableOffset() != 0);
+			return (Hashtable*)((byte*)this + vtable->traits->getHashtableOffset());
 		}
 
-		bool isValidDynamicName(Multiname* m) const {
+		bool isValidDynamicName(const Multiname* m) const {
 			return m->contains(core()->publicNamespace) && !m->isAnyName() && !m->isAttr();
 		}
 		
-		Atom getSlotAtom(int slot);
-		void setSlotAtom(int slot, Atom atom);
+		Atom getSlotAtom(uint32_t slot);
+		void setSlotAtom(uint32_t slot, Atom atom);
 
-		virtual Atom getDescendants(Multiname* name) const;
+		virtual Atom getDescendants(const Multiname* name) const;
 
 		// argv[0] = receiver
-		virtual Atom callProperty(Multiname* name, int argc, Atom* argv);
-		virtual Atom constructProperty(Multiname* name, int argc, Atom* argv);
+		virtual Atom callProperty(const Multiname* name, int argc, Atom* argv);
+		virtual Atom constructProperty(const Multiname* name, int argc, Atom* argv);
 
 		// common set/set/has/delete/etc virtual methods renamed to explicitly name the expected arg types,
 		// to avoid potentially hidden virtual functions
@@ -118,10 +110,10 @@ namespace avmplus
 		virtual bool getAtomPropertyIsEnumerable(Atom name) const;
 		virtual void setAtomPropertyIsEnumerable(Atom name, bool enumerable);
 
-		virtual Atom getMultinameProperty(Multiname* name) const;
-		virtual void setMultinameProperty(Multiname* name, Atom value);
-		virtual bool deleteMultinameProperty(Multiname* name);
-		virtual bool hasMultinameProperty(Multiname* name) const;
+		virtual Atom getMultinameProperty(const Multiname* name) const;
+		virtual void setMultinameProperty(const Multiname* name, Atom value);
+		virtual bool deleteMultinameProperty(const Multiname* name);
+		virtual bool hasMultinameProperty(const Multiname* name) const;
 
 		virtual Atom getUintProperty(uint32 i) const;
 		virtual void setUintProperty(uint32 i, Atom value);
@@ -188,26 +180,28 @@ namespace avmplus
 
 		virtual ScriptObject* createInstance(VTable* ivtable, ScriptObject* prototype);
 
-		Atom function_call(Atom thisAtom, Atom *argv, int argc);
-		Atom function_apply(Atom thisAtom, Atom argArray);
-		
 		// The maximum integer key we can use with our ScriptObject
 		// HashTable must fit within 28 bits.  Any integer larger
 		// than 28 bits will use a string key.
-		static const int MAX_INTEGER_MASK = 0xF0000000;
+		static const uint32 MAX_INTEGER_MASK = 0xF0000000;
+
+		// return true iff the object is a toplevel script init object.
+        bool isGlobalObject() const;
 
 #ifdef AVMPLUS_VERBOSE
 	public:
 		virtual Stringp format(AvmCore* core) const;
 #endif
-	private:
-        ScriptObject* delegate;     // __proto__ in AS2, archetype in semantics
 		
 #ifdef DEBUGGER
 	public:
-		uint64 size() const;
-		virtual MethodEnv *getCallMethodEnv() { return NULL; }
+		virtual uint64 size() const;
+		virtual MethodEnv* getCallMethodEnv() { return NULL; }
 #endif
+	// ------------------------ DATA SECTION BEGIN
+	public:		VTable* const		vtable;
+	private:	ScriptObject*		delegate;     // __proto__ in AS2, archetype in semantics
+	// ------------------------ DATA SECTION END
 	};
 }
 

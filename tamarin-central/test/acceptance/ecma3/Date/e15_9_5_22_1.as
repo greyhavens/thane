@@ -88,10 +88,10 @@ function getTestCases() {
 
     
     function addTestCase( t ) {
-        for ( m = 0; m <= 1000; m+=100 ) {
-                t++;
+        for ( var m = 0; m <= 1000; m+=100 ) {
+                t=t+m*msPerMinute;
                 array[item++] = new TestCase( SECTION,
-                                        "(new Date("+t+")).getTimezoneOffset()",
+                                        ""+new Date(t)+" new Date(t).getTimezoneOffset()",
                                         (t - LocalTime(t)) / msPerMinute,
                                         (new Date(t)).getTimezoneOffset() );
         }

@@ -107,14 +107,7 @@ them both to 0; an emulation function will be used. */
 #define UNICODE_ZEROWIDTH_NOBREAK_SPACE 0xFEFF	// - zero width no-break space
 
 //inline bool isECMALineTerminator(unsigned short x) { return (((x) == NEWLINE) || ((x) == CARRAIGE_RETURN) || ((x) == UNICODE_LINE_SEPERATOR) || ((x) == UNICODE_PARAGRAPH_SEPERATOR) ); }
-inline bool isUnicodeWhiteSpace(unsigned short x)  
-{ 
-	return (((x) == UNICODE_NOBREAK_SPACE) || 
-		((x) == UNICODE_ZEROWIDTH_SPACE) || 
-		((x) == UNICODE_WORDJOINER_SPACE) || 
-		((x) == UNICODE_IDEOGRAPHIC_SPACE) || 
-		((x) == UNICODE_ZEROWIDTH_NOBREAK_SPACE) ); 
-} 
+bool isUnicodeWhiteSpace(unsigned short x);
 
 /* The value of LINK_SIZE determines the number of bytes used to store links
    as offsets within the compiled regex. The default is 2, which allows for
@@ -227,9 +220,6 @@ inline bool isUnicodeWhiteSpace(unsigned short x)
 #ifndef VERSION
 #define VERSION "7.3"
 #endif // VERSION
-
-// AVMPLUS_PCRE is #defined for any code changes avmplus requires
-#define AVMPLUS_PCRE
 
 //#define PCRE_DEBUG
 

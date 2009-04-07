@@ -45,19 +45,29 @@ function primes(isPrime, n) {
         isPrime[j>>5] &= ~(1<<(j&31));
       count++;
     }
+  return count;
 }
 
 function sieve() {
+    var res;
     for (var i = 4; i <= 4; i++) {
         var isPrime = new Array((10000<<i)+31>>5);
-        primes(isPrime, i);
+        res=primes(isPrime, i);
     }
+    return res;
 }
 
-function runBitopsNsieveBits() {
-  var _sunSpiderStartDate = new Date();
-  sieve();
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+if (CONFIG::desktop) {
+    var start=new Date();
+    var res=sieve();
+    var totaltime=new Date()-start;
 }
-print("metric bitops-nsieve-bits "+runBitopsNsieveBits());
+else { // mobile
+    var start=getTimer();
+    var res=sieve();
+    var totaltime=getTimer()-start;
+}
+if (res==14683) 
+  print("metric time "+totaltime);
+else
+  print("error nsieveBits() expected 14683 got "+res);

@@ -1,9 +1,10 @@
 var size:int;
 var DEBUG:Boolean=true;
-var datasizes:Vector.<int> = new Vector.<int>(3,true);
+var datasizes:Vector.<int> = new Vector.<int>(4,true);
 datasizes[0] = 3000000;
 datasizes[1] = 20000000;
 datasizes[2] = 50000000;
+datasizes[3] = 100000;
     
   // Declare class data. Byte buffer plain1 holds the original
   // data for encryption, crypt1 holds the encrypted data, and
@@ -26,10 +27,17 @@ datasizes[2] = 50000000;
   var lastRandom:int = RANDOM_SEED;
   var DK:Vector.<int>;
 
-  var start=new Date();
-  JGFrun(1);
-  var elapsed=new Date()-start;
-  print("metric jsbench-crypt "+elapsed);
+  if (CONFIG::desktop) {
+      var start = new Date();
+      JGFrun(0);
+      var elapsed = new Date() - start;
+  }
+  else { // mobile
+      var start = getTimer();
+      JGFrun(3);
+      var elapsed = getTimer() - start;
+  }
+  print("metric time "+elapsed);
   
   function _randomInt():int
   {

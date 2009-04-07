@@ -61,8 +61,6 @@ namespace avmplus
 		{
 			return construct(argc, argv);
 		}
-
-		DECLARE_NATIVE_MAP(BooleanClass)
 	};
 }
 

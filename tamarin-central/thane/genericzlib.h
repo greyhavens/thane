@@ -40,12 +40,16 @@
 #ifndef GENERIC_ZLIB_H
 #define GENERIC_ZLIB_H
 
-namespace thane
+#include "zlib.h"
+
+namespace avmthane
 {
 	
 //#include "platformutils.h"
+#ifndef PLAYERASSERT
 #define PLAYERASSERT AvmAssert
-#include "zlib.h"
+#endif
+
 
 
 inline bool PlatformZlibInflate(
@@ -114,7 +118,7 @@ private:
 
 PlatformZlibStream::PlatformZlibStream()
 {
-	memset(&m_zstream, 0, sizeof m_zstream);
+	VMPI_memset(&m_zstream, 0, sizeof m_zstream);
 	int error = inflateInit(&m_zstream);
 	(void)error;
 	PLAYERASSERT(error == Z_OK);
@@ -144,7 +148,7 @@ void PlatformZlibStream::SetAvailIn(int nb)
 
 int PlatformZlibStream::AvailIn()
 {
-	PLAYERASSERT(m_zstream.avail_in >= 0);
+	//PLAYERASSERT(m_zstream.avail_in >= 0);
 	return m_zstream.avail_in;
 }
 
@@ -183,14 +187,14 @@ void PlatformZlibStream::SetAvailOut(int nb)
 
 int PlatformZlibStream::AvailOut()
 {
-	PLAYERASSERT(m_zstream.avail_out >= 0);
+	//PLAYERASSERT(m_zstream.avail_out >= 0);
 	return m_zstream.avail_out;
 }
 
 
 int PlatformZlibStream::TotalOut()
 {
-	PLAYERASSERT(m_zstream.total_out >= 0);
+	//PLAYERASSERT(m_zstream.total_out >= 0);
 	return m_zstream.total_out;
 }
 

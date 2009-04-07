@@ -94,45 +94,86 @@ final class Scanner
     {
     }
 
-    public function regexp() {
-        // Capture the initial '/'
-        markIndex = curIndex - 1;
+    // Read slash-delimited string plus following flags, return as one string
+    // Initial '/' has been consumed
+    // Must handle unescaped / inside character sets
+    // Must strip \<newline>
+    // Must strip blanks from /x expressions
+    // Character sets are always flat
+    //
+    // The regex engine should evolve to handle \<newline> and blank
+    // stripping as that provides better debuggability.
 
-        // Body
-        // Avoid switches here, the verifier gets confused (verifier bug).
+    public function regexp() {
+        let incharset = false;
+        let s = "/";
+    loop:
         while (true) {
             let c = src.charCodeAt(curIndex++) | 0;
-            if (c == 47 /* Char::Slash */)
-                break;
-            else if (c == 92 /* Char::Backslash */) {
-                let d = src.charCodeAt(curIndex++) | 0;
-                if (d == 10 /* Char::Newline */ ||
-                    d == 13 /* Char::CarriageReturn */ ||
-                    d == 0x2028 /* Char::UnicodeLS */ ||
-                    d == 0x2029 /* Char::UnicodePS */)
-                    Lex::syntaxError("Illegal newline in regexp literal");
-                else if (d == 0 /* Char::Nul */) {
-                    if (curIndex == src.length)
-                        Lex::syntaxError("Unexpected end of program in regexp literal");
-                }
-            }
-            else if (c == 10 /* Char::Newline */ ||
-                     c == 13 /* Char::CarriageReturn */ ||
-                     c == 0x2028 /* Char::LS */ ||
-                     c == 0x2029 /* Char::PS */) {
-                Lex::syntaxError("Illegal newline in regexp literal");
-            }
-            else if (c == 0 /* Char::Nul */) {
+            switch (c) {
+            case 0 /* Char::Nul */:
                 if (curIndex == src.length)
                     Lex::syntaxError("Unexpected end of program in regexp literal");
+                break;
+            case 47 /* Char::Slash */:
+                if (!incharset)
+                    break loop;
+                break;
+            case 91 /* Char::LeftBracket */:
+                incharset = true;
+                break;
+            case 93 /* Char::RightBracket */:
+                incharset = false;
+                break;
+            case 92 /* Char::Backslash */:
+                c = src.charCodeAt(curIndex++) | 0;
+                switch (c) {
+                case 0 /* Char::Nul */:
+                    if (curIndex == src.length)
+                        Lex::syntaxError("Unexpected end of program in regexp literal");
+                    break;
+                case 13 /* Char::CarriageReturn */:
+                    if ((src.charCodeAt(curIndex) | 0) == 10 /* Char::Newline */)
+                        curIndex++;
+                    continue;
+                case 10 /* Char::Newline */:
+                case 0x2028 /* Char::LS */:
+                case 0x2029 /* Char::PS */:
+                    continue;
+                default:
+                    break;
+                }
+                s += "\\";
+                break;
+            case 10 /* Char::Newline */:
+            case 13 /* Char::CarriageReturn */:
+            case 0x2028 /* Char::LS */:
+            case 0x2029 /* Char::PS */:
+                Lex::syntaxError("Illegal newline in regexp literal");
             }
+            s += String.fromCharCode(c);
         }
+        s += "/";
 
         // Flags
-        while (Char::isUnicodeIdentifierPart(src.charCodeAt(curIndex) | 0))
-            ++curIndex;
+        let xflag = false;
+        while (Char::isUnicodeIdentifierPart(c = src.charCodeAt(curIndex) | 0)) {
+            curIndex++;
+            xflag = xflag || c == 120 /* Char::x */;
+            s += String.fromCharCode(c);
+        }
 
-        return Token::makeInstance (Token::RegexpLiteral,lexeme());
+        if (xflag) {
+            let t = "";
+            for ( let i=0, limit=s.length ; i < limit ; i++ ) {
+                let c = s.charCodeAt(i);
+                if (!Char::isUnicodeWhitespace(c))
+                    t += String.fromCharCode(c);
+            }
+            s = t;
+        }
+
+        return Token::makeInstance (Token::RegexpLiteral,s);
     }
 
     public function div() {
@@ -467,9 +508,10 @@ final class Scanner
                     src.charCodeAt(curIndex+5) == 111 /* Char::o */ &&
                     src.charCodeAt(curIndex+6) == 95 /* Char::_ */ &&
                     src.charCodeAt(curIndex+7) == 95 /* Char::_ */ &&
+                    !ESC::flags.es3_keywords &&
                     notPartOfIdent[src.charCodeAt(curIndex+8)]) {
                     curIndex += 8;
-                    return Token::__Proto__;
+                    return Token::Proto;
                 }
                 break bigswitch;
             case 98: /* Char::b */
@@ -494,7 +536,7 @@ final class Scanner
                             curIndex += 3;
                             return Token::Case;
                         case 116: /* Char::t */
-                            if (!(notPartOfIdent[src.charCodeAt(curIndex+3)])) 
+                            if (!ESC::flags.es3_keywords && !(notPartOfIdent[src.charCodeAt(curIndex+3)])) 
                                 break bigswitch;
                             curIndex += 3;
                             return Token::Cast;
@@ -516,6 +558,7 @@ final class Scanner
                     if (src.charCodeAt(curIndex+1) == 97 /* Char::a */ &&
                         src.charCodeAt(curIndex+2) == 115 /* Char::s */ &&
                         src.charCodeAt(curIndex+3) == 115 /* Char::s */ &&
+                        !ESC::flags.es3_keywords &&
                         notPartOfIdent[src.charCodeAt(curIndex+4)]) {
                         curIndex += 4;
                         return Token::Class;
@@ -527,6 +570,7 @@ final class Scanner
                         switch(src.charCodeAt(curIndex+2)) {
                         case 115: /* Char::s */
                             if (src.charCodeAt(curIndex+3) == 116 /* Char::t */ &&
+                                !ESC::flags.es3_keywords &&
                                 notPartOfIdent[src.charCodeAt(curIndex+4)]) {
                                 curIndex += 4;
                                 return Token::Const;
@@ -555,6 +599,18 @@ final class Scanner
                 switch(src.charCodeAt(curIndex+0)) {
                 case 101: /* Char::e */
                     switch(src.charCodeAt(curIndex+1)) {
+                    case 98: /* Char::b */
+                        if (src.charCodeAt(curIndex+2) == 117 /* Char::u */ &&
+                            src.charCodeAt(curIndex+3) == 103 /* Char::g */ &&
+                            src.charCodeAt(curIndex+4) == 103 /* Char::g */ &&
+                            src.charCodeAt(curIndex+5) == 101 /* Char::e */ &&
+                            src.charCodeAt(curIndex+6) == 114 /* Char::r */ &&
+                            ESC::flags.es4_kwd_debugger &&
+                            notPartOfIdent[src.charCodeAt(curIndex+7)]) {
+                            curIndex += 7;
+                            return Token::Debugger;
+                        }
+                        break bigswitch;
                     case 102: /* Char::f */
                         if (src.charCodeAt(curIndex+2) == 97 /* Char::a */ &&
                             src.charCodeAt(curIndex+3) == 117 /* Char::u */ &&
@@ -588,6 +644,7 @@ final class Scanner
                         src.charCodeAt(curIndex+3) == 109 /* Char::m */ &&
                         src.charCodeAt(curIndex+4) == 105 /* Char::i */ &&
                         src.charCodeAt(curIndex+5) == 99 /* Char::c */ &&
+                        !ESC::flags.es3_keywords &&
                         notPartOfIdent[src.charCodeAt(curIndex+6)]) {
                         curIndex += 6;
                         return Token::Dynamic;
@@ -629,7 +686,7 @@ final class Scanner
                                     curIndex += 6;
                                     return Token::Finally;
                                 }
-                                if (!(notPartOfIdent[src.charCodeAt(curIndex+4)])) 
+                                if (!ESC::flags.es3_keywords && !(notPartOfIdent[src.charCodeAt(curIndex+4)])) 
                                     break bigswitch;
                                 curIndex += 4;
                                 return Token::Final;
@@ -693,6 +750,7 @@ final class Scanner
                             src.charCodeAt(curIndex+5) == 97 /* Char::a */ &&
                             src.charCodeAt(curIndex+6) == 99 /* Char::c */ &&
                             src.charCodeAt(curIndex+7) == 101 /* Char::e */ &&
+                            !ESC::flags.es3_keywords &&
                             notPartOfIdent[src.charCodeAt(curIndex+8)]) {
                             curIndex += 8;
                             return Token::Interface;
@@ -705,7 +763,7 @@ final class Scanner
                         return Token::In;
                     }
                 case 115: /* Char::s */
-                    if (!(notPartOfIdent[src.charCodeAt(curIndex+1)])) 
+                    if (!ESC::flags.es3_keywords && !(notPartOfIdent[src.charCodeAt(curIndex+1)])) 
                         break bigswitch;
                     curIndex += 1;
                     return Token::Is;
@@ -713,25 +771,14 @@ final class Scanner
                     break bigswitch;
                 }
             case 108: /* Char::l */
-                switch(src.charCodeAt(curIndex+0)) {
-                case 101: /* Char::e */
-                    if (src.charCodeAt(curIndex+1) == 116 /* Char::t */ &&
-                        notPartOfIdent[src.charCodeAt(curIndex+2)]) {
-                        curIndex += 2;
-                        return Token::Let;
-                    }
-                    break bigswitch;
-                case 105: /* Char::i */
-                    if (src.charCodeAt(curIndex+1) == 107 /* Char::k */ &&
-                        src.charCodeAt(curIndex+2) == 101 /* Char::e */ &&
-                        notPartOfIdent[src.charCodeAt(curIndex+3)]) {
-                        curIndex += 3;
-                        return Token::Like;
-                    }
-                    break bigswitch;
-                default:
-                    break bigswitch;
+                if (src.charCodeAt(curIndex+0) == 101 /* Char::e */ &&
+                    src.charCodeAt(curIndex+1) == 116 /* Char::t */ &&
+                    !ESC::flags.es3_keywords &&
+                    notPartOfIdent[src.charCodeAt(curIndex+2)]) {
+                    curIndex += 2;
+                    return Token::Let;
                 }
+                break bigswitch;
             case 110: /* Char::n */
                 switch(src.charCodeAt(curIndex+0)) {
                 case 97: /* Char::a */
@@ -743,6 +790,7 @@ final class Scanner
                             src.charCodeAt(curIndex+5) == 97 /* Char::a */ &&
                             src.charCodeAt(curIndex+6) == 99 /* Char::c */ &&
                             src.charCodeAt(curIndex+7) == 101 /* Char::e */ &&
+                            !ESC::flags.es3_keywords &&
                             notPartOfIdent[src.charCodeAt(curIndex+8)]) {
                             curIndex += 8;
                             return Token::Namespace;
@@ -752,6 +800,7 @@ final class Scanner
                         if (src.charCodeAt(curIndex+2) == 105 /* Char::i */ &&
                             src.charCodeAt(curIndex+3) == 118 /* Char::v */ &&
                             src.charCodeAt(curIndex+4) == 101 /* Char::e */ &&
+                            !ESC::flags.es3_keywords &&
                             notPartOfIdent[src.charCodeAt(curIndex+5)]) {
                             curIndex += 5;
                             return Token::Native;
@@ -786,6 +835,7 @@ final class Scanner
                     src.charCodeAt(curIndex+4) == 105 /* Char::i */ &&
                     src.charCodeAt(curIndex+5) == 100 /* Char::d */ &&
                     src.charCodeAt(curIndex+6) == 101 /* Char::e */ &&
+                    !ESC::flags.es3_keywords &&
                     notPartOfIdent[src.charCodeAt(curIndex+7)]) {
                     curIndex += 7;
                     return Token::Override;
@@ -809,6 +859,7 @@ final class Scanner
                         src.charCodeAt(curIndex+2) == 116 /* Char::t */ &&
                         src.charCodeAt(curIndex+3) == 105 /* Char::i */ &&
                         src.charCodeAt(curIndex+4) == 99 /* Char::c */ &&
+                        !ESC::flags.es3_keywords &&
                         notPartOfIdent[src.charCodeAt(curIndex+5)]) {
                         curIndex += 5;
                         return Token::Static;
@@ -818,6 +869,7 @@ final class Scanner
                     if (src.charCodeAt(curIndex+1) == 112 /* Char::p */ &&
                         src.charCodeAt(curIndex+2) == 101 /* Char::e */ &&
                         src.charCodeAt(curIndex+3) == 114 /* Char::r */ &&
+                        !ESC::flags.es3_keywords &&
                         notPartOfIdent[src.charCodeAt(curIndex+4)]) {
                         curIndex += 4;
                         return Token::Super;
@@ -886,7 +938,7 @@ final class Scanner
                                 curIndex += 5;
                                 return Token::TypeOf;
                             }
-                            if (!(notPartOfIdent[src.charCodeAt(curIndex+3)])) 
+                            if (!ESC::flags.es3_keywords && !(notPartOfIdent[src.charCodeAt(curIndex+3)])) 
                                 break bigswitch;
                             curIndex += 3;
                             return Token::Type;
@@ -954,11 +1006,13 @@ final class Scanner
                     src.charCodeAt(curIndex+1) == 101 /* Char::e */ &&
                     src.charCodeAt(curIndex+2) == 108 /* Char::l */ &&
                     src.charCodeAt(curIndex+3) == 100 /* Char::d */ &&
+                    !ESC::flags.es3_keywords &&
                     notPartOfIdent[src.charCodeAt(curIndex+4)]) {
                     curIndex += 4;
                     return Token::Yield;
                 }
                 break bigswitch;
+
 
                 // End generated code
 

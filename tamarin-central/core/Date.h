@@ -85,7 +85,7 @@ namespace avmplus
 		static inline double TimeClip(double t)
 		{
 			if (MathUtils::isInfinite(t) || MathUtils::isNaN(t) || ((t < 0 ? -t : t) > kHalfTimeDomain)) {
-				return MathUtils::nan();
+				return MathUtils::kNaN;
 			}
 			return MathUtils::toInt(t) + (+0.);
 		}

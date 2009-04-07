@@ -81,6 +81,7 @@ package flash.utils
  * @refpath 
  * @keyword ByteArray
  */
+[native(cls="ByteArrayClass", instance="ByteArrayObject", methods="auto")]
 public class ByteArray
 {
 	public native static function readFile(filename:String):ByteArray;
@@ -459,7 +460,8 @@ public class ByteArray
 	* @refpath
 	* @keyword ByteArray, ByteArray.compress, compress
 	*/
-	public native function compress():void;
+	private native function zlib_compress():void;
+	public function compress():void { zlib_compress(); }
 
 	/**
 	* Uncompresses the byte array.  The byte array
@@ -474,7 +476,8 @@ public class ByteArray
 	* @refpath
 	* @keyword ByteArray, ByteArray.uncompress, uncompress
 	*/
-	public native function uncompress():void;
+	private native function zlib_uncompress():void;
+	public function uncompress():void { zlib_uncompress(); }
 
 
 	/**
@@ -488,7 +491,8 @@ public class ByteArray
 	 * @refpath 
 	 * @keyword ByteArray, ByteArray.toString, toString
 	 */	
-	public native function toString():String;
+	private native function _toString():String;
+	public function toString():String { return _toString(); }
 	
 	/**
 	 * The number of bytes of data available for reading

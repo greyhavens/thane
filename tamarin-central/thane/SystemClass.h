@@ -35,12 +35,47 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef __thane_SystemClass__
-#define __thane_SystemClass__
+#ifndef __avmthane_SystemClass__
+#define __avmthane_SystemClass__
 
 
-namespace thane
+namespace avmthane
 {
+	// this class exists solely to test native classes that use MI.
+	class MIClass : public ClassClosure
+	{
+	public:
+		MIClass(VTable* cvtable) : ClassClosure(cvtable) {}
+		~MIClass() {}
+	};
+
+	// this class exists solely to test native classes that use MI.
+	class MixinClassThatDoesNotDescendFromScriptObject
+	{
+	public:
+		const double factor;
+		MixinClassThatDoesNotDescendFromScriptObject(double f) : factor(f) {}
+		// evil, wrong version that we DO NOT WANT
+		double plus(double v) { return v * factor; }
+	};
+	
+	// this class exists solely to test native classes that use MI.
+	class MIObjectImpl : public ScriptObject
+	{
+	public:
+		const double amount;
+		MIObjectImpl(VTable* vtable, ScriptObject* prototype, double a) : ScriptObject(vtable, prototype), amount(a) {}
+		double plus(double v) { return v + amount; }
+	};
+
+	// this class exists solely to test native classes that use MI.
+	class MIObject : public MIObjectImpl, public MixinClassThatDoesNotDescendFromScriptObject
+	{
+	public:
+		MIObject(VTable* vtable, ScriptObject* prototype) : MIObjectImpl(vtable, prototype, 1), MixinClassThatDoesNotDescendFromScriptObject(2) {}
+		~MIObject() {}
+	};
+
 	/**
 	 * A simple class that has some native methods.
 	 * Included as an example for writers of native methods,
@@ -63,7 +98,7 @@ namespace thane
 		 * AS usage: System.exit(status);
 		 * Exits the VM with OS exit code specified by  status.
 		 */
-		void exit(int status);
+		void doExit(int status);
 
 		/**
 		 * Implementation of System.getAvmplusVersion
@@ -73,18 +108,8 @@ namespace thane
 		 */
 		Stringp getAvmplusVersion();
 
-		/**
-		 * Implementation of System.exec
-		 * AS usage: exitCode = System.exec("command");
-		 * Executes the specified command line and returns
-		 * the status code
-		 */
-		int exec(Stringp command);
-
 		void trace(Stringp prefix, ArrayObject* a);
-		void write(Stringp s);
 
-		
         /**
 		 * @name ActionScript Extensions
 		 * ActionScript extensions to ECMAScript
@@ -95,10 +120,10 @@ namespace thane
 
 		ArrayObject * getArgv();
 
-		Stringp readLine();
-
-		DECLARE_NATIVE_MAP(SystemClass)
+		double get_totalMemory();
+		double get_freeMemory();
+		double get_privateMemory();
     };
 }
 
-#endif /* __thane_SystemClass__ */
+#endif /* __avmthane_SystemClass__ */

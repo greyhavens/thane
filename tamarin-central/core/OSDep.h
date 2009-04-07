@@ -50,11 +50,6 @@ namespace avmplus
 	class OSDep
 	{
 	public:
-		static double getDate();
-		static double localTZA(double time);
-		static double daylightSavingTA(double time);
-		static uint64 currentTimeMillis();
-
 		static uintptr startIntWriteTimer(uint32 millis, int *addr);
 		static void stopTimer(uintptr handle);
 	};

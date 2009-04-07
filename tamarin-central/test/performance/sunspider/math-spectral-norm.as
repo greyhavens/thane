@@ -37,7 +37,6 @@ function Au(u,v) {
     var t = 0;
     for (var j=0; j<u.length; ++j)
       t += A_sn(i,j) * u[j];
-      t += u[j];
     v[i] = t;
   }
 }
@@ -71,12 +70,33 @@ function spectralnorm(n) {
   }
   return Math.sqrt(vBv/vv);
 }
+
 function runMathSpectralNorm() {
-var _sunSpiderStartDate = new Date();
-for (var i = 6; i <= 48; i *= 2) {
-    spectralnorm(i);
+  
+  if (CONFIG::desktop)
+      var _sunSpiderStartDate = (new Date).getTime();
+  else  // mobile
+      var _sunSpiderStartDate = getTimer();
+  for (var i = 6; i <= 48; i *= 2) {
+      spectralnorm(i);
+  }
+  if (CONFIG::desktop)
+      var _sunSpiderInterval = (new Date).getTime() - _sunSpiderStartDate;
+  else  // mobile
+      var _sunSpiderInterval = getTimer() - _sunSpiderStartDate;
+  return(_sunSpiderInterval);
 }
-var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-return(_sunSpiderInterval);
+
+function verifyTest() {
+  var result = spectralnorm(10);
+  var expectedResult = 1.2718440192507248;
+  if (result !== expectedResult) {
+    print('Test verification failed. spectralnorm(10):  Expected: '+expectedResult+' Got: '+result);
+    return false;
+  }
+  return true;
 }
-print("metric math-spectral-norm "+runMathSpectralNorm());
+
+if (verifyTest()) {
+  print("metric time " + runMathSpectralNorm());
+}

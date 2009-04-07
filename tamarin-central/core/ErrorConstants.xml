@@ -41,7 +41,7 @@
   for easy localization.   
   %o = ScriptObject* 
   %t = Traits* 
-  %m = AbstractFunction* 
+  %m = MethodInfo* 
   %n = Multiname (name portion only)
   %N = Multiname (namespace portion only)
   %a = Atom 

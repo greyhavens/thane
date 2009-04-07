@@ -37,57 +37,14 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(XMLListClass)
-		NATIVE_METHOD(XMLList_AS3_attribute, XMLListObject::attribute)
-		NATIVE_METHOD(XMLList_AS3_attributes, XMLListObject::attributes)
-		NATIVE_METHOD(XMLList_AS3_child, XMLListObject::child)
-		NATIVE_METHOD(XMLList_AS3_children, XMLListObject::children)
-		NATIVE_METHOD(XMLList_AS3_comments, XMLListObject::comments)
-		NATIVE_METHOD(XMLList_AS3_contains, XMLListObject::contains)
-		NATIVE_METHOD(XMLList_AS3_copy, XMLListObject::copy)
-		NATIVE_METHOD(XMLList_AS3_descendants, XMLListObject::descendants)
-		NATIVE_METHOD(XMLList_AS3_elements, XMLListObject::elements)
-		NATIVE_METHOD(XMLList_AS3_hasOwnProperty, XMLListObject::hasOwnProperty)
-		NATIVE_METHOD(XMLList_AS3_hasComplexContent, XMLListObject::hasComplexContent)
-		NATIVE_METHOD(XMLList_AS3_hasSimpleContent, XMLListObject::hasSimpleContent)
-		NATIVE_METHOD(XMLList_AS3_length, XMLListObject::AS_based_length)
-		NATIVE_METHOD(XMLList_AS3_name, XMLListObject::name)
-		NATIVE_METHOD(XMLList_AS3_normalize, XMLListObject::normalize)
-		NATIVE_METHOD(XMLList_AS3_parent, XMLListObject::parent)
-		NATIVE_METHOD(XMLList_AS3_processingInstructions, XMLListObject::processingInstructions)
-		NATIVE_METHOD(XMLList_AS3_propertyIsEnumerable, XMLListObject::xmlListPropertyIsEnumerable)
-		NATIVE_METHOD(XMLList_AS3_text, XMLListObject::text)
-		NATIVE_METHOD(XMLList_AS3_toString, XMLListObject::toStringMethod)
-		NATIVE_METHOD(XMLList_AS3_toXMLString, XMLListObject::toXMLString)
-
-		// These are not in the spec but work if there's only element in the XMLList
-		NATIVE_METHOD(XMLList_AS3_addNamespace, XMLListObject::addNamespace)
-		NATIVE_METHOD(XMLList_AS3_appendChild, XMLListObject::appendChild)
-		NATIVE_METHOD(XMLList_AS3_childIndex, XMLListObject::childIndex)
-		NATIVE_METHOD(XMLList_AS3_inScopeNamespaces, XMLListObject::inScopeNamespaces)
-		NATIVE_METHOD(XMLList_AS3_insertChildAfter, XMLListObject::insertChildAfter)
-		NATIVE_METHOD(XMLList_AS3_insertChildBefore, XMLListObject::insertChildBefore)
-		NATIVE_METHODV(XMLList_AS3_namespace, XMLListObject::getNamespace)
-		NATIVE_METHOD(XMLList_AS3_localName, XMLListObject::localName)
-		NATIVE_METHOD(XMLList_AS3_namespaceDeclarations, XMLListObject::namespaceDeclarations)
-		NATIVE_METHOD(XMLList_AS3_nodeKind, XMLListObject::nodeKind)
-		NATIVE_METHOD(XMLList_AS3_prependChild, XMLListObject::prependChild)
-		NATIVE_METHOD(XMLList_AS3_removeNamespace, XMLListObject::removeNamespace)
-		NATIVE_METHOD(XMLList_AS3_replace, XMLListObject::replace)
-		NATIVE_METHOD(XMLList_AS3_setChildren, XMLListObject::setChildren)
-		NATIVE_METHOD(XMLList_AS3_setLocalName, XMLListObject::setLocalName)
-		NATIVE_METHOD(XMLList_AS3_setName, XMLListObject::setName)
-		NATIVE_METHOD(XMLList_AS3_setNamespace, XMLListObject::setNamespace)
-
-	END_NATIVE_MAP()
-
 	XMLListClass::XMLListClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
-		AvmAssert(traits()->sizeofInstance == sizeof(XMLListClass));
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(XMLListClass));
 		createVanillaPrototype();
 	}
 
@@ -104,13 +61,13 @@ namespace avmplus
 			return arg;
 		}
 
-		if (core->isXMLList(arg))
+		if (AvmCore::isXMLList(arg))
 		{
 			return arg;
 		}
-		else if (core->isXML (arg))
+		else if (AvmCore::isXML(arg))
 		{
-			XMLObject *x = core->atomToXMLObject(arg);
+			XMLObject *x = AvmCore::atomToXMLObject(arg);
 			Multiname m;
 			bool bFound = x->getQName (&m);
 			XMLListObject *xl = new (core->GetGC()) XMLListObject(toplevel()->xmlListClass(), x->parent(), bFound ? &m : 0);
@@ -123,13 +80,10 @@ namespace avmplus
 	
 			Stringp s = core->string(arg);
 
-			Stringp startTag = new (core->GetGC()) String(s, 0, 2);
-			Stringp endTag = new (core->GetGC()) String(s, s->length() - 3, 3);
-
-			if (startTag->Equals("<>") && endTag->Equals("</>"))
-			{
-				s = new (core->GetGC()) String(s, 2, s->length() - 5);
-			}
+			Stringp startTag = s->substr(0, 2);
+			Stringp endTag = s->substr(s->length() - 3, 3);
+			if (startTag->equalsLatin1("<>") && endTag->equalsLatin1("</>"))
+				s = s->substr(2, s->length() - 5);
 
 			Namespace *defaultNamespace = toplevel->getDefaultNamespace();
 			// We handle this step in the XMLObject constructor to avoid concatenation huge strings together
@@ -171,11 +125,11 @@ namespace avmplus
 		AvmCore* core = this->core();
 		if ((!argc) || AvmCore::isNullOrUndefined(argv[1]))
 		{
-			return ToXMLList (core->newString("")->atom());
+			return ToXMLList (core->kEmptyString->atom());
 		}
 
 		// if args[0] is xmllist, create new list and call append
-		if (core->isXMLList(argv[1]))
+		if (AvmCore::isXMLList(argv[1]))
 		{
 			XMLListObject *l = new (core->GetGC()) XMLListObject(toplevel()->xmlListClass());
 			l->_append (argv[1]);

@@ -94,7 +94,7 @@ function getTestCases() {
 	    for ( d = 0; d < TimeInMonth(MonthFromTime(t)); d+= msPerDay ) {
 	        t += d;
 	        array[item++] = new TestCase( SECTION,
-	                                    "(new Date(+t+)).getDate()",
+	                                    new Date(t)+" new Date(t).getDate()",
 	                                    DateFromTime(LocalTime(t)),
 	                                    (new Date(t)).getDate() );
 	    }

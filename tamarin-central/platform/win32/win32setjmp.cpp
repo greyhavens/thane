@@ -44,9 +44,6 @@ extern "C"
 	__declspec(naked)
 	int __cdecl _setjmp3(jmp_buf /*jmpbuf*/, int /*arg*/)
 	{
-		// warning: the order of the registers in jmpbuf is used in
-		// BufferGuard for in memory swf buffer protection.  See
-		// GrowableBuffer.cpp
 		_asm
 		{
 			mov edx, [esp+4]

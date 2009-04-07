@@ -38,6 +38,102 @@
 
 #include "avmplus.h"
 
+// FIXME the following is required because FrameState has dependencies on the jitters
+#if defined FEATURE_NANOJIT
+    #include "CodegenLIR.h"
+#endif
+
+#include "FrameState.h"
+
 namespace avmplus
 {
+	/*static*/ ScopeTypeChain* ScopeTypeChain::create(MMgc::GC* gc, const ScopeTypeChain* outer, const FrameState* state, Traits* append, Traits* extra)
+	{
+		const int stateScopeDepth = (state ? state->scopeDepth : 0);
+		const int capture = stateScopeDepth + (append ? 1 : 0);
+		const int extraEntries = extra ? 1 : 0;
+		const int outerSize = (outer ? outer->size : 0);
+		const int pad = capture + extraEntries;
+		const size_t padSize = sizeof(uintptr_t) * (((pad > 0) ? (pad - 1) : 0) + outerSize);
+		ScopeTypeChain* nscope = new(gc, padSize) ScopeTypeChain(outerSize + capture, outerSize + capture + extraEntries);
+		int j = 0;
+		for (int i = 0; i < outerSize; i++)
+		{
+			nscope->_scopes[j++] = outer->_scopes[i];
+		}
+		for (int i = 0; i < stateScopeDepth; i++)
+		{
+			const Value& v = state->scopeValue(i);
+			nscope->setScopeAt(j++, v.traits, v.isWith);
+		}
+		if (append)
+		{
+			nscope->setScopeAt(j++, append, false);
+		}
+		if (extra)
+		{
+			nscope->setScopeAt(j++, extra, false);
+		}
+		AvmAssert(j == nscope->fullsize);
+		return nscope;
+	}
+
+	#if VMCFG_METHOD_NAMES
+	Stringp ScopeTypeChain::format(AvmCore* core) const
+	{
+		Stringp r = core->kEmptyString;
+		r = r->appendLatin1("STC:[");
+		for (int i = 0; i < fullsize; i++)
+		{
+			if (i > 0)
+				r = r->appendLatin1(",");
+			Traits* t = getScopeTraitsAt(i);
+			bool b = getScopeIsWithAt(i);
+			r = r->append(t->format(core));
+			r = r->appendLatin1(b?":1":":0");
+		}
+		r = r->appendLatin1("]");
+		return r;
+	}
+	#endif
+
+	/*static*/ ScopeChain* ScopeChain::create(MMgc::GC* gc, const ScopeTypeChain* scopeTraits, const ScopeChain* outer, Namespacep dxns)
+	{
+		const int scopeTraitsSize = scopeTraits->size;
+		const int outerSize = outer ? outer->_scopeTraits->size : 0;
+		const size_t padSize = scopeTraitsSize > 0 ? sizeof(Atom) * (scopeTraitsSize-1) : 0;
+		ScopeChain* nscope = new(gc, padSize) ScopeChain(scopeTraits, dxns);
+		for (int i=0; i < outerSize; i ++)
+		{
+			nscope->setScope(gc, i, outer->_scopes[i]);
+		}
+		return nscope;
+	}
+
+	void ScopeChain::setScope(MMgc::GC* gc, int i, Atom value)
+	{
+		AvmAssert(i >= 0 && i < _scopeTraits->size);
+		//scopes[i] = value;
+		WBATOM(gc, this, &_scopes[i], value);
+	}
+
+	#if VMCFG_METHOD_NAMES
+	Stringp ScopeChain::format(AvmCore* core) const
+	{
+		Stringp r = core->kEmptyString;
+		r = r->appendLatin1("SC:{dxns=(");
+		r = r->append(_defaultXmlNamespace->format(core));
+		r = r->appendLatin1("),");
+		r = r->append(_scopeTraits->format(core));
+		r = r->appendLatin1(",V:[");
+		for (int i = 0; i < _scopeTraits->size; i++)
+		{
+			if (i > 0)
+				r = r->appendLatin1(",");
+			r = r->append(core->format(_scopes[i]));
+		}
+		r = r->appendLatin1("]}");
+		return r;
+	}
+	#endif
 }

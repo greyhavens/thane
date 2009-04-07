@@ -40,7 +40,7 @@
 
 namespace avmplus
 {
-	Multiname::Multiname(NamespaceSet* nsset)
+	Multiname::Multiname(NamespaceSetp nsset)
 	{
 		this->flags = 0;
 		setNsset(nsset);
@@ -54,7 +54,7 @@ namespace avmplus
 		this->ns = NULL;
 	}
 
-	Multiname::Multiname(Namespace* ns, Stringp name, bool qualified)
+	Multiname::Multiname(Namespacep ns, Stringp name, bool qualified)
 	{
 		this->flags = 0;
 		setNamespace(ns);
@@ -63,7 +63,7 @@ namespace avmplus
 			setQName();
 	}
 
-	Namespace* Multiname::getNamespace(int i) const
+	Namespacep Multiname::getNamespace(int i) const
 	{
 		AvmAssert(!isRtns() && !isAnyNamespace());
 		if (flags&NSSET)
@@ -78,7 +78,7 @@ namespace avmplus
 		}
 	}
 
-	bool Multiname::contains(Namespace* ns) const
+	bool Multiname::contains(Namespacep ns) const
 	{
 		if (flags & NSSET)
 		{
@@ -149,7 +149,7 @@ namespace avmplus
 	}
 
 	/* static */ 
-	Stringp Multiname::format(AvmCore *core, Namespace* ns, Stringp name, bool attr, bool hideNonPublicNamespaces)
+	Stringp Multiname::format(AvmCore *core, Namespacep ns, Stringp name, bool attr, bool hideNonPublicNamespaces)
 	{
 		if (ns == core->publicNamespace ||
 			(hideNonPublicNamespaces && // backwards compatibility
@@ -161,13 +161,13 @@ namespace avmplus
 		{
 			if (attr)
 			{
-				return core->concatStrings(core->newString("@"), core->concatStrings(ns->getURI(),
-					core->concatStrings(core->newString("::"), name)));
+				return core->concatStrings(core->newConstantStringLatin1("@"), core->concatStrings(ns->getURI(),
+					core->concatStrings(core->newConstantStringLatin1("::"), name)));
 			}
 			else
 			{
 				return core->concatStrings(ns->getURI(),
-					core->concatStrings(core->newString("::"), name));
+					core->concatStrings(core->newConstantStringLatin1("::"), name));
 			}
 		}
 	}
@@ -176,20 +176,20 @@ namespace avmplus
 	// Made available in non-AVMPLUS_VERBOSE builds for describeType
 	Stringp Multiname::format(AvmCore* core , MultiFormat form) const
 	{
-		Stringp attr = this->isAttr() ? core->newString("@") : (Stringp)core->kEmptyString;
+		Stringp attr = this->isAttr() ? core->newConstantStringLatin1("@") : (Stringp)core->kEmptyString;
 		Stringp name = this->isAnyName() 
-			? core->newString("*") 
+			? core->newConstantStringLatin1("*") 
 			: (this->isRtname()
-				? core->newString("[]")
+				? core->newConstantStringLatin1("[]")
 				: getName());
 
 		if (isAnyNamespace())
 		{
-			return core->concatStrings(attr, core->concatStrings(core->newString("*::"), name));
+			return core->concatStrings(attr, core->concatStrings(core->newConstantStringLatin1("*::"), name));
 		}
 		else if (isRtns())
 		{
-			return core->concatStrings(attr, core->concatStrings(core->newString("[]::"), name));
+			return core->concatStrings(attr, core->concatStrings(core->newConstantStringLatin1("[]::"), name));
 		}
 		else if (namespaceCount() == 1 && isQName()) 
 		{
@@ -205,20 +205,20 @@ namespace avmplus
 			if (showNs)
 			{
 				if (showBrackets)
-					s = core->concatStrings(s, core->newString("{"));
+					s = core->concatStrings(s, core->newConstantStringLatin1("{"));
 
 				for (int i=0,n=namespaceCount(); i < n; i++) 
 				{			
 					if (getNamespace(i)==core->publicNamespace)
-						s = core->concatStrings(s, core->newString("public"));
+						s = core->concatStrings(s, core->newConstantStringLatin1("public"));
 					else
 						s = core->concatStrings(s, getNamespace(i)->getURI());
 					if (i+1 < n)
-						s = core->concatStrings(s, core->newString(","));
+						s = core->concatStrings(s, core->newConstantStringLatin1(","));
 				}
 
 				if (showBrackets)
-					s = core->concatStrings(s, core->newString("}::"));
+					s = core->concatStrings(s, core->newConstantStringLatin1("}::"));
 			}
 
 			if (showName)

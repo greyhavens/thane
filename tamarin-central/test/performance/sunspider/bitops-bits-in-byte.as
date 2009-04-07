@@ -37,15 +37,24 @@ return c;
 }
 
 function TimeFunc(func) {
-var x, y, t;
+var res, x, y, t;
 for(var x=0; x<350; x++)
-for(var y=0; y<256; y++) func(y);
+for(var y=0; y<256; y++) res=func(y);
+return res;
 }
 
-function runBitOpsBitsInByte() {
-  var _sunSpiderStartDate = new Date();
-  TimeFunc(bitsinbyte);
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+if (CONFIG::desktop) {
+    var start=new Date();
+    var res=TimeFunc(bitsinbyte);
+    var totaltime=new Date()-start;
 }
-print("metric bitops-bit-in-byte "+runBitOpsBitsInByte());
+else {  // mobile
+    var start=getTimer();
+    var res=TimeFunc(bitsinbyte);
+    var totaltime=getTimer()-start;
+}
+print("bitsinbyte="+res);
+if (res==8)
+   print("metric time "+totaltime);
+else
+   print("error bitsinbyte() expected 8 got "+res);

@@ -38,6 +38,7 @@
 
 package
 {
+	[native(cls="NumberClass", instance="double", methods="auto")]
 	public final class Number 
 	{
 		// Number.length = 1 per ES3
@@ -56,11 +57,11 @@ package
 		private static const DTOSTR_PRECISION:int = 2
 		private static const DTOSTR_EXPONENTIAL:int = 3
 
-		private static native function _toString(n:Number, radix:int):String
+		private static native function _numberToString(n:Number, radix:int):String
 		private static native function _convert(n:Number, precision:int, mode:int):String
 
 		AS3 function toString(radix=10):String {
-			return _toString(this,radix)
+			return _numberToString(this,radix)
 		}
 		AS3 function valueOf():Number { return this }
 		
@@ -72,7 +73,7 @@ package
 			if (!(this is Number))
 				Error.throwError( TypeError, 1004 /*kInvokeOnIncompatibleObjectError*/, "Number.prototype.toString" );
 				
-			return _toString(this, radix)
+			return _numberToString(this, radix)
 		}
 
 		prototype.valueOf = function()
@@ -124,6 +125,7 @@ package
 		_dontEnumPrototype(prototype);
 	}
 
+	[native(cls="IntClass", instance="int32_t", methods="auto")]
 	public final class int
 	{
 		// based on Number: E262 {ReadOnly, DontDelete, DontEnum}
@@ -191,6 +193,7 @@ package
 		_dontEnumPrototype(prototype);		
 	}
 
+	[native(cls="UIntClass", instance="uint32_t", methods="auto")]
 	public final class uint
 	{
 		// based on Number: E262 {ReadOnly, DontDelete, DontEnum}

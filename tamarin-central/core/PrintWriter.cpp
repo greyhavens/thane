@@ -37,6 +37,9 @@
 
 
 #include "avmplus.h"
+#if defined FEATURE_NANOJIT
+#include "CodegenLIR.h"
+#endif 
 
 namespace avmplus
 {
@@ -82,23 +85,21 @@ namespace avmplus
 	}
 	
 	PrintWriter& PrintWriter::operator<< (percent value)
-	{		
-		// Number.MAX_VALUE is 1.79e+308; size temp buffer accordingly
-		wchar buffer[312];
-		int len;
-		MathUtils::convertDoubleToString(value.getPercent(), buffer, len);
-		wchar *ptr = buffer;
-		while (*ptr) {
-			if (*ptr == '.' && *(ptr+1)) {
-				*(ptr+2) = 0;
-				break;
-			}
-			ptr++;
-		}
+	{
 		if (value.getPercent() < 10) {
 			*this << ' ';
 		}
-		*this << buffer;
+		Stringp s = MathUtils::convertDoubleToString(m_core, value.getPercent());
+		StringIndexer str(s);
+		for (int32_t i = 0; i < s->length(); i++)
+		{
+			wchar ch = str[i];
+			*this << ch;
+			if (ch == '.' && i < s->length() - 1) {
+				*this << str[++i];
+				break;
+			}
+		}
 		return *this;
 	}
 	
@@ -141,59 +142,57 @@ namespace avmplus
 		return *this;
 	}
 	
-	PrintWriter& PrintWriter::operator<< (int value)
+	PrintWriter& PrintWriter::operator<< (int32_t value)
 	{
-		wchar buffer[256];
-		int len;
-		if (MathUtils::convertIntegerToString(value, buffer, len)) {
-			*this << buffer;
-		}
-		return *this;
+		Stringp s = MathUtils::convertIntegerToStringBase10(m_core, value, MathUtils::kTreatAsSigned);
+		return *this << s;
 	}
 
-	PrintWriter& PrintWriter::operator<< (uint64 value)
+	PrintWriter& PrintWriter::operator<< (uint64_t value)
 	{
-		wchar buffer[256];
-		int len;
-		if (MathUtils::convertIntegerToString((sintptr) value, buffer, len)) {
-			*this << buffer;
-		}
-		return *this;
+		// use the intptr_t version - it is 64, not 32 bits
+		Stringp s = MathUtils::convertIntegerToStringRadix(m_core, (intptr_t) value, 10, MathUtils::kTreatAsUnsigned);
+		return *this << s;
 	}
 
-	PrintWriter& PrintWriter::operator<< (int64 value)
+	PrintWriter& PrintWriter::operator<< (int64_t value)
 	{
-		wchar buffer[256];
-		int len;
-		if (MathUtils::convertIntegerToString((sintptr) value, buffer, len)) {
-			*this << buffer;
-		}
-		return *this;
+		// use the intptr_t version - it is 64, not 32 bits
+		Stringp s = MathUtils::convertIntegerToStringRadix(m_core, (intptr_t) value, 10, MathUtils::kTreatAsSigned);
+		return *this << s;
 	}
 
-	PrintWriter& PrintWriter::operator<< (uint32 value)
+#if defined AVMPLUS_MAC && defined AVMPLUS_64BIT
+	PrintWriter& PrintWriter::operator<< (ptrdiff_t value)
 	{
-		wchar buffer[256];
-		int len;
-		if (MathUtils::convertIntegerToString(value, buffer, len, 10, true)) {
-			*this << buffer;
-		}
-		return *this;
+		// use the sintptr version - it is 64, not 32 bits
+		Stringp s = MathUtils::convertIntegerToStringRadix(m_core, (intptr_t) value, 10, MathUtils::kTreatAsSigned);
+		return *this << s;
+	}
+#endif
+
+	PrintWriter& PrintWriter::operator<< (uint32_t value)
+	{
+		Stringp s = MathUtils::convertIntegerToStringBase10(m_core, value, MathUtils::kTreatAsUnsigned);
+		return *this << s;
 	}
 
 	PrintWriter& PrintWriter::operator<< (double value)
 	{
-		// Number.MAX_VALUE is 1.79e+308; size temp buffer accordingly
-		wchar buffer[312];
-		int len;
-		MathUtils::convertDoubleToString(value, buffer, len);
-		*this << buffer;
-		return *this;
+		return *this << MathUtils::convertDoubleToString(m_core, value);
 	}
 
 	PrintWriter& PrintWriter::operator<< (Stringp str)
 	{
-		return *this << str->c_str();
+		if (!str)
+			return *this << "(null)";
+		
+		StringIndexer str_idx(str);
+		for (int i=0, n=str_idx->length(); i<n; i++) 
+		{
+			*this << (wchar)str_idx[i];
+		}
+		return *this;
 	}
 
 	PrintWriter& PrintWriter::operator<< (ScriptObject *obj)
@@ -224,7 +223,7 @@ namespace avmplus
 		return *this;
 #endif
 	}
-	PrintWriter& PrintWriter::operator<< (AbstractFunction *obj)
+	PrintWriter& PrintWriter::operator<< (MethodInfo *obj)
 	{
 #ifdef AVMPLUS_VERBOSE
 		if (obj) {
@@ -239,23 +238,19 @@ namespace avmplus
 #endif
 	}
 
-	PrintWriter& PrintWriter::operator<< (Multiname *obj)
+	PrintWriter& PrintWriter::operator<< (const Multiname& obj)
 	{
 		// Made available in non-AVMPLUS_VERBOSE builds for describeType
 //#ifdef AVMPLUS_VERBOSE
 #if 1
-		if (obj) {
-			return *this << obj->format(m_core);
-		} else {
-			return *this << "null";
-		}
+		return *this << obj.format(m_core);
 #else
 		AvmAssert(0); // this is only supported in AVMPLUS_VERBOSE builds
 		return *this;
 #endif
 	}
 
-	PrintWriter& PrintWriter::operator<< (Namespace* ns)
+	PrintWriter& PrintWriter::operator<< (Namespacep ns)
 	{
 		// Made available in non-AVMPLUS_VERBOSE builds for describeType
 //#ifdef AVMPLUS_VERBOSE
@@ -394,7 +389,7 @@ namespace avmplus
 					formatTypeName(va_arg(ap, Traits*));
 					break;
 				case 'm':
-					*this << va_arg(ap, AbstractFunction*);
+					*this << va_arg(ap, MethodInfo*);
 					break;
 				case 'n':
 					*this << va_arg(ap, Multiname*)->format(m_core, Multiname::MULTI_FORMAT_NAME_ONLY);
@@ -402,52 +397,6 @@ namespace avmplus
 				case 'N':
 					*this << va_arg(ap, Multiname*)->format(m_core, Multiname::MULTI_FORMAT_NS_ONLY);
 					break;
-	#ifdef AVMPLUS_MIR
-				case 'A': // addr
-	#ifdef AVMPLUS_64BIT
-					*this << hexAddr(va_arg(ap,int64));
-	#else
-					*this << hexAddr(va_arg(ap,int));
-	#endif				
-					break;
-
-				#ifdef AVMPLUS_ARM
-				case 'R': // gp reg
-					*this << CodegenMIR::regNames[va_arg(ap, int)];
-					break;
-				#endif
-
-				#ifdef AVMPLUS_PPC
-				case 'R': {// gp reg 
-					int r = va_arg(ap,int);
-					if (r == CodegenMIR::Unknown)
-						*this << "0";
-					else
-						*this << CodegenMIR::gpregNames[r];
-					break;
-				}
-				case 'F': // fp reg
-					*this << CodegenMIR::fpregNames[va_arg(ap, int)];
-					break;
-                #endif
-					
-		#if defined (AVMPLUS_IA32) || defined (AVMPLUS_AMD64)
-				case 'R': {// gp reg 
-					int r = va_arg(ap,int);
-					if (r == CodegenMIR::Unknown)
-						*this << "0";
-					else
-						*this << CodegenMIR::gpregNames[r];
-					break;
-				}
-				case 'F': // fp reg
-					*this << CodegenMIR::xmmregNames[va_arg(ap, int)];
-					break;
-				case 'X': // x87 reg
-					*this << CodegenMIR::x87regNames[va_arg(ap, int)];
-					break;
-		#endif
-	#endif
 				case 'S':
 					*this << va_arg(ap, Stringp);
 					break;

@@ -39,6 +39,7 @@
 package 
 {
 	//pseudo-final - no user class can extend Function
+	[native(cls="FunctionClass", instance="FunctionObject", methods="auto")]
 	dynamic public class Function
 	{
 		// Function.length = 1 per ES3
@@ -105,6 +106,7 @@ package
 }
 
 // not dynamic
+[native(cls="MethodClosureClass", instance="MethodClosure", methods="auto")]
 final class MethodClosure extends Function
 {
 	override public function get prototype()
@@ -116,8 +118,4 @@ final class MethodClosure extends Function
 	{
 		Error.throwError( ReferenceError, 1074 /*kConstWriteError*/, "prototype", "MethodClosure" );
 	}
-
-	public override native function get length():int;
-
-	private native function get savedThis():Object;
 }

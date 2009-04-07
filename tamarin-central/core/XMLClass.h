@@ -108,24 +108,22 @@ namespace avmplus
 		// XML.setSettings ([settings]) (in AS)
 		// XML.defaultSettings() (in AS)
 
-		void setIgnoreComments(uint32 ignoreFlag);
-		uint32 getIgnoreComments();
+		void set_ignoreComments(uint32 ignoreFlag);
+		uint32 get_ignoreComments();
 
-		void setIgnoreProcessingInstructions(uint32 ignoreFlag);
-		uint32 getIgnoreProcessingInstructions();
+		void set_ignoreProcessingInstructions(uint32 ignoreFlag);
+		uint32 get_ignoreProcessingInstructions();
 
-		void setIgnoreWhitespace(uint32 ignoreFlag);
-		uint32 getIgnoreWhitespace();
+		void set_ignoreWhitespace(uint32 ignoreFlag);
+		uint32 get_ignoreWhitespace();
 
-		void setPrettyPrinting(uint32 prettyPrinting);
-		uint32 getPrettyPrinting();
+		void set_prettyPrinting(uint32 prettyPrinting);
+		uint32 get_prettyPrinting();
 
-		void setPrettyIndent(int indent);
-		int getPrettyIndent();
+		void set_prettyIndent(int indent);
+		int get_prettyIndent();
 
-		bool okToPrettyPrint() { return (getPrettyPrinting() && (m_prettyIndent >= 0)); }
-
-		DECLARE_NATIVE_MAP(XMLClass)
+		bool okToPrettyPrint() { return (get_prettyPrinting() && (m_prettyIndent >= 0)); }
 	};
 
 	/**
@@ -145,8 +143,6 @@ namespace avmplus
 		// arg1 = argv[1]
 		// argN = argv[argc]
 		Atom construct(int argc, Atom* argv);
-
-		DECLARE_NATIVE_MAP(QNameClass)
 
 		ATOM_WB kUri;
 		ATOM_WB kLocalName;

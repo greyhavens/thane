@@ -94,8 +94,9 @@ function getTestCases() {
 	            t += d;
 
 	            array[item++] = new TestCase( SECTION,
-	                                    "(new Date(TimeInMonth+"+d+")).getDay()",
-	                                    true, WeekDay(LocalTime(t)) ==
+		                            
+	                                    ""+new Date(t)+" new Date(t).getDay()",
+	                                    WeekDay(LocalTime(t)),
 	                                    (new Date(t)).getDay() );
 	        }
 	    }

@@ -38,6 +38,7 @@
 
 package
 {
+	[native(cls="ArrayClass", instance="ArrayObject", methods="auto")]
 	public dynamic class Array extends Object
 	{
 		// option flags for sort and sortOn
@@ -151,7 +152,7 @@ package
 		The result is calculated as follows:
 		1. Call the [[Get]] method of this object with argument "length".
 		2. Call ToUint32(Result(1)).
-		3. Let separator be the list-separator string appropriate for the host environment’s current locale (this is derived in
+		3. Let separator be the list-separator string appropriate for the host environment's current locale (this is derived in
 		an implementation-defined way).
 		4. Call ToString(separator).
 		5. If Result(2) is zero, return the empty string.
@@ -252,7 +253,7 @@ package
 		}
 
 		/**
-		15.4.4.13 Array.prototype.unshift ( [ item1 [ , item2 [ , … ] ] ] )
+		15.4.4.13 Array.prototype.unshift ( [ item1 [ , item2 [ , ... ] ] ] )
 		The arguments are prepended to the start of the array, such that their order within the array is the same as the
 		order in which they appear in the argument list.
 		When the unshift method is called with zero or more arguments item1, item2, etc., the following steps are taken:
@@ -261,8 +262,8 @@ package
 		3. Compute the number of arguments.
 		4. Let k be Result(2).
 		5. If k is zero, go to step 15.
-		6. Call ToString(k–1).
-		7. Call ToString(k+Result(3)–1).
+		6. Call ToString(k-1).
+		7. Call ToString(k+Result(3)-1).
 		8. If this object has a property named by Result(6), go to step 9; but if this object has no property named by
 		Result(6), then go to step 12.
 		9. Call the [[Get]] method of this object with argument Result(6).
@@ -285,9 +286,12 @@ package
 		be transferred to other kinds of objects for use as a method. Whether the unshift function can be applied successfully to a
 		host object is implementation-dependent.
 		*/
+		private static native function _unshift(o, args:Array):uint
 		native AS3 function unshift(...args):uint
 		prototype.unshift = function(...args):uint
 		{
+			if (this is Array)
+				return _unshift(this, args);
 			var len:uint = uint(this.length)
 			var argc:uint = args.length
 			var k:uint

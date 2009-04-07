@@ -239,12 +239,13 @@ HRESULT CActiveScript::callEngineRawVA(Atom *ppret, const char *name, va_list va
 		}
 		Multiname multiname(core->publicNamespace, core->constantString("engine"));
 		ScriptEnv *se = (ScriptEnv *)domEnv->getScriptInit(&multiname);
-		if (!se || !se->global) {
+		ScriptObject *global = se->global;
+		if (!se || !global) {
 			AvmDebugMsg(true, "callEngine('%s') - early exit due to no ScriptEnv\r\n", name);
 			return E_FAIL;
 		}
 		AvmAssert(engine==undefinedAtom); // already initialized?
-		engine = core->toplevel->getproperty(se->global->atom(), &multiname, core->toplevel->toVTable(se->global->atom()));
+		engine = core->toplevel->getproperty(global->atom(), &multiname, core->toplevel->toVTable(global->atom()));
 
 		initialized = true;
 	}

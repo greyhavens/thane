@@ -39,147 +39,77 @@
 #ifndef __GCMemoryProfiler__
 #define __GCMemoryProfiler__
 
-#ifndef WIN32
-#include <pthread.h>
-#endif
+namespace MMgc
+{
+	MMGC_API void PrintStackTrace(const void *item);
+	MMGC_API const char* GetAllocationName(const void *obj);
 
-
-#ifndef MEMORY_INFO
-
-#define MMGC_MEM_TAG(_x)
-#define MMGC_MEM_TYPE(_x)
-#define GetRealPointer(_x) _x
-#define GetUserPointer(_x) _x
-#define DebugSize() 0
-#else
+#ifdef MMGC_MEMORY_PROFILER
 
 #define MMGC_MEM_TAG(_x) MMgc::SetMemTag(_x)
 #define MMGC_MEM_TYPE(_x) MMgc::SetMemType(_x)
-
-namespace MMgc
-{
-#ifdef WIN32
-	/**
-	 * GCCriticalSection is a simple Critical Section class used by GCMemoryProfiler to
-	 * ensure mutually exclusive access.  GCSpinLock doesn't suffice since its not
-	 * re-entrant and we need that
-	 */
-	class GCCriticalSection
-	{
-	public:
-		GCCriticalSection()
-		{
-			InitializeCriticalSection(&cs);
-		}
-
-		inline void Acquire()
-		{
-			EnterCriticalSection(&cs);
-		}
-		
-		inline void Release()
-		{
-			LeaveCriticalSection(&cs);
-		}
-
-	private:
-		CRITICAL_SECTION cs;
-	};
 	
-	template<typename T>
-	class GCThreadLocal
-	{
-	public:
-		GCThreadLocal()
-		{
-			GCAssert(sizeof(T) <= sizeof(LPVOID));
-			tlsId = TlsAlloc();
-		}
-		T operator=(T tNew)
-		{
-			TlsSetValue(tlsId, (LPVOID) tNew);
-			return tNew;
-		}
-		operator T() const
-		{
-			return (T) TlsGetValue(tlsId);
-		}
-	private:
-		DWORD tlsId;
-	};
-#else
-
-	template<typename T>
-	class GCThreadLocal
-	{
-	public:
-		GCThreadLocal()
-		{
-			GCAssert(sizeof(T) <= sizeof(void*));
-			pthread_key_create(&tlsId, NULL);
-		}
-		T operator=(T tNew)
-		{
-			pthread_setspecific(tlsId, (const void*)tNew);
-			return tNew;
-		}
-		operator T() const
-		{
-			return (T)pthread_getspecific(tlsId);
-		}
-	private:
-		pthread_key_t tlsId ;
-	};
-
-	class GCCriticalSection
-	{
-	public:
-		GCCriticalSection()
-		{
-		}
-
-		inline void Acquire()
-		{
-		}
-		
-		inline void Release()
-		{
-		}
-	};
-#endif
-
-	class GCEnterCriticalSection
-	{
-	public:
-		GCEnterCriticalSection(GCCriticalSection& cs) : m_cs(cs)
-		{
-			m_cs.Acquire();
-		}
-		~GCEnterCriticalSection()
-		{
-			m_cs.Release();
-		}
-
-	private:
-		GCCriticalSection& m_cs;
-	};
+	class StackTrace;
 
 	MMGC_API void SetMemTag(const char *memtag);
-	MMGC_API void SetMemType(void *memtype);
+	MMGC_API void SetMemType(const void *memtype);
+	MMGC_API void PrintStackTraceByTrace(StackTrace *trace);
 
-	/**
-	 * calculate a stack trace skipping skip frames and return index into
-	 * trace table of stored trace
-	 */
-	unsigned int GetStackTraceIndex(int skip);
-	unsigned int LookupTrace(int *trace);
-	void ChangeSize(int traceIndex, int delta);
-	void DumpFatties();
+	class GCStackTraceHashtable : public GCHashtable
+	{
+	public:
+		GCStackTraceHashtable(unsigned int capacity=kDefaultSize, int options=0) : GCHashtable(capacity, options) {}
+	protected:
+		virtual unsigned equals(const void *k, const void *k2);
+		virtual unsigned hash(const void *k);
+	};
+
+	class MemoryProfiler : public GCAllocObject
+	{
+	public:
+		MemoryProfiler();
+		~MemoryProfiler();
+		void Alloc(const void *item, size_t size);
+		void Free(const void *item, size_t size);
+		void DumpFatties();
+		const char *GetAllocationName(const void *obj);
+		StackTrace *GetAllocationTrace(const void *obj);
+	private:
+		StackTrace *GetStackTrace();
+		const char *Intern(const char *name, size_t len);
+		const char *GetPackage(StackTrace *trace);
+		const char *GetAllocationNameFromTrace(StackTrace *trace);
+		const char *GetAllocationCategory(StackTrace *trace);
+
+		// map memory addresses of allocated objects to StackTrace*
+		GCHashtable traceTable;
+
+		// intern table of StackTrace*
+		GCStackTraceHashtable stackTraceMap;
+
+		// intern table of names
+		GCHashtable nameTable;
+	};
+
+#else // MMGC_MEMORY_PROFILER
+
+#define MMGC_MEM_TAG(_x)
+#define MMGC_MEM_TYPE(_x)
+
+#endif // !MMGC_MEMORY_PROFILER
+
+#ifndef MMGC_MEMORY_INFO
+
+#define GetRealPointer(_x) _x
+#define GetUserPointer(_x) _x
+#define DebugSize() 0
+
+#else 
 
 	/**
 	* Manually set me, for special memory not new/deleted, like the code memory region
 	*/
-	MMGC_API void ChangeSizeForObject(void *object, int size);
+	MMGC_API void ChangeSizeForObject(const void *object, int size);
 
 	/**
 	* How much extra size does DebugDecorate need?
@@ -189,39 +119,26 @@ namespace MMgc
 	/**
 	* decorate memory with debug information, return pointer to memory to return to caller
 	*/
-	MMGC_API void *DebugDecorate(void *item, size_t size, int skip);
-
+	MMGC_API void DebugDecorate(const void *item, size_t size);
 	/** 
 	* Given a pointer to user memory do debug checks and return pointer to real memory
 	*/
-	void *DebugFree(const void *item, int poison, int skip);		
-
-	/**
-	* Given a pointer to real memory do debug checks and return pointer to user memory
-	*/
-	void *DebugFreeReverse(void *item, int poison, int skip);
+	void *DebugFree(const void *item, int poison, size_t size);		
 
 	/**
 	* Given a user pointer back up to real beginning
 	*/
-	inline void *GetRealPointer(const void *item) { return (void*)((uintptr) item -  2 * sizeof(int)); }
+	inline void *GetRealPointer(const void *item) { return (void*)((uintptr_t) item -  2 * sizeof(int)); }
 
 	/**
 	* Given a user pointer back up to real beginning
 	*/
-	inline void *GetUserPointer(const void *item) { return (void*)((uintptr) item +  2 * sizeof(int)); }
+	inline void *GetUserPointer(const void *item) { return (void*)((uintptr_t) item +  2 * sizeof(int)); }
 
-	const char* GetTypeName(int index, void *obj);
 
-	void GetInfoFromPC(int pc, char *buff, int buffSize);
-	void GetStackTrace(int *trace, int len, int skip);
-	// print stack trace of index into trace table
-	void PrintStackTraceByIndex(int index);
-	MMGC_API void PrintStackTrace(const void *item);
-	// print stack trace of caller
-	void DumpStackTrace(int skip=1);
-}
+#endif //MMGC_MEMORY_INFO
 
-#endif //MEMORY_INFO
+} // namespace MMgc
+
 #endif //!__GCMemoryProfiler__
 

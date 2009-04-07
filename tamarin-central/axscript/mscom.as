@@ -35,8 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 // hackery - for now, this file is "built" via:
-// % java -ea -DAS3 -Xmx200m -DAVMPLUS -classpath ../utils/asc.jar macromedia.asc.embedding.ScriptCompiler -abcfuture -builtin -import ../core/builtin.abc -import ../esc/bin/parse.es.abc -import ../esc/bin/cogen.es.abc -import ../esc/bin/ast.es.abc -import ../esc/bin/esc-core.es.abc -import ../esc/bin/eval-support.es.abc -out axtoplevel mscom.as Domain.as ../shell/ByteArray.as && move /y ..\shell\axtoplevel.* .
-// Note that adding '-d' will include debug info which can be handy if you are tracking problems in this script
+// %java -ea -DAS3 -DAVMPLUS -classpath ../utils/asc.jar macromedia.asc.embedding.ScriptCompiler -abcfuture -builtin -d -import ../core/builtin.abc -import ../esc/bin/esc-core.es.abc -import ../esc/bin/eval-support.es.abc -out axtoplevel mscom.as Domain.as ../shell/ByteArray.as && move /y ..\shell\axtoplevel.* .
+// Note the '-d' will include debug info which is handy in the early days...
 
 package axtam 
 {
@@ -62,11 +62,8 @@ package
 
 	namespace ESC = "ESC"; // implicit namespace from esc-env.ast
 
-	public function eval(s)
-	{
-		use namespace ESC;
-		ESC::evaluateInScopeArray(s, "", []);
-	}
+	// 'eval' support is still a work in progress.
+	public function eval(...rest) {} // just needs to exist!!
 }
 
 // a clone of the File class from shell/toplevel.as
@@ -139,7 +136,7 @@ package axtam.com {
 	// This is the actual class that is thrown by script code (see throwError above)
 	// When exceptions of this class are thrown, they are not treated as "unhandled",
 	// but simply indicate that script code wants a COM error returned.
-	public dynamic class ProviderError extends Error {
+	public dynamic class ProviderError extends axtam.com.Error {
 		function ProviderError(hresult, excepinfo:EXCEPINFO = null) {
 			super(hresult, excepinfo)
 		}
@@ -151,7 +148,7 @@ package axtam.com {
 	// (such as Window) returns a COM error code.  These are never thrown by script code,
 	// and are treated as "unhandled" when the occur - eg, a traceback is printed, debugger
 	// semantics followed, etc.
-	public dynamic class ConsumerError extends Error {
+	public dynamic class ConsumerError extends axtam.com.Error {
 		function ConsumerError(hresult, excepinfo:EXCEPINFO = null) {
 			super(hresult, excepinfo)
 		}
@@ -238,27 +235,15 @@ package axtam.com.provider {
 
 package {
 
-    import flash.utils.*; // for our ByteArray clone - either it should die, or we rename the package in our clone!
+	import flash.utils.*; // for our ByteArray clone - either it should die, or we rename the package in our clone!
 
-    public function compileString(str, fname:String = "", startLineNumber:int = 0): ByteArray
-    {
-        import Parse.*;
-        import Lex.*; // needed to set lnCoord below, for reasons too magic for markh :)
-        var top = []
-
-        var parser = new Parser(str,top,fname);
-        parser.scan.lnCoord += startLineNumber;
-        var prog = parser.program();
-        var bytes = Gen::cg(prog).getBytes();
-
-        var b = new ByteArray();
-        b.endian = "littleEndian";
-
-        for (var i = 0, len = bytes.length; i<len; ++i) {
-            b.writeByte(uint(bytes[i]));
-        }
-        return b
-    }
+	public function compileString(str, fname:String = "", startLineNumber:int = 0)
+	{
+		// NOTE: This requires the patch to bug 432242 (and by the time this
+		// comment is stale, we should remove compileString() completely and
+		// inline it!
+		return ESC::compileStringToBytes(str, fname, startLineNumber+1);
+	}
 }
 
 package {

@@ -47,7 +47,6 @@ namespace avmplus
 	class ClassClosure : public ScriptObject
 	{
 	public:
-		DRCWB(ScriptObject*) prototype;
 
 		ClassClosure(VTable *cvtable);
 
@@ -63,6 +62,8 @@ namespace avmplus
 		 */
 		virtual Atom construct(int argc, Atom* argv);
 
+		ScriptObject* newInstance();
+
 		/**
 		 * called as function, as in C().  For user classes, this is the
 		 * the explicit coersion function.  For user functions, we
@@ -70,20 +71,19 @@ namespace avmplus
 		 */
 		virtual Atom call(int argc, Atom* argv);
 
-		// Accessors for Function.length
-		int get_length();
-
 		VTable* ivtable() const;
 
 #ifdef DEBUGGER
-		uint64 size() const;
-		MethodEnv *getCallMethodEnv() { return vtable->call; }
+		virtual uint64 size() const;
 #endif
 
 #ifdef AVMPLUS_VERBOSE
 	public:
 		Stringp format(AvmCore* core) const;
 #endif
+	// ------------------------ DATA SECTION BEGIN
+	public: DRCWB(ScriptObject*) prototype;
+	// ------------------------ DATA SECTION END
 	};
 }
 

@@ -61,6 +61,7 @@ struct cpuid_get_hwcap {
 #endif
 extern "C" int open(const char *, int, ...);
 extern "C" int ioctl(int, int, ...);
+extern "C" int close(int);
 
 static unsigned int GetFeatureFlags()
 {
@@ -84,10 +85,11 @@ static unsigned int GetFeatureFlags()
 
 	cgh->cgh_archname = (char *)isa;
 	if (ioctl(d, (('c' << 24) | ('i' << 16) | ('d' << 8) | 0) /* CPUID_GET_HWCAP */,
-	    cgh) != 0)
-	  return 0;
+		cgh) == 0)
+	  flag = cgh->cgh_hwcap;
 
-	flag = cgh->cgh_hwcap;
+	close(d);
+
 	return flag;
 }
 

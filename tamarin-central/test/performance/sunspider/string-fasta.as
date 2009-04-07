@@ -79,6 +79,7 @@ function fastaRepeat(n, seq) {
     }
     n -= lenOut;
   }
+  return ret;
 }
 
 function fastaRandom(n, table) {
@@ -93,27 +94,42 @@ function fastaRandom(n, table) {
           line[i] = c;
           break;
         }
+        
       }
     }
     ret = line.join('');
     n -= line.length;
   }
+  return ret;
 }
 
 function runStringFasta() {
-var _sunSpiderStartDate = new Date();
-
-var ret;
-
-var count = 7;
-ret = fastaRepeat(2*count*100000, ALU);
-ret = fastaRandom(3*count*1000, IUB);
-ret = fastaRandom(5*count*1000, HomoSap);
-
-
-
-var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-
-return(_sunSpiderInterval);
+  if (CONFIG::desktop)
+      var _sunSpiderStartDate = (new Date).getTime();
+  else  // mobile
+      var _sunSpiderStartDate = getTimer();
+  
+  var ret;
+  
+  var count = 7;
+  ret = fastaRepeat(2*count*100000, ALU);
+  ret += fastaRandom(3*count*1000, IUB);
+  ret += fastaRandom(5*count*1000, HomoSap);
+  
+  
+  if (CONFIG::desktop)
+      var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
+  else  // mobile
+      var _sunSpiderInterval = getTimer() - _sunSpiderStartDate;
+  
+  // verify test results
+  // we can not verify actual output because tamarin does not guarantee the order of iteration
+  // when using for ... in statements. (see makeCumulative function)
+  if (ret.length != 100) {
+    print("Test validation failed.  Expected: 100 Got: "+ret.length);
+  } else {
+    print("metric time "+_sunSpiderInterval);
+  }
 }
-print("metric string-fasta "+runStringFasta());
+
+runStringFasta();

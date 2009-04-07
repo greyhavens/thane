@@ -43,14 +43,38 @@ function tak(x,y,z) {
     return tak(tak(x-1,y,z), tak(y-1,z,x), tak(z-1,x,y));
 }
 
-function runControlflowRecursive() {
-  var _sunSpiderStartDate = new Date();
-  for ( var i = 3; i <= 5; i++ ) {
-    ack(3,i);
-    fib(17.0+i);
-    tak(3*i+3,2*i+2,i+1);
-  }
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+var results=new Array();
+if (CONFIG::desktop)
+    var start=new Date();
+else  // mobile
+    var start=getTimer();
+for ( var i = 3; i <= 5; i++ ) {
+    results['ack'+i]=ack(3,i);
+    results['fib'+(17+i)]=fib(17.0+i);
+    results['tak'+i]=tak(3*i+3,2*i+2,i+1);
 }
-print("metric controlflow-recursive "+runControlflowRecursive());
+if (CONFIG::desktop)
+    var totaltime=new Date()-start;
+else  // mobile
+    var totaltime=getTimer()-start;
+
+var expectedresults=new Array();
+expectedresults['ack3']=61;
+expectedresults['ack4']=125;
+expectedresults['ack5']=253;
+expectedresults['fib20']=10946;
+expectedresults['fib21']=17711;
+expectedresults['fib22']=28657;
+expectedresults['tak3']=5;
+expectedresults['tak4']=10;
+expectedresults['tak5']=7;
+
+var msg="";
+for (var a in results) {
+    if (expectedresults[a]!=results[a]) 
+        msg+=" test: "+a+" expected "+expectedresults[a]+" got "+results[a];
+}
+if (msg=="")
+    print("metric time "+totaltime);
+else
+    print("error "+msg);

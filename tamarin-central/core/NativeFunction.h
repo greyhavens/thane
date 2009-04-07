@@ -41,205 +41,331 @@
 
 namespace avmplus
 {
+	typedef avmplus::AbcEnv* AvmInstance;
+	typedef avmplus::ScriptObject* AvmObject;
+	typedef avmplus::String* AvmString;
+	typedef avmplus::Namespace* AvmNamespace;
+	typedef avmplus::Atom AvmBox;
+	typedef avmplus::MethodEnv* AvmMethodEnv;
+	typedef int32_t AvmBool32;
 
-	/**
-	 * The NativeMethod class is a wrapper to bind a native C++ function
-	 * to a class method surfaced into the ActionScript world.
-	 * The class method must be defined with the "native" attribute.
-	 *
-	 * NativeMethod uses C++ calling conventions when calling the
-	 * native C++ code.  Incoming parameters are coerced to the
-	 * proper type before the call as follows:
-	 *
-	 * AS type         C++ type
-	 * -------         --------
-	 * Void            Atom, if parameter, void if return type
-	 * Object          Atom
-	 * Boolean         bool
-	 * Number          double
-	 * String          Stringp (String *)
-	 * Class           ClassClosure*
-	 * MovieClip       MovieClipObject*   (similar for any other class)
-	 */
-	class NativeMethod : public AbstractFunction
+	#define kAvmThunkNull		nullObjectAtom
+	#define kAvmThunkUndefined	undefinedAtom
+
+	#define kAvmThunkInfinity		(MathUtils::kInfinity)
+	#define kAvmThunkNegInfinity	(MathUtils::kNegInfinity)
+	#define kAvmThunkNaN			(MathUtils::kNaN)
+	
+	typedef AvmObject		AvmRetType_AvmObject;
+	typedef bool			AvmRetType_AvmBool32;	// bools are passed in as int32, but returned as bool, for historic reasons
+	typedef int32_t			AvmRetType_int32_t;
+	typedef uint32_t		AvmRetType_uint32_t;
+	typedef AvmNamespace	AvmRetType_AvmNamespace;
+	typedef AvmBox			AvmRetType_AvmBox;
+	typedef AvmString		AvmRetType_AvmString;
+	typedef void			AvmRetType_void;
+	typedef double			AvmRetType_double;
+
+	typedef avmplus::ScriptObject AvmObjectT;
+	typedef avmplus::String AvmStringT;
+	typedef avmplus::Namespace AvmNamespaceT;
+
+	typedef AvmBox (*AvmThunkNativeThunker)(AvmMethodEnv env, uint32_t argc, AvmBox* argv);
+	typedef double (*AvmThunkNativeThunkerN)(AvmMethodEnv env, uint32_t argc, AvmBox* argv);
+
+	typedef void (AvmObjectT::*AvmThunkNativeMethodHandler)();
+	typedef void (*AvmThunkNativeFunctionHandler)(AvmObject obj);
+
+	const uintptr_t kUnboxMask = ~uintptr_t(7);
+	#define AvmThunkUnbox_AvmReceiver(t,r)	((t)(uintptr_t(r) & kUnboxMask))
+	#define AvmThunkUnbox_AvmObject(r)		((ScriptObject*)(r))
+	#define AvmThunkUnbox_AvmBool32(r)		((r) != 0)
+	#define AvmThunkUnbox_int32_t(r)		int32_t(r)
+	#define AvmThunkUnbox_uint32_t(r)		uint32_t(r)
+	#define AvmThunkUnbox_AvmNamespace(r)	((Namespace*)(r))
+	#define AvmThunkUnbox_AvmBox(r)			(r)
+	#define AvmThunkUnbox_AvmString(r)		((String*)(r))
+	#define AvmThunkUnbox_void(r)			(error ??? illegal)
+	#define AvmThunkUnbox_double(r)			AvmThunkUnbox_double_impl(&(r))
+
+	#define AvmThunkArgSize_AvmObject		1
+	#define AvmThunkArgSize_AvmBool32		1
+	#define AvmThunkArgSize_int32_t			1
+	#define AvmThunkArgSize_uint32_t		1
+	#define AvmThunkArgSize_AvmNamespace	1
+	#define AvmThunkArgSize_AvmBox			1
+	#define AvmThunkArgSize_AvmString		1
+	#define AvmThunkArgSize_void			(error ??? illegal)
+#ifdef AVMPLUS_64BIT
+	#define AvmThunkArgSize_double			1
+#else
+	#define AvmThunkArgSize_double			2
+#endif
+
+	inline double AvmThunkUnbox_double_impl(const AvmBox* b)
 	{
-	public:
-		typedef void (ScriptObject::*Handler)();
-		typedef Atom (ScriptObject::*GetHandler)();
-		typedef void (ScriptObject::*SetHandler)(Atom);
-
-		/**
-		 * invoke handler as handler(...) with native typed args
-		 */
-		NativeMethod(int flags, Handler handler);
-
-		/**
-		 * invoke handler as handler(int cookie, ...) with native typed args
-		 */
-		NativeMethod(int flags, Handler handler, int cookie);
-		
-		// we have virtual functions, so we probably need a virtual dtor
-		virtual ~NativeMethod() {}
-
-		static Atom verifyEnter(MethodEnv* env, int argc, uint32 *ap);
-
-		virtual void verify(Toplevel* toplevel);
-
-		int m_cookie;
+	#if defined(AVMPLUS_64BIT)
+		AvmAssert(sizeof(AvmBox) == sizeof(double));
+		return *(const double*)b;
+	#elif defined(AVMPLUS_UNALIGNED_ACCESS)
+		AvmAssert(sizeof(AvmBox)*2 == sizeof(double));
+		return *(const double*)b;
+	#else
+		AvmAssert(sizeof(AvmBox)*2 == sizeof(double));
 		union {
-			Handler m_handler;
-			uintptr m_handler_addr;
-		};
+			double d;
+			AvmBox b[2];
+		} u;
+		// @todo, does this need endian attention?
+		u.b[0] = b[0];
+		u.b[1] = b[1];
+		return u.d;
+	#endif
+	}
+
+	// trick, since values are compile-time known we usually don't need to call intToAtom, can statically transform them
+	// good for ints and ints currently
+	#define AvmThunkCanBeSmallIntAtom(v)	(!((v) & 0xF0000000))
+	#define AvmThunkSmallIntAtom(v)			((((Atom)(v))<<3) | kIntegerType)
 		
+	// note, this isn't complete -- only the ones currently needed are defined.
+	// expand as necessary. macros to take advantage of the fact that most
+	// args are compile-time constants.
+	#define AvmThunkCoerce_int32_t_double(v)	double(v)
+	#define AvmThunkCoerce_int32_t_uint32_t(v)	uint32_t(v)
+	#define AvmThunkCoerce_int32_t_AvmBox(v)	(AvmThunkCanBeSmallIntAtom(v) ? AvmThunkSmallIntAtom(v) : env->core()->intAtom(v))
+
+	#define AvmThunkCoerce_uint32_t_double(v)	double(v)
+	#define AvmThunkCoerce_uint32_t_int32_t(v)	int32_t(v)
+	#define AvmThunkCoerce_uint32_t_AvmBox(v)	(AvmThunkCanBeSmallIntAtom(v) ? AvmThunkSmallIntAtom(v) : env->core()->intAtom(v))
+
+	#define AvmThunkCoerce_AvmBool32_AvmBox(v)	((v) ? trueAtom : falseAtom)
+
+#ifdef _DEBUG
+	inline double AvmThunkCoerce_AvmBox_double(AvmBox v) { AvmAssert((v) == kAvmThunkUndefined); (void)v; return kAvmThunkNaN; }
+	inline AvmString AvmThunkCoerce_AvmBox_AvmString(AvmBox v) { AvmAssert((v) == kAvmThunkUndefined || (v) == kAvmThunkNull); (void)v; return NULL; }
+	inline AvmObject AvmThunkCoerce_AvmBox_AvmObject(AvmBox v) { AvmAssert((v) == kAvmThunkUndefined || (v) == kAvmThunkNull); (void)v; return NULL; }
+#else
+	#define AvmThunkCoerce_AvmBox_double(v)		(kAvmThunkNaN)
+	#define AvmThunkCoerce_AvmBox_AvmString(v)	(NULL)
+	#define AvmThunkCoerce_AvmBox_AvmObject(v)	(NULL)
+#endif
+
+	#define AvmThunkCoerce_AvmString_AvmBox(v)	((v) ? (v)->atom() : nullStringAtom)
+
+	#define AvmThunkConstant_AvmString(v)		(env->method->pool()->cpool_string[v])
+	
+	#define AVMTHUNK_GET_METHOD_HANDLER(env)	((env)->method->handler_method())
+	#define AVMTHUNK_GET_FUNCTION_HANDLER(env)	((env)->method->handler_function())
+
+	union AvmThunkNativeHandler
+	{
+		AvmThunkNativeMethodHandler method;
+		AvmThunkNativeFunctionHandler function;
 	};
 
-	/**
-	 * NativeMethodV is similar to NativeMethod but does not coerce
-	 * arguments automatically to appropriate C++ types.
-	 * Instead, the C++ code always receives arguments in the
-	 * form: Atom method(Atom *argv, int argc);
-	 *
-	 * NativeMethodV is deprecated and will eventually be removed.
-	 */
-	class NativeMethodV : public AbstractFunction
+	struct NativeMethodInfo
 	{
 	public:
-		typedef sintptr (ScriptObject::*Handler32)(Atom *argv, int argc);
-		typedef sintptr (ScriptObject::*CookieHandler32)(int cookie, Atom *argv, int argc);		
-		typedef double (ScriptObject::*HandlerN)(Atom *argv, int argc);
-		typedef double (ScriptObject::*CookieHandlerN)(int cookie, Atom *argv, int argc);		
-
-		/**
-		 * invoke handler as handler(...) with native typed args
-		 */
-		NativeMethodV(Handler32 handler, int flgs)
-			: AbstractFunction()
-		{
-			m_handler = handler;
-			this->flags |= (flgs | NEED_REST);
-			this->impl32 = verifyEnter;
-		}
-
-		/**
-		 * invoke handler as handler(int cookie, ...) with native typed args
-		 */
-		NativeMethodV(Handler32 handler, int cookie, int flgs)
-			: AbstractFunction()
-		{
-			m_handler = handler;
-			m_cookie  = cookie;
-			m_haveCookie = true;
-			this->impl32 = verifyEnter;
-			this->flags = flgs;
-		}
-
-		void verify(Toplevel* toplevel)
-		{
-			AvmAssert(declaringTraits->linked);
-			resolveSignature(toplevel);
-			AvmCore* core = this->core();
-			if (returnTraits() == NUMBER_TYPE)
-				implN = implvN;
-			else
-				impl32 = implv32;
-		}
-
-		static Atom verifyEnter(MethodEnv* env, int argc, uint32 *ap);
-
-		static Atom implv32(MethodEnv* env, 
-				   int argc, uint32 *ap);
-		static double implvN(MethodEnv* env,
-				   int argc, uint32 *ap);
-		
-	private:
-		bool m_haveCookie;
-		int m_cookie;
-		Handler32 m_handler;
+		AvmThunkNativeHandler handler;
+		AvmThunkNativeThunker thunker;
+#ifndef AVMPLUS_NO_STATIC_POINTERS
+		int32_t method_id;
+#endif
 	};
 
-
-	/**
-	 * NativeTableEntry is an internal structure used for native
-	 * method tables.  It is wrapped by the NATIVE_METHOD() macros
-	 * below.
-	 */
-	struct NativeTableEntry
-	{
-		typedef void (ScriptObject::*Handler)();
-		int method_id;
-		enum {
-			kNativePrefix,
-			kNativeMethod,
-			kNativeMethod1,
-			kNativeMethodRest,
-			kNativeMethodV,
-			kNativeMethodV1
-		} type;
-		Handler handler;
-		int cookie;
-		int flags;
-	};
-
-	/**
-	 * Macros for declaring native methods
-	 */
-#define BEGIN_NATIVE_MAP(_Class) NativeTableEntry _Class::natives[] = {
-		
-#define DECLARE_NATIVE_MAP(_Class) static ClassClosure* createClassClosure(VTable* cvtable) \
-{ return new (cvtable->gc(), cvtable->getExtraSize()) _Class(cvtable); } \
-static NativeTableEntry natives[];
-
-#define DECLARE_NATIVE_SCRIPT(_Script) static ScriptObject* createGlobalObject(VTable* vtable, ScriptObject* delegate) \
-{ return new (vtable->gc(), vtable->getExtraSize()) _Script(vtable, delegate); } \
-static NativeTableEntry natives[];
-
-#define NATIVE_METHOD(method_id, handler) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethod, (NativeTableEntry::Handler)&handler, 0, AbstractFunction::NEEDS_CODECONTEXT | AbstractFunction::NEEDS_DXNS },
-#define NATIVE_METHOD_FLAGS(method_id, handler, fl) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethod, (NativeTableEntry::Handler)&handler, 0, fl },
-
-#define NATIVE_METHOD2(method_id, handler) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethod, (NativeTableEntry::Handler)(handler), 0, AbstractFunction::NEEDS_CODECONTEXT | AbstractFunction::NEEDS_DXNS },
-#define NATIVE_METHOD2_FLAGS(method_id, handler,fl) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethod, (NativeTableEntry::Handler)(handler), 0, fl },
-
-#define NATIVE_METHOD1(method_id, handler, cookie) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethod1, (NativeTableEntry::Handler)&handler, cookie, AbstractFunction::NEEDS_CODECONTEXT | AbstractFunction::NEEDS_DXNS },
-#define NATIVE_METHOD1_FLAGS(method_id, handler, cookie, fl) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethod1, (NativeTableEntry::Handler)&handler, cookie, fl },
-
-#define NATIVE_METHODV(method_id, handler) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethodV, (NativeTableEntry::Handler)&handler, 0, AbstractFunction::NEEDS_CODECONTEXT | AbstractFunction::NEEDS_DXNS },
-#define NATIVE_METHODV_FLAGS(method_id, handler, fl) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethodV, (NativeTableEntry::Handler)&handler, 0, fl },
-		
-#define NATIVE_METHODV1(method_id, handler, cookie) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethodV1, (NativeTableEntry::Handler)&handler, cookie, AbstractFunction::NEEDS_CODECONTEXT | AbstractFunction::NEEDS_DXNS },
-#define NATIVE_METHODV1_FLAGS(method_id, handler, cookie, fl) { avmplus::NativeID::method_id, NativeTableEntry::kNativeMethodV1, (NativeTableEntry::Handler)&handler, cookie, fl },
-
-
-#define END_NATIVE_MAP() { -1, NativeTableEntry::kNativeMethod, NULL, 0 } };
-
-    /**
-	 * NativeScriptInfo is an internal structure used for
-	 * native script tables.  It is wrapped by the
-	 * NATIVE_SCRIPT() macro.
-	 */
-    struct NativeScriptInfo
-	{
-		typedef ScriptObject* (*Handler)(VTable*, ScriptObject*);
-
-		int script_id;
-		Handler handler;
-		NativeTableEntry *nativeMap;
-		int sizeofInstance;
-	};
-
-	/**
-	 * NativeClassInfo is an internal structure used for native
-	 * method tables.  It is wrapped by the NATIVE_CLASS() macro.
-	 */
 	struct NativeClassInfo
 	{
-		typedef ClassClosure* (*Handler)(VTable*);
-
-		int class_id;
-		Handler handler;
-		NativeTableEntry *nativeMap;
-		int sizeofClass;
-		int sizeofInstance;
+	public:
+		CreateClassClosureProc createClassClosure;
+#ifndef AVMPLUS_NO_STATIC_POINTERS
+		int32_t class_id;
+#endif
+		uint32_t sizeofClass;
+		uint32_t sizeofInstance;
 	};
+
+
+	// ---------------
+
+	class NativeInitializer
+	{
+	public:
+		NativeInitializer(AvmCore* core, 
+			const uint8_t* abcData,
+			uint32_t abcDataLen,
+			uint32_t methodCount,
+			uint32_t classCount);
+
+		~NativeInitializer();
+
+		PoolObject* parseBuiltinABC(Domain* domain, const List<Stringp, LIST_RCObjects>* includes = NULL);
+
+		const NativeMethodInfo* getNativeInfo(uint32_t i) const { return get_method(i); }
+	
+		#ifdef AVMPLUS_NO_STATIC_POINTERS
+			typedef void (*FillInProc)(NativeMethodInfo* m, NativeClassInfo* c);
+			void fillIn(FillInProc p);
+			inline const NativeClassInfo* get_class(uint32_t i) const { AvmAssert(i < classCount); return &classes[i]; }
+		#else
+			void fillInMethods(const NativeMethodInfo* methodEntry);
+			void fillInClasses(const NativeClassInfo* classEntry);
+			inline const NativeClassInfo* get_class(uint32_t i) const { AvmAssert(i < classCount); return classes[i]; }
+		#endif
+		
+	private:
+		#ifdef AVMPLUS_NO_STATIC_POINTERS
+			typedef NativeMethodInfo MethodType;
+			typedef NativeClassInfo ClassType;
+			inline const NativeMethodInfo* get_method(uint32_t i) const { AvmAssert(i < methodCount); return &methods[i]; }
+		#else
+			typedef const NativeMethodInfo* MethodType;
+			typedef const NativeClassInfo* ClassType;
+			inline const NativeMethodInfo* get_method(uint32_t i) const { AvmAssert(i < methodCount); return methods[i]; }
+		#endif
+
+	private:
+		AvmCore* const			core;
+		const uint8_t* const	abcData;
+		uint32_t const			abcDataLen;
+		MethodType* const		methods;
+		ClassType* const		classes;
+		const uint32_t			methodCount;
+		const uint32_t			classCount;
+	};
+
+	#define _NATIVE_METHOD_CAST_PTR(CLS, PTR) \
+		reinterpret_cast<AvmThunkNativeMethodHandler>((void(CLS::*)())(PTR))
+
+	#define AVMTHUNK_NATIVE_CLASS_GLUE(CLS) \
+		static ClassClosure* CLS##_createClassClosure(VTable* cvtable) \
+		{ return new (cvtable->gc(), cvtable->getExtraSize()) CLS(cvtable); } 
+
+	#define AVMTHUNK_DECLARE_NATIVE_INITIALIZER(NAME) \
+		extern PoolObject* initBuiltinABC_##NAME(AvmCore* core, Domain* domain, const List<Stringp, LIST_RCObjects>* includes);
+
+#ifdef AVMPLUS_NO_STATIC_POINTERS
+
+	#define AVMTHUNK_BEGIN_NATIVE_TABLES(NAME) \
+		static void fillIn_##NAME(NativeMethodInfo* m, NativeClassInfo* c) { 
+
+	#define AVMTHUNK_END_NATIVE_TABLES() \
+		}
+	
+	// ---------------
+
+	#define AVMTHUNK_BEGIN_NATIVE_METHODS(NAME) 
+
+	#define _AVMTHUNK_NATIVE_METHOD(CLS, METHID, IMPL) \
+		m[METHID].handler.method = _NATIVE_METHOD_CAST_PTR(CLS, &IMPL); \
+		m[METHID].thunker = (AvmThunkNativeThunker)avmplus::NativeID::METHID##_thunk; 
+
+	#define AVMTHUNK_NATIVE_METHOD(METHID, IMPL) \
+		_AVMTHUNK_NATIVE_METHOD(ScriptObject, METHID, IMPL)
+
+	#define AVMTHUNK_NATIVE_METHOD_STRING(METHID, IMPL) \
+		_AVMTHUNK_NATIVE_METHOD(avmplus::String, METHID, IMPL)
+
+	#define AVMTHUNK_NATIVE_METHOD_NAMESPACE(METHID, IMPL) \
+		_AVMTHUNK_NATIVE_METHOD(avmplus::Namespace, METHID, IMPL)
+
+	#define AVMTHUNK_NATIVE_FUNCTION(METHID, IMPL) \
+		m[METHID].handler.function = reinterpret_cast<AvmThunkNativeFunctionHandler>(IMPL); \
+		m[METHID].thunker = (AvmThunkNativeThunker)avmplus::NativeID::METHID##_thunk; 
+
+	#define AVMTHUNK_END_NATIVE_METHODS() 
+
+	// ---------------
+
+	#define AVMTHUNK_BEGIN_NATIVE_CLASSES(NAME) 
+
+	#define AVMTHUNK_NATIVE_CLASS(CLSID, CLS, INST) \
+		c[CLSID].createClassClosure = (CreateClassClosureProc)CLS##_createClassClosure; \
+		c[CLSID].sizeofClass = sizeof(CLS); \
+		c[CLSID].sizeofInstance = sizeof(INST); 
+
+	#define AVMTHUNK_END_NATIVE_CLASSES() 
+
+	#define AVMTHUNK_DEFINE_NATIVE_INITIALIZER(NAME) \
+		PoolObject* initBuiltinABC_##NAME(AvmCore* core, Domain* domain, const List<Stringp, LIST_RCObjects>* includes) { \
+			NativeInitializer ninit(core, \
+				avmplus::NativeID::NAME##_abc_data, \
+				avmplus::NativeID::NAME##_abc_length, \
+				avmplus::NativeID::NAME##_abc_method_count, \
+				avmplus::NativeID::NAME##_abc_class_count); \
+			ninit.fillIn(fillIn_##NAME); \
+			return ninit.parseBuiltinABC(domain, includes); \
+		}
+
+#else
+
+	#define AVMTHUNK_BEGIN_NATIVE_TABLES(NAME)
+	#define AVMTHUNK_END_NATIVE_TABLES()
+	
+	// ---------------
+
+	#define AVMTHUNK_BEGIN_NATIVE_METHODS(NAME) \
+		static const NativeMethodInfo NAME##_methodEntries[] = {
+			
+	#define _AVMTHUNK_NATIVE_METHOD(CLS, METHID, IMPL) \
+		{ { _NATIVE_METHOD_CAST_PTR(CLS, &IMPL) }, (AvmThunkNativeThunker)avmplus::NativeID::METHID##_thunk, avmplus::NativeID::METHID },
+
+	#define AVMTHUNK_NATIVE_METHOD(METHID, IMPL) \
+		_AVMTHUNK_NATIVE_METHOD(ScriptObject, METHID, IMPL)
+
+	#define AVMTHUNK_NATIVE_METHOD_STRING(METHID, IMPL) \
+		_AVMTHUNK_NATIVE_METHOD(avmplus::String, METHID, IMPL)
+
+	#define AVMTHUNK_NATIVE_METHOD_NAMESPACE(METHID, IMPL) \
+		_AVMTHUNK_NATIVE_METHOD(avmplus::Namespace, METHID, IMPL)
+
+	// C++ won't let us auto-init a union to a field other than the first one, nor will it
+	// allow us to reliably cast between a pointer-to-function and pointer-to-member-function,
+	// thus this inline function to massage the few places that need it.
+	inline AvmThunkNativeMethodHandler _to_method_handler(AvmThunkNativeFunctionHandler function)
+	{
+		AvmThunkNativeHandler handler;
+		handler.function = function;
+		return handler.method;
+	}
+
+	#define AVMTHUNK_NATIVE_FUNCTION(METHID, IMPL) \
+		{ { _to_method_handler(reinterpret_cast<AvmThunkNativeFunctionHandler>(IMPL)) }, (AvmThunkNativeThunker)avmplus::NativeID::METHID##_thunk, avmplus::NativeID::METHID },
+
+	#define AVMTHUNK_END_NATIVE_METHODS() \
+		{ { NULL }, NULL, -1 } };
+
+	// ---------------
+
+	#define AVMTHUNK_BEGIN_NATIVE_CLASSES(NAME) \
+		const NativeClassInfo NAME##_classEntries[] = {
+
+	#define AVMTHUNK_NATIVE_CLASS(CLSID, CLS, INST) \
+		{ (CreateClassClosureProc)CLS##_createClassClosure, avmplus::NativeID::CLSID, sizeof(CLS), sizeof(INST) },
+
+	#define AVMTHUNK_END_NATIVE_CLASSES() \
+		{ NULL, -1, 0, 0 } };
+
+	#define AVMTHUNK_DEFINE_NATIVE_INITIALIZER(NAME) \
+		PoolObject* initBuiltinABC_##NAME(AvmCore* core, Domain* domain, const List<Stringp, LIST_RCObjects>* includes) { \
+			NativeInitializer ninit(core, \
+				avmplus::NativeID::NAME##_abc_data, \
+				avmplus::NativeID::NAME##_abc_length, \
+				avmplus::NativeID::NAME##_abc_method_count, \
+				avmplus::NativeID::NAME##_abc_class_count); \
+			ninit.fillInClasses(NAME##_classEntries); \
+			ninit.fillInMethods(NAME##_methodEntries); \
+			return ninit.parseBuiltinABC(domain, includes); \
+		}
+
+#endif // AVMPLUS_NO_STATIC_POINTERS
+
+	#define AVM_INIT_BUILTIN_ABC_IN_DOMAIN(MAPNAME, CORE, DOMAIN) \
+		avmplus::NativeID::initBuiltinABC_##MAPNAME((CORE), (DOMAIN), NULL)
+
+	#define AVM_INIT_BUILTIN_ABC(MAPNAME, CORE) \
+		avmplus::NativeID::initBuiltinABC_##MAPNAME((CORE), (CORE)->builtinDomain, NULL)
+
 }	
 
 #endif /* __avmplus_NativeFunction__ */

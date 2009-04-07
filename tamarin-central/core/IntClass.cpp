@@ -40,9 +40,6 @@
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(IntClass)
-	END_NATIVE_MAP()
-
 	IntClass::IntClass(VTable* cvtable) : ClassClosure(cvtable)
 	{
 		toplevel()->intClass = this;
@@ -58,9 +55,6 @@ namespace avmplus
 			return core()->intAtom(argv[1]);
 		// TODO ArgumentError if argc > 1
 	}
-
-	BEGIN_NATIVE_MAP(UIntClass)
-	END_NATIVE_MAP()
 
 	UIntClass::UIntClass(VTable* cvtable) : ClassClosure(cvtable)
 	{

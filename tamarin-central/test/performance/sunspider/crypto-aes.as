@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2007 Apple Inc.  All rights reserved.
+> Copyright (C) 2007 Apple Inc.  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
@@ -289,7 +289,6 @@ function AESDecryptCtr(ciphertext, password, nBits) {
       pt += String.fromCharCode(plaintextByte);
     }
     // pt is now plaintext for this block
-
     plaintext[b-1] = pt;  // b-1 'cos no initial nonce block in plaintext
   }
 
@@ -297,7 +296,42 @@ function AESDecryptCtr(ciphertext, password, nBits) {
 }
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
+// Due to bug 464773 (465816) the esc/unesc functions have been replaced
+function escCtrlChars(str) {  // escape control chars which might cause problems handling ciphertext
+  var s = "";
+  for ( var i=0 ; i < str.length ; i++ ) {
+    var c = str.charAt(i);
+    if (c == "\0" || c == "\t" || c == "\n" || c == "\v" || c == "\f" || c == "\r" || c == "\xA0" || c == "'" || c == "\"" || c == "!" || c == "-")
+        s += "!" + c.charCodeAt(0) + "!";
+    else
+        s += c;
+  }
+  return s;
+}
 
+function unescCtrlChars(str) {  // unescape potentially problematic control characters
+  var s = "";
+  var c;
+  var i = 0;
+  while (i < str.length) {
+    if (str.charAt(i) == "!") {
+       i++;
+       var j = i;
+       while (i < str.length && (c = str.charAt(i)) >= "0" && c <= "9")
+           i++;
+       if (i < str.length && str.charAt(i) == "!") {
+           s += String.fromCharCode(parseInt(str.substring(j,i)));
+           i++;
+           continue;
+       }
+       i = j-1;
+    }
+    s += str.charAt(i++);
+  }
+  return s;
+}
+
+/*
 function escCtrlChars(str) {  // escape control chars which might cause problems handling ciphertext
   return str.replace(/[\0\t\n\v\f\r\xa0'"!-]/g, function(c) { return '!' + c.charCodeAt(0) + '!'; });
 }  // \xa0 to cater for bug in Firefox; include '-' to leave it free for use as a block marker
@@ -305,6 +339,7 @@ function escCtrlChars(str) {  // escape control chars which might cause problems
 function unescCtrlChars(str) {  // unescape potentially problematic control characters
   return str.replace(/!\d\d?\d?!/g, function(c) { return String.fromCharCode(c.slice(1,-1)); });
 }
+*/
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
 /*
@@ -404,8 +439,11 @@ function byteArrayToHexStr(b) {  // convert byte array to hex string for display
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 
-function runCryptoAES() {
-var _sunSpiderStartDate = new Date();
+if (CONFIG::desktop)
+    var start=new Date();
+else  // mobile
+    var start=getTimer();
+
 var plainText = "ROMEO: But, soft! what light through yonder window breaks?\n\
 It is the east, and Juliet is the sun.\n\
 Arise, fair sun, and kill the envious moon,\n\
@@ -445,9 +483,13 @@ var password = "O Romeo, Romeo! wherefore art thou Romeo?";
 var cipherText = AESEncryptCtr(plainText, password, 256);
 var decryptedText = AESDecryptCtr(cipherText, password, 256);
 
-
-var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-
-return(_sunSpiderInterval);
+if (CONFIG::desktop)
+    var totaltime=new Date()-start;
+else  // mobile
+    var totaltime=getTimer()-start;
+if (decryptedText==plainText) {
+    print("metric time "+totaltime);
+} else {
+    print("metric time "+totaltime);
+    print("error plaintext and decrypted text did not match\nplaintext=\n"+plainText+"\ndecryptedtext=\n"+decryptedText);
 }
-print("metric crypto-aes "+runCryptoAES());

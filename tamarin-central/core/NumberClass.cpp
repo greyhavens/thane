@@ -37,14 +37,10 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(NumberClass)
-		NATIVE_METHOD(Number_private__toString, NumberClass::numberToString)
-		NATIVE_METHOD(Number_private__convert, NumberClass::convert)
-	END_NATIVE_MAP()
-
 	NumberClass::NumberClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
@@ -65,7 +61,7 @@ namespace avmplus
 		// TODO ArgumentError if argc > 1
 	}
 
-	Stringp NumberClass::convert(double n, int precision, int mode)
+	Stringp NumberClass::_convert(double n, int precision, int mode)
 	{
 		AvmCore* core = this->core();
 
@@ -82,18 +78,10 @@ namespace avmplus
 			}
 		}
 
-		wchar buffer[312];
-		int len;
-		MathUtils::convertDoubleToString(n,
-										 buffer,
-										 len,
-										 mode,
-										 precision);
-
-		return new (core->GetGC()) String(buffer,len);
+		return MathUtils::convertDoubleToString(core, n, mode, precision);
 	}
 	
-	Stringp NumberClass::numberToString(double dVal, int radix)
+	Stringp NumberClass::_numberToString(double dVal, int radix)
 	{
 		AvmCore* core = this->core();
 

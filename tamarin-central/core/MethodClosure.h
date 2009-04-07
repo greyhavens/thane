@@ -44,8 +44,6 @@ namespace avmplus
 	class MethodClosureClass : public ClassClosure
 	{
 	public:
-		DECLARE_NATIVE_MAP(MethodClosureClass)
-
 		MethodClosureClass(VTable* cvtable);
 
 		// Function called as constructor ... not supported from user code
@@ -79,34 +77,30 @@ namespace avmplus
 	 * MethodClosure is invoked, the method is invoked with
 	 * "this" pointing to the remembered instance.
 	 */
-	class MethodClosure : public ScriptObject
+	class MethodClosure : public FunctionObject
 	{
 		friend class MethodClosureClass;
-		MethodClosure(VTable* vtable, ScriptObject* prototype, MethodEnv* env, Atom savedThis);
+		MethodClosure(VTable* cvtable, MethodEnv* call, Atom savedThis);
+
 	public:
-		DWB(MethodEnv*) env;
-		ATOM_WB savedThis;
-
-
-		// argc is args only, argv[0] = receiver
-		Atom call(int argc, Atom* argv);
-
 		// argc is args only, argv[0] = receiver(ignored)
-		Atom construct(int argc, Atom* argv);
+		virtual Atom construct(int argc, Atom* argv);
 
-		int get_length() const;
-		Atom get_savedThis();
-
-		bool isMethodClosure() { return true; }
+		virtual bool isMethodClosure() { return true; }
 
 #ifdef AVMPLUS_VERBOSE
-	public:
 		Stringp format(AvmCore* core) const;
 #endif
 
-#ifdef DEBUGGER
-		MethodEnv *getCallMethodEnv() { return env; }
-#endif
+		// Flash needs to peek at these for WeakMethodClosure, alas
+		inline MethodEnv* peek_call() { return _call; }
+		inline Atom peek_savedThis() { return _savedThis; }
+
+	protected:
+		virtual Atom get_coerced_receiver(Atom a);
+
+	protected:
+		ATOM_WB _savedThis;
 	};
 }
 

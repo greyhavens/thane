@@ -65,36 +65,64 @@ namespace avmplus
 		// override ScriptObject::createInstance
 		ArrayObject* createInstance(VTable *ivtable, ScriptObject* prototype);
 
-		ArrayObject* concat(Atom thisAtom, ArrayObject* args);
-		Atom pop(Atom thisAtom);
-		Atom reverse(Atom thisAtom);
-		Atom shift(Atom thisAtom);
-		ArrayObject* slice(Atom thisAtom, double A, double B);
-		Atom sort(Atom thisAtom, ArrayObject *args);
-		Atom sortOn(Atom thisAtom, Atom namesAtom, Atom optionsAtom);
-		ArrayObject* splice(Atom thisAtom, ArrayObject* args);
+		// AS3 glue code methods (not inlined, just declared here for convenience)
+		ArrayObject* _concat(Atom thisAtom, ArrayObject* args) { return ArrayClass::generic_concat(toplevel(), thisAtom, args); }
+		Atom _pop(Atom thisAtom) { return ArrayClass::generic_pop(toplevel(), thisAtom); }
+		Atom _reverse(Atom thisAtom) { return ArrayClass::generic_reverse(toplevel(), thisAtom); }
+		Atom _shift(Atom thisAtom) { return ArrayClass::generic_shift(toplevel(), thisAtom); }
+		ArrayObject* _slice(Atom thisAtom, double A, double B) { return ArrayClass::generic_slice(toplevel(), thisAtom, A, B); }
+		Atom _sort(Atom thisAtom, ArrayObject *args) { return ArrayClass::generic_sort(toplevel(), thisAtom, args); }
+		Atom _sortOn(Atom thisAtom, Atom namesAtom, Atom optionsAtom) { return ArrayClass::generic_sortOn(toplevel(), thisAtom, namesAtom, optionsAtom); }
+		ArrayObject* _splice(Atom thisAtom, ArrayObject* args) { return ArrayClass::generic_splice(toplevel(), thisAtom, args); }
+		int _indexOf(Atom thisAtom, Atom searchElement, int startIndex) { return ArrayClass::generic_indexOf(toplevel(), thisAtom, searchElement, startIndex); }
+		int _lastIndexOf(Atom thisAtom, Atom searchElement, int startIndex) { return ArrayClass::generic_lastIndexOf(toplevel(), thisAtom, searchElement, startIndex); }
+		bool _every(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_every(toplevel(), thisAtom, callback, thisObject); }
+		ArrayObject* _filter(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_filter(toplevel(), thisAtom, callback, thisObject); }
+		void _forEach(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_forEach(toplevel(), thisAtom, callback, thisObject); }
+		bool _some(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_some(toplevel(), thisAtom, callback, thisObject); }
+		ArrayObject* _map(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_map(toplevel(), thisAtom, callback, thisObject); }
+		uint32 _unshift(Atom thisAtom, ArrayObject* args) { return ArrayClass::generic_unshift(toplevel(), thisAtom, args); }
 
-		int indexOf (Atom thisAtom, Atom searchElement, int startIndex);
-		int lastIndexOf (Atom thisAtom, Atom searchElement, int startIndex);
-		bool every (Atom thisAtom, ScriptObject *callback, Atom thisObject); 
-		ArrayObject *filter (Atom thisAtom, ScriptObject *callback, Atom thisObject); 
-		void forEach (Atom thisAtom, ScriptObject *callback, Atom thisObject); 
-		bool some (Atom thisAtom, ScriptObject *callback, Atom thisObject); 
-		ArrayObject *map (Atom thisAtom, ScriptObject *callback, Atom thisObject); 
+		// inline wrappers for legacy code.
+		inline ArrayObject* concat(Atom thisAtom, ArrayObject* args) { return ArrayClass::generic_concat(toplevel(), thisAtom, args); }
+		inline Atom pop(Atom thisAtom) { return ArrayClass::generic_pop(toplevel(), thisAtom); }
+		inline Atom reverse(Atom thisAtom) { return ArrayClass::generic_reverse(toplevel(), thisAtom); }
+		inline Atom shift(Atom thisAtom) { return ArrayClass::generic_shift(toplevel(), thisAtom); }
+		inline ArrayObject* slice(Atom thisAtom, double A, double B) { return ArrayClass::generic_slice(toplevel(), thisAtom, A, B); }
+		inline Atom sort(Atom thisAtom, ArrayObject *args) { return ArrayClass::generic_sort(toplevel(), thisAtom, args); }
+		inline Atom sortOn(Atom thisAtom, Atom namesAtom, Atom optionsAtom) { return ArrayClass::generic_sortOn(toplevel(), thisAtom, namesAtom, optionsAtom); }
+		inline ArrayObject* splice(Atom thisAtom, ArrayObject* args) { return ArrayClass::generic_splice(toplevel(), thisAtom, args); }
+		inline int indexOf(Atom thisAtom, Atom searchElement, int startIndex) { return ArrayClass::generic_indexOf(toplevel(), thisAtom, searchElement, startIndex); }
+		inline int lastIndexOf(Atom thisAtom, Atom searchElement, int startIndex) { return ArrayClass::generic_lastIndexOf(toplevel(), thisAtom, searchElement, startIndex); }
+		inline bool every(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_every(toplevel(), thisAtom, callback, thisObject); }
+		inline ArrayObject* filter(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_filter(toplevel(), thisAtom, callback, thisObject); }
+		inline void forEach(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_forEach(toplevel(), thisAtom, callback, thisObject); }
+		inline bool some(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_some(toplevel(), thisAtom, callback, thisObject); }
+		inline ArrayObject* map(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_map(toplevel(), thisAtom, callback, thisObject); }
 
-		DECLARE_NATIVE_MAP(ArrayClass)
-
-		uint32 getLengthHelper (ScriptObject *d);
+		static ArrayObject* generic_concat(Toplevel* toplevel, Atom thisAtom, ArrayObject* args);
+		static Atom generic_pop(Toplevel* toplevel, Atom thisAtom);
+		static Atom generic_reverse(Toplevel* toplevel, Atom thisAtom);
+		static Atom generic_shift(Toplevel* toplevel, Atom thisAtom);
+		static ArrayObject* generic_slice(Toplevel* toplevel, Atom thisAtom, double A, double B);
+		static Atom generic_sort(Toplevel* toplevel, Atom thisAtom, ArrayObject *args);
+		static Atom generic_sortOn(Toplevel* toplevel, Atom thisAtom, Atom namesAtom, Atom optionsAtom);
+		static ArrayObject* generic_splice(Toplevel* toplevel, Atom thisAtom, ArrayObject* args);
+		static int generic_indexOf(Toplevel* toplevel, Atom thisAtom, Atom searchElement, int startIndex);
+		static int generic_lastIndexOf(Toplevel* toplevel, Atom thisAtom, Atom searchElement, int startIndex);
+		static bool generic_every(Toplevel* toplevel, Atom thisAtom, ScriptObject* callback, Atom thisObject); 
+		static ArrayObject* generic_filter(Toplevel* toplevel, Atom thisAtom, ScriptObject* callback, Atom thisObject); 
+		static void generic_forEach(Toplevel* toplevel, Atom thisAtom, ScriptObject* callback, Atom thisObject); 
+		static bool generic_some(Toplevel* toplevel, Atom thisAtom, ScriptObject* callback, Atom thisObject); 
+		static ArrayObject* generic_map(Toplevel* toplevel, Atom thisAtom, ScriptObject* callback, Atom thisObject); 
+		static uint32 generic_unshift(Toplevel* toplevel, Atom thisAtom, ArrayObject* args);
+		
+		static uint32_t getLengthHelper(Toplevel* toplevel, ScriptObject* d);
 
 	private:
-		void setLengthHelper (ScriptObject *d, uint32 newLen);
+		static void setLengthHelper(Toplevel* toplevel, ScriptObject *d, uint32 newLen);
 
-		ArrayObject* isArray(Atom instance)
-		{
-			if (core()->istype(instance, ivtable()->traits))
-				return (ArrayObject*)AvmCore::atomToScriptObject(instance);
-			return NULL;
-		}
+		static ArrayObject* isArray(Toplevel* toplevel, Atom instance);
 
 		const DRCWB(Stringp) kComma;
 	};

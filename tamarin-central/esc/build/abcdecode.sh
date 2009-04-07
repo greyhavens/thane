@@ -1,3 +1,37 @@
-### translate .asm to .abc
+# Translate .asm to .abc
+#
+# You must first build a tamarin executable and store it under the
+# name "shell" (or "shell.exe") in the directory $DIR.
+#
+# usage:
+#   abcdecode.sh <filename>
+#
+# abcdecode.sh must be run from $DIR, or you must change the value of
+# $DIR to be the absolute path of the bin directory (that has the
+# shell and the abc files for ESC).
 
-../bin/shell ../bin/debug.es.abc ../bin/ast.es.abc ../bin/util.es.abc ../bin/lex-char.es.abc ../bin/lex-token.es.abc ../bin/lex-scan.es.abc ../bin/parse.es.abc ../bin/util-tamarin.es.abc ../bin/bytes-tamarin.es.abc ../bin/util-tamarin.es.abc ../bin/asm.es.abc ../bin/abc.es.abc ../bin/abc-encode.es.abc ../bin/abc-decode.es.abc ../bin/emit.es.abc ../bin/cogen.es.abc ../bin/cogen-stmt.es.abc ../bin/cogen-expr.es.abc ../bin/abcdec.es.abc -- $1
+DIR=../bin
+
+$DIR/shell\
+    $DIR/debug.es.abc \
+    $DIR/util.es.abc \
+    $DIR/lex-char.es.abc \
+    $DIR/lex-token.es.abc \
+    $DIR/lex-scan.es.abc \
+    $DIR/ast.es.abc \
+    $DIR/define.es.abc \
+    $DIR/parse.es.abc \
+    $DIR/util-tamarin.es.abc \
+    $DIR/bytes-tamarin.es.abc \
+    $DIR/util-tamarin.es.abc \
+    $DIR/asm.es.abc \
+    $DIR/abc.es.abc \
+    $DIR/abc-encode.es.abc \
+    $DIR/abc-decode.es.abc \
+    $DIR/emit.es.abc \
+    $DIR/cogen.es.abc \
+    $DIR/cogen-stmt.es.abc \
+    $DIR/cogen-expr.es.abc \
+    $DIR/esc-core.es.abc \
+    $DIR/abcdec.es.abc \
+    -- $@

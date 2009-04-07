@@ -53,7 +53,7 @@ namespace avmplus
 		StringOutputStream(MMgc::GC *gc);
 		~StringOutputStream();
 
-		const char *c_str() { return m_buffer; }
+		const char* c_str() { return m_buffer; }	// note, always in UTF8 form
 		int length() const { return m_length; }
 		void reset() { m_length=0; }
 
@@ -88,7 +88,7 @@ namespace avmplus
 			setOutputStream(&m_stream);
 		}
 
-		const char *c_str() { return m_stream.c_str(); }
+		const char* c_str() { return m_stream.c_str(); }	// note, always in UTF8 form
 		int length() const { return m_stream.length(); }
 		void reset() { m_stream.reset(); }
 		

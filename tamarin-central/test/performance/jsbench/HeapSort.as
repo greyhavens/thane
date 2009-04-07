@@ -2,13 +2,20 @@
 var array_rows;
 var TestArray;
 var size;
-var datasizes = new Array(3);
+var datasizes = new Array(4);
 	
 
-var start=new Date();
-JGFrun(1);
-var elapsed=new Date()-start;
-print("metric jsbench-heapsort "+elapsed);
+if (CONFIG::desktop) {
+    var start = new Date();
+    JGFrun(0);
+    var elapsed = new Date() - start;
+}
+else { // mobile
+    var start = getTimer();
+    JGFrun(3);
+    var elapsed = getTimer() - start;
+}
+print("metric time "+elapsed);
 
 /**
  * @author ayermolo
@@ -18,6 +25,7 @@ function JGFrun(sizelocal)
 		datasizes[0]= 1000000;
 		datasizes[1]= 5000000;
 		datasizes[2]=25000000;
+        datasizes[3]= 250000;
 		
 		JGFsetsize(sizelocal);
 		JGFinitialise();

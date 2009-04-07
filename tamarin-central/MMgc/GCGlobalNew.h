@@ -39,55 +39,40 @@
 #ifndef __GCGLOBALNEW__
 #define __GCGLOBALNEW__
 
-#ifdef OVERRIDE_GLOBAL_NEW
 #ifdef __GNUC__
-#ifndef _MAC
+#define REALLY_INLINE inline __attribute__((always_inline))
+#elif _MSVC
+#define REALLY_INLINE __forceinline
+#else
+#define REALLY_INLINE inline
+#endif
+
 // Custom new and delete operators
 
-#ifdef _DEBUG
-extern int cBlocksAllocated;
-#endif // _DEBUG
-
 // User-defined operator new.
-inline __attribute__((always_inline)) void *operator new(size_t size)
+REALLY_INLINE void *operator new(size_t size)
 {
-    #ifdef _DEBUG
-	cBlocksAllocated++;
-    #endif // _DEBUG
-       
-	return MMgc::FixedMalloc::GetInstance()->Alloc(size);
+	return MMgc::GCHeap::GetGCHeap()->GetFixedMalloc()->Alloc(size);
 }
        
-inline __attribute__((always_inline)) void *operator new[](size_t size)
+REALLY_INLINE void *operator new[](size_t size)
 {
-    #ifdef _DEBUG
-    cBlocksAllocated++;
-    #endif // _DEBUG
-       
-	return MMgc::FixedMalloc::GetInstance()->Alloc(size);
+	return MMgc::GCHeap::GetGCHeap()->GetFixedMalloc()->Alloc(size);
 }
        
 // User-defined operator delete.
-inline __attribute__((always_inline)) void operator delete( void *p)
+REALLY_INLINE void operator delete( void *p)
 {
-	MMgc::FixedMalloc::GetInstance()->Free(p);
-       
-    #ifdef _DEBUG
-	cBlocksAllocated--;
-    #endif // _DEBUG
+	MMgc::GCHeap::GetGCHeap()->GetFixedMalloc()->Free(p);
 }
        
-inline __attribute__((always_inline)) void operator delete[]( void *p )
+REALLY_INLINE void operator delete[]( void *p )
 {
-	MMgc::FixedMalloc::GetInstance()->Free(p);
-       
-    #ifdef _DEBUG
-	cBlocksAllocated--;
-    #endif // _DEBUG
+	MMgc::GCHeap::GetGCHeap()->GetFixedMalloc()->Free(p);
 }
 
-#endif // _MAC
+#ifdef __GNUC__
+#undef REALLY_INLINE
 #endif // __GNUC__
-#endif // OVERRIDE_GLOBAL_NEW
 
 #endif // __GCGLOBALNEW__

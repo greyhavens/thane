@@ -36,12 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <string.h>
-
 #include "MMgc.h"
 
 namespace MMgc
@@ -134,7 +128,7 @@ namespace MMgc
 					GCFinalizable *obj = (GCFinalizable *) item;
 					obj = (GCFinalizable *) GetUserPointer(obj);
 					obj->~GCFinalizable();
-#if defined(_DEBUG) && defined(MMGC_DRC)
+#if defined(_DEBUG)
 					if((b->flags & kRCObject) != 0) {
 						b->gc->RCObjectZeroCheck((RCObject*)obj);
 					}
@@ -143,6 +137,10 @@ namespace MMgc
 				if(b->flags & kHasWeakRef) {
 					b->gc->ClearWeakRef(GetUserPointer(item));
 				}
+				
+				if(m_gc->heap->HooksEnabled())
+					m_gc->heap->FinalizeHook(GetUserPointer(item), b->usableSize - DebugSize());
+				
 				// unlink from list
 				*prev = b->next;
 				b->gc->AddToLargeEmptyBlockList(b);
@@ -163,10 +161,21 @@ namespace MMgc
 	/* static */
 	bool GCLargeAlloc::ConservativeGetMark(const void *item, bool bogusPointerReturnValue)
 	{
-		if(((uintptr) item & 0xfff) == sizeof(LargeBlock))
+		if(((uintptr_t) item & 0xfff) == sizeof(LargeBlock))
 		{
 			return GetMark(item);
 		}
 		return bogusPointerReturnValue;
+	}
+	
+	size_t GCLargeAlloc::GetBytesInUse()
+	{
+		size_t bytes=0; 
+		LargeBlock *block = m_blocks;
+		while (block) {
+			bytes += block->usableSize;
+			block = block->next;
+		}		
+		return bytes;
 	}
 }

@@ -63,11 +63,8 @@ namespace avmplus
 			return construct(argc,argv);
 		}
 
-		Stringp convert(double n, int precision, int mode);
-		// renamed to avoid hiding ScriptObject::toString
-		Stringp numberToString(double n, int radix);
-		
-		DECLARE_NATIVE_MAP(NumberClass)
+		Stringp _convert(double n, int precision, int mode);
+		Stringp _numberToString(double n, int radix);
     };
 }
 

@@ -47,6 +47,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "pcre_internal.h"
 
+bool isUnicodeWhiteSpace(unsigned short x)  
+{ 
+	return (((x) == UNICODE_NOBREAK_SPACE) || 
+		((x) == UNICODE_ZEROWIDTH_SPACE) || 
+		((x) == UNICODE_WORDJOINER_SPACE) || 
+		((x) == UNICODE_IDEOGRAPHIC_SPACE) || 
+		((x) == UNICODE_ZEROWIDTH_NOBREAK_SPACE) ); 
+} 
 
 /*************************************************
 * Return info about what features are configured *

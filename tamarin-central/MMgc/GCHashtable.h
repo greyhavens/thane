@@ -49,17 +49,23 @@ namespace MMgc
 	{
 		friend class GCHashtableIterator;
 	public:
-		const static uint32 kDefaultSize=16;
+		const static uint32_t kDefaultSize=16;
 		const static void * DELETED;
-		GCHashtable(unsigned int capacity=kDefaultSize);
-		~GCHashtable();
+		enum 
+		{ 
+			OPTION_MALLOC=1, 
+			OPTION_MT=2, 
+			OPTION_STRINGS=4 
+		};
+		GCHashtable(unsigned int capacity=kDefaultSize, int options=0);
+		virtual ~GCHashtable();
 		const void *get(const void *key);
-		const void *get(sintptr key) { return get((const void*)key); }
+		const void *get(intptr_t key) { return get((const void*)key); }
 		const void *remove(const void *key);
 		// updates value if present, adds and grows if necessary if not
 		void put(const void *key, const void *value);
 		void add(const void *key, const void *value) { put(key, value); }
-		void add(sintptr key, const void *value) { put((const void*)key, value); }
+		void add(intptr_t key, const void *value) { put((const void*)key, value); }
 		int count() { return numValues; }
 
 		int nextIndex(int index);
@@ -79,8 +85,12 @@ namespace MMgc
 		// table elements
 		const void **table;
 
-		static int find(const void *key, const void **table, unsigned int tableSize);
+		int options;
+		int find(const void *key, const void **table, unsigned int tableSize);
 		void grow();
+	protected:
+		virtual unsigned equals(const void *k1, const void *k2);
+		virtual unsigned hash(const void *k);
 	};
 
 	class GCHashtableIterator

@@ -103,8 +103,8 @@ function getTestCases() {
 	    for ( d = 0; d < TimeInMonth(MonthFromTime(t)); d+= msPerDay ) {
 	        t += d;
 	        array[item++] = new TestCase( SECTION,
-	                                    "(new Date(currentTime+"+d+")).getDate()",
-	                                    true, DateFromTime(LocalTime(t)) ==
+	                                    "new Date(t).getDate() t="+new Date(t),
+	                                    DateFromTime(LocalTime(t)),
 	                                    (new Date(t)).getDate() );
 	    }
 	}

@@ -69,15 +69,19 @@ namespace avmplus
 		ArrayObject* split(Stringp subject, uint32 limit);
 		ArrayObject* match(Stringp subject);
 		
-		Atom execSimple(Stringp subject);
+		Atom AS3_exec(Stringp subject);
 		Atom replace(Stringp subject, Stringp replacement);
 		Atom replace(Stringp subject, ScriptObject *replaceFunction);
 
-		Stringp getSource() const { return m_source; }
-		bool isGlobal() const { return m_global; }
-		int getLastIndex() const { return m_lastIndex; }
-		void setLastIndex(int newIndex) { m_lastIndex = newIndex; }
-		bool hasOption(int mask) { return (m_optionFlags&mask) != 0; }
+		Stringp get_source() const { return m_source; }
+		bool get_global() const { return m_global; }
+		int get_lastIndex() const { return m_lastIndex; }
+		void set_lastIndex(int newIndex) { m_lastIndex = newIndex; }
+		inline bool hasOption(int mask) { return (m_optionFlags&mask) != 0; }
+		bool get_ignoreCase();
+		bool get_multiline();
+		bool get_dotall();
+		bool get_extended();
 		
 	private:
 		DRCWB(Stringp) m_source;
@@ -89,22 +93,14 @@ namespace avmplus
 
 		Atom stringFromUTF8(const char *buffer, int len);
 
-		ArrayObject* exec(Stringp subject, UTF8String *utf8Subject);
+		ArrayObject* _exec(Stringp subject, StIndexableUTF8String& utf8Subject);
 		
-		ArrayObject* exec(Stringp subject,
-						  UTF8String *utf8Subject,
+		ArrayObject* _exec(Stringp subject,
+						  StIndexableUTF8String& utf8Subject,
 						  int startIndex,
 						  int& matchIndex,
 						  int& matchLen);
 		
-		int Utf16ToUtf8Index(Stringp utf16String,
-							 UTF8String *utf8String,
-							 int utf16Index);
-
-		int Utf8ToUtf16Index(Stringp utf16String,
-							 UTF8String *utf8String,
-							 int utf8Index);
-
 		void fixReplaceLastIndex(const char *src,
 								 int subjectLength,
 								 int lastIndex,

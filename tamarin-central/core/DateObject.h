@@ -56,8 +56,9 @@ namespace avmplus
 		DateObject(DateClass *type, ScriptObject *objectPrototype)
 			: ScriptObject(type->ivtable(), objectPrototype)
 		{
-			AvmAssert(traits()->sizeofInstance == sizeof(DateObject));
-			date.setTime(MathUtils::nan());  // Date.prototype should be the "Invalid Date"
+			SAMPLE_FRAME("Date", core());
+			AvmAssert(traits()->getSizeOfInstance() == sizeof(DateObject));
+			date.setTime(MathUtils::kNaN);  // Date.prototype should be the "Invalid Date"
 		}
 
 		/**
@@ -67,16 +68,51 @@ namespace avmplus
 		DateObject(DateClass *type, const Date& date)
 			: ScriptObject(type->ivtable(), type->prototype)
 		{
-			AvmAssert(traits()->sizeofInstance == sizeof(DateObject));
+			AvmAssert(traits()->getSizeOfInstance() == sizeof(DateObject));
 			this->date = date;
 		}
 		
 		// renamed to avoid hiding ScriptObject::toString
-		Stringp dateToString(int index);
-		double valueOf();
-		double setTime(double value);
-		double get(int index);
-		double set(int index, Atom *argv, int argc);
+		Stringp _toString(int index);
+		double AS3_valueOf();
+		double _setTime(double value);
+		double _get(int index);
+		double _set(int index, Atom* argv, int argc);
+
+		double AS3_getUTCFullYear() { return _get(Date::kUTCFullYear); }
+		double AS3_getUTCMonth() { return _get(Date::kUTCMonth); }
+		double AS3_getUTCDate() { return _get(Date::kUTCDate); }
+		double AS3_getUTCDay() { return _get(Date::kUTCDay); }
+		double AS3_getUTCHours() { return _get(Date::kUTCHours); }
+		double AS3_getUTCMinutes() { return _get(Date::kUTCMinutes); }
+		double AS3_getUTCSeconds() { return _get(Date::kUTCSeconds); }
+		double AS3_getUTCMilliseconds() { return _get(Date::kUTCMilliseconds); }
+		double AS3_getFullYear() { return _get(Date::kFullYear); }
+		double AS3_getMonth() { return _get(Date::kMonth); }
+		double AS3_getDate() { return _get(Date::kDate); }
+		double AS3_getDay() { return _get(Date::kDay); }
+		double AS3_getHours() { return _get(Date::kHours); }
+		double AS3_getMinutes() { return _get(Date::kMinutes); }
+		double AS3_getSeconds() { return _get(Date::kSeconds); }
+		double AS3_getMilliseconds() { return _get(Date::kMilliseconds); }
+		double AS3_getTimezoneOffset() { return _get(Date::kTimezoneOffset); }
+		double AS3_getTime() { return _get(Date::kTime); }
+
+		double _setUTCFullYear(Atom* argv, int argc) { return _set(-1, argv, argc); }
+		double _setUTCMonth(Atom* argv, int argc) { return _set(-2, argv, argc); }
+		double _setUTCDate(Atom* argv, int argc) { return _set(-3, argv, argc); }
+		double _setUTCHours(Atom* argv, int argc) { return _set(-4, argv, argc); }
+		double _setUTCMinutes(Atom* argv, int argc) { return _set(-5, argv, argc); }
+		double _setUTCSeconds(Atom* argv, int argc) { return _set(-6, argv, argc); }
+		double _setUTCMilliseconds(Atom* argv, int argc) { return _set(-7, argv, argc); }
+
+		double _setFullYear(Atom* argv, int argc) { return _set(1, argv, argc); }
+		double _setMonth(Atom* argv, int argc) { return _set(2, argv, argc); }
+		double _setDate(Atom* argv, int argc) { return _set(3, argv, argc); }
+		double _setHours(Atom* argv, int argc) { return _set(4, argv, argc); }
+		double _setMinutes(Atom* argv, int argc) { return _set(5, argv, argc); }
+		double _setSeconds(Atom* argv, int argc) { return _set(6, argv, argc); }
+		double _setMilliseconds(Atom* argv, int argc) { return _set(7, argv, argc); }
 
 #ifdef AVMPLUS_VERBOSE
 	public:

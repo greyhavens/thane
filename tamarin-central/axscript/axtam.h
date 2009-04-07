@@ -216,7 +216,7 @@ namespace axtam
 		// handle an exception by a "top-level" COM entry-point.
 		HRESULT handleException(Exception *exc, EXCEPINFO *pei = NULL, int depth=0);
 
-		Toplevel* initAXTamBuiltins();
+		Toplevel* initAXTamBuiltins(bool load_esc);
 		// Create IDispatch wrappers around script objects (dispatch providers)
 		// The native method version for script code.
 		CComPtr<IDispatch> createDispatchProvider(Atom ob);
@@ -255,6 +255,7 @@ namespace axtam
 		void computeStackBase();
 
 		void initAXPool();
+		void initESC(Toplevel *toplevel);
 
 		#ifdef DEBUGGER
 		//Debugger *debugger;

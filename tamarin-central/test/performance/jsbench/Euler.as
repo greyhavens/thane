@@ -1,8 +1,9 @@
 	var size;
 	var errorCheck=false;
-	var datasizes = new Array(2);
-	datasizes[0] = 8;
-	datasizes[1] = 12;
+	var datasizes = new Array(3);
+	datasizes[0] = 2;
+	datasizes[1] = 8;
+	datasizes[2] = 12;
 
 	var machff = 0.7; /* Inflow mach number */
 
@@ -1585,8 +1586,14 @@ class Vector2 {
 }
 	
 	
-	var start=new Date();
-	JGFrun(0);
-	var elapsed=new Date()-start;
-	print("metric jsbench-euler "+elapsed);
+    if (CONFIG::desktop) {
+        var start = new Date();
+        JGFrun(0);
+        var elapsed = new Date() - start;
+    }
+    else { // mobile
+        // unable to trim this test down further
+        var elapsed = 0;
+    }
+	print("metric time "+elapsed);
 	

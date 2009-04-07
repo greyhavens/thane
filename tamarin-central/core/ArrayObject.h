@@ -71,36 +71,41 @@ namespace avmplus
 		bool isSimpleDense() const { return (m_denseArr.getLength() == m_length); };
 		uint32 getDenseLength() const { return m_denseArr.getLength(); }
 
-		uint32 getLength() const { return (m_length); }
-		void setLength(uint32 newLength);
+		// Non-virtual members for ActionScript method implementation
+		uint32 get_length() const;
+		void set_length(uint32 newLength);
 
-		Atom getAtomProperty(Atom name) const;
-		void setAtomProperty(Atom name, Atom value);
-		bool deleteAtomProperty(Atom name);
-		bool hasAtomProperty(Atom name) const;
+		// Virtual members so Array subclasses can treat length differently (in both C++ and AS3)
+		virtual uint32 getLength() const;
+		virtual void setLength(uint32 newLength);
+
+		virtual Atom getAtomProperty(Atom name) const;
+		virtual void setAtomProperty(Atom name, Atom value);
+		virtual bool deleteAtomProperty(Atom name);
+		virtual bool hasAtomProperty(Atom name) const;
 
 		// Faster versions that takes direct indices
-		Atom getUintProperty(uint32 index) const
+		virtual Atom getUintProperty(uint32 index) const
 		{
 			 return _getUintProperty(index);
 		}
-		void setUintProperty(uint32 index, Atom value)
+		virtual void setUintProperty(uint32 index, Atom value)
 		{
 			_setUintProperty(index, value);
 		}
-		bool delUintProperty(uint32 index);
-		bool hasUintProperty(uint32 i) const;
+		virtual bool delUintProperty(uint32 index);
+		virtual bool hasUintProperty(uint32 i) const;
 
-		Atom getIntProperty(int index) const
+		inline Atom getIntProperty(int index) const
 		{
 			return _getIntProperty(index);
 		}
-		void setIntProperty(int index, Atom value)
+		inline void setIntProperty(int index, Atom value)
 		{
 			_setIntProperty(index, value);
 		}
 
-		bool getAtomPropertyIsEnumerable(Atom name) const;
+		virtual bool getAtomPropertyIsEnumerable(Atom name) const;
 		
 		Atom _getUintProperty(uint32 index) const;
 		void _setUintProperty(uint32 index, Atom value);
@@ -108,19 +113,23 @@ namespace avmplus
 		void _setIntProperty(int index, Atom value);
 
 		// Iterator support - for in, for each
-		Atom nextName(int index);
-		Atom nextValue(int index);
-		int nextNameIndex(int index);
+		virtual Atom nextName(int index);
+		virtual Atom nextValue(int index);
+		virtual int nextNameIndex(int index);
 
 		// native methods
-		Atom pop(); // pop(...rest)
-		uint32 push(Atom *args, int argc); // push(...args):uint
-		uint32 unshift(Atom *args, int argc); // unshift(...args):
+		Atom AS3_pop(); // pop(...rest)
+		uint32 AS3_push(Atom *args, int argc); // push(...args):uint
+		uint32 AS3_unshift(Atom *args, int argc); // unshift(...args):
+
+		inline Atom pop() { return AS3_pop(); }
+		inline uint32 push(Atom *args, int argc) { return AS3_push(args, argc); }
+		inline uint32 unshift(Atom *args, int argc) { return AS3_unshift(args, argc); }
 
 		void checkForSparseToDenseConversion();
 
 #ifdef DEBUGGER
-		uint64 size() const;
+		virtual uint64 size() const;
 #endif
 
 #ifdef AVMPLUS_VERBOSE

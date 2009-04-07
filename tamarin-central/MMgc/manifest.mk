@@ -50,54 +50,26 @@ MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
   $(curdir)/FixedMalloc.cpp \
   $(curdir)/GC.cpp \
   $(curdir)/GCAlloc.cpp \
+  $(curdir)/GCAllocObject.cpp \
+  $(curdir)/GCDebug.cpp \
   $(curdir)/GCGlobalNew.cpp \
   $(curdir)/GCHashtable.cpp \
   $(curdir)/GCHeap.cpp \
   $(curdir)/GCLargeAlloc.cpp \
+  $(curdir)/GCLog.cpp \
   $(curdir)/GCMemoryProfiler.cpp \
   $(curdir)/GCObject.cpp \
   $(curdir)/GCTests.cpp \
   $(curdir)/GCThreads.cpp \
   $(NULL)
 
+ifeq (arm,$(TARGET_CPU))
 ifeq (windows,$(TARGET_OS))
-MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
-  $(curdir)/GCAllocObjectWin.cpp \
-  $(curdir)/GCDebugWin.cpp \
-  $(curdir)/GCHeapWin.cpp \
+MMgc_ASMSRCS := $(avmplus_ASMSRCS) \
+  $(curdir)/WinCEUtil.armasm
   $(NULL)
+endif
 endif
 
-ifeq (darwin,$(TARGET_OS))
-MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
-  $(curdir)/GCAllocObjectMac.cpp \
-  $(curdir)/GCDebugMac.cpp \
-  $(curdir)/GCHeapMac.cpp \
-  $(NULL)
-endif
-
-ifeq (linux,$(TARGET_OS))
-MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
-  $(curdir)/GCAllocObjectUnix.cpp \
-  $(curdir)/GCDebugUnix.cpp \
-  $(curdir)/GCHeapUnix.cpp \
-  $(NULL)
-endif
-
-ifeq (freebsd,$(TARGET_OS))
-MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
-  $(curdir)/GCAllocObjectUnix.cpp \
-  $(curdir)/GCDebugUnix.cpp \
-  $(curdir)/GCHeapUnix.cpp \
-  $(NULL)
-endif
-
-ifeq (sunos,$(TARGET_OS))
-MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
-  $(curdir)/GCAllocObjectUnix.cpp \
-  $(curdir)/GCDebugUnix.cpp \
-  $(curdir)/GCHeapUnix.cpp \
-  $(NULL)
-endif
 
 $(curdir)/GCDebugMac.$(OBJ_SUFFIX): CXXFLAGS += -Wno-deprecated-declarations

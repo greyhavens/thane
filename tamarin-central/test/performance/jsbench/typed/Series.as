@@ -5,15 +5,23 @@ var size:int;
 
   var TestArray:Vector.<Vector.<Number>>; // Array of arrays.
   
-  var datasizes:Vector.<int> = new Vector.<int>(3,true);
+  var datasizes:Vector.<int> = new Vector.<int>(4,true);
   datasizes[0] = 10000;
   datasizes[1] = 100000;
   datasizes[2] = 1000000;
+  datasizes[3] = 125;
 
-  var start=new Date();
-  JGFrun(1);
-  var elapsed=new Date()-start;
-  print("metric jsbench-series "+elapsed);
+  if (CONFIG::desktop) {
+      var start = new Date();
+      JGFrun(0);
+      var elapsed = new Date() - start;
+  }
+  else { // mobile
+      var start = getTimer();
+      JGFrun(3);
+      var elapsed = getTimer() - start;
+  }
+  print("metric time "+elapsed);
   function JGFsetsize(sizel:int):void {
     size = sizel;
   }
@@ -32,6 +40,7 @@ var size:int;
     for(var i=0;i<4;i++)
     {
       ref[i] = new Vector.<Number>(2,true);
+      
     }
     
     ref[0][0] = 2.8729524964837996;
@@ -50,7 +59,6 @@ var size:int;
     for (var i:int = 0; i < 4; i++) {
       for (var j:int = 0; j < 2; j++) {
         var error:Number = Math.abs(TestArray[j][i] - ref[i][j]);
-        
         if (error > 1.0e-12) {
           print("Validation failed for coefficient " + j + "," + i);
           print("Computed value = " + TestArray[j][i]);

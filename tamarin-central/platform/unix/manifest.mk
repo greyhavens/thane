@@ -45,7 +45,6 @@ unixcpuid_cxxsrc = unixcpuid.cpp
 endif
 
 avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
-  $(curdir)/DateUnix.cpp \
   $(curdir)/$(mathutils_cxxsrc) \
   $(curdir)/$(unixcpuid_cxxsrc) \
   $(curdir)/OSDepUnix.cpp \

@@ -38,23 +38,8 @@
 
 #include "avmshell.h"
 
-#include <stdlib.h>
-
 namespace avmshell
 {
-	BEGIN_NATIVE_MAP(SystemClass)
-		NATIVE_METHOD(avmplus_System_exit, SystemClass::exit)
-		NATIVE_METHOD(avmplus_System_exec, SystemClass::exec)
-		NATIVE_METHOD(avmplus_System_getAvmplusVersion, SystemClass::getAvmplusVersion)
-		NATIVE_METHOD(avmplus_System_trace, SystemClass::trace)
-		NATIVE_METHOD(avmplus_System_write, SystemClass::write)
-		NATIVE_METHOD(avmplus_System_debugger, SystemClass::debugger)
-		NATIVE_METHOD(avmplus_System_isDebugger, SystemClass::isDebugger)
-		NATIVE_METHOD(avmplus_System_getTimer, SystemClass::getTimer)
-		NATIVE_METHOD(avmplus_System_readLine, SystemClass::readLine)
-		NATIVE_METHOD(avmplus_System_private_getArgv, SystemClass::getArgv)
-	END_NATIVE_MAP()
-					  
 	SystemClass::SystemClass(VTable *cvtable)
 		: ClassClosure(cvtable)
     {
@@ -69,9 +54,9 @@ namespace avmshell
 		// todo note this is currently routed to the performance counter
 		// for benchmark purposes.
 		#ifdef PERFORMANCE_GETTIMER
-		initialTime = MMgc::GC::getPerformanceCounter();
+		initialTime = VMPI_getPerformanceCounter();
 		#else
-		initialTime = OSDep::currentTimeMillis();		
+		initialTime = VMPI_getTime();		
 		#endif // PERFORMANCE_GETTIMER
 
 	}
@@ -83,7 +68,7 @@ namespace avmshell
 
 	void SystemClass::exit(int status)
 	{
-		::exit(status);
+		Platform::GetInstance()->exit(status);
 	}
 
 	int SystemClass::exec(Stringp command)
@@ -91,13 +76,18 @@ namespace avmshell
 		if (!command) {
 			toplevel()->throwArgumentError(kNullArgumentError, "command");
 		}
-		UTF8String *commandUTF8 = command->toUTF8String();
-		return system(commandUTF8->c_str());
+		#ifdef UNDER_CE
+		AvmAssert(0);
+		return 0;
+		#else
+		StUTF8String commandUTF8(command);
+		return system(commandUTF8.c_str());
+		#endif
 	}
 	
 	Stringp SystemClass::getAvmplusVersion()
 	{
-		return core()->newString(AVMPLUS_VERSION_USER " " AVMPLUS_BUILD_CODE);
+		return core()->newConstantStringLatin1(AVMPLUS_VERSION_USER " " AVMPLUS_BUILD_CODE);
 	}
 
 	void SystemClass::write(Stringp s)
@@ -117,16 +107,16 @@ namespace avmshell
 		{
 			if (i > 0)
                 console << ' ';
-			Stringp s = core->string(a->getUintProperty(i));
+			StringIndexer s(core->string(a->getUintProperty(i)));
 			for (int j = 0; j < s->length(); j++)
 			{
-				wchar c = (*s)[j];
+				wchar c = s[j];
 				// '\r' gets converted into '\n'
 				// '\n' is left alone
 				// '\r\n' is left alone
 				if (c == '\r')
 				{
-					if (((j+1) < s->length()) && (*s)[j+1] == '\n')
+					if (((j+1) < s->length()) && s[j+1] == '\n')
 					{
 						console << '\r';	
 						j++;
@@ -146,14 +136,15 @@ namespace avmshell
 	void SystemClass::debugger()
 	{
 		#ifdef DEBUGGER
-		core()->debugger->enterDebugger();
+		if (core()->debugger())
+			core()->debugger()->enterDebugger();
 		#endif
 	}
 
 	bool SystemClass::isDebugger()
 	{
 		#ifdef DEBUGGER
-		return true;
+		return core()->debugger() != NULL;
 		#else
 		return false;
 		#endif
@@ -162,11 +153,11 @@ namespace avmshell
 	unsigned SystemClass::getTimer()
 	{
 #ifdef PERFORMANCE_GETTIMER
-		double time = ((double) (MMgc::GC::getPerformanceCounter() - initialTime) * 1000.0 /
-					   (double)MMgc::GC::getPerformanceFrequency());
+		double time = ((double) (VMPI_getPerformanceCounter() - initialTime) * 1000.0 /
+					   (double)VMPI_getPerformanceFrequency());
 		return (uint32)time;
 #else
-		return (uint32)(OSDep::currentTimeMillis() - initialTime);
+		return (uint32)(VMPI_getTime() - initialTime);
 #endif /* PERFORMANCE_GETTIMER */
 
     }
@@ -182,7 +173,7 @@ namespace avmshell
 
 		ArrayObject *array = toplevel->arrayClass->newArray();
 		for(int i=0; i<user_argc;i++)
-			array->setUintProperty(i, core->newString(user_argv[i])->atom());
+			array->setUintProperty(i, core->newStringUTF8(user_argv[i])->atom());
 
 		return array;
 	}
@@ -198,14 +189,36 @@ namespace avmshell
 			wc[i++] = (wchar)c;
 			if (i == 63) {
 				wc[i] = 0;
-				s = core->concatStrings(s, core->newString(wc));
+				s = s->append16(wc);
 				i = 0;
 			}
 		}
 		if (i > 0) {
 			wc[i] = 0;
-			s = core->concatStrings(s, core->newString(wc));
+			s = s->append16(wc);
 		}
 		return s;
+	}
+
+	double SystemClass::get_totalMemory()
+	{
+		MMgc::GCHeap* gcheap = core()->GetGC()->GetGCHeap();
+		return double(gcheap->GetUsedHeapSize() * MMgc::GCHeap::kBlockSize);
+	}
+
+	double SystemClass::get_freeMemory()
+	{
+		MMgc::GCHeap* gcheap = core()->GetGC()->GetGCHeap();
+		return double(gcheap->GetFreeHeapSize() * MMgc::GCHeap::kBlockSize);
+	}
+	
+	double SystemClass::get_privateMemory()
+	{
+		return double(MMgc::GCHeap::GetPrivateBytes() * MMgc::GCHeap::kBlockSize);
+	}
+
+	bool SystemClass::isGlobal(Atom o)
+	{
+		return AvmCore::isObject(o) ? AvmCore::atomToScriptObject(o)->isGlobalObject() : false;
 	}
 }

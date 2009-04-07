@@ -44,6 +44,8 @@
 
     var testcases = getTestCases();
     test();
+
+
     
 function getTestCases() {
     var array = new Array();
@@ -92,8 +94,8 @@ function getTestCases() {
                 t += 1000;
                 array[item++] = new TestCase( SECTION,
                                         "(new Date("+t+")).getUTCSeconds()",
-                                        true, SecFromTime(t) ==
-                                        (new Date(t)).getUTCSeconds() );
+                                        true, compareDate(SecFromTime(t),
+                                        (new Date(t)).getUTCSeconds()) );
         }
     }
     
@@ -104,8 +106,9 @@ function getTestCases() {
                 t += 1000;
                 array[item++] = new TestCase( SECTION,
                                         "(new Date(currentDate)).getUTCSeconds()",
-                                        true, SecFromTime(t) ==
-                                        (new Date(t)).getUTCSeconds() );
+                                        true, 
+					compareDate(SecFromTime(t),
+                                        (new Date(t)).getUTCSeconds()) );
         }
     }
     return array;

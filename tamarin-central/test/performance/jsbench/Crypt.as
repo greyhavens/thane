@@ -1,9 +1,10 @@
 	var size;
 	var DEBUG=true;
-	var datasizes = new Array(3);
+	var datasizes = new Array(4);
 		datasizes[0] = 3000000;
 		datasizes[1] = 20000000;
 		datasizes[2] = 50000000;
+        datasizes[3] = 100000;
 		
 			// Declare class data. Byte buffer plain1 holds the original
 	// data for encryption, crypt1 holds the encrypted data, and
@@ -26,10 +27,19 @@
 	var lastRandom=RANDOM_SEED;
 	var DK;
 
-	var start=new Date();
-	JGFrun(1);
-	var elapsed=new Date()-start;
-	print("metric jsbench-crypt "+elapsed);
+    if (CONFIG::desktop) {
+        var start = new Date();
+        JGFrun(0);
+        var elapsed = new Date() - start;
+    }
+    else { // mobile
+        var start = getTimer();
+        JGFrun(3);
+        var elapsed = getTimer() - start;
+    }
+	
+	
+	print("metric time "+elapsed);
 	
 	function _randomInt()
 	{

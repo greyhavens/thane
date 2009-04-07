@@ -41,6 +41,42 @@
 
 namespace avmplus
 {
+	// Note: we rely on this being <= 32 entries. None of the enumeration values are magic,
+	// so we just keep them in alphabetical order for simplicity.
+	enum BuiltinType
+	{
+		BUILTIN_any,	// this is the "*" type in AS3, corresponds to a NULL Traits in C++ (not the "null" value in AS3")
+		BUILTIN_array,
+		BUILTIN_boolean,
+		BUILTIN_class,	// class Class only, not subclasses of Class
+		BUILTIN_date,
+		BUILTIN_error,
+		BUILTIN_function,
+		BUILTIN_int,
+		BUILTIN_math,
+		BUILTIN_methodClosure,
+		BUILTIN_namespace,
+		BUILTIN_null,	// this is the "null" AS3 value, not a NULL Traits* in C++
+		BUILTIN_number,
+		BUILTIN_object, // this is Object specifically, not a subclass thereof
+		BUILTIN_qName,
+		BUILTIN_regexp,
+		BUILTIN_string,
+		BUILTIN_uint,
+		BUILTIN_vector,
+		BUILTIN_vectordouble,
+		BUILTIN_vectorint,
+		BUILTIN_vectorobj,
+		BUILTIN_vectoruint,
+		BUILTIN_void,
+		BUILTIN_xmlList,
+		BUILTIN_xml,
+
+		BUILTIN_none,		// "none of the above" (ie it's not any of the rest of this enum)
+		
+		BUILTIN_COUNT
+	};
+
 	/**
 	 * BuiltinTraits is a container for the traits of all of
 	 * the built-in objects.
@@ -69,24 +105,25 @@ namespace avmplus
 		Traits *date_itraits;
 		Traits *error_itraits;
 		Traits *function_itraits;
+		Traits *int_itraits;
+		Traits *math_itraits;
+		Traits *methodClosure_itraits;
 		Traits *namespace_itraits;
 		Traits *null_itraits;
 		Traits *number_itraits;
-		Traits *int_itraits;
-		Traits *uint_itraits;
 		Traits *object_itraits;
+		Traits *qName_itraits;
 		Traits *regexp_itraits;
 		Traits *string_itraits;
-		Traits *toplevel_itraits;
-		Traits *vectorint_itraits;
-		Traits *vectoruint_itraits;
-		Traits *vectordouble_itraits;
-		Traits *vectorobj_itraits;
+		Traits *uint_itraits;
 		Traits *vector_itraits;
+		Traits *vectordouble_itraits;
+		Traits *vectorint_itraits;
+		Traits *vectorobj_itraits;
+		Traits *vectoruint_itraits;
 		Traits *void_itraits;
-		Traits *xml_itraits;
 		Traits *xmlList_itraits;
-		Traits *qName_itraits;
+		Traits *xml_itraits;
 
 		Traits* math_ctraits;
 		Traits* int_ctraits;

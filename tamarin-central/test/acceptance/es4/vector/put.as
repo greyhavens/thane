@@ -71,7 +71,7 @@ try {
 }
 AddTestCase("set [1] element on empty vector, throws exception",
             "RangeError: Error #1125",
-            errormsg);
+            parseError(errormsg,"RangeError: Error #1125".length));
 AddTestCase("set [1] element on empty vector, array is still empty",
             "",
             v1.toString());
@@ -86,7 +86,7 @@ try {
 }
 AddTestCase("set fixed vector past fixed length throws exception",
             "RangeError: Error #1125",
-            errormsg);
+            parseError(errormsg,"RangeError: Error #1125".length));
 AddTestCase("set fixed vector past fixed length throws exception, original vector remains same",
             "1,2,3,4,5",
             v1.toString());

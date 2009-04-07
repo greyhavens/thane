@@ -12,11 +12,12 @@
 
 DIR=../bin
 
-$DIR/shell \
+$DIR/shell\
     $DIR/debug.es.abc \
     $DIR/util.es.abc \
     $DIR/bytes-tamarin.es.abc \
     $DIR/util-tamarin.es.abc \
+    $DIR/lex-token.es.abc \
     $DIR/asm.es.abc \
     $DIR/abc.es.abc \
     $DIR/abc-encode.es.abc \

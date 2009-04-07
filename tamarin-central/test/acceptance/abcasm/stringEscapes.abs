@@ -1,0 +1,8 @@
+function main()
+{
+    pushstring "This is a string"
+	pushstring "\\ \b \t\n\r\f\"\'"
+	pushstring "\343"
+	pushstring "\u0982"
+	returnvoid
+}

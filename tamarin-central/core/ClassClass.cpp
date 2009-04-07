@@ -37,31 +37,23 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(ClassClass)
-		NATIVE_METHOD2(Class_prototype_get, 
-					(NativeMethod::GetHandler)&ClassClosure::get_prototype)
-	END_NATIVE_MAP()
-
 	ClassClass::ClassClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
 		toplevel()->classClass = this;
 
-		// patch Class's instance vtable scope, since we created it earlier for
-		// bootstrapping
-		ivtable()->scope = cvtable->scope;
-
-		AvmAssert(traits()->sizeofInstance == sizeof(ClassClass));
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(ClassClass));
 
 		createVanillaPrototype();
 	}
 
 	Atom ClassClass::construct(int /*argc*/, Atom* /*argv*/)
 	{
-		Multiname multiname(core()->publicNamespace, core()->constantString("Class$"));
+		Multiname multiname(core()->publicNamespace, core()->internConstantStringLatin1("Class$"));
 		toplevel()->throwTypeError(kNotConstructorError, core()->toErrorString(&multiname));
 		return nullObjectAtom;
 	}

@@ -41,7 +41,7 @@ function fannkuch(n) {
    while (true) {
       // write-out the first 30 permutations
       if (check < 30){
-         var s = "";
+         var s="";
          for(var i=0; i<n; i++) s += (perm1[i]+1).toString();
          check++;
       }
@@ -84,11 +84,19 @@ function fannkuch(n) {
       }
    }
 }
-function runAccessFannkuch() {
-  var _sunSpiderStartDate = new Date();
-  var n = 8;
-  var ret = fannkuch(n);
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+if (CONFIG::desktop) {
+    var start=new Date();
+    var res=fannkuch(8);
+    var totaltime=new Date()-start;
 }
-print("metric run-access-fannkuch "+runAccessFannkuch());
+else { // mobile
+    var start=getTimer();
+    var res=fannkuch(8);
+    var totaltime=getTimer()-start;
+}
+print("fannkuch(8)="+res);
+if (res==22) {
+    print("metric time "+totaltime); 
+} else {
+    print("error fannkkuch(8) expecting 22 got "+res);
+}

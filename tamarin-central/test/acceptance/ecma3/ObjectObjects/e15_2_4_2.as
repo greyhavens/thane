@@ -103,7 +103,7 @@ function getTestCases() {
 	myvar.toString = Object.prototype.toString;
 	array[item++] = new TestCase( SECTION,  "myvar = function() {}; myvar.toString = Object.prototype.toString; myvar.toString()",
                                             true,
-                                            myvar.toString()=="[object Function-3]" || myvar.toString()=="[object null]");
+                                            Boolean(myvar.toString().match(/\[object Function-[0-9]+\]/)) || myvar.toString()=="[object null]");
 
 /*
 	myvar = new Array();

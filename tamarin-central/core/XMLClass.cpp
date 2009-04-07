@@ -37,66 +37,14 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(XMLClass)
-		NATIVE_METHOD(XML_ignoreComments_get, XMLClass::getIgnoreComments)
-		NATIVE_METHOD(XML_ignoreComments_set, XMLClass::setIgnoreComments)
-		NATIVE_METHOD(XML_ignoreProcessingInstructions_get, XMLClass::getIgnoreProcessingInstructions)
-		NATIVE_METHOD(XML_ignoreProcessingInstructions_set, XMLClass::setIgnoreProcessingInstructions)
-		NATIVE_METHOD(XML_ignoreWhitespace_get, XMLClass::getIgnoreWhitespace)
-		NATIVE_METHOD(XML_ignoreWhitespace_set, XMLClass::setIgnoreWhitespace)
-		NATIVE_METHOD(XML_prettyPrinting_get, XMLClass::getPrettyPrinting)
-		NATIVE_METHOD(XML_prettyPrinting_set, XMLClass::setPrettyPrinting)
-		NATIVE_METHOD(XML_prettyIndent_get, XMLClass::getPrettyIndent)
-		NATIVE_METHOD(XML_prettyIndent_set, XMLClass::setPrettyIndent)
-
-		NATIVE_METHOD(XML_AS3_addNamespace, XMLObject::addNamespace)
-		NATIVE_METHOD(XML_AS3_appendChild, XMLObject::appendChild)
-		NATIVE_METHOD(XML_AS3_attribute, XMLObject::attribute)
-		NATIVE_METHOD(XML_AS3_attributes, XMLObject::attributes)
-		NATIVE_METHOD(XML_AS3_child, XMLObject::child)
-		NATIVE_METHOD(XML_AS3_childIndex, XMLObject::childIndex)
-		NATIVE_METHOD(XML_AS3_children, XMLObject::children)
-		NATIVE_METHOD(XML_AS3_comments, XMLObject::comments)
-		NATIVE_METHOD(XML_AS3_contains, XMLObject::contains)
-		NATIVE_METHOD(XML_AS3_copy, XMLObject::copy)
-		NATIVE_METHOD(XML_AS3_descendants, XMLObject::descendants)
-		NATIVE_METHOD(XML_AS3_elements, XMLObject::elements)
-		NATIVE_METHOD(XML_AS3_hasOwnProperty, XMLObject::hasOwnProperty)
-		NATIVE_METHOD(XML_AS3_hasComplexContent, XMLObject::hasComplexContent)
-		NATIVE_METHOD(XML_AS3_hasSimpleContent, XMLObject::hasSimpleContent)
-		NATIVE_METHOD(XML_AS3_inScopeNamespaces, XMLObject::inScopeNamespaces)
-		NATIVE_METHOD(XML_AS3_insertChildAfter, XMLObject::insertChildAfter)
-		NATIVE_METHOD(XML_AS3_insertChildBefore, XMLObject::insertChildBefore)
-		NATIVE_METHOD(XML_AS3_localName, XMLObject::localName)
-		NATIVE_METHOD(XML_AS3_name, XMLObject::name)
-		NATIVE_METHODV(XML_AS3_namespace, XMLObject::getNamespace)
-		NATIVE_METHOD(XML_AS3_namespaceDeclarations, XMLObject::namespaceDeclarations)
-		NATIVE_METHOD(XML_AS3_nodeKind, XMLObject::nodeKind)
-		NATIVE_METHOD(XML_AS3_normalize, XMLObject::normalize)
-		NATIVE_METHOD(XML_AS3_notification, XMLObject::getNotification)
-		NATIVE_METHOD(XML_AS3_parent, XMLObject::parent)
-		NATIVE_METHOD(XML_AS3_processingInstructions, XMLObject::processingInstructions)
-		NATIVE_METHOD(XML_AS3_prependChild, XMLObject::prependChild)
-		NATIVE_METHOD(XML_AS3_propertyIsEnumerable, XMLObject::xmlPropertyIsEnumerable)
-		NATIVE_METHOD(XML_AS3_removeNamespace, XMLObject::removeNamespace)
-		NATIVE_METHOD(XML_AS3_replace, XMLObject::replace)
-		NATIVE_METHOD(XML_AS3_setChildren, XMLObject::setChildren)
-		NATIVE_METHOD(XML_AS3_setLocalName, XMLObject::setLocalName)
-		NATIVE_METHOD(XML_AS3_setName, XMLObject::setName)
-		NATIVE_METHOD(XML_AS3_setNamespace, XMLObject::setNamespace)
-		NATIVE_METHOD(XML_AS3_setNotification, XMLObject::setNotification)
-		NATIVE_METHOD(XML_AS3_text, XMLObject::text)
-		NATIVE_METHOD(XML_AS3_toString, XMLObject::toStringMethod)
-		NATIVE_METHOD(XML_AS3_toXMLString, XMLObject::toXMLString)
-	END_NATIVE_MAP()
-
 	XMLClass::XMLClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
-		AvmAssert(traits()->sizeofInstance == sizeof(XMLClass));
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(XMLClass));
 
 		AvmCore* core = this->core();
 
@@ -112,28 +60,28 @@ namespace avmplus
 		m_flags = kFlagIgnoreComments | kFlagIgnoreProcessingInstructions | kFlagIgnoreWhitespace | kFlagPrettyPrinting;
 		m_prettyIndent = 2;
 
-		kAttribute = core->constantString("attribute");
-		kComment = core->constantString("comment");
-		kProcessingInstruction = core->constantString("processing-instruction");
-		kElement = core->constantString("element");
-		kText = core->constantString("text");
+		kAttribute = core->internConstantStringLatin1("attribute");
+		kComment = core->internConstantStringLatin1("comment");
+		kProcessingInstruction = core->internConstantStringLatin1("processing-instruction");
+		kElement = core->internConstantStringLatin1("element");
+		kText = core->internConstantStringLatin1("text");
 
-		kColon = core->constantString(":");
-		kXml = core->constantString("xml");
-		nsXML = core->newNamespace (core->kEmptyString->atom(), core->internString (core->newString ("http://www.w3.org/XML/1998/namespace"))->atom()); 
+		kColon = core->internConstantStringLatin1(":");
+		kXml = core->internConstantStringLatin1("xml");
+		nsXML = core->newNamespace(core->kEmptyString->atom(), core->internConstantStringLatin1("http://www.w3.org/XML/1998/namespace")->atom()); 
 
 		// for notifications
-		kAttrAdded = core->constant("attributeAdded");
-		kAttrRemoved = core->constant("attributeRemoved");
-		kAttrChanged = core->constant("attributeChanged");
-		kNodeAdded = core->constant("nodeAdded");
-		kNodeRemoved = core->constant("nodeRemoved");
-		kNodeChanged = core->constant("nodeChanged");
-		kNamespaceAdded = core->constant("namespaceAdded");
-		kNamespaceRemoved = core->constant("namespaceRemoved");
-		kNamespaceSet = core->constant("namespaceSet");
-		kNameSet = core->constant("nameSet");
-		kTextSet = core->constant("textSet");
+		kAttrAdded = core->internConstantStringLatin1("attributeAdded")->atom();
+		kAttrRemoved = core->internConstantStringLatin1("attributeRemoved")->atom();
+		kAttrChanged = core->internConstantStringLatin1("attributeChanged")->atom();
+		kNodeAdded = core->internConstantStringLatin1("nodeAdded")->atom();
+		kNodeRemoved = core->internConstantStringLatin1("nodeRemoved")->atom();
+		kNodeChanged = core->internConstantStringLatin1("nodeChanged")->atom();
+		kNamespaceAdded = core->internConstantStringLatin1("namespaceAdded")->atom();
+		kNamespaceRemoved = core->internConstantStringLatin1("namespaceRemoved")->atom();
+		kNamespaceSet = core->internConstantStringLatin1("namespaceSet")->atom();
+		kNameSet = core->internConstantStringLatin1("nameSet")->atom();
+		kTextSet = core->internConstantStringLatin1("textSet")->atom();
 
 		// XML.settings
 		// XML.setSettings ([settings])
@@ -177,10 +125,10 @@ namespace avmplus
 
 		Atom x = ToXML (argv[1]);
 		// if args[0] is xml, xmllist or w3c xml, return a deep copy
-		if (core->isXML(argv[1]) || core->isXMLList(argv[1]))
+		if (AvmCore::isXML(argv[1]) || AvmCore::isXMLList(argv[1]))
 		{
 			// return deepCopy of x
-			XMLObject *x2 = core->atomToXMLObject(x);
+			XMLObject *x2 = AvmCore::atomToXMLObject(x);
 			return x2->_deepCopy()->atom();
 		}
 
@@ -214,13 +162,13 @@ namespace avmplus
 											kConvertNullToObjectError);
 			return arg;
 		}
-		else if (core->isXML(arg))
+		else if (AvmCore::isXML(arg))
 		{
 			return arg;
 		}
-		else if (core->isXMLList (arg))
+		else if (AvmCore::isXMLList(arg))
 		{
-			XMLListObject *xl = core->atomToXMLList (arg);
+			XMLListObject *xl = AvmCore::atomToXMLList(arg);
 			if (xl->_length() == 1)
 			{
 				return xl->_getAt(0)->atom();
@@ -234,11 +182,7 @@ namespace avmplus
 		else
 		{
 			Namespace *defaultNamespace = toplevel->getDefaultNamespace();
-			// parentString = <parent xnlns=defaultNamespace> s </parent>
-			//Stringp parentString = core->concatStrings(core->newString("<parent xmlns=\""),defaultNamespace->getURI());
-			//parentString = core->concatStrings(parentString, core->newString("\">"));
-			//parentString = core->concatStrings(parentString, core->string(arg));
-			//parentString = core->concatStrings(parentString, core->newString("</parent>"));
+
 			// 2. Parse parentString as a W3C element information info e
 			// 3. If the parse fails, throw a SyntaxError exception
 			XMLObject *x = new (core->GetGC()) XMLObject(toplevel->xmlClass(), core->string(arg), defaultNamespace);
@@ -300,7 +244,7 @@ namespace avmplus
 		}
 	}
 
-	void XMLClass::setIgnoreComments(uint32 ignoreFlag) 
+	void XMLClass::set_ignoreComments(uint32 ignoreFlag) 
 	{ 
 		if (ignoreFlag)
 			m_flags |= kFlagIgnoreComments; 
@@ -308,12 +252,12 @@ namespace avmplus
 			m_flags &= ~kFlagIgnoreComments; 
 	}
 
-	uint32 XMLClass::getIgnoreComments() 
+	uint32 XMLClass::get_ignoreComments() 
 	{ 
 		return ((m_flags & kFlagIgnoreComments) != 0); 
 	}
 
-	void XMLClass::setIgnoreProcessingInstructions(uint32 ignoreFlag)
+	void XMLClass::set_ignoreProcessingInstructions(uint32 ignoreFlag)
 	{ 
 		if (ignoreFlag)
 			m_flags |= kFlagIgnoreProcessingInstructions; 
@@ -321,12 +265,12 @@ namespace avmplus
 			m_flags &= ~kFlagIgnoreProcessingInstructions; 
 	}
 
-	uint32 XMLClass::getIgnoreProcessingInstructions() 
+	uint32 XMLClass::get_ignoreProcessingInstructions() 
 	{ 
 		return ((m_flags & kFlagIgnoreProcessingInstructions) != 0); 
 	}
 
-	void XMLClass::setIgnoreWhitespace(uint32 ignoreFlag)
+	void XMLClass::set_ignoreWhitespace(uint32 ignoreFlag)
 	{ 
 		if (ignoreFlag)
 			m_flags |= kFlagIgnoreWhitespace; 
@@ -334,12 +278,12 @@ namespace avmplus
 			m_flags &= ~kFlagIgnoreWhitespace; 
 	}
 	
-	uint32 XMLClass::getIgnoreWhitespace()
+	uint32 XMLClass::get_ignoreWhitespace()
 	{ 
 		return ((m_flags & kFlagIgnoreWhitespace) != 0); 
 	}
 
-	void XMLClass::setPrettyPrinting(uint32 prettyFlag)
+	void XMLClass::set_prettyPrinting(uint32 prettyFlag)
 	{
 		if (prettyFlag)
 			m_flags |= kFlagPrettyPrinting; 
@@ -347,17 +291,17 @@ namespace avmplus
 			m_flags &= ~kFlagPrettyPrinting; 
 	}
 
-	uint32 XMLClass::getPrettyPrinting()
+	uint32 XMLClass::get_prettyPrinting()
 	{
 		return ((m_flags & kFlagPrettyPrinting) != 0); 
 	}
 
-	void XMLClass::setPrettyIndent(int printVal)
+	void XMLClass::set_prettyIndent(int printVal)
 	{
 		m_prettyIndent = printVal;
 	}
 
-	int XMLClass::getPrettyIndent()
+	int XMLClass::get_prettyIndent()
 	{
 		return m_prettyIndent;
 	}
@@ -366,21 +310,16 @@ namespace avmplus
 	/////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////
 
-	BEGIN_NATIVE_MAP(QNameClass)
-		NATIVE_METHOD(QName_localName_get, QNameObject::getLocalName)
-		NATIVE_METHOD(QName_uri_get, QNameObject::getURI)
-	END_NATIVE_MAP()
-
 	QNameClass::QNameClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
-		AvmAssert(traits()->sizeofInstance == sizeof(QNameClass));
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(QNameClass));
 
 		createVanillaPrototype();
 
 		AvmCore* core = this->core();
-		kUri = core->constant("uri");
-		kLocalName = core->constant("localName");
+		kUri = core->internConstantStringLatin1("uri")->atom();
+		kLocalName = core->internConstantStringLatin1("localName")->atom();
 	}
 
 	// E4X 13.3.1, page 66
@@ -392,7 +331,7 @@ namespace avmplus
 		if (argc == 1)
 		{
 			AvmCore* core = this->core();
-			if (core->isObject(argv[1]) && core->istype(argv[1], core->traits.qName_itraits))
+			if (core->isObject(argv[1]) && AvmCore::istype(argv[1], core->traits.qName_itraits))
 				return argv[1];
 		}
 
@@ -409,7 +348,7 @@ namespace avmplus
 
 		if (argc == 1)
 		{
-			if (core->isObject(argv[1]) && core->istype(argv[1], core->traits.qName_itraits))
+			if (core->isObject(argv[1]) && AvmCore::istype(argv[1], core->traits.qName_itraits))
 				return argv[1];
 
 			return (new (core->GetGC(), ivtable()->getExtraSize()) QNameObject(this, argv[1]))->atom();

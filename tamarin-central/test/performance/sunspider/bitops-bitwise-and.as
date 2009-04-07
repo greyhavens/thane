@@ -25,11 +25,25 @@
  */
 
 function runBitopsBitwiseAnd() {
-  var _sunSpiderStartDate = new Date();
   bitwiseAndValue = 4294967296;
-  for (var i = 0; i < 600000; i++)
+  for (var i = 0; i < 600000; i++) {
     bitwiseAndValue = bitwiseAndValue & i;
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+  }
+  return bitwiseAndValue;
 }
-print("metric bitops-bitwise-and "+runBitopsBitwiseAnd());
+
+if (CONFIG::desktop) {
+    var start=new Date();
+    var res=runBitopsBitwiseAnd();
+    var totaltime=new Date()-start;
+}
+else {  // mobile
+    var start=getTimer();
+    var res=runBitopsBitwiseAnd();
+    var totaltime=getTimer()-start;
+}
+print("bitwiseAnd()="+res);
+if (res==0) 
+  print("metric time "+totaltime);
+else
+  print("error bitwiseAnd() expected 0 got "+res);

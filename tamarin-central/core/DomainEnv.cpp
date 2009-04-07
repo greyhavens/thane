@@ -41,58 +41,58 @@
 namespace avmplus
 {
 	DomainEnv::DomainEnv(AvmCore *core, Domain* domain, DomainEnv* base)
-		: domain(domain),
-		  base(base)
+		: m_domain(domain),
+		  m_base(base),
+		  m_namedScripts(new (core->GetGC()) MultinameHashtable())
 	{
-		namedScripts = new (core->GetGC()) MultinameHashtable();
 	}
 
-	MethodEnv* DomainEnv::getScriptInit(Namespace* ns, Stringp name) const
+	MethodEnv* DomainEnv::getScriptInit(Namespacep ns, Stringp name) const
 	{
 		MethodEnv *env = NULL;
-		if (base) {
-			env = base->getScriptInit(ns, name);
+		if (m_base) {
+			env = m_base->getScriptInit(ns, name);
 		}
 		if (!env) {
-			env = (MethodEnv*) namedScripts->get(name, ns);
+			env = (MethodEnv*) m_namedScripts->get(name, ns);
 		}
 		return env;
 	}	
 
-	MethodEnv* DomainEnv::getScriptInit(Multiname* multiname) const
+	MethodEnv* DomainEnv::getScriptInit(const Multiname& multiname) const
 	{
 		MethodEnv *env = NULL;
-		if (base) {
-			env = base->getScriptInit(multiname);
+		if (m_base) {
+			env = m_base->getScriptInit(multiname);
 		}
 		if (!env) {
-			env = (MethodEnv*) namedScripts->getMulti(multiname);
+			env = (MethodEnv*) m_namedScripts->getMulti(multiname);
 		}
 		return env;
 	}
 
 	int DomainEnv::scriptNext(int index) const
 	{
-		int v = namedScripts->next(index);
+		int v = m_namedScripts->next(index);
 		return v;
 	}
 
 	Stringp DomainEnv::scriptNameAt(int index) const
 	{
-		Stringp s = namedScripts->keyAt(index);
+		Stringp s = m_namedScripts->keyAt(index);
 		return s;
 	}
 
-	Namespace* DomainEnv::scriptNsAt(int index) const
+	Namespacep DomainEnv::scriptNsAt(int index) const
 	{
-		Namespace* ns = namedScripts->nsAt(index);
+		Namespacep ns = m_namedScripts->nsAt(index);
 		return ns;
 	}
 	
 	Toplevel* DomainEnv::toplevel() const
 	{
 		if(m_toplevel) return m_toplevel;
-		if(base) return base->toplevel();
+		if(m_base) return m_base->toplevel();
 		AvmAssert(0);
 		return NULL;
 	}

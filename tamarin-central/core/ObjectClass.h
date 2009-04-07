@@ -48,7 +48,6 @@ namespace avmplus
     class ObjectClass : public ClassClosure
     {
 	public:
-		DECLARE_NATIVE_MAP(ObjectClass)
 		ObjectClass(VTable* cvtable);
 
 		void initPrototype();
@@ -66,12 +65,11 @@ namespace avmplus
 		Atom construct(int argc, Atom* argv);
 
 		// native methods
-		// (renamed to avoid hiding ScriptObject methods)
-		bool objectHasOwnProperty(Atom thisAtom, Stringp name);
-		bool objectIsPrototypeOf(Atom thisAtom, Atom other);
-		bool objectPropertyIsEnumerable(Atom thisAtom, Stringp name);
-		void objectSetPropertyIsEnumerable(Atom thisAtom, Stringp name, bool enumerable);		
-		Stringp objectToString(Atom thisAtom);
+		bool _hasOwnProperty(Atom thisAtom, Stringp name);
+		bool _isPrototypeOf(Atom thisAtom, Atom other);
+		bool _propertyIsEnumerable(Atom thisAtom, Stringp name);
+		void _setPropertyIsEnumerable(Atom thisAtom, Stringp name, bool enumerable);		
+		Stringp _toString(Atom thisAtom);
     };
 }
 

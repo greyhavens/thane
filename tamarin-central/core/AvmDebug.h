@@ -41,23 +41,11 @@
 
 #include "avmplusTypes.h"
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#ifdef _MAC
-#if !TARGET_RT_MAC_MACHO
-typedef const unsigned char* ConstStr255Param;
-extern "C"
-{
-#ifdef powerc
-	extern pascal void DebugStr(ConstStr255Param aStr);
-#else
-	// extern pascal void DebugStr(ConstStr255Param aStr) = 0xABFF;
-	extern pascal void SysBreakStr(ConstStr255Param aStr) = {0x303C, 0xFE15, 0xA9C9};
-#endif
-}
-#endif
+#if defined(AVMPLUS_CUSTOM_ASSERTION_HANDLER)
+    extern "C"
+    {
+        void AVMPlusCustomAssertionHandler(const char *message);
+    }
 #endif
 
 namespace avmplus
@@ -67,13 +55,20 @@ namespace avmplus
 	void AvmDebugMsg(const wchar* msg, bool debuggerBreak);
 
 	#ifdef _DEBUG
-		inline void _AvmAssertMsg(int32 assertion, const char* msg)
-		{
-			if (assertion == 0)
-				AvmDebugMsg(msg, true);
+		inline void AvmAssertFail(const char *message) {
+			#if defined(AVMPLUS_CUSTOM_ASSERTION_HANDLER)
+				AVMPlusCustomAssertionHandler(message);
+			#else
+				AvmDebugMsg(message, true);
+			#endif
 		}
 
-		#define AvmAssertMsg(x,y)				do { _AvmAssertMsg((x), (y)); } while (0) /* no semi */
+		inline void _AvmAssertMsg(int32 assertion, const char* message) {
+			if (!assertion)
+				AvmAssertFail(message);
+		}
+
+		#define AvmAssertMsg(x,y)				do { avmplus::_AvmAssertMsg((x), (y)); } while (0) /* no semi */
 
 		#define AvmAssert(x)					_AvmAssert((x), __LINE__,__FILE__)
 		#define _AvmAssert(x, line_, file_)		__AvmAssert((x), line_, file_)
@@ -83,32 +78,16 @@ namespace avmplus
 		#define AvmAssertMsg(x,y)	do { } while (0) /* no semi */
 		#define AvmAssert(x)		do { } while (0) /* no semi */
 	#endif
+}
 
-	/*************************************************************************/
-	/******************************* Debugging *******************************/
-	/*************************************************************************/
-
-	/* This mess serves to define the DebugMsg function on each platform.
-	* DebugMsg is only defined when the Debug flag is turned on; it halts
-	* program execution and drops into the debugger with the given message.
-	* We define it as in inline so that when you fall into the debugger,
-	* you're in the function that issued the call and not in a "DebugMsg"
-	* subroutine.
-	*/
-	#if defined(_MAC) && !defined(DARWIN)
-		// WARNING: this function is NOT THREAD SAFE
-	    /*plugin_export*/ ConstStr255Param MakePascalMsg(const char* theString);
-		
-		#ifdef SOFT_ASSERTS
-			inline void DebugMsg_(const char* msg) { }
-		#else
-			#ifdef powerc
-				inline void DebugMsg_(const char* msg) { DebugStr(MakePascalMsg(msg)); }
-			#else
-				inline void DebugMsg_(const char* msg) { SysBreakStr(MakePascalMsg(msg)); }
-			#endif
-		#endif // SOFT_ASSERTS
+#ifdef FEATURE_NANOJIT
+namespace nanojit {
+	#ifdef _DEBUG
+	inline void NanoAssertFail() {
+		avmplus::AvmAssertFail("");
+	}
 	#endif
 }
+#endif
 
 #endif /* __AvmDebug__ */

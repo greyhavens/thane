@@ -49,7 +49,10 @@ function cgStmt(ctx, s) {
     switch type (s) {
     case (s:EmptyStmt) { }
     case (s:ExprStmt) { cgExprStmt(ctx, s) }
+    case (s:ForStmt) { cgForStmt(ctx, s) }
+    case (s:ForBindingStmt) { cgForBindingStmt(ctx, s) }
     case (s:ForInStmt) { cgForInStmt(ctx, s) }
+    case (s:ForInBindingStmt) { cgForInBindingStmt(ctx, s) }
     case (s:ThrowStmt) { cgThrowStmt(ctx, s) }
     case (s:ReturnStmt) { cgReturnStmt(ctx, s) }
     case (s:BreakStmt) { cgBreakStmt(ctx,s) }
@@ -59,7 +62,6 @@ function cgStmt(ctx, s) {
     case (s:LetBlockStmt) { cgLetBlockStmt(ctx,s) }
     case (s:WhileStmt) { cgWhileStmt(ctx, s) }
     case (s:DoWhileStmt) { cgDoWhileStmt(ctx, s) }
-    case (s:ForStmt) { cgForStmt(ctx, s) }
     case (s:IfStmt) { cgIfStmt(ctx, s) }
     case (s:WithStmt) { cgWithStmt(ctx, s) }
     case (s:TryStmt) { cgTryStmt(ctx, s) }
@@ -84,9 +86,9 @@ function cgExprStmt(ctx, s) {
     //  - exprStmt updates the local with the value instead of popping it
     //  - catch and finally blocks do not affect the captured value
 
-    while (stk != null && stk.tag != "function" && stk.tag != "finally" && stk.tag != "catch")
+    while (stk != null && stk.tag != "function" && stk.tag != "script" && stk.tag != "finally" && stk.tag != "catch")
         stk = stk.link;
-    if (stk != null && stk.tag == "function" && stk.capture_reg) {
+    if (stk != null /*&& stk.tag == "function"*/ && stk.capture_reg) {
         asm.I_coerce_a();
         asm.I_setlocal(stk.capture_reg);
     }
@@ -155,11 +157,8 @@ function cgDoWhileStmt(ctx, {stmt, labels, expr}) {
     asm.I_label(Lbreak);
 }
 
-function cgForStmt(ctx, {vars, init, cond, incr, stmt, labels}) {
-    // FIXME: fixtures
-    // FIXME: code shape?
+function cgForStmt(ctx, {init, cond, incr, stmt, labels}) {
     let {asm} = ctx;
-    cgHead(ctx, vars);
     let Lbreak = asm.newLabel();
     let Lcont = asm.newLabel();
     if (init != null) {
@@ -181,43 +180,21 @@ function cgForStmt(ctx, {vars, init, cond, incr, stmt, labels}) {
     asm.I_label(Lbreak);
 }
 
-function cgForInStmt(ctx, {vars, init, obj, stmt, labels, is_each}) {
-    // FIXME: fixtures
-    // FIXME: code shape?
-    let {asm, emitter} = ctx;
-    cgHead(ctx, vars);
+function cgForBindingStmt(ctx, s) {
+    cgHead(ctx, s.head);
+    cgForStmt(ctx, s);
+}
 
-    let name;
-    switch type (init) {
-    case (ident: Ast::IdentExpr) {
-        name = cgIdentExpr(ctx, ident);
-    }
-    case (ie: Ast::InitExpr) {
-        if (ie.inits.length != 1)
-            Gen::internalError(ctx, "unimplemented cogen in cgForInStmt: too many names" + ie.inits.length);
-        let {name:fxname} = ie.inits[0];
-        name = emitter.fixtureNameToName(fxname);
-    }
-    case(x: *) {
-        Gen::internalError(ctx, "unimplemented cogen in cgForInStmt for " + init);
-    }
-    }
+function cgForInStmt(ctx, {assignment, tmp, obj, stmt, is_each, labels}) {
+    let {asm, emitter} = ctx;
 
     let Lbreak = asm.newLabel();
     let Lcont = asm.newLabel();
 
-    // FIXME: actually wrong to do this.  The effect we're looking for is that the
-    // binding is introduced if it does not exist, ie, DEFVAR.
-    asm.I_findproperty(name);
-    asm.I_pushundefined();
-    asm.I_setproperty(name);
-
-    if (init != null) {
-        cgExpr(ctx, init);
-        asm.I_pop();
-    }
     let T_obj = asm.getTemp();
     let T_idx = asm.getTemp();
+    let T_val = asm.getTemp();
+    tmp.n = T_val;
     cgExpr(ctx, obj);
     asm.I_coerce_a(); // satisfy verifier
     asm.I_setlocal(T_obj);
@@ -235,18 +212,27 @@ function cgForInStmt(ctx, {vars, init, obj, stmt, labels, is_each}) {
         asm.I_nextvalue();
     else 
         asm.I_nextname();
-
-    asm.I_findpropstrict(name);
-    asm.I_swap();
-    asm.I_setproperty(name);
+    asm.I_setlocal(T_val);
+    cgExpr(ctx, assignment);
+    asm.I_pop();
 
     cgStmt(pushBreak(pushContinue(ctx, labels, Lcont), Lbreak), stmt);
     asm.I_label(Lcont);
     asm.I_jump(Ltop);
 
     asm.I_label(Lbreak);
+    asm.killTemp(T_val);
     asm.killTemp(T_idx);
     asm.killTemp(T_obj);
+}
+
+function cgForInBindingStmt(ctx, s) {
+    let {asm, emitter} = ctx;
+    let {head, init} = s;
+    cgHead(ctx, head);
+    cgExpr(ctx, init);
+    asm.I_pop();
+    cgForInStmt(ctx, s);
 }
 
 function cgBreakStmt(ctx, {ident}) {
@@ -256,7 +242,7 @@ function cgBreakStmt(ctx, {ident}) {
     unstructuredControlFlow(ctx,
                             hit,
                             true,
-                            (ident == null ? "No 'break' allowed here" : "'break' to undefined label " + ident));
+                            (ident == null ? "No 'break' allowed here" : "'break' to undefined label " + ident.text));
 }
 
 function cgContinueStmt(ctx, {ident}) {
@@ -266,7 +252,7 @@ function cgContinueStmt(ctx, {ident}) {
     unstructuredControlFlow(ctx,
                             hit,
                             true,
-                            "'continue' to undefined label " + ident);
+                            (ident == null ? "No 'continue' allowed here" : "'continue' to undefined label " + ident.text));
 }
 
 function cgThrowStmt(ctx, {expr}) {
@@ -439,7 +425,7 @@ function cgSwitchStmtFast(ctx, s, low, high, has_default) {
         }
 
         let stmts = c.stmts;
-        for ( let j=0 ; j < stmts.length ; j++ )
+        for ( let j=0, jlimit=stmts.length ; j < jlimit ; j++ )
             cgStmt(nctx, stmts[j] );
     }
 
@@ -463,26 +449,25 @@ function cgSwitchStmtSlow(ctx, {expr,cases}) {
     let {asm} = ctx;
     cgExpr(ctx, expr);
     let t = asm.getTemp();
+    asm.I_coerce_a();
     asm.I_setlocal(t);
     let Ldefault = null;
     let Lnext = null;
     let Lfall = null;
     let Lbreak = asm.newLabel();
     let nctx = pushBreak(ctx, Lbreak);
-    for ( let i=0 ; i < cases.length ; i++ ) {
+    for ( let i=0, limit=cases.length ; i < limit ; i++ ) {
         let c = cases[i];
 
         if (c.expr == null) {
             assert (Ldefault==null);
             Ldefault = asm.I_label(undefined);    // label default pos
         }
-
-        if (Lnext !== null) {
-            asm.I_label(Lnext);                   // label next pos
-            Lnext = null;
-        }
-
-        if (c.expr != null) {
+        else {
+            if (Lnext !== null) {
+                asm.I_label(Lnext);               // label next pos
+                Lnext = null;
+            }
             cgExpr(nctx, c.expr);                 // check for match
             asm.I_getlocal(t);
             asm.I_strictequals();
@@ -495,11 +480,10 @@ function cgSwitchStmtSlow(ctx, {expr,cases}) {
         }
 
         let stmts = c.stmts;
-        for ( let j=0 ; j < stmts.length ; j++ ) {
+        for ( let j=0, jlimit=stmts.length ; j < jlimit ; j++ )
             cgStmt(nctx, stmts[j] );
-        }
 
-        Lfall = asm.I_jump (undefined);           // fall through
+        Lfall = asm.I_jump(undefined);            // fall through
     }
     if (Lnext !== null)
         asm.I_label(Lnext);
@@ -512,11 +496,16 @@ function cgSwitchStmtSlow(ctx, {expr,cases}) {
 }
 
 function cgSwitchTypeStmt(ctx, {expr,cases}) {
-    let b = new Ast::Block(new Ast::Head([],[]), [new Ast::ThrowStmt(expr)]);
+    let {asm} = ctx;
+    let t = new Ast::GetCogenTemp();
+    t.n = asm.getTemp();
+    cgExpr(ctx, expr);
+    asm.I_setlocal(t.n);
+    let b = new Ast::Block(new Ast::Head([],[]), [new Ast::ThrowStmt(t)]);
     let newcases = [];
     let hasDefault = false;
 
-    for( let i = 0; i < cases.length; i++ ) {
+    for( let i = 0, limit=cases.length ; i < limit ; i++ ) {
         newcases.push(cases[i]);
         let {data} = cases[i].param.fixtures[0];
         if (Ast::isAnyType(data.ty))
@@ -525,12 +514,13 @@ function cgSwitchTypeStmt(ctx, {expr,cases}) {
 
     // Add a catch all case so we don't end up throwing whatever the switch type expr was
     if (!hasDefault) {
-        newcases.push(new Ast::Catch(new Ast::Head([ new Ast::Fixture(new Ast::PropName(new Ast::Name(Ast::publicNS, "x")),
+        newcases.push(new Ast::Catch(new Ast::Head([ new Ast::Fixture(new Ast::PropName(new Ast::Name(Ast::publicNS, Token::sym_x)),
                                                                       new Ast::ValFixture(Ast::anyType, false)) ],
                                                    []),
                                      new Ast::Block(new Ast::Head([],[]), [])));
     }
-    cgTryStmt(ctx, {block:b, catches:newcases, finallyBlock:null} );        
+    cgTryStmt(ctx, {block:b, catches:newcases, finallyBlock:null} );
+    asm.killTemp(t.n);
 }
     
 function cgWithStmt(ctx, {expr,stmt}) {
@@ -660,7 +650,7 @@ function cgTryStmtNoFinally(ctx, {block, catches}) {
     let Lend = asm.newLabel();
     asm.I_jump(Lend);
 
-    for( let i = 0; i < catches.length; ++i )
+    for( let i = 0, limit=catches.length ; i < limit ; ++i )
         cgCatch(ctx, code_start, code_end, Lend, catches[i]);
         
     asm.I_label(Lend);

@@ -1,5 +1,4 @@
 
-#ifndef AVMPLUS_AMD64
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -36,6 +35,18 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+#include "avmplus.h"
+
+#ifdef AVMPLUS_ARM
+
+bool P4Available() {
+	return false;
+}
+
+#else // AVMPLUS_ARM
+
+#ifndef AVMPLUS_AMD64
 
 #define SSE_FLAG  0x02000000		// SSE flag is bit 25 of Feature Flags
 #define SSE2_FLAG 0x04000000		// SSE2 flag is bit 26 of Feature Flags
@@ -98,3 +109,5 @@ bool P4Available()
 }
 
 #endif // AVMPLUS_AMD64
+
+#endif // AVMPLUS_ARM

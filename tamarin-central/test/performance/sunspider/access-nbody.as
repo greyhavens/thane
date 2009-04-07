@@ -176,8 +176,7 @@ NBodySystem.prototype.energy = function(){
    return e;
 }
 function runAccessNBody() {
-  var _sunSpiderStartDate = new Date();
-  var ret;
+  var res;
 
   for ( var n = 3; n <= 24; n *= 2 ) {
     (function(){
@@ -190,10 +189,23 @@ function runAccessNBody() {
         for (var i=0; i<max; i++){
             bodies.advance(0.01);
         }
-        ret = bodies.energy();
+        res = bodies.energy();
+	print(""+n+"="+res);
     })();
   }
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+  return res;
 }
-print("metric access-nbody "+runAccessNBody());
+if (CONFIG::desktop) {
+    var _sunSpiderStartDate = new Date();
+    var res=runAccessNBody();
+    var totaltime=new Date()-_sunSpiderStartDate;
+}
+else { // mobile
+    var _sunSpiderStartDate = getTimer();
+    var res=runAccessNBody();
+    var totaltime=getTimer()-_sunSpiderStartDate;
+}
+if (res-(-0.1690693)<0.00001)
+   print("metric time "+totaltime);
+else
+   print("error nbody result expecting -0.1690693 got "+res);

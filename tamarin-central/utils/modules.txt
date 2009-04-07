@@ -1,3 +1,40 @@
+# ***** BEGIN LICENSE BLOCK *****
+# Version: MPL 1.1/GPL 2.0/LGPL 2.1
+#
+# The contents of this file are subject to the Mozilla Public License Version
+# 1.1 (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+# http:#www.mozilla.org/MPL/
+#
+# Software distributed under the License is distributed on an "AS IS" basis,
+# WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+# for the specific language governing rights and limitations under the
+# License.
+#
+# The Original Code is [Open Source Virtual Machine.].
+#
+# The Initial Developer of the Original Code is
+# Adobe System Incorporated.
+# Portions created by the Initial Developer are Copyright (C) 2006-2008
+# the Initial Developer. All Rights Reserved.
+#
+# Contributor(s):
+#   Adobe AS3 Team
+#
+# Alternatively, the contents of this file may be used under the terms of
+# either the GNU General Public License Version 2 or later (the "GPL"), or
+# the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+# in which case the provisions of the GPL or the LGPL are applicable instead
+# of those above. If you wish to allow use of your version of this file only
+# under the terms of either the GPL or the LGPL, and not to allow others to
+# use your version of this file under the terms of the MPL, indicate your
+# decision by deleting the provisions above and replace them with the notice
+# and other provisions required by the GPL or the LGPL. If you do not delete
+# the provisions above, a recipient may use your version of this file under
+# the terms of any one of the MPL, the GPL or the LGPL.
+#
+# ***** END LICENSE BLOCK *****
+
 crt <common>
 crt kernel32:KERNEL32.dll
 crt advapi32:ADVAPI32.dll
@@ -6,278 +43,303 @@ crt LIBCMT: *
 crt Dll:: *
 crt _E32Dll *
 crt __cpp *
+crt mmtimer: *
+crt coredll: *
+crt corelibc: *
 
-MMGC mmgc: *
-MMGC avmplus:GC *
-MMGC avmplus:FixedAlloc.obj
-MMGC avmplus:FixedMalloc.obj
-MMGC MMgc:: *
-MMGC operator *
+mmgc mmgc: *
+mmgc avmplus:GC *
+mmgc avmplus:FixedAlloc.obj
+mmgc avmplus:FixedMalloc.obj
+mmgc MMgc:: *
+mmgc MMgc: *
+mmgc operator *
 
-MIR avmplus:CodegenMIR.obj
-MIR avmplus:Ia32Assembler.obj
-MIR avmplus:GrowableBuffer.obj
-MIR win32cpuid.obj
-MIR avmplus::CodegenMIR
-MIR avmplus::ArmAssembler
-MIR avmplus::GrowableBuffer
-MIR avmplus::ImtBuilder
+nanojit avmplus:CodegenMIR.obj
+nanojit avmplus:Ia32Assembler.obj
+nanojit win32cpuid.obj
+nanojit avmplus::CodegenMIR
+nanojit avmplus::ArmAssembler
+nanojit avmplus::ImtBuilder
+nanojit avmplus:CodegenLIR.obj
+nanojit avmplus:WordcodeEmitter.obj
+nanojit avmplus:TypeDescriber.obj
+nanojit avmplus:peephole.obj
+nanojit nanojit:Nativei386.obj
+nanojit avmplus:Nativei386.obj
+nanojit avmplus:NativeARM.obj
+nanojit nanojit:LIR.obj
+nanojit avmplus:LIR.obj
+nanojit nanojit:Assembler.obj
+nanojit avmplus:Assembler.obj
+nanojit nanojit:Fragmento.obj
+nanojit avmplus:Fragmento.obj
+nanojit avmplus:wopcodes.obj
+nanojit avmplus:QCache.obj
+nanojit nanojit:RegAlloc.obj
+nanojit avmplus:RegAlloc.obj
 
-Interp avmplus:Interpreter.obj
-Interp avmplus::Interpreter
+vm avmplus:Interpreter.obj
+vm avmplus::Interpreter
 
-Verify avmplus:Verifier.obj
-Verify avmplus:AbcParser.obj
-Verify avmplus::Verifier
-Verify avmplus::AbcParser
-Verify avmplus::SortedIntMap
-Verify avmplus::FrameState
+vm avmplus:Verifier.obj
+vm avmplus:AbcParser.obj
+vm avmplus::Verifier
+vm avmplus::AbcParser
+vm avmplus::SortedIntMap
+vm avmplus::FrameState
+vm avmplus:Coder.obj
 
-Math avmplus:MathUtils.obj
-Math avmplus:MathClass.obj
-Math avmplus:MathUtilsWin.obj
-Math avmplus:BigInteger.obj
-Math avmplus::MathUtils
-Math avmplus::MathClass
-Math avmplus::BigInteger
-Math avmplus::D2A
-Math avmplus::kPowersOfTen
-Math avmplus::Random_Xor_Masks
-Math avmplus::quickBigPowTen
-Math avmplus::quickPowTen
-Math avmplus::quickPowTwo
-Math avmplus::powInt
+builtin avmplus:MathUtils.obj
+builtin avmplus:MathClass.obj
+builtin avmplus:MathUtilsWin.obj
+builtin avmplus:BigInteger.obj
+builtin avmplus::MathUtils
+builtin avmplus::MathClass
+builtin avmplus::BigInteger
+builtin avmplus::D2A
+builtin avmplus::kPowersOfTen
+builtin avmplus::Random_Xor_Masks
+builtin avmplus::quickBigPowTen
+builtin avmplus::quickPowTen
+builtin avmplus::quickPowTwo
+builtin avmplus::powInt
 
-Number avmplus:NumberClass.obj
-Number avmplus:IntClass.obj
-Number avmplus::NumberClass
-Number avmplus::IntClass
-Number avmplus::UintClass
+builtin avmplus:NumberClass.obj
+builtin avmplus:IntClass.obj
+builtin avmplus::NumberClass
+builtin avmplus::IntClass
+builtin avmplus::UintClass
 
-Error avmplus:ErrorClass.obj
-Error avmplus:Exception.obj
-Error avmplus::ErrorClass
-Error avmplus::NativeErrorClass
-Error avmplus::ErrorObject
-Error avmplus::ExceptionFrame
-Error avmplus::Exception
-Error avmplus::ExceptionHandlerTable
+builtin avmplus:ErrorClass.obj
+builtin avmplus:Exception.obj
+builtin avmplus::ErrorClass
+builtin avmplus::NativeErrorClass
+builtin avmplus::ErrorObject
+builtin avmplus::ExceptionFrame
+builtin avmplus::Exception
+builtin avmplus::ExceptionHandlerTable
 
-RegExp avmplus:pcre_ *
-RegExp avmplus:RegExp *
-RegExp avmplus::RegExp *
-RegExp pcre_ *
-RegExp _pcre_ *
-RegExp find_ *
-RegExp is_ *
-RegExp compile_ *
-RegExp match_ *
-RegExp check_ *
-RegExp posix_ *
-RegExp first_ *
-RegExp auto_callout
-RegExp match
-RegExp set_start_bits
-RegExp digitab
-RegExp could_be_empty_branch
-RegExp error_texts
-RegExp escapes
-RegExp byteflip
-RegExp complete_callout
-RegExp avmplus::fmalloc
-RegExp avmplus::ffree
-RegExp rep_min
-RegExp rep_max
-RegExp set_bit
-RegExp adjust_recurse
-RegExp read_repeat_counts
+regexp avmplus:pcre_ *
+regexp avmplus:RegExp *
+regexp avmplus::RegExp *
+regexp pcre_ *
+regexp _pcre_ *
+regexp find_ *
+regexp is_ *
+regexp compile_ *
+regexp match_ *
+regexp check_ *
+regexp posix_ *
+regexp first_ *
+regexp auto_callout
+regexp match
+regexp set_start_bits
+regexp digitab
+regexp could_be_empty_branch
+regexp error_texts
+regexp escapes
+regexp byteflip
+regexp complete_callout
+regexp avmplus::fmalloc
+regexp avmplus::ffree
+regexp rep_min
+regexp rep_max
+regexp set_bit
+regexp adjust_recurse
+regexp read_repeat_counts
 
-ZLIB deflate.obj
-ZLIB inflate.obj
-ZLIB trees.obj
-ZLIB infback.obj
-ZLIB inftrees.obj
-ZLIB inffas86.obj
-ZLIB adler32.obj
-ZLIB compress.obj
-ZLIB zutil.obj
-ZLIB uncompr.obj
-ZLIB crc32.obj
+zlib zlib-arm: *
+zlib zlib:deflate.obj
+zlib zlib:inflate.obj
+zlib zlib:trees.obj
+zlib zlib:infback.obj
+zlib zlib:inftrees.obj
+zlib zlib:inffas86.obj
+zlib zlib:adler32.obj
+zlib zlib:compress.obj
+zlib zlib:zutil.obj
+zlib zlib:uncompr.obj
+zlib zlib:crc32.obj
+zlib zlib:inffast.obj
 
-E4X avmplus:XMLObject.obj
-E4X avmplus:XMLListObject.obj
-E4X avmplus:XMLClass.obj
-E4X avmplus:XMLListClass.obj
-E4X avmplus:E4XNode.obj
-E4X avmplus:XMLParser16.obj
-E4X avmplus::CommentE4XNode
-E4X avmplus::AttributeE4XNode
-E4X avmplus::CDATAE4XNode
-E4X avmplus::TextE4XNode
-E4X avmplus::PIE4XNode
-E4X avmplus::ElementE4XNode
-E4X avmplus::E4XNode *
-E4X avmplus::XML *
-E4X avmplus::QName *
-E4X avmplus::stripPrefix
+builtin avmplus:XMLObject.obj
+builtin avmplus:XMLListObject.obj
+builtin avmplus:XMLClass.obj
+builtin avmplus:XMLListClass.obj
+builtin avmplus:BUILTINNode.obj
+builtin avmplus:XMLParser16.obj
+builtin avmplus::CommentE4XNode
+builtin avmplus::AttributeE4XNode
+builtin avmplus::CDATAE4XNode
+builtin avmplus::TextE4XNode
+builtin avmplus::PIE4XNode
+builtin avmplus::ElementE4XNode
+builtin avmplus:E4XNode.obj
+builtin avmplus::XML *
+builtin avmplus::QName *
+builtin avmplus::stripPrefix
 
-Builtin.as avmplus:AbcData.obj
-Builtin.as avmplus::builtin_abc_data
+builtin avmplus:AbcData.obj
+builtin avmplus::builtin_abc_data
 
-Runtime avmplus:AvmCore.obj
-Runtime avmplus:MethodEnv.obj
-Runtime avmplus:Toplevel.obj
-Runtime avmplus:AvmCore.obj
-Runtime	avmplus:MethodEnv.obj
-Runtime avmplus:Toplevel.obj
-Runtime avmplus:PoolObject.obj
-Runtime avmplus:Traits.obj
-Runtime avmplus:AbstractFunction.obj
-Runtime avmplus:PrintWriter.obj
-Runtime avmplus:Multiname.obj
-Runtime avmplus:NamespaceSet.obj
-Runtime avmplus:BuiltinTraits.obj
-Runtime avmplus:Domain.obj
-Runtime avmplus:DomainEnv.obj
-Runtime avmplus:VTable.obj
-Runtime avmplus:NativeFunction.obj
-Runtime avmplus:StringBuffer.obj
-Runtime avmplus:MethodInfo.obj
-Runtime avmplus:AbcGen.obj
-Runtime avmplus:win32setjmp.obj
-Runtime avmplus:OSDepWin.obj
-Runtime avmplus:AbcEnv.obj
-Runtime avmplus:ActionBlockConstants.obj
-Runtime avmplus:MultinameHashtable.obj
-Runtime avmplus::OSDep
-Runtime avmplus::Domain *
-Runtime avmplus::NativeObjectHelpers *
-Runtime avmplus::NativeMethod *
-Runtime avmplus::AvmCore
-Runtime avmplus::MethodEnv
-Runtime avmplus::ScriptEnv
-Runtime avmplus::Toplevel
-Runtime avmplus::PoolObject
-Runtime avmplus::Traits
-Runtime avmplus::List
-Runtime avmplus::Multiname *
-Runtime avmplus::PrintWriter
-Runtime avmplus::BuiltinTraits
-Runtime avmplus::letterTable
-Runtime avmplus::AbstractFunction
-Runtime avmplus::ActionBlockConstants
-Runtime avmplus::VTable
-Runtime avmplus::combiningCharTable
-Runtime avmplus::parseDateNumber
-Runtime avmplus::AbcGen
-Date avmplus::parseDateKeyword
-Runtime avmplus::UIntClass
+vm avmplus:AvmCore.obj
+vm avmplus:MethodEnv.obj
+vm avmplus:Toplevel.obj
+vm avmplus:AvmCore.obj
+vm	avmplus:MethodEnv.obj
+vm avmplus:Toplevel.obj
+vm avmplus:PoolObject.obj
+vm avmplus:Traits.obj
+vm avmplus:Translator.obj
+vm avmplus:PrintWriter.obj
+vm avmplus:Multiname.obj
+vm avmplus:NamespaceSet.obj
+vm avmplus:BuiltinTraits.obj
+vm avmplus:Domain.obj
+vm avmplus:DomainEnv.obj
+vm avmplus:VTable.obj
+vm avmplus:NativeFunction.obj
+vm avmplus:StringBuffer.obj
+vm avmplus:MethodInfo.obj
+vm avmplus:AbcGen.obj
+vm avmplus:win32setjmp.obj
+vm avmplus:win32cpuid.obj
+vm avmplus:OSDepWin.obj
+vm avmplus:AbcEnv.obj
+vm avmplus:ActionBlockConstants.obj
+vm avmplus:MultinameHashtable.obj
+vm avmplus::OSDep
+vm avmplus::Domain *
+vm avmplus::NativeObjectHelpers *
+vm avmplus::NativeMethod *
+vm avmplus::AvmCore
+vm avmplus::MethodEnv
+vm avmplus::ScriptEnv
+vm avmplus::Toplevel
+vm avmplus::PoolObject
+vm avmplus::Traits
+vm avmplus::List
+vm avmplus::Multiname *
+vm avmplus::PrintWriter
+vm avmplus::BuiltinTraits
+vm avmplus::letterTable
+vm avmplus::ActionBlockConstants
+vm avmplus::VTable
+vm avmplus::combiningCharTable
+vm avmplus::parseDateNumber
+vm avmplus::AbcGen
+vm avmplus::UIntClass
+vm avmplus:VectorClass.obj
+vm avmplus:DescribeTypeClass.obj
+vm eval-abc.obj
 
-Object avmplus:ScriptObject.obj
-Object avmplus:ObjectClass.obj
-Object avmplus:avmplusHashtable.obj
-Object avmplus::ObjectClass
-Object avmplus::ScriptObject
-Object avmplus::Hashtable
-Object avmplus::WeakValueHashtable
-Object avmplus::WeakKeyHashtable
+builtin avmplus:ScriptObject.obj
+builtin avmplus:ObjectClass.obj
+builtin avmplus:avmplusHashtable.obj
+builtin avmplus::ObjectClass
+builtin avmplus::ScriptObject
+builtin avmplus::Hashtable
+builtin avmplus::WeakValueHashtable
+builtin avmplus::WeakKeyHashtable
 
-Array avmplus:ArrayClass.obj
-Array avmplus:ArrayObject.obj
-Array avmplus:AtomArray.obj
-Array avmplus::ArrayObject
-Array avmplus::ArrayClass
-Array avmplus::AtomArray
-Array avmplus::ArraySort
+builtin avmplus:ArrayClass.obj
+builtin avmplus:ArrayObject.obj
+builtin avmplus:AtomArray.obj
+builtin avmplus::ArrayObject
+builtin avmplus::ArrayClass
+builtin avmplus::AtomArray
+builtin avmplus::ArraySort
 
-String avmplus:StringClass.obj
-String avmplus:StringObject.obj
-String avmplus:UnicodeUtils.obj
-String avmplus::String
-String avmplus::StringClass
-String avmplus::UnicodeUtils
-String avmplus::StringOutputStream
-String avmplus::StringBuffer
-String avmplus::wcharEquals
-String avmplus::UsesUTF8String
-String avmplus::upperCaseBase
-String avmplus::lowerCaseBase
-String avmplus::upperCaseConversion
-String avmplus::lowerCaseConversion
-String avmplus::g_tolower_map
-String avmplus::g_toupper_map
-String avmplus::operator *
-String minUCS4@_ZN7avmplus12UnicodeUtils10Utf8ToUcs4EPKhiPm_0
+builtin avmplus:StringClass.obj
+builtin avmplus:StringObject.obj
+builtin avmplus:UnicodeUtils.obj
+builtin avmplus::String
+builtin avmplus::StringClass
+builtin avmplus::UnicodeUtils
+builtin avmplus::StringOutputStream
+builtin avmplus::StringBuffer
+builtin avmplus::wcharEquals
+builtin avmplus::UsesUTF8String
+builtin avmplus::upperCaseBase
+builtin avmplus::lowerCaseBase
+builtin avmplus::upperCaseConversion
+builtin avmplus::lowerCaseConversion
+builtin avmplus::g_tolower_map
+builtin avmplus::g_toupper_map
+builtin avmplus::operator *
+builtin minUCS4@_ZN7avmplus12UnicodeUtils10Utf8ToUcs4EPKhiPm_0
 
-Namespace avmplus:Namespace.obj
-Namespace avmplus:NamespaceClass.obj
-Namespace avmplus::Namespace *
+builtin avmplus:Namespace.obj
+builtin avmplus:NamespaceClass.obj
+builtin avmplus::Namespace *
 
-Boolean avmplus:BooleanClass.obj
-Boolean avmplus::Boolean *
+builtin avmplus:BooleanClass.obj
+builtin avmplus::Boolean *
 
-Class avmplus:ClassClosure.obj
-Class avmplus:ClassClass.obj
-Class avmplus::ClassClosure
-Class avmplus::ClassClass
+vm avmplus:ClassClosure.obj
+vm avmplus:ClassClass.obj
+vm avmplus::ClassClosure
+vm avmplus::ClassClass
 
-Function avmplus:MethodClosure.obj
-Function avmplus:FunctionClass.obj
-Function avmplus::FunctionClass
-Function avmplus::MethodClosure
-Function avmplus::MethodClosureClass
+vm avmplus:MethodClosure.obj
+vm avmplus:FunctionClass.obj
+vm avmplus::FunctionClass
+vm avmplus::MethodClosure
+vm avmplus::MethodClosureClass
 
-Date avmplus:DateClass.obj
-Date avmplus:DateObject.obj
-Date avmplus:Date.obj
-Date avmplus:DateWin.obj
-Date avmplus::UTC
-Date avmplus::Date *
-Date avmplus::Day *
+builtin avmplus:DateClass.obj
+builtin avmplus:DateObject.obj
+builtin avmplus:Date.obj
+builtin avmplus:DateWin.obj
+builtin avmplus::UTC
+builtin avmplus::Date *
+builtin avmplus::Day *
+builtin avmplus::parseDateKeyword
 
-SHELL avmshell.obj
-SHELL DomainClass.obj
-SHELL DomainObject.obj
-SHELL StringBuilderClass.obj
-SHELL StringBuilderObject.obj
-SHELL TypedArrayClass.obj
-SHELL TypedArrayObject.obj
-SHELL ByteArrayGlue.obj
-SHELL DataIO.obj
-SHELL FileClass.obj
-SHELL DictionaryGlue.obj
-SHELL SystemClass.obj
-SHELL ConsoleOutputStream.obj
-SHELL FileInputStream.obj
-SHELL JavaGlue.obj
+shell avmshell.obj
+shell DomainClass.obj
+shell DomainObject.obj
+shell ByteArrayGlue.obj
+shell DataIO.obj
+shell FileClass.obj
+shell DictionaryGlue.obj
+shell SystemClass.obj
+shell ConsoleOutputStream.obj
+shell FileInputStream.obj
+shell JavaGlue.obj
+shell vprof.obj
+shell SamplerScript.obj
+shell WinPortUtils.obj
+shell avmshellWin.obj
+shell WinFile.obj
 
+darkMatter <Anon *
 
-DarkMatter <Anon *
-
-Date avmplus::MakeTime
-Date avmplus::MakeDay
-Runtime avmplus::MethodInfo
-Date avmplus::YearFromTime
-Date avmplus::WeekDay
-Date avmplus::MakeDate
-Runtime avmplus::HeapMultiname
-Runtime avmplus::addTraits
-Runtime avmplus::AvmPlusScriptableObject
-Runtime avmplus::ScopeTypeChain
-Runtime avmplus::ScopeChain
-Runtime avmplus::digitTable
-Date avmplus::IsLeapYear
-Date avmplus::kMonthOffset
-Date avmplus::MonthFromTime
-Runtime avmplus::extenderTable
-Date avmplus::HourFromTime
-Date avmplus::LocalTime
-Runtime avmplus::OutputStream
-Date kMonths@_ZNK7avmplus4Date8toStringEPtiRi_0
-Date avmplus::SecFromTime
-Date avmplus::MinFromTime
-Date avmplus::GetTimezoneOffset
-Date avmplus::MsecFromTime
-Date kDaysOfWeek@_ZNK7avmplus4Date8toStringEPtiRi_1
-Date avmplus::TimeFromYear
-Date avmplus::TimeInLeapYear
+builtin avmplus::MakeTime
+builtin avmplus::MakeDay
+runtime avmplus::MethodInfo
+builtin avmplus::YearFromTime
+builtin avmplus::WeekDay
+builtin avmplus::MakeDate
+runtime avmplus::HeapMultiname
+runtime avmplus::addTraits
+runtime avmplus::AvmPlusScriptableObject
+runtime avmplus::ScopeTypeChain
+runtime avmplus::ScopeChain
+runtime avmplus::digitTable
+builtin avmplus::IsLeapYear
+builtin avmplus::kMonthOffset
+builtin avmplus::MonthFromTime
+runtime avmplus::extenderTable
+builtin avmplus::HourFromTime
+builtin avmplus::LocalTime
+runtime avmplus::OutputStream
+builtin kMonths@_ZNK7avmplus4Date8toStringEPtiRi_0
+builtin avmplus::SecFromTime
+builtin avmplus::MinFromTime
+builtin avmplus::GetTimezoneOffset
+builtin avmplus::MsecFromTime
+builtin kDaysOfWeek@_ZNK7avmplus4Date8toStringEPtiRi_1
+builtin avmplus::TimeFromYear
+builtin avmplus::TimeInLeapYear

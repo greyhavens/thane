@@ -24,6 +24,7 @@
 
 package {
 
+import avmplus.*;
 import flash.utils.getDefinitionByName;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
@@ -37,7 +38,7 @@ public class AMF3Decoder
 {
     public static function decode (bytes :IDataInput) :*
     {
-        _ctx = new Context(bytes);
+        _ctx = new DecoderContext(bytes);
         return decodeValue();
     }
 
@@ -236,7 +237,7 @@ public class AMF3Decoder
         return bytes;
     }
 
-    private static var _ctx :Context;
+    private static var _ctx :DecoderContext;
 }
 }
 
@@ -244,7 +245,7 @@ public class AMF3Decoder
 import flash.utils.IDataInput;
 import flash.utils.Dictionary;
 
-class Context
+class DecoderContext
 {
     public var bytes :IDataInput;
 
@@ -252,7 +253,7 @@ class Context
     public var sRef :Array = new Array();
     public var tRef :Array = new Array();
 
-    public function Context (bytes :IDataInput)
+    public function DecoderContext (bytes :IDataInput)
     {
         this.bytes = bytes;
     }

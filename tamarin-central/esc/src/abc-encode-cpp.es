@@ -200,9 +200,9 @@ class AbcEncoderCpp
     let [h_data, cpp_data] = encoder.encode();
     let prefix = "// This is a GENERATED file - do not edit\n";
 
-    writeFile(prefix + h_data, fname+".h");
+    Util::writeStringToFile(prefix + h_data, fname+".h");
     print (fname+".h, "+h_data.length+" chars written");
 
-    writeFile(prefix + cpp_data, fname+".cpp");
+    Util::writeStringToFile(prefix + cpp_data, fname+".cpp");
     print (fname+".cpp, "+cpp_data.length+" chars written");
 }

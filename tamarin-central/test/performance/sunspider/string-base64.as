@@ -64,9 +64,15 @@
 
 /* Convert data (an array of integers) to a Base64 string. */
 var toBase64Table = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+// workaround for bug 409210
+toBase64Table = toBase64Table.split('');
+
 var base64Pad = '=';
 
 function toBase64(data) {
+    // workaround for bug 409210
+    data = data.split('');
+    
     var result = '';
     var length = data.length;
     var i;
@@ -108,13 +114,18 @@ var toBinaryTable = [
 ];
 
 function base64ToString(data) {
+    // workaround for bug 409210
+    data = data.split('');
+
     var result = '';
     var leftbits = 0; // number of bits decoded, but yet to be appended
     var leftdata = 0; // bits decoded, but yet to be appended
 
     // Convert one by one.
     for (var i = 0; i < data.length; i++) {
-        var c = toBinaryTable[data.charCodeAt(i) & 0x7f];
+        // workaround for bug 409210
+        // var c = toBinaryTable[data.charCodeAt(i) & 0x7f];
+        var c = toBinaryTable[data[i].charCodeAt(0) & 0x7f];
         var padding = (data[i] == base64Pad);
         // Skip illegal characters and whitespace
         if (c == -1) continue;
@@ -141,7 +152,10 @@ function base64ToString(data) {
 }
 
 function runStringBase64() {
-var _sunSpiderStartDate = new Date();
+if (CONFIG::desktop)
+    var _sunSpiderStartDate = (new Date).getTime();
+else  // mobile
+    var _sunSpiderStartDate = getTimer();
 
 var str = "";
 
@@ -162,8 +176,21 @@ for ( var i = 8192; i <= 16384; i *= 2 ) {
 toBinaryTable = null;
 
 
-var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
+if (CONFIG::desktop)
+    var _sunSpiderInterval = (new Date).getTime() - _sunSpiderStartDate;
+else  // mobile
+    var _sunSpiderInterval = getTimer() - _sunSpiderStartDate;
 
 return(_sunSpiderInterval);
 }
-print("metric string-base64 "+runStringBase64());
+
+//verify test results first
+var testString = "1234567890qwertyuiopasdfghjklzxcvbnm";
+testString = 'hello';
+trace(toBase64(testString));
+trace(base64ToString(toBase64(testString)));
+if (testString !== base64ToString(toBase64(testString))) {
+    print('Test validation failed: Expected: '+testString+' Got: '+base64ToString(toBase64(testString)));
+} else {
+    print("metric time " +runStringBase64());
+}

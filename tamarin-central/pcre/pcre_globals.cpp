@@ -65,6 +65,17 @@ void avmplus_pcre_free(void *ptr)
 	delete [] cp;
 }
 
+const pcre_callout_t pcre_callout = NULL;
+
+#if 0
+
+#ifdef __ARMCC__
+extern "C" void *(*pcre_malloc)(size_t) = avmplus_pcre_malloc;;
+extern "C" void  (*pcre_free)(void *) = avmplus_pcre_free;;
+extern "C" void *(*pcre_stack_malloc)(size_t) = avmplus_pcre_malloc;;
+extern "C" void  (*pcre_stack_free)(void *) = avmplus_pcre_free;;
+extern "C" int   (*pcre_callout)(pcre_callout_block *)  = NULL;;
+#else
 // GCC complains if you declare as extern and init in same statement
 
 extern "C" void *(*pcre_malloc)(size_t);
@@ -78,6 +89,9 @@ void  (*pcre_free)(void *) = avmplus_pcre_free;
 void *(*pcre_stack_malloc)(size_t) = avmplus_pcre_malloc;
 void  (*pcre_stack_free)(void *) = avmplus_pcre_free;
 int   (*pcre_callout)(pcre_callout_block *) = NULL;
+#endif
+
+#endif
 
 #else
 #ifndef VPCOMPAT
@@ -88,6 +102,6 @@ PCRE_EXP_DATA_DEFN void  (*pcre_stack_free)(void *) = free;
 PCRE_EXP_DATA_DEFN int   (*pcre_callout)(pcre_callout_block *) = NULL;
 #endif
 
-#endif /* AVMPLUS_PCRE */
+#endif
 
 /* End of pcre_globals.c */

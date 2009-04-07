@@ -36,9 +36,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "avmplus.h"
+using namespace MMgc;
 
 #ifdef DARWIN
-#include <Carbon/Carbon.h>
+//    #if defined(AVMPLUS_MAC_CARBON)
+		#include <Carbon/Carbon.h>
+//	#endif
 #endif
 
 #ifdef AVMPLUS_ROSETTA
@@ -123,124 +126,6 @@ extern "C"
 
 namespace avmplus
 {
-	GrowableBuffer::GrowableBuffer(MMgc::GCHeap *gcheap, bool mir)
-		: heap(gcheap)
-		, forMir(mir)
-	{
-		init();
-		AvmAssert( (size_t)MathUtils::nextPowerOfTwo((int)(pageSize()-1)) == pageSize() );
-	}
-
-	GrowableBuffer::~GrowableBuffer()
-	{
-		free();
-	}
-
-	void GrowableBuffer::init()
-	{
-		first = 0;
-		last = 0;
-		uncommit = 0;
-		current = 0;
-	}
-
-	byte* GrowableBuffer::reserve(size_t amt)
-	{
-		// attempt to reserve space 
-		amt = (size_t)pageAfter((byte*)amt);   // align to page
-		first = (forMir) ? (byte*)heap->ReserveMirMemory(amt) : (byte*)heap->ReserveCodeMemory(0, amt);
-		last = first + amt;
-		uncommit = first;
-		current = first;
-
-		// commit the first page and make it a guard page
-		if (first)
-			heap->SetGuardPage(first);
-			
-		return first;
-	}
-
-	byte* GrowableBuffer::decommitUnused()
-	{
-		// have we committed too much beyond the current location?
-		if (current + pageSize() < uncommit) 
-		{
-			// get rid of pages
-			byte* after = pageAfter(current);
-#ifdef MEMORY_INFO
-			MMgc::ChangeSizeForObject(this, (int)(-1 * (uncommit-after)));
-#endif
-			heap->DecommitCodeMemory((void*)after, uncommit-after);
-			uncommit = after;
-
-			heap->SetGuardPage(uncommit);
-		}
-		return uncommit;
-	}
-
-	byte* GrowableBuffer::grow()
-	{ 
-		return growBy(pageSize()*PAGES_PER_GROW); 
-	}
-
-	byte* GrowableBuffer::growBy(size_t amt)
-	{
-		AvmAssertMsg(amt % pageSize() == 0, "amt must be multiple of pageSize");
-		size_t grow = ( (uncommit + amt) < last) ? amt : last - uncommit;
-#ifdef MEMORY_INFO
-		MMgc::ChangeSizeForObject(this, (int)grow);
-#endif
-		void* res = heap->CommitCodeMemory((void*)uncommit, grow);
-		AvmAssert(res != 0);
-		if(res == 0)
-		  return uncommit;
-
-		uncommit += grow;
-
-		// commit the first page and make it a guard page
-		heap->SetGuardPage(uncommit);
-		
-		return uncommit;
-	}
-
-	byte* GrowableBuffer::shrinkTo(size_t amt)
-	{
-		AvmAssertMsg(amt % pageSize() == 0, "amt must be multiple of pageSize");
-		byte* shrinkTo = start() + amt;
-		size_t size = (shrinkTo < uncommit) ? uncommit - shrinkTo : 0;
-		if (size > 0)
-		{	
-#ifdef MEMORY_INFO
-			MMgc::ChangeSizeForObject(this, (int)(-1 * size));
-#endif
-			void* res = heap->DecommitCodeMemory((void*)shrinkTo, size);
-			AvmAssert(res != 0);
-			(void)res;
-			uncommit = shrinkTo;
-
-			// commit the first page and make it a guard page
-			heap->SetGuardPage(uncommit);
-		}
-		return uncommit;
-	}
-
-	void GrowableBuffer::free()
-	{
-		// get rid of the whole shebang
-		if (first != 0)
-		{
-#ifdef MEMORY_INFO
-			MMgc::ChangeSizeForObject(this, (int)(-1 * (uncommit-first)));
-			heap->DecommitCodeMemory(first, uncommit-first);
-#endif
-			if (forMir)
-				heap->ReleaseMirMemory(first, size());
-			else
-				heap->ReleaseCodeMemory(first, size());
-			init();
-		}
-	}
-
 #ifdef FEATURE_BUFFER_GUARD
 
 	//
@@ -788,7 +673,10 @@ namespace avmplus
 		// Add self to exception thread's list
 		int retCode = pthread_mutex_lock(&mutex);
 		(void)retCode;
+
+        #if !defined(AVMPLUS_PTHREAD_NO_ASSERT)
 		AvmAssert(!retCode);
+		#endif
 
 		thread = mach_thread_self();
 		
@@ -796,13 +684,15 @@ namespace avmplus
 		guardList = this;
 		
 		retCode = pthread_mutex_unlock(&mutex);
-		AvmAssert(!retCode);
 
+        #if !defined(AVMPLUS_PTHREAD_NO_ASSERT)
+		AvmAssert(!retCode);
+		#endif
 
 		exception_mask_t mask = EXC_MASK_BAD_ACCESS;
 		
 		// Save exception ports
-		memset(&savedExceptionPorts, 0, sizeof(SavedExceptionPorts));
+		VMPI_memset(&savedExceptionPorts, 0, sizeof(SavedExceptionPorts));
 		
 		kern_return_t r;
 		r = thread_get_exception_ports(thread,
@@ -892,6 +782,8 @@ namespace avmplus
 													  exception_data_t code,
 													  mach_msg_type_number_t code_count)
 	{
+		bool isAccessViolation = false;
+		
 		// Find the GenericGuard associated with thread
 		int retCode = pthread_mutex_lock(&mutex);
 		(void)retCode;
@@ -922,7 +814,7 @@ namespace avmplus
 
 		// If an access violation occurred, let the GenericGuard a shot
 		// at handling the exception.
-		bool isAccessViolation = (exception == EXC_BAD_ACCESS && code[0] == KERN_PROTECTION_FAILURE);
+		isAccessViolation = (exception == EXC_BAD_ACCESS && code[0] == KERN_PROTECTION_FAILURE);
 
 		#ifdef AVMPLUS_ROSETTA
 		// Under Rosetta on 10.4.6 i386, exception and code[0] come through in
@@ -953,78 +845,13 @@ namespace avmplus
 								 ports);
 	}
 	
-	bool GrowthGuard::handleException(kern_return_t& returnCode)
-	{
-    #ifdef AVMPLUS_ROSETTA
-		// Under Rosetta, thread_get_state does not appear to work.
-		// So, we will simply assume that this exception is intended for us
-		// and grow the buffer.
-		if (rosetta)
-		{
-			GrowableBuffer* g = buffer;
-			g->grow();
-			returnCode = KERN_SUCCESS;
-			return true;
-		}
-	#endif
-		
-	#if defined (AVMPLUS_IA32) || defined(AVMPLUS_AMD64)
-		i386_exception_state_t exc_state;
-		mach_msg_type_number_t exc_state_count = i386_EXCEPTION_STATE_COUNT;
-		thread_state_flavor_t flavor = i386_EXCEPTION_STATE;
-	#else
-		ppc_exception_state_t exc_state;
-		mach_msg_type_number_t exc_state_count = PPC_EXCEPTION_STATE_COUNT;
-		thread_state_flavor_t flavor = PPC_EXCEPTION_STATE;
-	#endif
-
-		thread_get_state(thread,
-						 flavor,
-						 (natural_t*)&exc_state,
-						 &exc_state_count);
-
-	#if defined (AVMPLUS_IA32) || defined(AVMPLUS_AMD64)
-	#if __DARWIN_UNIX03 // Mac 10.5 SDK changed definition
-		byte *AccessViolationAddress = (byte*) exc_state.__faultvaddr;
-	#else
-		byte *AccessViolationAddress = (byte*) exc_state.faultvaddr;
-	#endif
-    #else
-		byte *AccessViolationAddress = (byte*) exc_state.dar;
-    #endif
-			
-		GrowableBuffer* g = buffer;
-		byte* nextPage = g->uncommitted();
-		byte* nextPageAfterGrow = NULL;
-
-		if (AccessViolationAddress == nextPage)
-		{
-			// sequential write access to buffer
-			nextPageAfterGrow = g->grow();
-		}
-		
-		if (AccessViolationAddress > nextPage && AccessViolationAddress < g->end())
-		{
-			// random access into buffer (commit next page after the hit)
-			byte* page = g->pageAfter(AccessViolationAddress);
-			nextPageAfterGrow = g->growBy(page - nextPage);			
-		}
-		
-		if(nextPage != nextPageAfterGrow)
-		{
-			returnCode = KERN_SUCCESS;
-			return true;
-		}
-
-		return false;
-	}	
-#endif // AVMPLUS_MACH_EXCEPTIONS
+#endif
 
 #ifdef AVMPLUS_UNIX
     static pthread_key_t guardKey = 0;
     static struct sigaction orig_sa;
 
-    static void dispatchHandleException(int sig, siginfo_t *info, void *context)
+    static void dispatchHandleException(int /*sig*/, siginfo_t *info, void * /*context*/)
     {
         GenericGuard *genericGuard = (GenericGuard*) pthread_getspecific(guardKey);
         bool handled = false;
@@ -1220,7 +1047,7 @@ namespace avmplus
 
 		contextRecord->Rip = buf->Rip;
 
-		memcpy(&contextRecord->Xmm6, &buf->Xmm6, sizeof(M128A)*10);
+		VMPI_memcpy(&contextRecord->Xmm6, &buf->Xmm6, sizeof(M128A)*10);
 		//contextRecord->Xmm6 = (M128A)buf->Xmm6;
 		//contextRecord->Xmm7 = buf->Xmm7;
 		//contextRecord->Xmm8 = buf->Xmm8;
@@ -1276,8 +1103,13 @@ namespace avmplus
 		
 		// set the registers to point back to the CATCH block     
 		#ifdef AVMPLUS_PPC
-		thread_state.srr0 = (*jmpBuf)[21];
-		thread_state.r1   = (*jmpBuf)[0];
+		#  if defined AVMPLUS_64BIT
+			thread_state.__srr0 = (*jmpBuf)[21];
+			thread_state.__r1   = (*jmpBuf)[0];
+		#  else
+			thread_state.srr0 = (*jmpBuf)[21];
+			thread_state.r1   = (*jmpBuf)[0];
+		#  endif
 		#endif
 
 		#if defined (AVMPLUS_IA32) || defined(AVMPLUS_AMD64)
@@ -1320,151 +1152,14 @@ namespace avmplus
 #endif /* AVMPLUS_MACH_EXCEPTIONS */
 
 #ifdef AVMPLUS_UNIX
-    bool BufferGuard::handleException(byte *addr)
+    bool BufferGuard::handleException(byte * /*addr*/)
     {
 #ifdef _DEBUG
-        printf("BufferGuard::handleException: not implemented yet\n");
+        AvmLog("BufferGuard::handleException: not implemented yet\n");
 #endif
         return false;
     }
 #endif // AVMPLUS_UNIX
-
-	// GrowthGuard
-	GrowthGuard::GrowthGuard(GrowableBuffer* buffer)
-	{
-		this->registered = false;
-		this->buffer = buffer;
-		init();
-		if (buffer) 
-			registerHandler();
-	}
-
-	GrowthGuard::~GrowthGuard()
-	{
-		if (buffer) 
-			unregisterHandler();
-	}
-
-#ifdef _WIN64
-	void GrowthGuard::registerHandler()
-	{
-		if (gGrowthGuardHandler==0)
-		{
-			gGrowthGuardHandler = AddVectoredExceptionHandler(1, (PVECTORED_EXCEPTION_HANDLER)&avmplus::GenericGuard::guardRoutine);
-		}
-
-		if (gGrowthGuards==NULL)
-		{
-			// first guard
-			this->prevGuard = NULL;
-			this->nextGuard = NULL;
-			gGrowthGuards = this;
-		}
-		else
-		{
-			// Make this the first guard in the list
-			this->prevGuard = NULL;
-			this->nextGuard = gGrowthGuards;
-			gGrowthGuards->prevGuard = this;
-			gGrowthGuards = this;
-		}
-	}
-
-	void GrowthGuard::unregisterHandler()
-	{
-		// Find us in the list
-		GenericGuard* pGuard = gGrowthGuards;
-		while (pGuard!=this && pGuard!=NULL)
-			pGuard = pGuard->nextGuard;
-		if (pGuard)
-		{
-			// this is us
-			if (pGuard->prevGuard)
-				pGuard->prevGuard->nextGuard = pGuard->nextGuard;
-			else
-			{
-				gGrowthGuards = pGuard->nextGuard; // might be NULL
-				if (gGrowthGuards)
-					gGrowthGuards->prevGuard = NULL;
-			}
-		}
-
-		if (gGrowthGuards==NULL && gGrowthGuardHandler!=NULL)
-		{		
-			// No more Growth guards, remove handler
-			RemoveVectoredExceptionHandler(gGrowthGuardHandler);
-			gGrowthGuardHandler = 0;
-		}
-	}
-#endif
-
-	// Platform specific code follows
-#ifdef AVMPLUS_WIN32
-	int GrowthGuard::handleException(struct _EXCEPTION_RECORD* exceptionRecord,
-									 void* /*establisherFrame*/,
-									 struct _CONTEXT* /*contextRecord*/,
-									 void* /*dispatcherContext*/)
-	{
-		byte* AccessViolationAddress = (byte*) exceptionRecord->ExceptionInformation[1];
-		byte* nextPage = buffer->uncommitted();
-		if (AccessViolationAddress == nextPage)
-		{
-			// sequential write access to buffer
-			buffer->grow();
-			#ifdef _WIN64
-			return EXCEPTION_CONTINUE_EXECUTION;
-			#else
-			return ExceptionContinueExecution;
-			#endif
-		}
-		else if (AccessViolationAddress > nextPage && AccessViolationAddress < buffer->end())
-		{
-			// random access into buffer (commit next page after the hit)
-			byte* page = buffer->pageAfter(AccessViolationAddress);
-			buffer->growBy(page - nextPage);
-			#ifdef _WIN64
-			return EXCEPTION_CONTINUE_EXECUTION;
-			#else
-			return ExceptionContinueExecution;
-			#endif
-		}
-		else
-		{
-			// hmm something is pretty bad here
-			#ifdef _WIN64
-			return EXCEPTION_CONTINUE_SEARCH;
-			#else
-			return ExceptionContinueSearch;
-			#endif
-		}
-	}
-
-#endif /* AVMPLUS_WIN32 */
-
-#ifdef AVMPLUS_UNIX
-    bool GrowthGuard::handleException(byte* addr)
-    {
-        GrowableBuffer* g = buffer;
-        byte* nextPage = g->uncommitted();
-        bool result = false;
-
-        if (addr == nextPage)
-        {
-            // sequential write access to buffer
-            g->grow();
-            result = true;
-        }
-        else if (addr > nextPage && addr < g->end())
-        {
-            // random access into buffer (commit next page after the hit)
-            byte* page = g->pageAfter(addr);
-            g->growBy(page - nextPage);
-            result = true;
-        }
-
-        return result;
-    }
-#endif /* AVMPLUS_UNIX */
 
 #endif /* FEATURE_BUFFER_GUARD */
 }

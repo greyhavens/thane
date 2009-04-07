@@ -37,26 +37,17 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(FunctionClass)
-		NATIVE_METHOD2(Function_prototype_get, 
-						(NativeMethod::GetHandler)&ClassClosure::get_prototype)
-		NATIVE_METHOD2(Function_prototype_set, 
-						(NativeMethod::SetHandler)&ClassClosure::set_prototype)
-		NATIVE_METHOD2(Function_AS3_call, &ScriptObject::function_call)
-		NATIVE_METHOD2(Function_AS3_apply, &ScriptObject::function_apply)
-		NATIVE_METHOD2(Function_length_get, &ClassClosure::get_length)
-	END_NATIVE_MAP()
-
 	FunctionClass::FunctionClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
 		Toplevel* toplevel = this->toplevel();
 
 		toplevel->functionClass = this;
-		AvmAssert(traits()->sizeofInstance == sizeof(FunctionClass));
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(FunctionClass));
 
 		prototype = createEmptyFunction();
 		prototype->setDelegate(toplevel->objectClass->prototype);
@@ -99,10 +90,101 @@ namespace avmplus
 	ClassClosure* FunctionClass::createEmptyFunction()
 	{
 		// invoke AS3 private static function emptyCtor, which returns an empty function.
-		Binding b = traits()->getName(core()->constantString("emptyCtor"));
+		TraitsBindingsp t = traits()->getTraitsBindings();
+		Binding b = t->findBinding(core()->internConstantStringLatin1("emptyCtor"));
 		MethodEnv *f = vtable->methods[AvmCore::bindingToMethodId(b)];
-		Atom args[1] = { this->atom() };
-		return (ClassClosure*)AvmCore::atomToScriptObject(f->coerceEnter(0,args));
+		return (ClassClosure*)AvmCore::atomToScriptObject(f->coerceEnter(this->atom()));
 	}
 
+	/**
+     * Function.prototype.call()
+     */
+	Atom FunctionObject::AS3_call(Atom thisArg, Atom *argv, int argc)
+	{
+		thisArg = get_coerced_receiver(thisArg);
+
+		if (argc > 0) 
+		{
+			return _call->coerceEnter(thisArg, argc, argv);
+		}
+		else
+		{
+			return _call->coerceEnter(thisArg);
+		}
+	}
+
+	/**
+     * Function.prototype.apply()
+     */
+	Atom FunctionObject::AS3_apply(Atom thisArg, Atom argArray)
+	{
+		thisArg = get_coerced_receiver(thisArg);
+
+		// when argArray == undefined or null, same as not being there at all
+		// see Function/e15_3_4_3_1.as 
+	
+		if (!AvmCore::isNullOrUndefined(argArray))
+		{
+			AvmCore* core = this->core();
+
+			if (!AvmCore::istype(argArray, ARRAY_TYPE))
+				toplevel()->throwTypeError(kApplyError);
+
+			return _call->coerceEnter(thisArg, (ArrayObject*)AvmCore::atomToScriptObject(argArray));
+			
+		}
+		else
+		{
+			return _call->coerceEnter(thisArg);
+		}
+	}
+
+	// this = argv[0] (ignored)
+	// arg1 = argv[1]
+	// argN = argv[argc]
+	Atom FunctionObject::construct(int argc, Atom* argv)
+	{
+		AvmAssert(argv != NULL); // need at least one arg spot passed in
+
+		ScriptObject* obj = newInstance();
+
+		// this is a function
+		argv[0] = obj->atom(); // new object is receiver
+		Atom result = _call->coerceEnter(argc, argv);
+
+		// for E3 13.2.2 compliance, check result and return it if (Type(result) is Object)
+
+		/* ISSUE does this apply to class constructors too?
+
+		answer: no.  from E4: A constructor may invoke a return statement as long as that 
+		statement does not supply a value; a constructor cannot return a value. The newly 
+		created object is returned automatically. A constructors return type must be omitted. 
+		A constructor always returns a new instance. */
+
+		return AvmCore::isNull(result) || AvmCore::isObject(result) ? result : obj->atom();
+	}
+ 
+	Atom FunctionObject::call(int argc, Atom* argv)
+	{
+		argv[0] = get_coerced_receiver(argv[0]);
+		return _call->coerceEnter(argc, argv);
+	}
+
+	int FunctionObject::get_length()
+	{
+		MethodSignaturep ms = _call->method->getMethodSignature();
+		return ms->param_count();
+	}
+
+	Atom FunctionObject::get_coerced_receiver(Atom a)
+	{
+		if (AvmCore::isNullOrUndefined(a))
+		{
+			// use callee's global object as this.
+			// see E3 15.3.4.4
+			a = _call->scope()->getScope(0);
+		}
+		MethodSignaturep ms = _call->method->getMethodSignature();
+		return toplevel()->coerce(a, ms->paramTraits(0));
+	}
 }

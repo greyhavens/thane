@@ -48,45 +48,65 @@
 #include "MMgc-config.h"
 #endif
 
-// For size_t
-#include <stddef.h>
+#if defined(MMGC_CUSTOM_BUILD)
+    #include "MMgcCustomBuild.h"
+#else
+	#ifdef WIN32
+		#ifdef ARM
+			#include "armbuild.h"
+		#else
+			#include "winbuild.h"
+		#endif
+	#endif
 
-#ifdef WIN32
-#include "winbuild.h"
+	#ifdef _MAC
+		#include "macbuild.h"
+	#endif
+
+	#ifdef UNIX
+		#include "unixbuild.h"
+	#endif
+
+	// don't include armbuild.h when MMGC_CUSTOM_BUILD is used
+	#ifdef MMGC_ARM
+		#include "armbuild.h"
+	#endif
 #endif
 
-#ifdef _MAC
-#include "macbuild.h"
+#include "VMPI.h"
+
+#if defined(WIN32) && defined(MMGC_64BIT)
+#include <setjmpex.h>
+#else
+#include <setjmp.h>
 #endif
 
-#ifdef LINUX
-#include "linuxbuild.h"
+#if defined(SCRIPT_DEBUGGER) || defined(DEBUGGER)
+#define AVMPLUS_SAMPLER
 #endif
 
-#ifdef SOLARIS
-#include "solarisbuild.h"
-#endif
-
-#ifdef MMGC_ARM
-#include "armbuild.h"
-#endif
-
-#ifdef SCRIPT_DEBUGGER
-#ifndef DEBUGGER
-#define DEBUGGER
-#endif
-#endif
-
-#if defined(_DEBUG) || defined(_MAC)
-// for memset
-#include <string.h>
+#ifdef MMGC_AVMPLUS
+#  define MMGC_RCROOT_SUPPORT
 #endif
 
 #ifndef _MSC_VER
 #define __forceinline
+#else
+#ifndef DEBUG
+#include <memory.h>
+#include <string.h>
+#pragma intrinsic(memcmp)
+#pragma intrinsic(memcpy)
+#pragma intrinsic(memset)
+#pragma intrinsic(strlen)
+#pragma intrinsic(strcpy)
+#pragma intrinsic(strcat)
+#endif // DEBUG
 #endif
 
 #include "GCDebug.h"
+#include "GCLog.h"
+
 /*
  * If _GCHeapLock is defined, a spin lock is used for thread safety
  * on all public API's (Alloc, Free, ExpandHeap)
@@ -97,53 +117,47 @@
  * thread-safe.
  */
 
-#ifdef GCHEAP_LOCK
-#ifdef WIN32
-#include "GCSpinLockWin.h"
-#endif
-#ifdef _MAC
-#include "GCSpinLockMac.h"
-#endif
-#ifdef LINUX
-#include "GCSpinLockLinux.h"
-#endif
-#ifdef SOLARIS
-#include "GCSpinLockSolaris.h"
-#endif
+#ifdef MMGC_LOCKING
+#define MMGC_LOCK(_x) GCAcquireSpinlock _lock(_x)
+#include "GCSpinLock.h"
+#else
+#define MMGC_LOCK(_x) 
 #endif
 
 namespace MMgc
 {
 	class GC;
-	class GCTraceObject;
 	class RCObject;
 	class GCWeakRef;
 	class GCObject;
 	class GCHashtable;
 	class Cleaner;
 	class GCAlloc;
+	class GCHeap;
 }
 
 #include "GCTypes.h"
+#include "OOM.h"
 #include "GCStack.h"
 #include "GCThreads.h"
 #include "GCAllocObject.h"
+#include "GCHashtable.h"
+#include "GCMemoryProfiler.h"
+#include "GCThreadLocal.h"
+#include "FixedAlloc.h"
+#include "FixedMalloc.h"
 #include "GCHeap.h"
 #include "GCAlloc.h"
 #include "GCLargeAlloc.h"
-#include "GCMemoryProfiler.h"
-#include "FixedAlloc.h"
-#include "FixedMalloc.h"
 #include "GCGlobalNew.h"
-#include "GCHashtable.h"
 #include "GC.h"
 #include "GCObject.h"
 #include "GCWeakRef.h"
 #include "WriteBarrier.h"
 
-#if defined(MMGC_DRC) && !defined(WRITE_BARRIERS)
-#error "Need write barriers for DRC"
-#endif
+// remove these when the player stops using it
+#define MMGC_DRC
+#define WRITE_BARRIERS
 
 #endif /* __MMgc__ */
 

@@ -44,30 +44,64 @@
 
 namespace avmplus
 {
+    // Error message strings only in DEBUGGER builds.
+    #ifdef DEBUGGER
     namespace ErrorConstants
     {
-        // Error message strings only in DEBUGGER builds.
-        #ifdef DEBUGGER
-		LangName languageNames[kLanguages] =
+		LangName languageNames[] =
 		{
+        #ifdef AVMPLUS_ERROR_LANG_en
             { "en",     LANG_en },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_cs
             { "cs",     LANG_cs },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_de
             { "de",     LANG_de },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_es
             { "es",     LANG_es },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_fr
             { "fr",     LANG_fr },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_it
             { "it",     LANG_it },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_ja
             { "ja",     LANG_ja },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_ko
             { "ko",     LANG_ko },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_nl
             { "nl",     LANG_nl },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_pl
             { "pl",     LANG_pl },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_pt
             { "pt",     LANG_pt },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_ru
             { "ru",     LANG_ru },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_sv
             { "sv",     LANG_sv },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_tr
             { "tr",     LANG_tr },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_zh_CN
             { "zh-CN",  LANG_zh_CN },
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_zh_TW
             { "zh-TW",  LANG_zh_TW },
+        #endif
 
 		};
+    
+        MMGC_STATIC_ASSERT((sizeof languageNames/sizeof languageNames[0]) == kLanguages);
 
         int errorMappingTable[2*kNumErrorConstants] =
         {
@@ -206,9 +240,10 @@ namespace avmplus
             1510, 132
         };
 
-        const char* errorConstants[kLanguages][kNumErrorConstants] =
+        const char* errorConstants[][kNumErrorConstants] =
         {
-                // en
+        #ifdef AVMPLUS_ERROR_LANG_en
+            // en
             {
                 /*1000,0*/ "The system is out of memory.",
                 /*1001,1*/ "The method %1 is not implemented.",
@@ -344,7 +379,9 @@ namespace avmplus
                 /*1509,131*/ "There was an error decompressing the data.",
                 /*1510,132*/ "When the callback argument is a method of a class, the optional this argument must be null."
             },
-                // cs
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_cs
+            // cs
             {
                 /*1000,0*/ "Systém nemá dostatek paměti.",
                 /*1001,1*/ "Metoda %1 není implementovaná.",
@@ -466,8 +503,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 vyžaduje, aby objekt a index byly odlišné registry.",
                 /*1125,118*/ "Index %1 je mimo rozsah %2.",
                 /*1126,119*/ "Nelze změnit délku pevného vektoru.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Pokus o aplikaci typu u typu, který není parametrizován.",
+                /*1128,121*/ "Nesprávný počet parametrů typu pro %1. Očekáváno %2, obdrženo %3.",
                 /*1500,122*/ "Při otevírání souboru %1 došlo k chybě.",
                 /*1501,123*/ "Při zápisu do souboru %1 došlo k chybě.",
                 /*1502,124*/ "Skript byl spuštěn déle než je výchozí doba platnosti (15 sekund).",
@@ -480,7 +517,9 @@ namespace avmplus
                 /*1509,131*/ "Při dekomprimování dat došlo k chybě.",
                 /*1510,132*/ "Pokud je argument zpětného volání metodou třídy, volitelný argument musí být null."
             },
-                // de
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_de
+            // de
             {
                 /*1000,0*/ "Nicht genügend Speicher vorhanden.",
                 /*1001,1*/ "Die Methode %1 wird nicht implementiert.",
@@ -602,8 +641,8 @@ namespace avmplus
                 /*1124,117*/ "Für OP_hasnext2 müssen object und index verschiedene Register sein.",
                 /*1125,118*/ "Der Index %1 liegt außerhalb des gültigen Bereichs %2.",
                 /*1126,119*/ "Die Länge eines festen Vektors kann nicht geändert werden.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Typanwendung für einen Typ ohne Parameter versucht.",
+                /*1128,121*/ "Falsche Anzahl von type-Parametern für %1. Erwartet wurden %2, erhalten wurden %3.",
                 /*1500,122*/ "Fehler beim Öffnen von Datei %1.",
                 /*1501,123*/ "Fehler beim Schreiben in Datei %1.",
                 /*1502,124*/ "Ein Skript wurde länger als die Standard-Timeout-Zeit von 15 Sekunden ausgeführt.",
@@ -616,7 +655,9 @@ namespace avmplus
                 /*1509,131*/ "Fehler beim Dekomprimieren der Daten.",
                 /*1510,132*/ "Wenn das callback-Argument eine Methode einer Klasse ist, muss das optionale this-Argument null sein."
             },
-                // es
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_es
+            // es
             {
                 /*1000,0*/ "El sistema no tiene memoria disponible.",
                 /*1001,1*/ "El método %1 no se ha implementado.",
@@ -738,8 +779,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 requiere que el objeto y el índice sean registros diferentes.",
                 /*1125,118*/ "El índice %1 está fuera del rango %2.",
                 /*1126,119*/ "No se puede cambiar la longitud de un vector fijo.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "La aplicación intentó escribir en un tipo no parametrizado.",
+                /*1128,121*/ "Número incorrecto de parámetros type para %1. Se esperaba %2 y se obtuvo %3.",
                 /*1500,122*/ "Error al abrir el archivo %1.",
                 /*1501,123*/ "Error al escribir en el archivo %1.",
                 /*1502,124*/ "El tiempo de ejecución del script ha superado el tiempo de espera predeterminado de 15 segundos.",
@@ -752,7 +793,9 @@ namespace avmplus
                 /*1509,131*/ "Se produjo un error al descomprimir los datos.",
                 /*1510,132*/ "Si el argumento de la función de repetición de llamada es un método de la clase, el argumento opcional debe ser null."
             },
-                // fr
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_fr
+            // fr
             {
                 /*1000,0*/ "La mémoire du système est saturée.",
                 /*1001,1*/ "La méthode %1 n'est pas mise en oeuvre.",
@@ -874,8 +917,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 requiert que l'objet et l'index soient des registres distincts.",
                 /*1125,118*/ "L'index %1 est en dehors des limites %2.",
                 /*1126,119*/ "Impossible de modifier la longueur d'un vecteur fixe.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Application de type tentée sur un type sans paramètre.",
+                /*1128,121*/ "Nombre incorrect de paramètres type pour %1. %2 prévu(s), %3 détecté(s).",
                 /*1500,122*/ "Une erreur s’est produite lors de l’ouverture du fichier %1.",
                 /*1501,123*/ "Une erreur s’est produite lors de l’écriture dans le fichier %1.",
                 /*1502,124*/ "La durée d'exécution d'un script excède le délai par défaut (15 secondes).",
@@ -888,7 +931,9 @@ namespace avmplus
                 /*1509,131*/ "Une erreur s'est produite lors de la décompression des données.",
                 /*1510,132*/ "Lorsque l’argument du rappel correspond à une méthode de classe, l’argument facultatif 'this' doit être null."
             },
-                // it
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_it
+            // it
             {
                 /*1000,0*/ "Memoria del sistema esaurita.",
                 /*1001,1*/ "Il metodo %1 non è implementato.",
@@ -1010,8 +1055,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 richiede che oggetto e indice siano registri distinti.",
                 /*1125,118*/ "L'indice %1 non è nell'intervallo %2.",
                 /*1126,119*/ "Impossibile modificare la lunghezza di un vettore fisso.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Tentativo di applicazione del tipo a un tipo non parametrizzato.",
+                /*1128,121*/ "Numero di parametri di tipo non corretto per %1. Previsti: %2, ricevuti: %3.",
                 /*1500,122*/ "Errore durante l'apertura del file %1.",
                 /*1501,123*/ "Errore durante la scrittura del file %1.",
                 /*1502,124*/ "Uno script è stato eseguito per più del periodo di timeout predefinito di 15 secondi.",
@@ -1024,7 +1069,9 @@ namespace avmplus
                 /*1509,131*/ "Si è verificato un errore durante la decompressione dei dati.",
                 /*1510,132*/ "Quando l'argomento callback è il metodo di una classe, l'argomento opzionale this deve essere null."
             },
-                // ja
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_ja
+            // ja
             {
                 /*1000,0*/ "システムのメモリ不足です。",
                 /*1001,1*/ "メソッド %1 は実装されていません。",
@@ -1146,8 +1193,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 を明示的に登録するには、オブジェクトとインデックスが必要です。",
                 /*1125,118*/ "インデックス %1 は %2 の範囲外です。",
                 /*1126,119*/ "固定ベクターの長さは変更できません。",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "非パラメータ化された型に対して型指定を実行しようとしました。",
+                /*1128,121*/ "%1 の型パラメータ数が正しくありません。%2 である必要がありますが、%3 が指定されました。",
                 /*1500,122*/ "ファイル %1 を開く際にエラーが発生しました。",
                 /*1501,123*/ "ファイル %1 に書き込む際にエラーが発生しました。",
                 /*1502,124*/ "スクリプトがデフォルトのタイムアウト時間の 15 秒を超えて実行されました。",
@@ -1160,7 +1207,9 @@ namespace avmplus
                 /*1509,131*/ "圧縮データの解凍時にエラーが発生しました。",
                 /*1510,132*/ "コールバック引数がクラスのメソッドのとき、任意指定の引数 'this' は null でなければなりません。"
             },
-                // ko
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_ko
+            // ko
             {
                 /*1000,0*/ "시스템의 메모리가 부족합니다.",
                 /*1001,1*/ "메서드 %1이(가) 구현되지 않습니다.",
@@ -1282,8 +1331,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2는 개별 레지스터가 되려면 객체 및 인덱스가 있어야 합니다.",
                 /*1125,118*/ "인덱스 %1이(가) 범위 %2을(를) 벗어났습니다.",
                 /*1126,119*/ "고정된 벡터의 길이를 변경할 수 없습니다.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "매개 변수가 없는 유형에서 유형을 적용하려고 했습니다.",
+                /*1128,121*/ "%1에 대한 형식 매개 변수의 개수가 잘못되었습니다. %2개가 필요하지만 %3개가 있습니다.",
                 /*1500,122*/ "파일 %1을(를) 여는 동안 오류가 발생했습니다.",
                 /*1501,123*/ "파일 %1에 쓰는 동안 오류가 발생했습니다.",
                 /*1502,124*/ "스크립트 실행 시간이 기본 제한 시간인 15초를 초과했습니다.",
@@ -1296,7 +1345,9 @@ namespace avmplus
                 /*1509,131*/ "데이터의 압축을 푸는 동안 오류가 발생했습니다.",
                 /*1510,132*/ "콜백 인수가 클래스의 메서드인 경우 선택적 인수 'this'는 null이어야 합니다."
             },
-                // nl
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_nl
+            // nl
             {
                 /*1000,0*/ "Het systeem heeft onvoldoende geheugen beschikbaar.",
                 /*1001,1*/ "De methode %1 is niet geïmplementeerd.",
@@ -1418,8 +1469,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 vereist dat object en index verschillende registers hebben.",
                 /*1125,118*/ "De index %1 is buiten bereik %2.",
                 /*1126,119*/ "Kan de lengte van een vaste vector niet wijzigen.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Er is geprobeerd een type toepassing te maken op een type dat geen parameter is.",
+                /*1128,121*/ "Onjuist aantal type parameters voor %1. %2 verwacht, huidige waarde %3.",
                 /*1500,122*/ "Er is een fout opgetreden bij het openen van bestand %1.",
                 /*1501,123*/ "Er is een fout opgetreden bij het schrijven naar bestand %1.",
                 /*1502,124*/ "Een script wordt langer uitgevoerd dan de standaardperiode voor een time-out (15 seconden).",
@@ -1432,7 +1483,9 @@ namespace avmplus
                 /*1509,131*/ "Er is een fout opgetreden bij het decomprimeren van gegevens.",
                 /*1510,132*/ "Wanneer het callback-argument een methode of een klasse is, moet het optionele argument this null zijn."
             },
-                // pl
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_pl
+            // pl
             {
                 /*1000,0*/ "Brak pamięci w systemie.",
                 /*1001,1*/ "Metoda %1 nie jest implementowana.",
@@ -1554,8 +1607,8 @@ namespace avmplus
                 /*1124,117*/ "Kod operacji OP_hasnext2 wymaga, aby obiekt i indeks były różnymi rejestrami.",
                 /*1125,118*/ "Indeks %1 jest poza zakresem %2.",
                 /*1126,119*/ "Nie można zmienić długości stałego wektora.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Podjęto próbę zastosowania typu do niesparametryzowanego typu.",
+                /*1128,121*/ "Nieprawidłowa liczba parametrów typu dla %1. Oczekiwano %2, otrzymano %3.",
                 /*1500,122*/ "Podczas otwierania pliku %1 wystąpił błąd.",
                 /*1501,123*/ "Podczas zapisywania do pliku %1 wystąpił błąd.",
                 /*1502,124*/ "Skrypt był wykonywany dłużej niż domyślny limit czasu (15 sekund).",
@@ -1568,7 +1621,9 @@ namespace avmplus
                 /*1509,131*/ "Podczas dekompresji danych wystąpił błąd.",
                 /*1510,132*/ "Jeśli argument wywołania zwrotnego jest metodą klasy, argument opcjonalny musi mieć wartość null."
             },
-                // pt
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_cs
+            // pt
             {
                 /*1000,0*/ "O sistema está sem memória.",
                 /*1001,1*/ "O método %1 não foi implementado.",
@@ -1690,8 +1745,8 @@ namespace avmplus
                 /*1124,117*/ "O OP_hasnext2 requer que um objeto e um índice sejam registradores distintos.",
                 /*1125,118*/ "O índice %1 está fora do intervalo %2.",
                 /*1126,119*/ "Não é possível alterar o comprimento de um vetor fixo.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Tipo de aplicativo tentado de forma não-parametrizada.",
+                /*1128,121*/ "Número incorreto de parâmetros de tipo para %1. Era esperado %2, mas foi recebido %3.",
                 /*1500,122*/ "Erro ao abrir o arquivo %1.",
                 /*1501,123*/ "Erro ao gravar o arquivo %1.",
                 /*1502,124*/ "Um script foi executado por mais tempo que o período limite padrão de 15 segundos.",
@@ -1704,7 +1759,9 @@ namespace avmplus
                 /*1509,131*/ "Ocorreu um erro ao descompactar os dados.",
                 /*1510,132*/ "Quando o argumento de retorno de chamada for um método de uma classe, o opcional deste argumento deverá ser nulo."
             },
-                // ru
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_ru
+            // ru
             {
                 /*1000,0*/ "Недостаточно памяти в системе.",
                 /*1001,1*/ "Метод %1 не реализован.",
@@ -1826,8 +1883,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 требует наличия объекта и индекса в виде отдельных регистров.",
                 /*1125,118*/ "Индекс %1 выходит за границы диапазона %2.",
                 /*1126,119*/ "Невозможно изменить длину фиксированного вектора.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Выполнена попытка выбора непараметризованного типа приложения.",
+                /*1128,121*/ "Неверное количество параметров типа для %1. Ожидалось %2, получено %3.",
                 /*1500,122*/ "Ошибка при открытии файла %1.",
                 /*1501,123*/ "Ошибка при записи в файл %1.",
                 /*1502,124*/ "Сценарий выполнялся дольше периода ожидания, установленного по умолчанию на 15 секунд.",
@@ -1840,7 +1897,9 @@ namespace avmplus
                 /*1509,131*/ "При распаковке данных произошла ошибка.",
                 /*1510,132*/ "Если аргумент \"callback\" является методом класса, дополнительный аргумент \"this\" должен быть \"null\"."
             },
-                // sv
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_sv
+            // sv
             {
                 /*1000,0*/ "Systemets minne är slut.",
                 /*1001,1*/ "Metoden %1 har inte implementerats.",
@@ -1962,8 +2021,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 kräver att objekt och index är olika register.",
                 /*1125,118*/ "Indexvärdet %1 är utan för området %2.",
                 /*1126,119*/ "Det går inte att ändra längden på en fast vektor.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "En typ försökte användas på en typ utan parametrar.",
+                /*1128,121*/ "Felaktigt antal typparametrar för %1. %2 förväntades, men antalet var %3.",
                 /*1500,122*/ "Fel vid öppning av filen %1.",
                 /*1501,123*/ "Fel vid skrivning till filen %1.",
                 /*1502,124*/ "Ett skript har körts i mer än standardtiden för timeout, 15 sekunder.",
@@ -1976,7 +2035,9 @@ namespace avmplus
                 /*1509,131*/ "Ett fel uppstod vid dekomprimering av data.",
                 /*1510,132*/ "När ett callback-argument är en metod i en klass måste det valfria this-argumentet vara null."
             },
-                // tr
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_tr
+            // tr
             {
                 /*1000,0*/ "Sistem belleği yetersiz.",
                 /*1001,1*/ "%1 yöntemi uygulanamıyor.",
@@ -2098,8 +2159,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 nesne ve dizinin farklı kayıtlar olmasına gerek duyar.",
                 /*1125,118*/ "%1 dizini %2 aralığının dışındadır.",
                 /*1126,119*/ "Sabit bir vektörün uzunluğu değiştirilemez.",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "Tür uygulaması parametreleştirilmemiş bir türde denendi.",
+                /*1128,121*/ "%1 için hatalı sayıda tür parametresi. Beklenen: %2, alınan: %3.",
                 /*1500,122*/ "%1 dosyası açılırken hata oluştu.",
                 /*1501,123*/ "%1 dosyasına yazarken hata oluştu.",
                 /*1502,124*/ "Bir komut dosyası varsayılan 15 saniyelik zaman aşımı süresinden daha uzun çalıştırıldı.",
@@ -2112,7 +2173,9 @@ namespace avmplus
                 /*1509,131*/ "Veri açılırken hata oluştu.",
                 /*1510,132*/ "Geri çağırma değişkeni bir sınıfın yöntemi ise, isteğe bağlı olan bu değişken boş olmalıdır."
             },
-                // zh_CN
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_zh_CN
+            // zh_CN
             {
                 /*1000,0*/ "系统内存不足。",
                 /*1001,1*/ "未实现 %1 方法。",
@@ -2234,8 +2297,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 要求对象和索引位于不同的寄存器。",
                 /*1125,118*/ "索引 %1 超出范围 %2。",
                 /*1126,119*/ "无法更改固定矢量的长度。",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "尝试对非参数化类型执行类型应用程序。",
+                /*1128,121*/ "%1 的类型参数的个数不正确。应为 %2，当前为 %3。",
                 /*1500,122*/ "打开文件 %1 时出错。",
                 /*1501,123*/ "写入文件 %1 时出错。",
                 /*1502,124*/ "脚本的执行时间已经超过了 15 秒的默认超时设置。",
@@ -2248,7 +2311,9 @@ namespace avmplus
                 /*1509,131*/ "解压缩数据时出错。",
                 /*1510,132*/ "如果回调参数是某个类的方法，则可选参数“this”必须为空。"
             },
-                // zh_TW
+        #endif
+        #ifdef AVMPLUS_ERROR_LANG_zh_TW
+            // zh_TW
             {
                 /*1000,0*/ "系統記憶體不足。",
                 /*1001,1*/ "未實作方法 %1。",
@@ -2370,8 +2435,8 @@ namespace avmplus
                 /*1124,117*/ "OP_hasnext2 要求物件及索引為可辨識的登錄。",
                 /*1125,118*/ "索引 %1 超出範圍 %2。",
                 /*1126,119*/ "無法變更固定向量的長度。",
-                /*1127,120*/ "Type application attempted on a non-parameterized type.",
-                /*1128,121*/ "Incorrect number of type parameters for %1. Expected %2, got %3.",
+                /*1127,120*/ "嘗試在非參數化的類型上使用類型應用程式。",
+                /*1128,121*/ "%1 上的類型參數個數錯誤。需要 %2 個，目前為 %3 個。",
                 /*1500,122*/ "開啟檔案 %1 時發生錯誤。",
                 /*1501,123*/ "寫入檔案 %1 時發生錯誤。",
                 /*1502,124*/ "script 已經執行超過預設的 15 秒逾時時段。",
@@ -2384,7 +2449,11 @@ namespace avmplus
                 /*1509,131*/ "解壓縮資料時發生錯誤。",
                 /*1510,132*/ "若回呼引數是 Class 的方法，選擇性的引數 'this' 必須是 null。"
             }
+        #endif
         };
-        #endif /* DEBUGGER */
+        
+        MMGC_STATIC_ASSERT((sizeof errorConstants/sizeof errorConstants[0]) == kLanguages);
+        
     }
+    #endif /* DEBUGGER */
 }

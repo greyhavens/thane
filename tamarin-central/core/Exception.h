@@ -49,14 +49,7 @@ namespace avmplus
 	class Exception : public MMgc::GCObject
 	{
 	public:
-		Exception(Atom atom
-#ifdef DEBUGGER
-			, AvmCore* core
-#endif /* DEBUGGER */
-		);
-
-		ATOM_WB atom;
-		int flags;
+		Exception(AvmCore* core, Atom atom);
 
 		bool isValid();
 		enum
@@ -78,8 +71,17 @@ namespace avmplus
 
 #ifdef DEBUGGER
 		StackTrace* getStackTrace() const { return stackTrace; }
- 		DWB(StackTrace*) stackTrace;
 #endif /* DEBUGGER */
+
+	// ------------------------ DATA SECTION BEGIN
+	public:
+		ATOM_WB				atom;
+#ifdef DEBUGGER
+ 		DWB(StackTrace*)	stackTrace;
+#endif
+		int32_t				flags;
+
+	// ------------------------ DATA SECTION END
 	};
 
 	/**
@@ -95,24 +97,14 @@ namespace avmplus
 	 */
 	class ExceptionHandler
 	{
+	// ------------------------ DATA SECTION BEGIN
 	public:
-		/** Start of code range the exception applies to.  Inclusive. */
-		int from;
-
-		/** End of code range the exception applies to.  Exclusive. */
-		int to;
-
-		/** The target location to branch to when the exception occurs. */
-		union {
-			sintptr target;
-			CodegenMIR::OP* targetIns;
-		};
-
-		/** The type of exceptions handled by this exception handler. */
-		Traits* traits;
-
-		/** The exception scope traits. */
-		Traits* scopeTraits;
+		Traits* traits;			// The type of exceptions handled by this exception handler. 
+		Traits* scopeTraits;	// The exception scope traits. 
+		sintptr target;		// The target location to branch to when the exception occurs. 
+		int32_t from;			// Start of code range the exception applies to.  Inclusive. 
+		int32_t to;				// End of code range the exception applies to.  Exclusive. 
+	// ------------------------ DATA SECTION END
 	};
 
 	/**
@@ -125,11 +117,13 @@ namespace avmplus
 	public:
 		ExceptionHandlerTable(int exception_count);
 
-		int exception_count;
+	// ------------------------ DATA SECTION BEGIN
+	public:
+		int32_t exception_count;
 		ExceptionHandler exceptions[1];
+	// ------------------------ DATA SECTION END
 	};
 
-#ifdef DEBUGGER
 	/**
 	 * CatchAction indicates what the CATCH block for a given ExceptionFrame will
 	 * do if it gets invoked (that is, if an exception is raised from inside the
@@ -162,7 +156,6 @@ namespace avmplus
 		// for an ActionScript try/catch block which will catch it.
 		kCatchAction_SearchForActionScriptExceptionHandler
 	};
-#endif
 
 	/**
 	 * ExceptionFrame class is used to track stack frames that contain
@@ -171,12 +164,14 @@ namespace avmplus
 	class ExceptionFrame
 	{
 	public:
+		// The interpreter sometimes allocates the exception frame inside a larger data structure
+		// and needs the placement new operator.
+		void *operator new(size_t, void* p) { return p; }
+		
 		ExceptionFrame()
 		{
 			core = NULL;
-#ifdef DEBUGGER
 			this->catchAction = kCatchAction_Unknown;
-#endif
 		}
 		~ExceptionFrame() { endTry(); }
 		void beginTry(AvmCore* core);
@@ -184,21 +179,32 @@ namespace avmplus
 		void beginCatch();
 		void throwException(Exception *exception);
 
-		AvmCore *core;
-		ExceptionFrame *prevFrame;
-		jmp_buf jmpbuf;
-		Namespace*const* dxnsAddr;
-		CodeContextAtom codeContextAtom;
+	// ------------------------ DATA SECTION BEGIN
+	public:
+		jmp_buf				jmpbuf;
+		AvmCore*			core;
+		ExceptionFrame*		prevFrame;
+		Namespace* const *	dxnsAddr;
+		CodeContextAtom		codeContextAtom;
+		void*				stacktop;
 #ifdef DEBUGGER
-		CallStackNode *callStack;
-
-		// Indicates what the CATCH block is going to do if it sees an exception.
-		// (A CatchAction should only need 3 bits, but I have to give it 4 in
-		// order to avoid problems with sign-extension.)
-		CatchAction catchAction:4;
+		CallStackNode*		callStack;
 #endif /* DEBUGGER */
+		CatchAction			catchAction;
+
+	// ------------------------ DATA SECTION END
+
 	};
 
+	class ExceptionFrameAutoPtr
+	{
+	private:
+		ExceptionFrame& ef;
+	public:
+		ExceptionFrameAutoPtr(ExceptionFrame& ef) : ef(ef) {}
+		~ExceptionFrameAutoPtr() { ef.~ExceptionFrame(); }
+	};
+	
 	/**
 	 * TRY, CATCH, and friends are macros for setting up exception try/catch
 	 * blocks.  This is similar to the TRY, CATCH, etc. macros in MFC.
@@ -210,8 +216,12 @@ namespace avmplus
 	 * TRY_UNLESS is to support the optimization that if there are no exception handlers
 	 * in this frame, we don't need to create the exception frame at all.  If expr
 	 * is true, the exception frame is not created.
+	 *
+	 * TRY_UNLESS_HEAPMEM is like TRY_UNLESS but the address at which to allocate
+	 * the ExceptionFrame is passed explicitly (it is inside some larger heap-allocated
+	 * block, useful for short-stack systems)
 	 */
-#ifdef DEBUGGER
+
 	#define TRY(core, CATCH_ACTION) { \
 		ExceptionFrame _ef; \
 		_ef.beginTry(core); \
@@ -219,28 +229,20 @@ namespace avmplus
 		int _setjmpVal = ::setjmp(_ef.jmpbuf); \
 		Exception* _ee = core->exceptionAddr; \
 		if (!_setjmpVal)
-#else
-	#define TRY(core, CATCH_ACTION) { \
-		ExceptionFrame _ef; \
-		_ef.beginTry(core); \
-		int _setjmpVal = ::setjmp(_ef.jmpbuf); \
-		Exception* _ee = core->exceptionAddr; \
-		if (!_setjmpVal)
-#endif
 
-#ifdef DEBUGGER
 	#define TRY_UNLESS(core,expr,CATCH_ACTION) { \
 		ExceptionFrame _ef; \
 		Exception* _ee; \
 		int _setjmpVal = 0; \
 		if ((expr) || (_ef.beginTry(core), _ef.catchAction=(CATCH_ACTION), _setjmpVal = ::setjmp(_ef.jmpbuf), _ee=core->exceptionAddr, (_setjmpVal == 0)))
-#else
-	#define TRY_UNLESS(core,expr,CATCH_ACTION) { \
-		ExceptionFrame _ef; \
+
+	#define TRY_UNLESS_HEAPMEM(mem, core, expr, CATCH_ACTION) { \
+		ExceptionFrame& _ef = *(new (mem) ExceptionFrame); \
+		ExceptionFrameAutoPtr _ef_ap(_ef); \
 		Exception* _ee; \
 		int _setjmpVal = 0; \
-		if ((expr) || (_ef.beginTry(core), _setjmpVal = ::setjmp(_ef.jmpbuf), _ee=core->exceptionAddr, (_setjmpVal == 0)))
-#endif
+		if ((expr) || (_ef.beginTry(core), _ef.catchAction=(CATCH_ACTION), _setjmpVal = ::setjmp(_ef.jmpbuf), _ee=core->exceptionAddr, (_setjmpVal == 0)))
+
     #define CATCH(x) else { _ef.beginCatch(); x = _ee;
     #define END_CATCH }
     #define END_TRY }

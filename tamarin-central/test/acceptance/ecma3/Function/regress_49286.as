@@ -123,7 +123,7 @@ function f()
 {
   try
   {
-    eval(this.badSyntax);
+    evalXXX(this.badSyntax);
   }
   catch(e)
   {

@@ -75,7 +75,7 @@ try {
 AddTestCase(
    "sort vector without setting compare function throws exception",
    "TypeError: Error #1034",
-   errormsg);
+   parseError(errormsg,"TypeError: Error #1034".length));
 
 
 

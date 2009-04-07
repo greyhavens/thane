@@ -43,29 +43,99 @@
 #ifndef __avmplus_ErrorConstants__
 #define __avmplus_ErrorConstants__
 	
+#include "ErrorConstants.h"
+
 namespace avmplus
 { 
     namespace ErrorConstants
     {
+        #if 0 // Test if any lang subset is defined
+        #elif defined(AVMPLUS_ERROR_LANG_en)
+        #elif defined(AVMPLUS_ERROR_LANG_cs)
+        #elif defined(AVMPLUS_ERROR_LANG_de)
+        #elif defined(AVMPLUS_ERROR_LANG_es)
+        #elif defined(AVMPLUS_ERROR_LANG_fr)
+        #elif defined(AVMPLUS_ERROR_LANG_it)
+        #elif defined(AVMPLUS_ERROR_LANG_ja)
+        #elif defined(AVMPLUS_ERROR_LANG_ko)
+        #elif defined(AVMPLUS_ERROR_LANG_nl)
+        #elif defined(AVMPLUS_ERROR_LANG_pl)
+        #elif defined(AVMPLUS_ERROR_LANG_pt)
+        #elif defined(AVMPLUS_ERROR_LANG_ru)
+        #elif defined(AVMPLUS_ERROR_LANG_sv)
+        #elif defined(AVMPLUS_ERROR_LANG_tr)
+        #elif defined(AVMPLUS_ERROR_LANG_zh_CN)
+        #elif defined(AVMPLUS_ERROR_LANG_zh_TW)
+        #else // None defined?  Define them all
+            #define AVMPLUS_ERROR_LANG_en
+            #define AVMPLUS_ERROR_LANG_cs
+            #define AVMPLUS_ERROR_LANG_de
+            #define AVMPLUS_ERROR_LANG_es
+            #define AVMPLUS_ERROR_LANG_fr
+            #define AVMPLUS_ERROR_LANG_it
+            #define AVMPLUS_ERROR_LANG_ja
+            #define AVMPLUS_ERROR_LANG_ko
+            #define AVMPLUS_ERROR_LANG_nl
+            #define AVMPLUS_ERROR_LANG_pl
+            #define AVMPLUS_ERROR_LANG_pt
+            #define AVMPLUS_ERROR_LANG_ru
+            #define AVMPLUS_ERROR_LANG_sv
+            #define AVMPLUS_ERROR_LANG_tr
+            #define AVMPLUS_ERROR_LANG_zh_CN
+            #define AVMPLUS_ERROR_LANG_zh_TW
+        #endif
+
         enum LangID
         {
-            LANG_en    = 0,
-            LANG_cs    = 1,
-            LANG_de    = 2,
-            LANG_es    = 3,
-            LANG_fr    = 4,
-            LANG_it    = 5,
-            LANG_ja    = 6,
-            LANG_ko    = 7,
-            LANG_nl    = 8,
-            LANG_pl    = 9,
-            LANG_pt    = 10,
-            LANG_ru    = 11,
-            LANG_sv    = 12,
-            LANG_tr    = 13,
-            LANG_zh_CN = 14,
-            LANG_zh_TW = 15,
-            LANG_count = 16
+            #ifdef AVMPLUS_ERROR_LANG_en
+                LANG_en,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_cs
+                LANG_cs,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_de
+                LANG_de,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_es
+                LANG_es,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_fr
+                LANG_fr,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_it
+                LANG_it,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_ja
+                LANG_ja,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_ko
+                LANG_ko,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_nl
+                LANG_nl,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_pl
+                LANG_pl,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_pt
+                LANG_pt,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_ru
+                LANG_ru,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_sv
+                LANG_sv,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_tr
+                LANG_tr,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_zh_CN
+                LANG_zh_CN,
+            #endif
+            #ifdef AVMPLUS_ERROR_LANG_zh_TW
+                LANG_zh_TW,
+            #endif
+            LANG_count
         };
 
 		typedef struct _LangName

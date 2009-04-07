@@ -41,7 +41,10 @@ function morph(a, f) {
 
     
 function run3dmorph() {
-    var _sunSpiderStartDate = new Date();
+    if (CONFIG::desktop)
+      var _sunSpiderStartDate = (new Date).getTime();
+    else  // mobile
+      var _sunSpiderStartDate = getTimer();
     var a = Array()
     for (var i=0; i < nx*nz*3; ++i) 
        a[i] = 0
@@ -54,7 +57,16 @@ function run3dmorph() {
     for (var i = 0; i < nx; i++)
         testOutput += a[3*(i*nx+i)+1];
     a = null;
-    var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-    return _sunSpiderInterval;
+    if (CONFIG::desktop)
+        var _sunSpiderInterval = (new Date).getTime() - _sunSpiderStartDate;
+    else  // mobile
+        var _sunSpiderInterval = getTimer() - _sunSpiderStartDate;
+    // verify test result
+    if (Math.abs(testOutput - 6.750155989720952e-14)>0.00001) {
+      print("Test validation failed.  Expected 6.750155989720952e-14 Got: "+testOutput);
+    } else {
+      print("metric time "+ _sunSpiderInterval);
+    }
 }
-print("metric 3dmorph "+run3dmorph());
+
+run3dmorph();

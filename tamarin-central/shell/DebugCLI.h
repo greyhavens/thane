@@ -100,8 +100,6 @@ namespace avmshell
 		const static int CMD_SHOW			= 20;
 		const static int CMD_KILL			= 21;
 		const static int CMD_HANDLE			= 22;
-		const static int CMD_ENABLE			= 23;
-		const static int CMD_DISABLE		= 24;
 		const static int CMD_DISPLAY		= 25;
 		const static int CMD_UNDISPLAY		= 26;
 		const static int CMD_COMMANDS		= 27;
@@ -168,7 +166,7 @@ namespace avmshell
 		
 		void enterDebugger();
 		void setCurrentSource(Stringp file);
-		bool filterException(Exception *exception);
+		bool filterException(Exception *exception, bool willBeCaught);
 		bool hitWatchpoint() { return false; }
 
 		/**
@@ -192,9 +190,10 @@ namespace avmshell
 	private:
 		bool activeFlag;
 		char *currentSource;
-		int currentSourceLen;
+		uint32_t currentSourceLen;
 		Stringp currentFile;
 		int breakpointCount;
+        bool warnMissingSource;
 
 		BreakAction *firstBreakAction, *lastBreakAction;
 		
@@ -230,8 +229,6 @@ namespace avmshell
 		static StringIntArray commandArray[];
 		static StringIntArray infoCommandArray[];
 		static StringIntArray showCommandArray[];
-		static StringIntArray enableCommandArray[];
-		static StringIntArray disableCommandArray[];
 		/*@}*/
 	};
 }

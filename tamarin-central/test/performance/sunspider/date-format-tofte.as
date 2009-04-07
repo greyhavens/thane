@@ -270,7 +270,7 @@ Date.prototype.formatDate = function (input,time) {
         // else, do this:
         // codes thanks to ppk:
         // http://www.xs4all.nl/~ppk/js/introdate.html
-        var x = self.getYear();
+        var x = self.getFullYear();
         var y = x % 100;
         y += (y < 38) ? 2000 : 1900;
         return y;
@@ -302,7 +302,37 @@ Date.prototype.formatDate = function (input,time) {
             ia.splice(ij,1);
         } else {
             if (arrayExists(switches,ia[ij])) {
-                ia[ij] = eval(ia[ij] + "()");
+	        switch (ia[ij]) {
+                  case "A":
+                    ia[ij]=A();
+                    break;
+                  case "d":
+                    ia[ij]=d();
+                    break;
+                  case "F":
+                    ia[ij]=F();
+                    break;
+                  case "g":
+                    ia[ij]=g();
+                    break;
+                  case "i":
+                    ia[ij]=i();
+                    break;
+                  case "l":
+                    ia[ij]=l();
+                    break;
+                  case "m":
+                    ia[ij]=m();
+                    break;
+                  case "s":
+                    ia[ij]=s();
+                    break;
+                  case "Y":
+                    ia[ij]=Y();
+                    break;
+                  default:
+                    print("unknown function: "+ ia[ij]);
+                }
             }
         }
         ij++;
@@ -314,18 +344,29 @@ Date.prototype.formatDate = function (input,time) {
     return ia.join("");
 }
 
-function runDateFormatTofte() {
-var _sunSpiderStartDate = new Date();
-
+if (CONFIG::desktop)
+    var start=new Date();
+else  // mobile
+    var start=getTimer();
 var date = new Date("1/1/2007 1:11:11");
 
+var shortFormat;
+var longFormat;
 for (i = 0; i < 500; ++i) {
-    var shortFormat = date.formatDate("Y-m-d");
-    var longFormat = date.formatDate("l, F d, Y g:i:s A");
+    shortFormat = date.formatDate("Y-m-d");
+    longFormat = date.formatDate("l, F d, Y g:i:s A");
     date.setTime(date.getTime() + 84266956);
 }
-var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-
-return(_sunSpiderInterval);
+if (CONFIG::desktop)
+    var totaltime=new Date()-start;
+else  // mobile
+    var totaltime=getTimer()-start;
+if (shortFormat!="2008-05-01") {
+    print("error shortFormat expecting 2008-05-01 got "+shortFormat);
+} else {
+    if (longFormat!="Thursday, May 01, 2008 6:31:22 PM") {
+        print("error longFormat expecting Thursday, May 01, 2008 6:31:22 PM got "+longFormat);
+    } else {
+        print("metric time "+totaltime);
+    }
 }
-print("metric date-format-tofte "+runDateFormatTofte());

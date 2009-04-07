@@ -39,23 +39,37 @@
 use default namespace Token,
     namespace Token;
 
-// A token has a "kind" (the token type) and a "text" (the lexeme).
+// A token has a "kind" (the token type) and a "text" (the lexeme, a
+// string) and a "hash" (an ID for the text).
 //
 // For predefined tokens the kind is equal to its index in the
 // token store.
 // 
-// NOTE, the parser in-lines tokenKind and tokenText manually, and
-// knows what a Tok looks like.  Don't treat Tok as an abstraction!
+// NOTE, other parts of the compiler in-line tokenKind, tokenText, and
+// tokenHash manually, and know what a Tok looks like.  Don't treat
+// Tok as an abstraction!
 
-class Tok
+/*Ast interface Serializable;*/
+
+final class Tok /*implements Serializable*/
 {
     const kind: double;
+    const hash: double;
     const text: String;
 
-    function Tok(kind,text) : kind=kind, text=text {}
+    function Tok(kind,text,hash) : kind=kind, text=text, hash=hash {}
 
-    function toString()
-        kind + " " + text;
+    // A toString call on this is almost certainly an error that we
+    // want to catch very quickly; use serialize() instead.  (May lift
+    // this restriction when type annotations are properly supported
+    // in ESC.)
+
+    function toString() {
+        Util::internalError(null, 0, "Cannot convert Tok data to string: " + serialize());
+    }
+
+    function serialize()
+        "<#token " + kind + " " + text + " " + hash + ">"
 }
 
 function tokenKind(tid)
@@ -64,12 +78,13 @@ function tokenKind(tid)
 function tokenText(tid)
     tokenStore[tid].text;
 
+
 // Map from (kind, text) to index in tokenStore.  It is used to speed
 // up duplicate testing in makeInstance(), below.
 
 const tokenHash = 
-    new Util::Hashtable( (function(x) (Util::hash_number(x.kind) ^ Util::hash_string(x.text)) >>> 0),
-                         (function(a,b) a.kind === b.kind && a.text === b.text),
+    new Util::Hashtable( (function(x) x.hash),
+                         (function(a,b) a.text === b.text && a.kind === b.kind),
                          false );
     
 // Map from token number to a Tok structure.
@@ -77,7 +92,7 @@ const tokenHash =
 // Metric: Self-compiling parse.es, about 1000 unique tokens are
 // created (beyond the ones that initially populate the token store).
 
-const tokenStore: [Tok] = [] : [Tok];  // "new [Tok]" when that works
+const tokenStore: [...Tok] = [] : [...Tok];  // "new [Tok]" when that works
 
 // Attribute table for tokens.  Used by the parser for token
 // classification.  Entries are bit vectors (some tokens have multiple
@@ -97,7 +112,7 @@ const ADDITIVEOP = 256;      // It is + or -
 const MULTIPLICATIVEOP = 512;// It is *, /, or %
 const OPASSIGN = 1024;       // += and so on
 
-const tokenAttr: [double] = [] : [double];  // "new [double]" when that works
+const tokenAttr: [...double] = [] : [...double];  // "new [double]" when that works
 
 function isReserved(token)
     (tokenAttr[token] & RESERVED) != 0;
@@ -133,27 +148,45 @@ function isOpAssign(token)
 // path inside makeInstance().  It may not make a huge difference, but
 // there you have it.
 
-internal var hash_helper = {kind: 0, text: ""};
+internal var hash_helper = {kind: 0, text: "", hash: 0};
+
+// Note, trying to use the built-in string hashing algorithm by
+// storing a name->ID map in a plain object has about the same
+// performance as using Util::hash_string (it may be a hair faster),
+// but it uses more memory.
+//
+// The cost incurred by using real string hashing over a name->ID map
+// are the call to Util::hash_string on every call to makeInstance as
+// well as a === comparison of strings in the compare function for
+// tokenHash.  Thus at some point -- when the compiler is much faster
+// -- it may pay to revisit the decision.
 
 function makeInstance(kind, text) {
     hash_helper.kind = kind;
     hash_helper.text = text;
+    hash_helper.hash = Util::hash_string(text);
     var tid = tokenHash.read(hash_helper);
     if (tid === false) {
         tid = tokenStore.length;
-        tok = new Tok(kind, text);
+        tok = new Tok(hash_helper.kind, hash_helper.text, hash_helper.hash);
         tokenStore.push(tok);
         tokenHash.write(tok, tid);
     }
     return tid;
 }
 
-internal function setup(id, name, attr=0) {
-    tokenStore[id] = new Tok(id,name);
-    tokenAttr[id] = attr;
+function intern(s) {
+    return tokenStore[makeInstance(Token::Identifier, String(s))];
 }
 
 // punctuation and operators
+
+internal function setup(id, name, attr=0) {
+    let tok = new Tok(id, name, Util::hash_string(name));
+    tokenStore[id] = tok;
+    tokenHash.write(tok, id);
+    tokenAttr[id] = attr;
+}
 
 const Minus = 0;                                        setup(Token::Minus,"minus", ADDITIVEOP);
 const MinusMinus = Token::Minus + 1;                    setup(Token::MinusMinus,"minusminus");
@@ -276,11 +309,11 @@ const BREAK_SLASH = Token::EOS + 1;                     setup(Token::BREAK_SLASH
 const BREAK_RBROCKET = Token::BREAK_SLASH + 1;          setup(Token::BREAK_RBROCKET,"BREAK_RBROCKET");
 const NONE = Token::BREAK_RBROCKET + 1;                 setup(Token::NONE,"NONE");
 
-// Pre-computed identifier tokens, used by the parser for handling
-// contextually reserved words.
+// Pre-computed identifier IDs, used by the parser for handling
+// contextually reserved words.  (Arguably these belong in the
+// parser?)
 
 const id_each = makeInstance(Token::Identifier, "each");
-const id_eval = makeInstance(Token::Identifier, "eval");
 const id_extends = makeInstance(Token::Identifier, "extends");
 const id_generator = makeInstance(Token::Identifier, "generator");
 const id_get = makeInstance(Token::Identifier, "get");
@@ -289,3 +322,38 @@ const id_set = makeInstance(Token::Identifier, "set");
 const id_standard = makeInstance(Token::Identifier, "standard");
 const id_strict = makeInstance(Token::Identifier, "strict");
 const id_undefined = makeInstance(Token::Identifier, "undefined");
+
+// Pre-computed token values, used by various parts of the system.
+// (Saves the time of re-interning these strings whenever they are
+// needed.)
+
+const sym_EMPTY = intern("");
+const sym_ESC = intern("ESC");
+const sym_Array = intern("Array");
+const sym_Boolean = intern("Boolean");
+const sym_Class = intern("Class");
+const sym_Function = intern("Function");
+const sym_Namespace = intern("Namespace");
+const sym_Number = intern("Number");
+const sym_Object = intern("Object");
+const sym_RegExp = intern("RegExp");
+const sym_String = intern("String");
+const sym_TypeError = intern("TypeError");
+const sym_arguments = intern("arguments");
+const sym_boolean = intern("boolean");
+const sym_eval = intern("eval");
+const sym_eval_hook = intern("eval_hook");
+const sym_evaluateInScopeArray = intern("evaluateInScopeArray");
+const sym_get = intern("get");
+const sym_int = intern("int");
+const sym_internal = intern("internal");
+const sym_length = intern("length");
+const sym_private = intern("private");
+const sym_protected = intern("protected");
+const sym_public = intern("public");
+const sym_set = intern("set");
+const sym_slice = intern("slice");
+const sym_string = intern("string");
+const sym_uint = intern("uint");
+const sym_undefined = intern("undefined");
+const sym_x = intern("x");

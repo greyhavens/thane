@@ -41,12 +41,18 @@ namespace avmshell
 {
 	FileInputStream::FileInputStream(const char *filename)
 	{
-		file = fopen(filename, "rb");
-
-		if (file != NULL) {
-			fseek(file, 0L, SEEK_END);
-			len = ftell(file);
-			rewind(file);
+		file = Platform::GetInstance()->createFile();
+		if(file)
+		{
+			if(file->open(filename, File::OPEN_READ_BINARY))
+			{
+				len = file->size();
+			}
+			else
+			{
+				Platform::GetInstance()->destroyFile(file);
+				file = NULL;
+			}
 		}
 	}
 
@@ -57,24 +63,27 @@ namespace avmshell
 
 	FileInputStream::~FileInputStream()
 	{
-		if (file != NULL) {
-			fclose(file);
-		}
+		Platform::GetInstance()->destroyFile(file);
 	}
 
-	void FileInputStream::seek(int offset)
+	void FileInputStream::seek(int64_t offset)
 	{
-		fseek(file, offset, SEEK_SET);
+		file->setPosition(offset);
 	}
 	
-	int FileInputStream::available()
+	int64_t FileInputStream::available()
 	{
-		return len - ftell(file);
+		int64_t pos = file->getPosition();
+		if(pos >= 0 )
+		{
+			return len - pos;
+		}
+		return 0;
 	}
 
-	int FileInputStream::read(void *buffer,
-							  int count)
+	size_t FileInputStream::read(void *buffer,
+							  size_t count)
 	{
-		return (int) fread(buffer, 1, count, file);
+		return file->read(buffer, count);
 	}
 }

@@ -57,16 +57,6 @@
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(JObjectClass)
-		NATIVE_METHOD(avmplus_JObject_toString,				JObject::_toString)
-		NATIVE_METHOD(avmplus_JObject_methodSignature,		JObjectClass::methodSignature)
-		NATIVE_METHOD(avmplus_JObject_fieldSignature,		JObjectClass::fieldSignature)
-		NATIVE_METHOD(avmplus_JObject_constructorSignature,	JObjectClass::constructorSignature)
-		NATIVE_METHOD(avmplus_JObject_create,				JObjectClass::create)
-		NATIVE_METHOD(avmplus_JObject_createArray,			JObjectClass::createArray)
-		NATIVE_METHOD(avmplus_JObject_toArray,				JObjectClass::toArray)
-	END_NATIVE_MAP()
-
 	JObjectClass* JObjectClass::cc = 0; //@todo hack to remove
 
 	JObjectClass::JObjectClass(VTable *cvtable)
@@ -260,6 +250,7 @@ namespace avmplus
 
 	ArrayObject* JObjectClass::toArray(JObject* jobj)
 	{
+		(void)jobj;
 		return 0;
 	}
 
@@ -349,7 +340,7 @@ namespace avmplus
 		bool ok = false;
 		if (core->isInteger(a))
 		{
-			*index = core->integer(a);
+			*index = AvmCore::integer(a);
 			ok = true;
 		}
 		else if (core->isString(a))
@@ -365,7 +356,7 @@ namespace avmplus
 	}
 
 	// for calls
-	Atom JObject::callProperty(Multiname* multiname, int argc, Atom* argv) 
+	Atom JObject::callProperty(const Multiname* multiname, int argc, Atom* argv) 
 	{
 		String* nm = multiname->getName();
 		Atom a = jclass->callMethod(this, nm, argc, argv);
@@ -381,7 +372,7 @@ namespace avmplus
 		return a;
 	}
 
-	bool JObject::hasMultinameProperty(Multiname* multi) const
+	bool JObject::hasMultinameProperty(const Multiname* multi) const
 	{
 		String* nm = multi->getName();
 		bool has = jclass->hasField( (JObject*)this, nm);
@@ -389,7 +380,7 @@ namespace avmplus
 		return has;
 	}
 
-	void JObject::setMultinameProperty(Multiname* multi, Atom value)
+	void JObject::setMultinameProperty(const Multiname* multi, Atom value)
 	{
 		Java*	vm = jclass->jvm();
 		JNIEnv* jni = vm->jni;
@@ -405,7 +396,7 @@ namespace avmplus
 		AvmAssert( jclass->jvm()->jni->ExceptionOccurred() == 0);
 	}
 
-	String* JObject::_toString() const
+	String* JObject::javaObjectToString() const
 	{
 		AvmCore* core = this->core();
 		String* s = 0;
@@ -444,6 +435,9 @@ namespace avmplus
 
 	jarray JClass::createArray(JObjectClass* obj, int size, ArrayObject* fillWith)
 	{
+		(void)obj;
+		(void)fillWith;
+			
 		JNIEnv* jni = vm->jni;
 
 		// use the type character to tell us what kind of array this is 
@@ -516,10 +510,11 @@ namespace avmplus
 
 		// package up the args
 		int count = argumentCount(constrDesc);
-		jvalue* jargs = (jvalue*) alloca( count*sizeof(jvalue) );
+		MMgc::GC::AllocaAutoPtr _jargs;
+		jvalue* jargs = (jvalue*) VMPI_alloca( core, _jargs, count*sizeof(jvalue) );
 		boxArgs(core, jobj->toplevel(), constrDesc, argc, &argv[0], jargs);
 		for(int i=argc; i<count; i++)
-			memset(&jargs[i], 0, sizeof(jvalue));
+			VMPI_memset(&jargs[i], 0, sizeof(jvalue));
 
 		jmethodID mid = jni->FromReflectedMethod(constr);
 		jobject obj = jni->NewObjectA(cref, mid, jargs);
@@ -548,10 +543,11 @@ namespace avmplus
 
 		// package up the args
 		int count = argumentCount(methodDesc);
-		jvalue* jargs = (jvalue*) alloca( count*sizeof(jvalue) );
+		MMgc::GC::AllocaAutoPtr _jargs;
+		jvalue* jargs = (jvalue*) VMPI_alloca( core, _jargs, count*sizeof(jvalue) );
 		const char* rt = boxArgs(core, jobj->toplevel(), methodDesc, argc, &argv[1], jargs);
 		for(int i=argc; i<count; i++)
-			memset(&jargs[i], 0, sizeof(jvalue));
+			VMPI_memset(&jargs[i], 0, sizeof(jvalue));
 
 		// extract return type from methodDesc
 		while(*rt++ != ')')
@@ -624,6 +620,7 @@ namespace avmplus
 
 	bool JClass::hasField(JObject* jobj, String* nm)
 	{
+		(void)jobj;
 		jobject field = fieldFor(nm);
 		return (field == 0) ? false : true;
 	}
@@ -1003,7 +1000,7 @@ namespace avmplus
 				if (which == constrDesc)
 					continue;
 			}
-			strcpy(constrDesc, desc);
+			VMPI_strcpy(constrDesc, desc);
 			match = m;
 		}
 		return match;
@@ -1042,7 +1039,7 @@ namespace avmplus
 				if (which == methodDesc)
 					continue;
 			}
-			strcpy(methodDesc, desc);
+			VMPI_strcpy(methodDesc, desc);
 			match = m;
 		}
 		return match;
@@ -1226,7 +1223,7 @@ namespace avmplus
 			else if (core->isInteger(a))
 			{
 				// see if it can be reduced
-				int val = core->integer(a);
+				int val = AvmCore::integer(a);
 				if (val >= -128 && val < 127)
 					*desc++ = 'B';
 				else if (val >= -32768 && val < 32767)
@@ -1238,7 +1235,7 @@ namespace avmplus
 				*desc++ = 'D';
 			else if (core->isNullOrUndefined(a))
 				*desc++ = 'X';
-			else if (core->istype(a, ARRAY_TYPE))
+			else if (AvmCore::istype(a, ARRAY_TYPE))
 				*desc++ = '[';
 			else if (core->isString(a))
 				*desc++ = 'G';
@@ -1311,11 +1308,11 @@ namespace avmplus
 		switch( *type++ )
 		{
 			case 'Z':
-				val.z = (jboolean) ( core->booleanAtom(a) == trueAtom) ?  JNI_TRUE : JNI_FALSE; 
+				val.z = (jboolean) ( AvmCore::booleanAtom(a) == trueAtom) ?  JNI_TRUE : JNI_FALSE; 
 				break;
 
 			case 'B':
-				val.b = (jbyte) ( core->integer(a) );
+				val.b = (jbyte) ( AvmCore::integer(a) );
 				break;
 
 			case 'C':
@@ -1323,11 +1320,11 @@ namespace avmplus
 				break;
 
 			case 'S':
-				val.s = (jshort) ( core->integer(a) );
+				val.s = (jshort) ( AvmCore::integer(a) );
 				break;
 
 			case 'I':
-				val.i = core->integer(a);
+				val.i = AvmCore::integer(a);
 				break;
 
 			case 'J':
@@ -1335,11 +1332,11 @@ namespace avmplus
 				break;
 
 			case 'F':
-				val.f = core->number(a);
+				val.f = AvmCore::number(a);
 				break;
 
 			case 'D':
-				val.d = core->number(a);
+				val.d = AvmCore::number(a);
 				break;
 
 			case '[':
@@ -1376,14 +1373,14 @@ namespace avmplus
 		if (core->isString(a))
 		{
 			String* str = core->string(a);
-			if (core->isDigit(*str[0]) || *str[0] == '-')
+			if (AvmCore::isDigit(*str[0]) || *str[0] == '-')
 			{
 				//@todo need to support -9223372036854775808 to 9223372036854775807, inclusive
 			}
 		}
 
 		// so a string with digits should be converable 
-		val  = (jlong) ( core->integer(a) );
+		val  = (jlong) ( AvmCore::integer(a) );
 	}
 
 	/**
@@ -1391,6 +1388,7 @@ namespace avmplus
 	 */
 	const char* JClass::jvalueToAtom(AvmCore* core, Toplevel* toplevel, jvalue& val, const char* type, Atom& a)
 	{
+		(void)toplevel;
 		switch( *type++ )
 		{
 			case 'Z':
@@ -1534,6 +1532,7 @@ namespace avmplus
 
 	bool Java::bindLibrary(AvmCore* core)
 	{
+		(void)core;
 		if (!bound)
 		{
 #ifdef AVMPLUS_WIN32
@@ -1595,7 +1594,7 @@ namespace avmplus
 		vm.args.nOptions = (startup_options) ? 2 : 1;
 
 		#ifdef AVMPLUS_VERBOSE
-		if (core->verbose)
+		if (core->verbose())
 			core->console << "Creating JavaVM with options " << startup_options;
 		#endif /* AVMPLUS_VERBOSE */
 #ifdef SUPPORT_JNI_1_1
@@ -1691,18 +1690,4 @@ namespace avmplus
 		return JNI_OK;
 	}
 }	
-#else /* !AVMPLUS_WITH_JNI */
-namespace avmplus {
-	BEGIN_NATIVE_MAP(JObjectClass)
-		NATIVE_METHOD(avmplus_JObject_toString,				JObjectClass::NYI)
-		NATIVE_METHOD(avmplus_JObject_methodSignature,		JObjectClass::NYI)
-		NATIVE_METHOD(avmplus_JObject_fieldSignature,		JObjectClass::NYI)
-		NATIVE_METHOD(avmplus_JObject_constructorSignature,	JObjectClass::NYI)
-		NATIVE_METHOD(avmplus_JObject_create,				JObjectClass::NYI)
-		NATIVE_METHOD(avmplus_JObject_createArray,			JObjectClass::NYI)
-		NATIVE_METHOD(avmplus_JObject_toArray,				JObjectClass::NYI)
-	END_NATIVE_MAP()
-
-	void JObjectClass::NYI() { }
-}
 #endif /* AVMPLUS_WITH_JNI */

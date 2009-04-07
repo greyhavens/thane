@@ -95,8 +95,11 @@ $(1)_DEFINES += $(DEFINES)
 
 $(1)_CXXOBJS = $$($(1)_CXXSRCS:%.cpp=%.$(OBJ_SUFFIX))
 
+$(1)_ASMOBJS = $$($(1)_ASMSRCS:%.armasm=%.$(OBJ_SUFFIX))
+
 GARBAGE += \
   $$($(1)_CXXOBJS) \
+  $$($(1)_ASMOBJS) \
   $$($(1)_CXXOBJS:.$(OBJ_SUFFIX)=.$(II_SUFFIX)) \
   $$($(1)_CXXOBJS:.$(OBJ_SUFFIX)=.deps) \
   $(NULL)
@@ -110,6 +113,9 @@ $$($(1)_CXXOBJS:.$(OBJ_SUFFIX)=.$(II_SUFFIX)): %.$(II_SUFFIX): %.cpp $$(GLOBAL_D
 $$($(1)_CXXOBJS): %.$(OBJ_SUFFIX): %.$(II_SUFFIX) $$(GLOBAL_DEPS)
 	$(CXX) $(OUTOPTION)$$@ $$($(1)_CPPFLAGS) $$($(1)_CXXFLAGS) $$($(1)_DEFINES) $$($(1)_INCLUDES) -c $$<
 
+$$($(1)_ASMOBJS): %.$(OBJ_SUFFIX): %.armasm $$(GLOBAL_DEPS)
+	$(ASM) -o $$@ $$($(1)_ASMFLAGS) $$<
+	
 $(1).thing.pp: FORCE
 	@$(PYTHON) $(topsrcdir)/build/calcdepends.py $$@ $$($(1)_CXXOBJS:.$(OBJ_SUFFIX)=.$(II_SUFFIX))
 
@@ -122,8 +128,8 @@ define STATIC_LIBRARY_RULES
   $(1)_BASENAME ?= $(1)
   $(1)_NAME = $(LIB_PREFIX)$$($(1)_BASENAME).$(LIB_SUFFIX)
 
-$$($(1)_DIR)$$($(1)_NAME): $$($(1)_CXXOBJS)
-	$(call MKSTATICLIB,$$@) $$($(1)_CXXOBJS)
+$$($(1)_DIR)$$($(1)_NAME): $$($(1)_CXXOBJS) $$($(1)_ASMOBJS)
+	$(call MKSTATICLIB,$$@) $$($(1)_CXXOBJS) $$($(1)_ASMOBJS)
 
 GARBAGE += $$($(1)_DIR)$$($(1)_NAME)
 

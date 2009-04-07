@@ -38,16 +38,8 @@
 
 #include "avmshell.h"
 
-#include <stdlib.h>
-
 namespace avmshell
 {
-	BEGIN_NATIVE_MAP(FileClass)
-		NATIVE_METHOD(avmplus_File_exists, FileClass::exists)
-		NATIVE_METHOD(avmplus_File_read, FileClass::read)
-		NATIVE_METHOD(avmplus_File_write, FileClass::write)
-	END_NATIVE_MAP()
-					  
 	FileClass::FileClass(VTable *cvtable)
 		: ClassClosure(cvtable)
     {
@@ -59,13 +51,20 @@ namespace avmshell
 		if (!filename) {
 			toplevel()->throwArgumentError(kNullArgumentError, "filename");
 		}
-		UTF8String* filenameUTF8 = filename->toUTF8String();
-		FILE *fp = fopen(filenameUTF8->c_str(), "r");
-		if (fp != NULL) {
-			fclose(fp);
-			return true;
+		
+		bool result = false;
+
+		StUTF8String filenameUTF8(filename);
+		File* fp = Platform::GetInstance()->createFile();
+		if(fp)
+		{
+			if (fp->open(filenameUTF8.c_str(), File::OPEN_READ)) {
+				result = true;
+				fp->close();
+			}
+			Platform::GetInstance()->destroyFile(fp);
 		}
-		return false;
+		return result;
 	}
 
 	Stringp FileClass::read(Stringp filename)
@@ -76,65 +75,61 @@ namespace avmshell
 		if (!filename) {
 			toplevel->throwArgumentError(kNullArgumentError, "filename");
 		}
-		UTF8String* filenameUTF8 = filename->toUTF8String();
-		FILE *fp = fopen(filenameUTF8->c_str(), "r");
-		if (fp == NULL) {
+		StUTF8String filenameUTF8(filename);
+		File* fp = Platform::GetInstance()->createFile();
+		if(!fp || !fp->open(filenameUTF8.c_str(), File::OPEN_READ))
+		{
+			if(fp)
+			{
+				Platform::GetInstance()->destroyFile(fp);
+			}
+
 			toplevel->throwError(kFileOpenError, filename);
 		}
-		fseek(fp, 0L, SEEK_END);
-		long len = ftell(fp);
-		rewind(fp);
 
-		unsigned char *c = new unsigned char[len+1];
-		len = (long)fread(c, 1, len, fp);
+		int64_t fileSize = fp->size();
+		if(fileSize >= (int64_t)INT32_T_MAX) //File APIs cannot handle files > 2GB
+		{
+			toplevel->throwRangeError(kOutOfRangeError, filename);
+		}
+
+		int len = (int)fileSize;
+
+		MMgc::GC::AllocaAutoPtr _c;
+		uint8_t* c = (uint8_t*)VMPI_alloca(core, _c, len+1);
+
+		len = (int)fp->read(c, len); //need to force since the string creation functions expect an int
 		c[len] = 0;
 		
-		fclose(fp);
+		fp->close();
+		Platform::GetInstance()->destroyFile(fp);
 
 		if (len >= 3)
 		{
 			// UTF8 BOM
 			if ((c[0] == 0xef) && (c[1] == 0xbb) && (c[2] == 0xbf))
 			{
-				return core->newString(((char *)c) + 3, len - 3);
+				return core->newStringUTF8((const char*)c + 3, len - 3);
 			}
 			else if ((c[0] == 0xfe) && (c[1] == 0xff))
 			{
 				//UTF-16 big endian
 				c += 2;
 				len = (len - 2) >> 1;
-				Stringp out = new (core->GetGC()) String(len);
-				wchar *buffer = out->lockBuffer();
-				for (long i = 0; i < len; i++)
-				{
-					buffer[i] = (c[0] << 8) + c[1];
-					c += 2;
-				}
-				out->unlockBuffer();
-
-				return out;
+				return core->newStringEndianUTF16(/*littleEndian*/false, (const wchar*)c, len);
 			}
 			else if ((c[0] == 0xff) && (c[1] == 0xfe))
 			{
 				//UTF-16 little endian
 				c += 2;
 				len = (len - 2) >> 1;
-				Stringp out = new (core->GetGC()) String(len);
-				wchar *buffer = out->lockBuffer();
-				for (long i = 0; i < len; i++)
-				{
-					buffer[i] = (c[1] << 8) + c[0];
-					c += 2;
-				}
-				out->unlockBuffer();
-				return out;
+				return core->newStringEndianUTF16(/*littleEndian*/true, (const wchar*)c, len);
 			}
 		}
 
-		Stringp out = core->newString((char *) c);
-		delete [] c;
-		
-		return out;
+		// Use newStringUTF8() with "strict" explicitly set to false to mimick old,
+		// buggy behavior, where malformed UTF-8 sequences are stored as single characters.
+		return core->newStringUTF8((const char*)c, len, false);
 	}
 
 	void FileClass::write(Stringp filename,
@@ -148,13 +143,21 @@ namespace avmshell
 		if (!data) {
 			toplevel->throwArgumentError(kNullArgumentError, "data");
 		}
-		UTF8String* filenameUTF8 = filename->toUTF8String();
-		FILE *fp = fopen(filenameUTF8->c_str(), "w");
-		if (fp == NULL) {
+		StUTF8String filenameUTF8(filename);
+		File* fp = Platform::GetInstance()->createFile();
+		if (!fp || !fp->open(filenameUTF8.c_str(), File::OPEN_WRITE)) 
+		{
+			if(fp)
+			{
+				Platform::GetInstance()->destroyFile(fp);
+			}
 			toplevel->throwError(kFileWriteError, filename);
 		}
-		UTF8String* dataUTF8 = data->toUTF8String();
-		fwrite(dataUTF8->c_str(), dataUTF8->length(), 1, fp);
-		fclose(fp);
+		StUTF8String dataUTF8(data);
+		if ((int32_t)fp->write(dataUTF8.c_str(), dataUTF8.length()) != dataUTF8.length()) {
+			toplevel->throwError(kFileWriteError, filename);
+		}
+		fp->close();
+		Platform::GetInstance()->destroyFile(fp);
 	}
 }

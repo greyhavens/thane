@@ -38,142 +38,72 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
+
+using namespace MMgc;
 
 namespace avmplus
 {
-	NativeMethod::NativeMethod(int flags, Handler handler)
-		: AbstractFunction()
+	// ---------------
+
+	NativeInitializer::NativeInitializer(AvmCore* _core, 
+											const uint8_t* _abcData,
+											uint32_t _abcDataLen,
+											uint32_t _methodCount,
+											uint32_t _classCount) :
+		core(_core),
+		abcData(_abcData),
+		abcDataLen(_abcDataLen),
+		methods((MethodType*)core->GetGC()->Calloc(_methodCount, sizeof(MethodType), GC::kZero)),
+		classes((ClassType*)core->GetGC()->Calloc(_classCount, sizeof(ClassType), GC::kZero)),
+		methodCount(_methodCount),
+		classCount(_classCount)
 	{
-		m_handler = handler;
-		this->flags |= flags;
-		this->impl32 = verifyEnter;
 	}
 
-	/**
-		* invoke handler as handler(int cookie, ...) with native typed args
-		*/
-	NativeMethod::NativeMethod(int flags, Handler handler, int cookie)
-		: AbstractFunction()
+#ifdef AVMPLUS_NO_STATIC_POINTERS
+	void NativeInitializer::fillIn(NativeInitializer::FillInProc p)
 	{
-		m_handler = handler;
-		m_cookie  = cookie;
-		this->flags |= (flags | NATIVE_COOKIE);
-		this->impl32 = verifyEnter;
+		(*p)(methods, classes);
 	}
-
-
-	Atom NativeMethod::verifyEnter(MethodEnv* env, int argc, uint32 *ap)
+#else
+	void NativeInitializer::fillInMethods(const NativeMethodInfo* _methodEntry)
 	{
-		NativeMethod* f = (NativeMethod*) env->method;
-
-		f->verify(env->vtable->toplevel);
-
-		#ifdef AVMPLUS_VERIFYALL
-		f->flags |= VERIFIED;
-		if (f->pool->core->verifyall && f->pool)
-			f->pool->processVerifyQueue(env->toplevel());
-		#endif
-
-		env->impl32 = f->impl32;
-		return f->impl32(env, argc, ap);
-	}
-
-	void NativeMethod::verify(Toplevel *toplevel)
-	{
-		AvmAssert(declaringTraits->linked);
-		resolveSignature(toplevel);
-
-		// generate the native method thunk
-		CodegenMIR cgen(this);
-		cgen.emitNativeThunk(this);
-		if (cgen.overflow)
-			toplevel->throwError(kOutOfMemoryError);
-	}
-
-	Atom NativeMethodV::verifyEnter(MethodEnv* env, int argc, uint32 *ap)
-	{
-		NativeMethodV* f = (NativeMethodV*) env->method;
-
-		f->verify(env->vtable->toplevel);
-
-		#ifdef AVMPLUS_VERIFYALL
-		f->flags |= VERIFIED;
-		if (f->pool->core->verifyall && f->pool)
-			f->pool->processVerifyQueue(env->toplevel());
-		#endif
-
-		env->impl32 = f->impl32;
-		return f->impl32(env, argc, ap);
-	}
-
-	Atom NativeMethodV::implv32(MethodEnv* env, 
-				int argc, uint32 *ap)
-	{
-		// get the instance pointer before we unbox everything
-		ScriptObject* instance = *(ScriptObject **)(ap);
-
-#ifdef NATIVE_GLOBAL_FUNCTION_HACK
-		// HACK for native toplevel functions
-		instance = (ScriptObject*)(~7 & (int)instance);
-#endif
-
-		// convert the args in place
-		Atom* atomv = (Atom*) ap;
-
-		NativeMethodV* nmv = (NativeMethodV*) (AbstractFunction*) env->method;
-
-		nmv->boxArgs(argc, ap, atomv);
-
-		// skip the instance atom
-		atomv++;
-
-#ifdef DEBUGGER
-		if (env->core()->debugger != 0)
-			env->core()->debugger->traceMethod(nmv, true);  // tracing for native methods
-#endif	/* DEBUGGER */
-
-		if (nmv->m_haveCookie) {
-			CookieHandler32 cookieHandler = (CookieHandler32)nmv->m_handler;
-			return (instance->*cookieHandler)(nmv->m_cookie, atomv, argc);
-		} else {
-			Handler32 handler = (Handler32) nmv->m_handler;
-			return (instance->*handler)(atomv, argc);
+		while (_methodEntry->method_id != -1)
+		{
+			// if we overwrite a native method mapping, something is hosed
+			AvmAssert(methods[_methodEntry->method_id] == NULL);
+			methods[_methodEntry->method_id] = _methodEntry;
+			_methodEntry++;
 		}
 	}
 
-	double NativeMethodV::implvN(MethodEnv* env,
-				int argc, uint32 * ap)
+	void NativeInitializer::fillInClasses(const NativeClassInfo* _classEntry)
 	{
-		// get the instance pointer before we unbox everything
-		ScriptObject* instance = *(ScriptObject **)(ap);
+		while (_classEntry->class_id != -1)
+		{
+			// if we overwrite a native class mapping, something is hosed
+			AvmAssert(classes[_classEntry->class_id]  == NULL);
+			classes[_classEntry->class_id] = _classEntry;
+			_classEntry++;
+		}
+	}
 
-#ifdef NATIVE_GLOBAL_FUNCTION_HACK
-		// HACK for native toplevel functions
-		instance = (ScriptObject*)(~7 & (int)instance);
-#endif
-
-		// convert the args in place
-		Atom* atomv = (Atom*) ap;
+#endif // AVMPLUS_NO_STATIC_POINTERS
+	
+	PoolObject* NativeInitializer::parseBuiltinABC(Domain* domain, const List<Stringp, LIST_RCObjects>* includes)
+	{
+		AvmAssert(domain != NULL);
 		
-		NativeMethodV* nmv = (NativeMethodV*) (AbstractFunction*) env->method;
+		ScriptBuffer code = ScriptBuffer(new (core->GetGC()) ReadOnlyScriptBufferImpl(abcData, abcDataLen));
 
-		nmv->boxArgs(argc, ap, atomv);
-
-		// skip the instance atom
-		atomv++;
-
-#ifdef DEBUGGER
-		if (env->core()->debugger != 0)
-			env->core()->debugger->traceMethod(nmv, true);  // tracing for native methods
-#endif	/* DEBUGGER */
-
-		if (nmv->m_haveCookie) {
-			CookieHandlerN cookieHandler = (CookieHandlerN)nmv->m_handler;
-			return (instance->*cookieHandler)(nmv->m_cookie, atomv, argc);
-		} else {
-			HandlerN handler = (HandlerN) nmv->m_handler;
-			return (instance->*handler)(atomv, argc);
-		}
+		return core->parseActionBlock(code, /*start*/0, /*toplevel*/NULL, domain, this, (const List<Stringp>*)includes);
 	}
-
+	
+	NativeInitializer::~NativeInitializer()
+	{
+		// might as well explicitly free now
+		core->GetGC()->Free(methods);
+		core->GetGC()->Free(classes);
+	}
 }

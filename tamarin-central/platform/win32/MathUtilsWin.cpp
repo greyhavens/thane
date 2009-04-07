@@ -38,13 +38,27 @@
 #include "avmplus.h"
 #include <math.h>
 
-#ifndef _WIN64
+#ifdef AVMPLUS_IA32
 #define X86_MATH
 #endif
 
+// warning this code is used by amd64 and arm builds
 
 namespace avmplus
 {
+#ifdef AVMPLUS_ARM
+    const static double PI = 3.141592653589793;
+    const static double PI3_BY_4 = 3*PI/4;
+    const static double PI_BY_4 = PI/4;
+    
+    // 0=no, 1=+0, -1=-0  
+    static int32_t isZero(double v)
+    {
+        int32_t r = (MathUtils::isNegZero(v)) ? -1 : (v==0.0)? 1 : 0;
+        return r;
+    }
+#endif
+
 	double MathUtils::abs(double value)
 	{
 #ifdef X86_MATH
@@ -90,8 +104,25 @@ namespace avmplus
 		_asm fld [y];
 		_asm fld [x];
 		_asm fpatan;
+#elif defined(AVMPLUS_ARM)
+        int32_t zx = isZero(x);
+        int32_t zy = isZero(y);
+        if (zx==-1 && zy!=0)
+            return zy*PI;  // +-0,-0 case
+        else if (zy==-1 && (x==1.0 || x==-1.0))
+            return -(::atan2(y,x));  // negate result
+
+		double r = ::atan2(y, x);
+        if (MathUtils::isNaN(r)) {
+            int32_t s = MathUtils::isInfinite(x);
+            if (s==1) 
+                r = MathUtils::isInfinite(y) * PI_BY_4;
+            else if (s==-1)
+                r = MathUtils::isInfinite(y) * PI3_BY_4;
+        }
+        return r;
 #else
-		return ::atan2(y, x);
+        return ::atan2(y,x);
 #endif /* X86_MATH */
 	}
 	
@@ -112,11 +143,6 @@ namespace avmplus
 #else
 		return ::ceil(value);
 #endif /* X86_MATH */
-	}
-
-	double MathUtils::copysign(double x, double y)
-	{
-		return ::_copysign(x, y);
 	}
 
 	double MathUtils::cos(double value)
@@ -165,7 +191,7 @@ namespace avmplus
 #ifdef X86_MATH
 		switch (isInfinite(value)) {
 		case 1:
-			return infinity();
+			return kInfinity;
 		case -1:
 			return +0;
 		default:
@@ -195,7 +221,6 @@ namespace avmplus
 #endif /* X86_MATH */
 	}
 
-#if defined(X86_MATH) || defined(_WIN64)
 	/* @(#)s_frexp.c 5.1 93/09/24 */
 	/*
 	 * ====================================================
@@ -254,12 +279,6 @@ namespace avmplus
 		*eptr -= 53; // 52 mantissa bits + the hidden bit
 		return (uint64)((fracMantissa) * (double)(1LL << 53));
 	}
-#else
-	double MathUtils::frexp(double x, int *eptr)
-	{
-		return ::frexp(x, eptr);
-	}
-#endif /* X86_MATH */
 	
 	double MathUtils::log(double value)
 	{
@@ -287,6 +306,8 @@ namespace avmplus
 		_asm _emit 0xDD; // fstp st(1);
 		_asm _emit 0xD9;
 	}
+#elif defined(UNDER_CE)
+	double modInternal(double x, double y) { return ::fmod(x, y); };
 #else
 extern "C" {
 	double modInternal(double x, double y);
@@ -296,7 +317,7 @@ extern "C" {
 	double MathUtils::mod(double x, double y)
 	{
 		if (!y) {
-			return nan();
+			return kNaN;
 		}
 		return modInternal(x, y);
 	}

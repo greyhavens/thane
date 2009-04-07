@@ -26,6 +26,8 @@
    http://shootout.alioth.debian.org/
    contributed by Isaac Gouy */
 
+var checkobj=new Object();
+
 function TreeNode(left,right,item){
    this.left = left;
    this.right = right;
@@ -50,9 +52,6 @@ function bottomUpTree(item,depth){
    }
 }
 function runAccessBinaryTrees() {
-    var _sunSpiderStartDate = new Date();
-    var ret;
-
     for ( var n = 4; n <= 7; n += 1 ) {
        var minDepth = 4;
        var maxDepth = Math.max(minDepth + 2, n);
@@ -71,8 +70,20 @@ function runAccessBinaryTrees() {
           }
        }
     }
-    ret = longLivedTree.itemCheck();
-    var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-    return _sunSpiderInterval;
+    return check;
 }
-print("metric access-binary-trees "+runAccessBinaryTrees());
+if (CONFIG::desktop) {
+    var start=new Date();
+    var res=runAccessBinaryTrees();
+    var totaltime=new Date()-start;
+}
+else { // mobile
+    var start=getTimer();
+    var res=runAccessBinaryTrees();
+    var totaltime=getTimer()-start;
+}
+if (res==-64) {
+   print("metric time "+totaltime);
+} else {
+   print("error binarytrees expecting -64 got "+res);
+}

@@ -450,4 +450,4 @@ var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
 
 return(_sunSpiderInterval);
 }
-print("metric date-format-xparb "+runDateFormatXparb());
+print("metric time "+runDateFormatXparb());

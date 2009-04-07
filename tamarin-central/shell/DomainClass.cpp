@@ -40,13 +40,6 @@
 
 namespace avmshell
 {
-	BEGIN_NATIVE_MAP(DomainClass)
-		NATIVE_METHOD(avmplus_Domain_Domain, DomainObject::constructFromDomain)
-		NATIVE_METHOD(avmplus_Domain_loadBytes, DomainObject::loadBytes)
-		NATIVE_METHOD(avmplus_Domain_currentDomain_get, DomainClass::get_currentDomain)
-		NATIVE_METHOD(avmplus_Domain_getClass, DomainObject::getClass)
-	END_NATIVE_MAP()
-	
 	DomainObject::DomainObject(VTable *vtable, ScriptObject *delegate)
 		: ScriptObject(vtable, delegate)
 	{
@@ -56,13 +49,13 @@ namespace avmshell
 	{
 	}
 
-	void DomainObject::constructFromDomain(DomainObject *parentDomain)
+	void DomainObject::init(DomainObject *parentDomain)
 	{
 		Shell *core = (Shell*) this->core();
 
 		Domain* baseDomain;
 		if (parentDomain) {
-			baseDomain = parentDomain->domainEnv->getDomain();
+			baseDomain = parentDomain->domainEnv->domain();
 		} else {
 			baseDomain = core->builtinDomain;
 		}
@@ -90,15 +83,15 @@ namespace avmshell
 		// parse new bytecode
 		size_t len = b->get_length();
 		ScriptBuffer code = core->newScriptBuffer(len);
-		memcpy(code.getBuffer(), &b->GetByteArray()[0], len); 
+		VMPI_memcpy(code.getBuffer(), &b->GetByteArray()[0], len); 
 		Toplevel *toplevel = domainToplevel;
 		return core->handleActionBlock(code, 0,
 								  domainEnv,
 								  toplevel,
-								  NULL, NULL, NULL, codeContext);
+								  NULL, codeContext);
 	}
 
-	ScriptObject* DomainObject::finddef(Multiname* multiname,
+	ScriptObject* DomainObject::finddef(const Multiname& multiname,
 										DomainEnv* domainEnv)
 	{
 		Toplevel* toplevel = this->toplevel();
@@ -128,21 +121,19 @@ namespace avmshell
 			toplevel()->throwArgumentError(kNullArgumentError, core->toErrorString("name"));
 		}
 			
+
 		// Search for a dot from the end.
-		int dot;
-		for (dot=name->length()-1; dot >= 0; dot--)
-			if ((*name)[dot] == (wchar)'.')
-				break;
-		
+		int dot = name->lastIndexOf(core->cachedChars[(int)'.']);
+
 		// If there is a '.', this is a fully-qualified
 		// class name in a package.  Must turn it into
 		// a namespace-qualified multiname.
 		Namespace* ns;
 		Stringp className;
-		if (dot != -1) {
-			Stringp uri = core->internString(new (core->GetGC()) String(name, 0, dot));
+		if (dot >= 0) {
+			Stringp uri = core->internString(name->substring(0, dot));
 			ns = core->internNamespace(core->newNamespace(uri));
-			className = core->internString(new (core->GetGC()) String(name, dot+1, name->length()-(dot+1)));
+			className = core->internString(name->substring(dot+1, name->length()));
 		} else {
 			ns = core->publicNamespace;
 			className = core->internString(name);
@@ -150,7 +141,9 @@ namespace avmshell
 
 		Multiname multiname(ns, className);
 
-		ScriptObject *container = finddef(&multiname, domainEnv);
+		ShellCodeContext* codeContext = (ShellCodeContext*)core->codeContext();
+		
+		ScriptObject *container = finddef(multiname, codeContext->domainEnv());
 		if (!container) {
 			toplevel()->throwTypeError(kClassNotFoundError, core->toErrorString(&multiname));
 		}
@@ -158,7 +151,7 @@ namespace avmshell
 											&multiname,
 											container->vtable);
 
-		if (!core->istype(atom, core->traits.class_itraits)) {
+		if (!AvmCore::istype(atom, core->traits.class_itraits)) {
 			toplevel()->throwTypeError(kClassNotFoundError, core->toErrorString(&multiname));
 		}			
 		return (ClassClosure*)AvmCore::atomToScriptObject(atom);
@@ -186,4 +179,21 @@ namespace avmshell
 		
 		return domainObject;
 	}
+	
+	int DomainClass::get_MIN_DOMAIN_MEMORY_LENGTH()
+ 	{
+ 		return Domain::GLOBAL_MEMORY_MIN_SIZE;
+ 	}
+
+ 	ScriptObject *DomainObject::get_domainMemory() const
+ 	{
+ 		return domainEnv->domain()->globalMemory();
+ 	}
+ 
+ 	void DomainObject::set_domainMemory(ScriptObject *mem)
+ 	{
+ 		if(!domainEnv->domain()->setGlobalMemory(mem))
+ 			toplevel()->throwError(kEndOfFileError);
+ 	}
+
 }

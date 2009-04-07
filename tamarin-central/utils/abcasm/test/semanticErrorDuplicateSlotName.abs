@@ -1,0 +1,18 @@
+.script_info {
+	init: .function_id(main)
+
+	traits : {
+		.trait { kind: Trait_Slot name: foo slot_id:1 type_name:* }
+		//.trait { kind: Trait_Slot name: foo slot_id:2 type_name:int }
+	}
+}
+
+.method_info {
+	name: main
+}
+
+.method_body_info {
+	method: .function_id(main)
+
+	code: { returnvoid }
+}

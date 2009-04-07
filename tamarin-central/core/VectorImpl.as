@@ -171,12 +171,11 @@ prototype.every = function(checker, thisObj=void 0) : Boolean {
     return _every(castToThisType(this), checker, thisObj is Object ? thisObj : null);
 }
 
-private native function _filter(callback:Function, thisObject);
+private native function _filter(callback:Function, thisObject):Array;
 prototype.filter = function(checker, thisObj=void 0) {
     return castToThisType(this).private::_filter(checker, thisObj is Object ? thisObj : null);
 }
 
-//private static var _foreach = Array.prototype.foreach;
 private static native function _forEach(o, callback:Function, thisObject):void;
 prototype.forEach = function(eacher, thisObj=void 0) {
     _forEach(castToThisType(this), eacher, (thisObj is Object ? thisObj : null));
@@ -190,7 +189,7 @@ prototype.lastIndexOf = function (value, from=void 0) {
     return castToThisType(this).AS3::lastIndexOf(value, from == undefined ? Infinity : Number(from));
 }
 
-private native function _map(callback:Function, thisObject);
+private native function _map(callback:Function, thisObject):Array;
 prototype.map = function(mapper, thisObj=void 0) {
     return castToThisType(this).private::_map(mapper, thisObj is Object ? thisObj : null);
 }
@@ -199,17 +198,8 @@ prototype.pop = function() {
     return castToThisType(this).AS3::pop();
 }
 
-private function _push(items:Array) : uint{
-    var l : uint = length;
-    length = l + items.length;
-    for ( var i:uint=0, limit:uint=items.length ; i < limit ; i++, l++ )
-        this[l] = items[i];
-
-    return length;
-}
-
 prototype.push = function (...items) {
-    return castToThisType(this)._push(items);
+    return castToThisType(this).AS3::push.AS3::apply(castToThisType(this), items);
 }
 
 prototype.reverse = function() {
@@ -242,7 +232,7 @@ prototype.splice = function(start, deleteCount, ...items){
 }
 
 prototype.unshift = function(...items){
-    return castToThisType(this).AS3::unshift.apply(this, items);
+    return castToThisType(this).AS3::unshift.AS3::apply(this, items);
 }
 
 private function clamp(val: Number, len: uint): uint {

@@ -35,6 +35,7 @@ import flash.utils.ByteArray;
 import flash.utils.IDataInput;
 import flash.utils.IDataOutput;
 
+[native(cls="SocketClass", instance="SocketObject", methods="auto")]
 public class Socket extends EventDispatcher
     implements IDataInput, IDataOutput
 {

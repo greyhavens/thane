@@ -1,3 +1,4 @@
+/* -*- Mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t; -*- */
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -80,17 +81,21 @@ namespace avmshell
 		union {
 			uint32 u;
 			float f;
-		};
-		u = ReadU32();
-		return f;
+		} ptr;
+		ptr.u = ReadU32();
+		return ptr.f;
 	}
 
 	double DataInput::ReadDouble()
 	{
-		double value;
-		Read(&value, 8);
-		ConvertU64((uint64&)value);
-		return value;
+		union {
+			uint64 u;
+			double d;
+		} ptr;
+
+		Read(&ptr.d, 8);
+		ConvertU64(ptr.u);
+		return ptr.d;
 	}
 
 	String* DataInput::ReadUTFBytes(uint32 length)
@@ -105,7 +110,15 @@ namespace avmshell
 		Read(buffer, length);
 		buffer[length] = 0;
 		
-		String *out = m_toplevel->core()->newString(buffer);
+		// Since this is supposed to read UTF8 into a string, it really should ignore the UTF8 BOM that
+		// might reasonably occur at the head of the data.
+		char* utf8chars = buffer;
+		if (length >= 3 && (unsigned char)buffer[0] == 0xEF && (unsigned char)buffer[1] == 0xBB && (unsigned char)buffer[2] == 0xBF) 
+		{
+			utf8chars += 3;
+		}
+
+		String *out = m_toplevel->core()->newStringUTF8(utf8chars);
 		delete [] buffer;
 		
 		return out;
@@ -188,31 +201,41 @@ namespace avmshell
 	
 	void DataOutput::WriteFloat(float value)
 	{
-		WriteU32(*((uint32*)&value));
+		union {
+			uint32 u;
+			float v;
+		} ptr;
+		ptr.v = value;
+		WriteU32(ptr.u);
 	}
 
 	void DataOutput::WriteDouble(double value)
 	{
-		ConvertU64((uint64&)value);
-		Write(&value, 8);
+		union {
+			uint64 u;
+			double v;
+		} ptr;
+		ptr.v = value;
+		ConvertU64(ptr.u);
+		Write(&ptr.u, 8);
 	}
 
 	void DataOutput::WriteUTF(String *str)
 	{
-		UTF8String* utf8 = str->toUTF8String();
-		uint32 length = utf8->length();
+		StUTF8String utf8(str);
+		uint32 length = utf8.length();
 		if (length > 65535) {
 			ThrowRangeError();
 		}
 		WriteU16((unsigned short)length);
-		Write(utf8->c_str(), length*sizeof(char));
+		Write(utf8.c_str(), length*sizeof(char));
 	}
 
 	void DataOutput::WriteUTFBytes(String *str)
 	{
-		UTF8String* utf8 = str->toUTF8String();
-		int len = utf8->length();
-		Write(utf8->c_str(), len*sizeof(char));
+		StUTF8String utf8(str);
+		int len = utf8.length();
+		Write(utf8.c_str(), len*sizeof(char));
 	}
 	
 	void DataOutput::WriteByteArray(ByteArray& buffer,

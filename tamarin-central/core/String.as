@@ -38,6 +38,7 @@
 
 package
 {
+	[native(cls="StringClass", instance="String", methods="auto")]
 	public final class String extends Object
 	{
 		// String.length = 1 per ES3
@@ -46,14 +47,14 @@ package
 		
 		AS3 native static function fromCharCode(... arguments):String
 		String.fromCharCode = function(... arguments) {
-			return AS3::fromCharCode.apply(String,arguments)
+			return AS3::fromCharCode.AS3::apply(String,arguments)
 		}
 
 		// E262 {DontEnum, DontDelete, ReadOnly}
 		public native function get length():int
 		
-		// indexOf and other _ functions get early bound by MIR
-		private native function _indexOf(s:String, i:int=0):int
+		// indexOf and other _ functions get early bound by JIT
+		private native function _indexOf(s:String, i:int=0):int	// special-cased in Verifier, don't remove
 		AS3 native function indexOf(s:String="undefined", i:Number=0):int
 		prototype.indexOf = function(s:String="undefined", i:Number=0):int 
 		{
@@ -61,7 +62,7 @@ package
 		}
 
 		// lastIndexOf
-		private native function _lastIndexOf(s:String, i:int=0x7fffffff):int
+		private native function _lastIndexOf(s:String, i:int=0x7fffffff):int // special-cased in Verifier, don't remove
 		AS3 native function lastIndexOf(s:String="undefined", i:Number=0x7FFFFFFF):int 
 		
 		prototype.lastIndexOf = function(s:String="undefined", i:Number=0x7fffffff):int 
@@ -70,7 +71,7 @@ package
 		}
 
 		// charAt
-		private native function _charAt(i:int=0):String
+		private native function _charAt(i:int=0):String // special-cased in Verifier, don't remove
 		AS3 native function charAt(i:Number=0):String
 
 		prototype.charAt = function(i:Number=0):String
@@ -79,7 +80,7 @@ package
 		}
 
 		// charCodeAt
-		private native function _charCodeAt(i:int=0):Number
+		private native function _charCodeAt(i:int=0):Number // special-cased in Verifier, don't remove
 		AS3 native function charCodeAt(i:Number=0):Number
 
 		prototype.charCodeAt = function(i:Number=0):Number
@@ -150,7 +151,7 @@ package
 		}
 
 		// slice
-		private native function _slice(start:int=0, end:int=0x7fffffff):String
+		private native function _slice(start:int=0, end:int=0x7fffffff):String // special-cased in Verifier, don't remove
 		AS3 native function slice(start:Number=0, end:Number=0x7fffffff):String
 		prototype.slice = function(start:Number=0, end:Number=0x7fffffff):String
 		{
@@ -177,7 +178,7 @@ package
 		}
 
 		// substring
-		private native function _substring(start:int=0, end:int=0x7fffffff):String
+		private native function _substring(start:int=0, end:int=0x7fffffff):String // special-cased in Verifier, don't remove
 		AS3 native function substring(start:Number=0, end:Number=0x7fffffff):String
 		prototype.substring = function(start:Number=0, end:Number=0x7fffffff):String
 		{
@@ -185,7 +186,7 @@ package
 		}
 
 		// substr
-		private native function _substr(start:int=0, end:int=0x7fffffff):String
+		private native function _substr(start:int=0, end:int=0x7fffffff):String // special-cased in Verifier, don't remove
 		AS3 native function substr(start:Number=0, len:Number=0x7fffffff):String
 		prototype.substr = function(start:Number=0, len:Number=0x7fffffff):String
 		{

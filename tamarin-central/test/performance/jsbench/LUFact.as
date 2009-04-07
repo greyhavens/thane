@@ -1,9 +1,10 @@
 	var size;
 
-	var datasizes = new Array(3);
+	var datasizes = new Array(4);
 	datasizes[0] = 500;
 	datasizes[1] = 1000;
 	datasizes[2] = 2000;
+    datasizes[3] = 175;
 
 	var a;
 
@@ -20,10 +21,17 @@
 	var n, i, ntimes, info, lda, ldaa, kflops;
 
 	var ipvt;
-	var start=new Date();
-	JGFrun(1);
-	var elapsed=new Date()-start;
-	print("metric jsbench-lufact "+elapsed);
+    if (CONFIG::desktop) {
+        var start = new Date();
+        JGFrun(0);
+        var elapsed = new Date() - start;
+    }
+    else { // mobile
+        var start = getTimer();
+        JGFrun(3);
+        var elapsed = getTimer() - start;
+    }
+	print("metric time "+elapsed);
 	function abs(d) {
 		return (d >= 0) ? d : -d;
 	}
@@ -63,10 +71,11 @@
 
 		var i;
 		var eps, residn;
-		var ref = new Array(3);
+		var ref = new Array(4);
 		ref[0] = 6.0;
 		ref[1] = 12.0;
 		ref[2] = 20.0;
+        ref[3] = 3.0
 
 		for (i = 0; i < n; i++) {
 			x[i] = b[i];

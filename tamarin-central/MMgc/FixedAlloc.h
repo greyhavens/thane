@@ -38,7 +38,6 @@
 #ifndef __FixedAlloc__
 #define __FixedAlloc__
 
-
 namespace MMgc
 {
 	/**
@@ -60,148 +59,19 @@ namespace MMgc
 		FixedAlloc(int itemSize, GCHeap* heap);
 		~FixedAlloc();
 
-		inline void* Alloc(size_t size)
-		{ 
-			(void)size;
-			
-			GCAssertMsg(((size_t)m_itemSize >= size), "allocator itemsize too small");
+		void* Alloc(size_t size);
+		static void Free(void *item);
 
-			if(!m_firstFree) {
-				if(CreateChunk() == NULL) {
-					GCAssertMsg(false, "Out of memory!");
-					return NULL;
-				}
-			}
-
-			FixedBlock* b = m_firstFree;
-			GCAssert(b && !IsFull(b));
-
-			b->numAlloc++;
-
-			// Consume the free list if available
-			void *item = NULL;
-			if (b->firstFree) {
-				item = b->firstFree;
-				b->firstFree = *((void**)item);
-				// assert that the freelist hasn't been tampered with (by writing to the first 4 bytes)
-				GCAssert(b->firstFree == NULL || 
-						(b->firstFree >= b->items && 
-						(((uintptr)b->firstFree - (uintptr)b->items) % b->size) == 0 && 
-						(uintptr) b->firstFree < ((uintptr)b & ~0xfff) + GCHeap::kBlockSize));
-#ifdef MEMORY_INFO				
-				// ensure previously used item wasn't written to
-				// -1 because write back pointer space isn't poisoned.
-#ifdef MMGC_64BIT				
-				for(int i=3, n=(b->size>>2)-3; i<n; i++)
-#else
-				for(int i=3, n=(b->size>>2)-1; i<n; i++)
-#endif				
-				{
-					int data = ((int*)item)[i];
-					if(data != (int)0xedededed)
-					{
-						GCDebugMsg(false, "Object 0x%x was written to after it was deleted, allocation trace:", (int*)item+2);
-						PrintStackTrace((int*)item+2);
-						GCDebugMsg(false, "Deletion trace:");
-						PrintStackTrace((int*)item+3);
-						GCDebugMsg(true, "Deleted item write violation!");
-					}
-				}
-#endif
-			} else {
-				// Take next item from end of block
-				item = b->nextItem;
-				GCAssert(item != 0);
-				if(!IsFull(b)) {
-					// There are more items at the end of the block
-					b->nextItem = (void *) ((uintptr)item+m_itemSize);
-#ifdef MEMORY_INFO
-					// space made in ctor
-					item = DebugDecorate(item, size + DebugSize(), 6);
-					memset(item, 0xfa, size);
-#endif
-					return item;
-				}
-				b->nextItem = 0;
-			}
-
-
-			// If we're out of free items, be sure to remove ourselves from the
-			// list of blocks with free items.  
-			if (IsFull(b)) {
-				m_firstFree = b->nextFree;
-				b->nextFree = NULL;
-				GCAssert(b->prevFree == NULL);
-
-				if (m_firstFree)
-					m_firstFree->prevFree = 0;
-				else
-					CreateChunk();
-			}
-
-#ifdef MEMORY_INFO
-			// space made in ctor
-			item = DebugDecorate(item, size + DebugSize(), 6);
-			memset(item, 0xfa, size);
-#endif
-
-			GCAssertMsg(item != NULL, "Out of memory");
-			return item;
-		}
-
-		static inline void Free(void *item)
-		{
-			FixedBlock *b = (FixedBlock*) ((uintptr)item & ~0xFFF);
-
-#ifdef MEMORY_INFO
-			item = DebugFree(item, 0xED, 6);
-#endif
-
-#ifdef _DEBUG
-			// ensure that we are freeing a pointer on a item boundary
-			GCAssert(((uintptr)item - (uintptr)b->items) % b->alloc->m_itemSize == 0);
-#endif
-
-			// Add this item to the free list
-			*((void**)item) = b->firstFree;
-			b->firstFree = item;
-
-			// We were full but now we have a free spot, add us to the free block list.
-			if (b->numAlloc == b->alloc->m_itemsPerBlock)
-			{
-				GCAssert(!b->nextFree && !b->prevFree);
-				b->nextFree = b->alloc->m_firstFree;
-				if (b->alloc->m_firstFree)
-					b->alloc->m_firstFree->prevFree = b;
-				b->alloc->m_firstFree = b;
-			}
-#ifdef _DEBUG
-			else // we should already be on the free list
-			{
-				GCAssert ((b == b->alloc->m_firstFree) || b->prevFree);
-			}
-#endif
-
-			b->numAlloc--;
-
-			if(b->numAlloc == 0) {
-				b->alloc->FreeChunk(b);
-			}
-		}
-
-		size_t Allocated();
+		size_t GetBytesInUse();
 
 		size_t GetItemSize() const;
 		int GetMaxAlloc() const { return m_maxAlloc; }
 
+		size_t GetNumChunks() { return m_maxAlloc / m_itemsPerBlock; }	
+
 		static FixedAlloc *GetFixedAlloc(void *item)
 		{
-			FixedBlock *b = (FixedBlock*) ((uintptr)item & ~0xFFF);
-#ifdef _DEBUG
-			// Attempt to sanity check this ptr: numAllocs * size should be less than kBlockSize
-			GCAssertMsg(((b->numAlloc * b->size) < GCHeap::kBlockSize), "Size called on ptr not part of FixedBlock");
-#endif
-			return b->alloc;
+			return GetFixedBlock(item)->alloc;
 		}
 
 	private:
@@ -212,8 +82,8 @@ namespace MMgc
 			void*  nextItem;         // next free item
 			FixedBlock* next;
 			FixedBlock* prev;
-			uint16 numAlloc;
-			uint16 size;
+			uint16_t numAlloc;
+			uint16_t size;
 			FixedBlock *prevFree;
 			FixedBlock *nextFree;
 			FixedAlloc *alloc;
@@ -237,35 +107,40 @@ namespace MMgc
 		FixedBlock* CreateChunk();
 		void FreeChunk(FixedBlock* b);
 
+		static inline FixedBlock *GetFixedBlock(const void *item)
+		{
+			return (FixedBlock*) ((uintptr_t)item & ~0xFFF);
+		}
+
 		static inline size_t Size(const void *item)
 		{
-			FixedBlock *b = (FixedBlock*) ((uintptr)item & ~0xFFF);
-#ifdef _DEBUG
-			// Attempt to sanity check this ptr: numAllocs * size should be less than kBlockSize
-			GCAssertMsg(((b->numAlloc * b->size) < GCHeap::kBlockSize), "Size called on ptr not part of FixedBlock");
-#endif
-			return b->size;
+			return GetFixedBlock(item)->size;
 		}
 	};
 
 	class FixedAllocSafe : public FixedAlloc
 	{
 	public:
-		FixedAllocSafe(int itemSize, GCHeap* heap) : FixedAlloc(itemSize, heap) {}
+		FixedAllocSafe(int itemSize, GCHeap* heap) : FixedAlloc(itemSize, heap) 
+		{
+			m_spinlock = VMPI_lockCreate();
+			GCAssert(m_spinlock != NULL);
+		}
 		
+		~FixedAllocSafe()
+		{
+			VMPI_lockDestroy(m_spinlock);
+		}
+
 		void* Alloc(size_t size)
-		{ 		
-#ifdef GCHEAP_LOCK
-			GCAcquireSpinlock lock(m_spinlock);
-#endif
+		{
+			MMGC_LOCK(m_spinlock);
 			return FixedAlloc::Alloc(size); 
 		}
 
 		void Free(void *ptr)
 		{
-#ifdef GCHEAP_LOCK
-			GCAcquireSpinlock lock(m_spinlock);
-#endif
+			MMGC_LOCK(m_spinlock);
 			FixedAlloc::Free(ptr);
 		}
 
@@ -276,8 +151,8 @@ namespace MMgc
 
 	private:
 
-#ifdef GCHEAP_LOCK
-		GCSpinLock m_spinlock;
+#ifdef MMGC_LOCKING
+		vmpi_spin_lock_t m_spinlock;
 #endif
 	};
 

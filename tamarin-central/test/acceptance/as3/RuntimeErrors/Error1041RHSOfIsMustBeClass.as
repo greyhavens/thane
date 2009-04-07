@@ -47,7 +47,6 @@ try {
 } catch (err) {
 	result = err.toString();
 } finally {
-    trace(result);
 	AddTestCase("Runtime Error", TYPEERROR + CODE, typeError(result));
 }
 

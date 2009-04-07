@@ -39,7 +39,7 @@
 #define __thane_DomainClass__
 
 
-namespace thane
+namespace avmthane
 {
 	class DomainObject : public ScriptObject
 	{
@@ -47,9 +47,12 @@ namespace thane
 		DomainObject(VTable *vtable, ScriptObject *delegate);
 		~DomainObject();
 
-		void constructFromDomain(DomainObject *base);
-		Atom loadBytes(ByteArrayObject *bytes);
+		void initNewDomain();
+		Atom doLoadBytes(ByteArrayObject *bytes);
 		ClassClosure* getClass(Stringp name);
+        ScriptObject *get_domainMemory() const;
+        void set_domainMemory(ScriptObject *mem);
+
         ArrayObject *getVariables (Atom a);
 		Stringp getClassName (Atom a);
         bool isAssignableAs (ClassClosure *asClass, Atom a);
@@ -57,10 +60,10 @@ namespace thane
         Traits *getTraits (Atom a);
        
 		DWB(DomainEnv*) domainEnv;
-		DRCWB(Toplevel*) domainToplevel;
+		DWB(Toplevel*) domainToplevel;
 
 	  private:
-	    ScriptObject* finddef(Multiname* multiname, DomainEnv* domainEnv);
+	    ScriptObject* finddef(const Multiname& multiname, DomainEnv* domainEnv);
 	};
 
 	class DomainClass : public ClassClosure
@@ -71,8 +74,7 @@ namespace thane
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
 
 		DomainObject* get_currentDomain();
-		
-		DECLARE_NATIVE_MAP(DomainClass)
+        int get_MIN_DOMAIN_MEMORY_LENGTH();
 	};
 }
 

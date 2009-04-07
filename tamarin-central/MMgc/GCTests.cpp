@@ -80,7 +80,7 @@ namespace MMgc
 		// CleanStack will clobber it.
 		//
 		char buf[64];
-		sprintf(buf, "%d", extra);  // don't optimize away buf
+		VMPI_sprintf(buf, "%d", extra);  // don't optimize away buf
 
 		return (new (gc, extra) GCObject())->GetWeakRef();
 	}
@@ -155,6 +155,7 @@ namespace MMgc
 	{
 		// prime ZCT with some pinners
 		RCObject *stackPinners[3];
+		VMPI_memset(stackPinners, 0, sizeof(stackPinners));
 
 		GCWeakRef *wr = createProblem(stackPinners);
 

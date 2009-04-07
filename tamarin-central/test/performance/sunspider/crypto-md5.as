@@ -279,8 +279,10 @@ function binl2b64(binarray)
   return str;
 }
 
-function runCryptoMD5() {
-var _sunSpiderStartDate = new Date();
+if (CONFIG::desktop)
+    var start=new Date();
+else  // mobile
+    var start=getTimer();
 
 var plainText = "Rebellious subjects, enemies to peace,\n\
 Profaners of this neighbour-stained steel,--\n\
@@ -311,10 +313,11 @@ for (var i = 0; i <4; i++) {
 }
 
 var md5Output = hex_md5(plainText);
-
-
-var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-
-return(_sunSpiderInterval);
-}
-print("metric crypto-md5 "+runCryptoMD5());
+if (CONFIG::desktop)
+    var totaltime=new Date()-start;
+else  // mobile
+    var totaltime=getTimer()-start;
+if (md5Output=="a831e91e0f70eddcb70dc61c6f82f6cd")
+   print("metric time "+totaltime);
+else
+   print("error crypto-m5 expected a831e91e0f70eddcb70dc61c6f82f6cd got "+md5Output);

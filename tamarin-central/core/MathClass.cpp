@@ -37,32 +37,10 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(MathClass)
-		NATIVE_METHOD_FLAGS(Math_abs,    MathClass::abs, 0)
-		NATIVE_METHOD_FLAGS(Math_acos,   MathClass::acos, 0)
-		NATIVE_METHOD_FLAGS(Math_asin,   MathClass::asin, 0)
-		NATIVE_METHOD_FLAGS(Math_atan,   MathClass::atan, 0)
-		NATIVE_METHOD_FLAGS(Math_atan2,  MathClass::atan2, 0)
-		NATIVE_METHOD_FLAGS(Math_ceil,   MathClass::ceil, 0)
-		NATIVE_METHOD_FLAGS(Math_cos,    MathClass::cos, 0)
-		NATIVE_METHOD_FLAGS(Math_exp,    MathClass::exp, 0)
-		NATIVE_METHOD_FLAGS(Math_floor,  MathClass::floor, 0)
-		NATIVE_METHOD_FLAGS(Math_log,    MathClass::log, 0)
-		NATIVE_METHOD_FLAGS(Math_pow,    MathClass::pow, 0)
-		NATIVE_METHOD_FLAGS(Math_round,  MathClass::round, 0)
-		NATIVE_METHOD_FLAGS(Math_sin,    MathClass::sin, 0)
-		NATIVE_METHOD_FLAGS(Math_sqrt,   MathClass::sqrt, 0)
-		NATIVE_METHOD_FLAGS(Math_tan,    MathClass::tan, 0)
-		NATIVE_METHOD_FLAGS(Math_private__min,    MathClass::min2, 0)
-		NATIVE_METHOD_FLAGS(Math_private__max,    MathClass::max2, 0)
-		NATIVE_METHODV(Math_max,     MathClass::max)
-		NATIVE_METHODV(Math_min,     MathClass::min)
-		NATIVE_METHOD_FLAGS(Math_random,  MathClass::random, 0)
-	END_NATIVE_MAP()
-
 	Atom MathClass::construct(int /*argc*/, Atom* /*argv*/)
 	{
 		// according to ES3 15.8, Math cannot be used as a function or constructor.
@@ -80,7 +58,7 @@ namespace avmplus
 	MathClass::MathClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
-		AvmAssert(traits()->sizeofInstance == sizeof(MathClass));
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(MathClass));
 		MathUtils::initRandom(&seed);
 
         // todo does ES4 Math have a prototype object?
@@ -146,36 +124,90 @@ namespace avmplus
 		return MathUtils::log(x);
 	}
 	
-	double MathClass::min(Atom* argv, int argc)
+	double MathClass::min(double x, double y, const Atom* argv, uint32_t argc)
 	{
-		double x = MathUtils::infinity();
-		AvmCore* core = this->core();
-		for (int i=0; i < argc; i++)
+		if (MathUtils::isNaN(x)) 
 		{
-			double y = core->number(argv[i]);
+			return x;
+		}
+	    else if (MathUtils::isNaN(y)) 
+		{
+			return y;
+		}
+	    else if (y < x) 
+		{
+	        x = y;
+	    } 
+		else 
+		{
+	        if (y == x)
+	            if (y == 0.0)
+	                if (1.0/y < 0.0)
+            	        x = y;  // -0
+	    }
+		for (uint32_t i=0; i < argc; i++)
+		{
+			y = AvmCore::number(argv[i]);
+			if (MathUtils::isNaN(y)) return y;
 			if (y < x)
+			{
 				x = y;
-			else if (y == 0 && y == x && MathUtils::copysign(1.0, y) == -1)
-				x = y;
-			else if (MathUtils::isNaN(y))
-				return y;
+			}
+			else if (y == x && y == 0.0)
+			{
+				/*
+					Lars: "You can tell -0 from 0 by dividing 1 by the zero, -0 gives -Infinity
+					and 0 gives Infinity, so if you know x is a zero the test for negative
+					zero is (1/x < 0)."
+				*/
+			    if (y == x)
+			        if (y == 0.0)
+        				if ((1.0 / y) < 0.0)
+		        			x = y;  // pick up negative zero when appropriate
+			}
 		}
 		return x;
 	}
 
-	double MathClass::max(Atom* argv, int argc)
+	double MathClass::max(double x, double y, const Atom* argv, uint32_t argc)
 	{
-		double x = -MathUtils::infinity();
-		AvmCore* core = this->core();
-		for (int i=0; i < argc; i++)
+		if (MathUtils::isNaN(x)) 
 		{
-			double y = core->number(argv[i]);
+			return x;
+		}
+	    else if (MathUtils::isNaN(y)) 
+		{
+			return y;
+		}
+	    else if (y > x) 
+		{
+	        x = y;
+	    } 
+		else 
+		{
+	        if (y == x)
+	            if (y == 0.0)
+	                if (1.0/y > 0.0)
+            	        x = y;  // -0
+	    }
+		for (uint32_t i=0; i < argc; i++)
+		{
+			y = AvmCore::number(argv[i]);
+			if (MathUtils::isNaN(y)) return y;
 			if (y > x)
+			{
 				x = y;
-			else if (y == 0 && y == x && MathUtils::copysign(1.0, x) == -1)
-				x = y;
-			else if (MathUtils::isNaN(y))
-				return y;
+			}
+			else if (y == x && y == 0)
+			{
+				/*
+					Lars: "You can tell -0 from 0 by dividing 1 by the zero, -0 gives -Infinity
+					and 0 gives Infinity, so if you know x is a zero the test for negative
+					zero is (1/x < 0)."
+				*/
+				if ((1.0 / y) > 0.0)
+					x = y;  // pick up negative zero when appropriate
+			}
 		}
 		return x;
 	}
@@ -210,12 +242,12 @@ namespace avmplus
 		return MathUtils::tan(x);
 	}
 
-	double MathClass::min2(double x, double y)
+	double MathClass::_min(double x, double y)
 	{
 		return (x < y || MathUtils::isNaN(x)) ? x : y;
 	}
 
-	double MathClass::max2(double x, double y)
+	double MathClass::_max(double x, double y)
 	{
 		return (x > y || MathUtils::isNaN(x)) ? x : y;
 	}

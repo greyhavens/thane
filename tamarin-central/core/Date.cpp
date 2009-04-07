@@ -36,8 +36,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 
-#include <stdarg.h>
-
 #include "avmplus.h"
 
 namespace avmplus
@@ -200,12 +198,13 @@ namespace avmplus
 	/* This needs to be publicly available, for Mac edge code. (srj) */
 	double UTC(double t)
 	{
-		return (t - OSDep::localTZA(t) - OSDep::daylightSavingTA(t - OSDep::localTZA(t)));
+		double adj = VMPI_getLocalTimeOffset();
+		return (t - adj - VMPI_getDaylightSavingsTA(t - adj));
 	}
 
 	static double LocalTime(double t)
 	{
-		return (t + OSDep::localTZA(t) + OSDep::daylightSavingTA(t));
+		return (t + VMPI_getLocalTimeOffset() + VMPI_getDaylightSavingsTA(t));
 	}
 
 	// this needs to be publicly available, for data paraser
@@ -227,7 +226,7 @@ namespace avmplus
 	{
 		int iMonth = (int) MathUtils::floor(month);
 		if (iMonth < 0 || iMonth >= 12) {
-			return MathUtils::nan();
+			return MathUtils::kNaN;
 		}
 		return DayFromYear((int)year) + kMonthOffset[(int)IsLeapYear((int)year)][iMonth];
 	}
@@ -264,7 +263,7 @@ namespace avmplus
 		// if any value is not finite, return NaN
 		if (MathUtils::isInfinite(day) || MathUtils::isInfinite(time) ||
 			day != day || time != time)
-			return MathUtils::nan();
+			return MathUtils::kNaN;
 
 		day = MathUtils::toInt(day);
 		time = MathUtils::toInt(time);
@@ -277,7 +276,7 @@ namespace avmplus
 		// if any value is not finite, return NaN
 		if (MathUtils::isInfinite(hour) || MathUtils::isInfinite(min) || MathUtils::isInfinite(sec) || MathUtils::isInfinite(ms) ||
 			hour != hour || min != min || sec != sec || ms != ms)
-			return MathUtils::nan();
+			return MathUtils::kNaN;
 
 		hour = MathUtils::toInt(hour);
 		min  = MathUtils::toInt(min);
@@ -292,7 +291,7 @@ namespace avmplus
 		// if any value is not finite, return NaN
 		if (MathUtils::isInfinite(year) || MathUtils::isInfinite(month) || MathUtils::isInfinite(date) ||
 			year != year || month != month || date != date)
-			return MathUtils::nan();
+			return MathUtils::kNaN;
 
 		year  = MathUtils::toInt(year);
 		month = MathUtils::toInt(month);
@@ -308,7 +307,7 @@ namespace avmplus
 
 	Date::Date()
 	{
-		m_time = OSDep::getDate();
+		m_time = VMPI_getDate();
 	}
 		
 	Date::Date(double year,
@@ -373,12 +372,11 @@ namespace avmplus
 				case 'd':
 					{
 						int value = va_arg(ap, int);
-						wchar intbuf[256];
-						int len;
-						MathUtils::convertIntegerToString(value, intbuf, len);
-						wchar *uintptr = intbuf;
-						while (*uintptr) {
-							*buffer++ = *uintptr++;
+						char intbuf[MathUtils::kMinSizeForInt32_t_base10_toString];
+						int32_t len = MathUtils::kMinSizeForInt32_t_base10_toString;
+						char* intptr = MathUtils::convertIntegerToStringBuffer(value, intbuf, len, 10, MathUtils::kTreatAsSigned);
+						while (*intptr) {
+							*buffer++ = *intptr++;
 						}
 					}
 					break;
@@ -402,10 +400,10 @@ namespace avmplus
 		static const char kDaysOfWeek[] = "SunMonTueWedThuFriSat";
 
 		if (MathUtils::isNaN(m_time)) {
-			UnicodeUtils::Utf8ToUtf16( (const uint8 *)"Invalid Date", 
-													 12,
-													 buffer, 
-													 12 );
+			UnicodeUtils::Utf8ToUtf16((const uint8*)"Invalid Date", 
+									  12,
+									  buffer, 
+									  12, true );
 			buffer[len=12] = 0;
 			return true;
 		}
@@ -586,7 +584,7 @@ namespace avmplus
 		// Short-circuit and return NaN if the date
 		// is NaN
 		if (MathUtils::isNaN(t)) {
-			return MathUtils::nan();
+			return MathUtils::kNaN;
 		}
 		
 		switch (index) {

@@ -41,37 +41,6 @@
 namespace avmplus
 {
 #ifdef DEBUGGER
-	class StackTrace : public MMgc::GCObject
-	{
-	public:
-		Stringp format(AvmCore* core);
-
-		/**
-		 * The dump and format methods display a human-readable
-		 * version of the stack trace.  To avoid thousands of
-		 * lines of output, such as would happen in an infinite
-		 * recursion, no more than kMaxDisplayDepth levels will
-		 * be displayed.
-		 */
-		const static int kMaxDisplayDepth = 64;
-
-		int depth;
-		DRCWB(Stringp) stringRep;
-
-		struct Element
-		{
-			AbstractFunction *info;
-			Stringp filename;			// in the form "C:\path\to\package\root;package/package;filename"
-		    int linenum;
-		};
-		bool equals(StackTrace::Element *e, int depth);
-		static uintptr hashCode(StackTrace::Element *e, int depth);
-
-		Element elements[1];
-	private:
-		void dumpFilename(Stringp filename, PrintWriter& out) const;
-	};
-		
 	/**
 	 * The CallStackNode class tracks the call stack of executing
 	 * ActionScript code.  It is used for debugger stack dumps
@@ -114,6 +83,16 @@ namespace avmplus
 	class CallStackNode
 	{
 	public:
+
+		void init(MethodEnv*				env
+					, Atom*					framep
+					, Traits**				frameTraits
+					, intptr_t volatile*	eip
+				    , bool                  boxed
+				);
+
+		void init(AvmCore* core, Stringp name);
+
 		/**
 		 * Constructs a new CallStackNode.  The method executing and
 		 * the CallStackNode representing the previous call stack
@@ -122,63 +101,146 @@ namespace avmplus
 		 * @param info the currently executing method
 		 * @param next the CallStackNode representing the previous
 		 *             call stack
+		 * @param  ap  the arguments pointer.  This is an Atom* if
+		 *             'boxed' is true, and an uint32_t* otherwise.
 		 */
-		CallStackNode(MethodEnv *		env,
-					  AbstractFunction *info,
-					  Atom*				framep,
-					  Traits**			frameTraits,
-					  int				argc,
-					  uint32 *			ap,
-					  sintptr volatile *eip)
+		inline explicit CallStackNode(MethodEnv*				env
+										, Atom*					framep
+										, Traits**				frameTraits
+										, intptr_t volatile*	eip
+									    , bool                  boxed = false
+								)
 		{
-			initialize(env, info, framep, frameTraits, argc, ap, eip);
+			init(env, framep, frameTraits, eip, boxed);
 		}
 
-		// WARNING!!!! this method is called by CodegenMIR if you change the signature then change the call there.
-		void initialize(MethodEnv *			env,
-						AbstractFunction *	info,
-						Atom*				framep,
-						Traits**			frameTraits,
-						int					argc,
-						uint32 *			ap,
-						sintptr volatile *	eip);
+		// ctor used only for Sampling (no MethodEnv)
+		inline explicit CallStackNode(AvmCore* core, const char* name)
+		{
+			Sampler* sampler = core ? core->get_sampler() : NULL;
+			init(core, sampler ? sampler->getFakeFunctionName(name) : NULL);
+		}
 
-		void exit();
+		// dummy ctor we can use to construct an uninitalized version -- useful for the thunks, which
+		// will construct one and immediately call initialize (via debugEnter) so there's no need to
+		// redundantly fill in fields. (note that the fields are uninitialized so you *must* call init 
+		// afterwards when using this!)
+		enum Empty { kEmpty = 0 };
+		inline explicit CallStackNode(Empty) { }
 
-		MethodEnv *env;
-		AbstractFunction* info;
-		Stringp      filename;			// in the form "C:\path\to\package\root;package/package;filename"
-		int         linenum;
-		CallStackNode *next;
+		// dummy ctor used by verify to skip initialization in non-debugger runmode.
+		// you don't need to follow this with init (but can if you like)
+		enum NoOp { kNoOp = 0 };
+		inline explicit CallStackNode(NoOp) { VMPI_memset(this, 0, sizeof(*this)); }
 
-		int         depth;
-		uint32 *    ap;
-		int			argc;
-		Atom*		framep;		// pointer to top of AS registers
-		Traits**    traits;		// array of traits for AS registers
-		sintptr volatile * eip; 	// ptr to where the current pc is stored
+		~CallStackNode();
 
-		void**		scopeBase(); // with MIR, array members are (ScriptObject*); with interpreter, they are (Atom).
-		#ifdef AVMPLUS_INTERP
-		int*		scopeDepth; // Only used by the interpreter! With MIR, look for NULL entires in the scopeBase array.
-		#endif
-	protected:
-		// allow more flexibility to subclasses
-		CallStackNode(){}
+		// Does exactly what the destructor does, but on an arbitrary object.
+		void FASTCALL reset();
+		
+		inline void sampleCheck() { if (m_core) m_core->sampleCheck(); }
+
+		void** FASTCALL scopeBase(); // with JIT, array members are (ScriptObject*); with interpreter, they are (Atom).
+
+		void FASTCALL exit();
+
+		inline CallStackNode* next() const { return m_next; }
+		// WARNING, env() can return null if there are fake Sampler-only frames. You must always check for null.
+		inline MethodEnv* env() const { return m_env; }
+		// WARNING, info() can return null if there are fake Sampler-only frames. You must always check for null.
+		inline MethodInfo* info() const { return m_env ? m_env->method : NULL; }
+		inline Stringp fakename() const { return m_fakename; }
+		inline int32_t depth() const { return m_depth; }
+
+		inline intptr_t volatile* eip() const { return m_eip; }
+		inline Stringp filename() const { return m_filename; }
+		inline Atom* framep() const { return m_framep; }
+		inline Traits** traits() const { return m_traits; }
+		inline int32_t linenum() const { return m_linenum; }
+		inline bool boxed() const { return m_boxed; }
+
+		inline void set_filename(Stringp s) { m_filename = s; }
+		inline void set_linenum(int32_t i) { m_linenum = i; }
+
+		// Placement new and delete because the interpreter allocates CallStackNode
+		// instances inside other data structures (think alloca storage that has been
+		// allocated on the heap).
+		//
+		// The delete operator is required by some compilers in builds that compile with
+		// exceptions enabled, but is never actually called.
+		
+		inline void* operator new(size_t, void* storage) { return storage; }
+		inline void operator delete(void*) {}
+
+	// ------------------------ DATA SECTION BEGIN
+	private:	AvmCore*			m_core;
+	private:	MethodEnv*			m_env;			// will be NULL if the element is from a fake CallStackNode
+	private:	CallStackNode*		m_next;
+	private:	Stringp				m_fakename;		// NULL unless we are a fake CallStackNode
+	private:	int32_t				m_depth;
+	private:	intptr_t volatile*	m_eip;			// ptr to where the current pc is stored
+	private:	Stringp				m_filename;		// in the form "C:\path\to\package\root;package/package;filename"
+	private:	Atom*				m_framep;		// pointer to top of AS registers
+	private:	Traits**			m_traits;		// array of traits for AS registers
+	private:	int32_t				m_linenum;
+	private:	bool				m_boxed;
+	// ------------------------ DATA SECTION END
 	};
-	
-	// for sampling
-	class FakeCallStackNode : public CallStackNode
+
+	class StackTrace : public MMgc::GCObject
 	{
 	public:
-		FakeCallStackNode(AvmCore *core, const char *name);
-		~FakeCallStackNode();
-		void sampleCheck() { if(core) core->sampler()->sampleCheck(); }
-	private:
-		AvmCore *core;
-	};
+		Stringp format(AvmCore* core);
 
-#endif /* DEBUGGER */
+		/**
+		 * The dump and format methods display a human-readable
+		 * version of the stack trace.  To avoid thousands of
+		 * lines of output, such as would happen in an infinite
+		 * recursion, no more than kMaxDisplayDepth levels will
+		 * be displayed.
+		 */
+		const static int kMaxDisplayDepth = 64;
+
+		int depth;
+		DRCWB(Stringp) stringRep;
+
+		struct Element
+		{
+			MethodInfo*			m_info;			// will be null for fake CallStackNode
+			Stringp				m_name;			// same as m_info->name (except for fake CallStackNode)
+			Stringp				m_filename;		// in the form "C:\path\to\package\root;package/package;filename"
+		    int32_t				m_linenum;
+		#ifdef AVMPLUS_64BIT
+			int32_t				m_pad;
+		#endif
+
+			inline void set(const CallStackNode& csn) 
+			{ 
+				m_info		= csn.info();		// will be NULL if the element is from a fake CallStackNode
+				m_name		= csn.fakename();
+				if (!m_name && csn.info())
+					m_name = csn.info()->getMethodName();
+				m_filename	= csn.filename();
+				m_linenum	= csn.linenum();
+			#ifdef AVMPLUS_64BIT
+				m_pad		= 0;	// let's keep the stack nice and clean
+			#endif
+			}
+			// WARNING, info() can return null if there are fake Sampler-only frames. You must always check for null.
+			inline MethodInfo* info() const { return m_info; }
+			inline Stringp infoname() const { return m_name; }
+			inline Stringp filename() const { return m_filename; }
+			inline int32_t linenum() const { return m_linenum; }
+		};
+		bool equals(StackTrace::Element* e, int depth);
+		static uintptr_t hashCode(StackTrace::Element* e, int depth);
+
+		Element elements[1];
+	private:
+		void dumpFilename(Stringp filename, PrintWriter& out) const;
+	};
+		
+#endif 
 }
 
 #endif /* __avmplus_CallStackNode__ */

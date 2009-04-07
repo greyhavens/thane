@@ -43,8 +43,6 @@
 #ifndef _WRITE_BARRIER_H_
 #define _WRITE_BARRIER_H_
 
-#ifdef WRITE_BARRIERS
-
 // inline write barrier
 #define WB(gc, container, addr, value) gc->writeBarrier(container, addr, (const void *) (value))
 
@@ -57,19 +55,6 @@
 // declare an optimized RCObject write barrier
 #define DRCWB(type) MMgc::WriteBarrierRC<type>
 
-#else
-
-#define WB(gc, container, addr, value) *addr = value
-
-#define WBRC(gc, container, addr, value) *addr = value
-
-// declare write barrier
-#define DWB(type) type
-
-#define DVWB(type) type
-
-#endif
-
 namespace MMgc
 {
 	/**
@@ -81,45 +66,50 @@ namespace MMgc
 	template<class T> class WriteBarrier
 	{
 	public:
-		WriteBarrier() {}
-		WriteBarrier(T _t)
-		{ 
-			set(_t);
+		explicit inline WriteBarrier() : t(0)  
+		{
 		}
 
-		~WriteBarrier() 
+		explicit inline WriteBarrier(T _t) : t(_t)
+		{ 
+			//set(_t); not necessary
+		}
+
+		inline ~WriteBarrier() 
 		{ 
 			t = 0;
 		}
 
-		T operator=(const WriteBarrier<T>& wb)
+		inline T operator=(const WriteBarrier<T>& wb)
 		{
 			return set(wb.t);	
 		}
 
-		T operator=(T tNew)
+		inline T operator=(T tNew)
 		{
 			return set(tNew);
 		}
 
 		// BEHOLD ... The weird power of C++ operator overloading
-		operator T() const { return t; }
+		inline operator T() const { return t; }
 
-#ifdef MMGC_DRC
-		operator ZeroPtr<T>() const { return t; }
-#endif
+		// let us peek at it without a cast
+		inline T value() const { return t; }
 
-		bool operator!=(T other) const { return other != t; }
+		inline operator ZeroPtr<T>() const { return t; }
 
-		T operator->() const
+		inline bool operator!=(T other) const { return other != t; }
+
+		inline T operator->() const
 		{
 			return t;
 		}
+
 	private:
 
 		// private to prevent its use and someone adding it, GCC creates
 		// WriteBarrier's on the stack with it
-		WriteBarrier(const WriteBarrier<T>& toCopy) { GCAssert(false); }
+		WriteBarrier(const WriteBarrier<T>& toCopy);	// unimplemented
 		
 		T set(const T tNew)
 		{
@@ -139,13 +129,16 @@ namespace MMgc
 	template<class T> class WriteBarrierRC
 	{
 	public:
-		WriteBarrierRC() {}
-		WriteBarrierRC(T _t)
+		explicit inline WriteBarrierRC() : t(0) 
+		{
+		}
+		
+		explicit inline WriteBarrierRC(T _t) : t(0)
 		{ 
 			set(_t);
 		}
 
-		~WriteBarrierRC() 
+		inline ~WriteBarrierRC() 
 		{
 			if(t != 0) {
 				((RCObject*)t)->DecrementRef();
@@ -153,30 +146,28 @@ namespace MMgc
 			}
 		}
 
-		T operator=(const WriteBarrierRC<T>& wb)
+		inline T operator=(const WriteBarrierRC<T>& wb)
 		{
 			return set(wb.t);	
 		}
 
-		T operator=(T tNew)
+		inline T operator=(T tNew)
 		{
 			return set(tNew);
 		}
 
-		operator T() const { return t; }
+		inline operator T() const { return t; }
 
-#ifdef MMGC_DRC
-		operator ZeroPtr<T>() const { return t; }
-#endif
+		inline operator ZeroPtr<T>() const { return t; }
 
-		bool operator!=(T other) const { return other != t; }
+		inline bool operator!=(T other) const { return other != t; }
 
-		T operator->() const
+		inline T operator->() const
 		{
 			return t;
 		}
 
-		void Clear() { t = 0; }
+		inline void Clear() { t = 0; }
 	private:
 
 		// see note for WriteBarrier

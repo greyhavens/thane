@@ -35,8 +35,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include <stdio.h>
-
 #include "avmshell.h"
 
 #ifdef DEBUGGER
@@ -56,47 +54,22 @@ namespace avmshell
 	 */
 	DebugCLI::StringIntArray DebugCLI::commandArray[] =
 	{
-		{ "awatch", CMD_AWATCH },
 		{ "break", CMD_BREAK },
 		{ "bt", INFO_STACK_CMD },
         { "continue", CMD_CONTINUE },
-        { "cf", CMD_CF },
-		{ "clear", CMD_CLEAR },
-		{ "commands", CMD_COMMANDS },
-		{ "condition", CMD_CONDITION },
 		{ "delete", CMD_DELETE },
-		{ "disable", CMD_DISABLE },
-		{ "disassemble", CMD_DISASSEMBLE },
-		{ "display", CMD_DISPLAY },
-		{ "enable", CMD_ENABLE },
 		{ "finish", CMD_FINISH },
-		{ "file", CMD_FILE },
 		{ "help", CMD_HELP },
-		{ "halt", CMD_HALT },
-		{ "handle", CMD_HANDLE },
-		{ "home", CMD_HOME },
 		{ "info", CMD_INFO },
-		{ "kill", CMD_KILL },
 		{ "list", CMD_LIST },
 		{ "next", CMD_NEXT },
-		{ "nexti", CMD_NEXT },
-		{ "mctree", CMD_MCTREE },
         { "print", CMD_PRINT },
         { "pwd", CMD_PWD },
 		{ "quit", CMD_QUIT },
-		{ "run", CMD_RUN },
-		{ "rwatch", CMD_RWATCH },
 		{ "step", CMD_STEP },
-		{ "stepi", CMD_STEP },
 		{ "set", CMD_SET },
 		{ "show", CMD_SHOW },
-		{ "source", CMD_SOURCE },
-		{ "tutorial", CMD_TUTORIAL },
-		{ "undisplay", CMD_UNDISPLAY },
 		{ "where", INFO_STACK_CMD },
-		{ "watch", CMD_WATCH },
-		{ "what", CMD_WHAT },
-		{ "viewswf", CMD_VIEW_SWF },
 		{ NULL, 0 }
 	};
 
@@ -107,16 +80,10 @@ namespace avmshell
 	{
 		{ "arguments", INFO_ARGS_CMD },
 		{ "breakpoints", INFO_BREAK_CMD },
-		{ "display", INFO_DISPLAY_CMD },
 		{ "files", INFO_FILES_CMD },
 		{ "functions", INFO_FUNCTIONS_CMD },
-		{ "handle", INFO_HANDLE_CMD },
 		{ "locals", INFO_LOCALS_CMD },
 		{ "stack", INFO_STACK_CMD },
-        { "sources", INFO_SOURCES_CMD },
-        { "swfs", INFO_SWFS_CMD },
-        { "targets", INFO_TARGETS_CMD },
-		{ "variables", INFO_VARIABLES_CMD },
 		{ NULL, 0 }		
 	};
 
@@ -126,42 +93,17 @@ namespace avmshell
 	DebugCLI::StringIntArray DebugCLI::showCommandArray[] =
 	{
 		{ "break", SHOW_BREAK_CMD },
-		{ "files", SHOW_FILES_CMD },
 		{ "functions", SHOW_FUNC_CMD },
 		{ "memory", SHOW_MEM_CMD },
-		{ "net", SHOW_NET_CMD },
-		{ "properties", SHOW_PROPERTIES_CMD },
-		{ "uri", SHOW_URI_CMD },
 		{ "variable", SHOW_VAR_CMD },
 		{ NULL, 0 }		
 	};
 
-	/**
-	 * enable sub-commands
-	 */
-	DebugCLI::StringIntArray DebugCLI::enableCommandArray[] =
-	{
-		{ "breakpoints", CMD_BREAK },
-		{ "display", CMD_DISPLAY },
-		{ "delete", CMD_DELETE },
-		{ "once", ENABLE_ONCE_CMD },
-		{ NULL, 0 }		
-	};
-
-	/**
-	 * disable sub-commands
-	 */
-	DebugCLI::StringIntArray DebugCLI::disableCommandArray[] =
-	{
-		{ "display", CMD_DISPLAY },
-		{ "breakpoints", CMD_BREAK },
-		{ NULL, 0 }		
-	};
-	
 	DebugCLI::DebugCLI(AvmCore *core)
 		: Debugger(core)
 	{
-		currentSourceLen = -1;
+		currentSourceLen = 0;
+        warnMissingSource = true;
 	}
 
 	DebugCLI::~DebugCLI()
@@ -196,7 +138,9 @@ namespace avmshell
 								   const char *input,
 								   int defCmd)
 	{
-		int inputLen = (int)strlen(input);
+        if (!input) return INFO_UNKNOWN_CMD;
+        
+		int inputLen = (int)VMPI_strlen(input);
 		
 		// first check for a comment
 		if (input[0] == '#') {
@@ -207,7 +151,7 @@ namespace avmshell
 		bool ambiguous = false;
 		
 		for (int i=0; cmdList[i].text; i++) {
-			if (!strncmp(input, cmdList[i].text, inputLen)) {
+			if (!VMPI_strncmp(input, cmdList[i].text, inputLen)) {
 				if (match != -1) {
 					ambiguous = true;
 					break;
@@ -231,7 +175,7 @@ namespace avmshell
 			return defCmd;
 		}
 		// only 1 match or our input is 1 character or first match is exact
-		else if (!ambiguous || inputLen == 1 || !strcmp(cmdList[match].text, input)) {
+		else if (!ambiguous || inputLen == 1 || !VMPI_strcmp(cmdList[match].text, input)) {
 			return cmdList[match].id;
 		}
 		else {
@@ -239,7 +183,7 @@ namespace avmshell
 			core->console << "Ambiguous command '" << input << "': ";
 			bool first = true;
 			for (int i=0; cmdList[i].text; i++) {
-				if (!strncmp(cmdList[i].text, input, inputLen)) {
+				if (!VMPI_strncmp(cmdList[i].text, input, inputLen)) {
 					if (!first) {
 						core->console << ", ";
 					} else {
@@ -271,13 +215,13 @@ namespace avmshell
 		//core->console << '\n';
 
 		// obtain information about each frame 
-		int frameCount = core->debugger->frameCount();
+		int frameCount = core->debugger()->frameCount();
 		for(int k=0; k<frameCount; k++)
 		{
 			Atom* ptr;
 			int count, line; 
 			SourceInfo* src;
-			DebugFrame* frame = core->debugger->frameAt(k);
+			DebugFrame* frame = core->debugger()->frameAt(k);
 
 			// source information
 			frame->sourceLocation(src, line);
@@ -292,7 +236,7 @@ namespace avmshell
 			// method
 			MethodInfo* info = functionFor(src, line);
 			if (info)
-				core->console << info->name;
+				core->console << info->getMethodName();
 			else
 				core->console << "<unknown>";
 
@@ -303,8 +247,9 @@ namespace avmshell
 			for(int i=0; i<count; i++)
 			{
 				// write out the name
-				if ( info && (info->getArgName(i) != core->kundefined) )
-					core->console << info->getArgName(i) << "=";
+                Stringp nm = info->getArgName(i);
+				if (info && (nm != core->kundefined))
+					core->console << nm << "=";
 
 				core->console << core->format(*ptr++);
 				if (i<count-1)
@@ -330,7 +275,7 @@ namespace avmshell
 			for(int i=0; i<size; i++)
 			{
 				MethodInfo* m = src->functionAt(i);
-				if (line >= m->firstSourceLine && line <= m->lastSourceLine)
+				if (line >= m->firstSourceLine() && line <= m->lastSourceLine())
 				{
 					info = m;
 					break;
@@ -369,9 +314,12 @@ namespace avmshell
 	void DebugCLI::displayLines(int line, int count)
 	{
 		if (!lineStart(0)) {
-			core->console << "No source available for current instruction\n";
+            if (currentFile) 
+                core->console << currentFile;
+            else
+                core->console << "<unknown>";
+			core->console <<":"<<line<<" ";
 		} else {
-			// Display status
 			int lineAt = line;
 			while(count-- > 0)
 			{
@@ -399,41 +347,48 @@ namespace avmshell
 
 	void DebugCLI::list(const char* line)
 	{
-		int currentLine = (core->callStack) ? core->callStack->linenum : 0;
-		int linenum = (line) ? atoi(line) : currentLine;
+		int currentLine = (core->callStack) ? core->callStack->linenum() : 0;
+		int linenum = (line) ? VMPI_atoi(line) : currentLine;
 		displayLines(linenum, 10);
 	}
 	
 	void DebugCLI::printIP()
 	{
-		int line = (core->callStack) ? core->callStack->linenum : 0;
+		int line = (core->callStack) ? core->callStack->linenum() : 0;
 		displayLines(line, 1);
 	}
 
 	void DebugCLI::breakpoint(char *location)
 	{
 		Stringp filename = currentFile;
-		char *colon = strchr(location, ':');
+		char *colon = VMPI_strchr(location, ':');
 
 		if (colon) {
 			*colon = 0;
-			filename = core->constantString(location);
+			filename = core->internStringLatin1(location);
 			location = colon+1;
 		}
 
-		AbcFile *abcFile = (AbcFile*) abcAt(0);
-		if (abcFile == NULL) {
+		if (abcCount() == 0) {
 			core->console << "No abc file loaded\n";
 			return;
 		}
 
-		SourceFile *sourceFile = abcFile->sourceNamed(filename);
+		SourceFile* sourceFile = NULL;
+		for (int i = 0, n = abcCount(); i < n; ++i)
+		{
+			AbcFile* abcFile = (AbcFile*)abcAt(i);
+			sourceFile = abcFile->sourceNamed(filename);
+			if (sourceFile)
+				break;
+		}
+
 		if (sourceFile == NULL) {
 			core->console << "No source available; can't set breakpoint.\n";
 			return;
 		}
 
-		int targetLine = atoi(location);
+		int targetLine = VMPI_atoi(location);
 
 		int breakpointId = ++breakpointCount;
 		
@@ -469,7 +424,7 @@ namespace avmshell
 	
 	void DebugCLI::deleteBreakpoint(char *idstr)
 	{
-		int id = atoi(idstr);
+		int id = VMPI_atoi(idstr);
 
 		BreakAction *breakAction = firstBreakAction;
 		while (breakAction) {
@@ -505,7 +460,7 @@ namespace avmshell
 		Atom* ptr;
 		int count, line; 
 		SourceInfo* src;
-		DebugFrame* frame = core->debugger->frameAt(0);
+		DebugFrame* frame = core->debugger()->frameAt(0);
 
 		// source information
 		frame->sourceLocation(src, line);
@@ -514,16 +469,16 @@ namespace avmshell
 		MethodInfo* info = functionFor(src, line);
 		if (info)
 		{
-			frame->arguments(ptr, count);
+			frame->locals(ptr, count);
 			for(int i=0; i<count; i++)
 			{
 				// write out the name
-				if (info && (info->getLocalName(i) != core->kundefined) )
-					core->console << info->getLocalName(i) << " = ";
-
-				core->console << core->format(*ptr++);
-				//if (i<count-1)
-					core->console << "\n";
+                Stringp nm = info->getLocalName(i);
+                if (nm != core->kundefined) 
+					core->console << nm;
+                else
+                    core->console << "<local_" << i << ">";
+				core->console << " = " << core->format(*ptr++) << "\n";
 			}
 		}
 	}
@@ -531,13 +486,13 @@ namespace avmshell
 	Atom DebugCLI::ease2Atom(const char* to, Atom baseline)
 	{
 		// first make a string out of the value
-		Atom a = core->newString(to)->atom();
+		Atom a = core->newStringLatin1(to)->atom();
 
 		// using the type of baseline try to convert to into an appropriate Atom
 		if (core->isNumber(baseline))
 			return core->numberAtom(a);
 		else if (core->isBoolean(baseline))
-			return core->booleanAtom(a);
+			return AvmCore::booleanAtom(a);
 		
 		return nullStringAtom;
 	}
@@ -549,7 +504,7 @@ namespace avmshell
 		const char* to = nextToken();
 		if (!to || !equ || !what || *equ != '=')
 		{
-			core->console << " Bad format, should be:  'set {variable} = {value}' ";
+			core->console << " Bad format, should be:  'set {variable} = {value}' \n";
 		}
 		else
 		{
@@ -557,13 +512,13 @@ namespace avmshell
 			Atom* ptr;
 			int count, line; 
 			SourceInfo* src;
-			DebugFrame* frame = core->debugger->frameAt(0);
+			DebugFrame* frame = core->debugger()->frameAt(0);
 
 			// source information
 			frame->sourceLocation(src, line);
 			if (!src)
 			{
-				core->console << "Unable to locate debug information for current source file, so no local or argument names known";
+				core->console << "Unable to locate debug information for current source file, so no local or argument names known\n";
 				return;
 			}
 
@@ -571,7 +526,7 @@ namespace avmshell
 			MethodInfo* info = functionFor(src, line);
 			if (!info)
 			{
-				core->console << "Unable to find method debug information, so no local or argument names known";
+				core->console << "Unable to find method debug information, so no local or argument names known\n";
 				return;
 			}
 
@@ -579,7 +534,7 @@ namespace avmshell
 			for(int i=0; i<count; i++)
 			{
 				Stringp arg = info->getArgName(i);
-				if (arg->Equals(what)) 
+				if (arg->equalsLatin1(what)) 
 				{
 					// match!
 					Atom a = ease2Atom(to, ptr[i]);
@@ -595,7 +550,7 @@ namespace avmshell
 			for(int i=0; i<count; i++)
 			{
 				Stringp local = info->getLocalName(i);
-				if ( local->Equals(what)) 
+				if ( local->equalsLatin1(what)) 
 				{
 					// match!
 					Atom a = ease2Atom(to, ptr[i]);
@@ -619,7 +574,7 @@ namespace avmshell
 		// todo deal with exceptions
 		Multiname mname(
 			core->publicNamespace,
-			core->constantString(name)
+			core->internStringLatin1(name)
 		);
 
 		#if 0
@@ -630,7 +585,7 @@ namespace avmshell
 		#endif
 	}
 
-	bool DebugCLI::filterException(Exception *exception)
+	bool DebugCLI::filterException(Exception *exception, bool /*willBeCaught*/)
 	{
 		// Filter exceptions when -d switch specified
 		if (activeFlag) {
@@ -669,26 +624,20 @@ namespace avmshell
 	
 	void DebugCLI::enterDebugger()
 	{	
-		setCurrentSource( (core->callStack) ? (core->callStack->filename) : 0 );
-		if (currentSource == NULL)
-		{
-			stepInto();
-			return;
-		}
+		setCurrentSource( (core->callStack) ? (core->callStack->filename()) : 0 );
 
 		for (;;) {
 			printIP();
 			
 			core->console << "(asdb) ";
-			fflush(stdout);
-			fgets(commandLine, kMaxCommandLine, stdin);
+			Platform::GetInstance()->getUserInput(commandLine, kMaxCommandLine);
 
-			commandLine[strlen(commandLine)-1] = 0;
+			commandLine[VMPI_strlen(commandLine)-1] = 0;
 			
 			if (!commandLine[0]) {
-				strcpy(commandLine, lastCommand);
+				VMPI_strcpy(commandLine, lastCommand);
 			} else {
-				strcpy(lastCommand, commandLine);
+				VMPI_strcpy(lastCommand, commandLine);
 			}
 				
 			currentToken = commandLine;
@@ -716,7 +665,7 @@ namespace avmshell
 				core->console << "Unknown command.\n";
 				break;
 			case CMD_QUIT:
-				exit(0);
+				Platform::GetInstance()->exit(0);
 				break;
 			case CMD_CONTINUE:
 				return;
@@ -755,24 +704,26 @@ namespace avmshell
 		if (currentSource) {
 			delete [] currentSource;
 			currentSource = NULL;
-			currentSourceLen = -1;
+			currentSourceLen = 0;
 		}
 		
 		// Open this file and suck it into memory
-		FileInputStream f(currentFile->toUTF8String()->c_str());
-		if (f.valid()) {
-			currentSourceLen = f.available();
+		StUTF8String currentFileUTF8(currentFile);
+		FileInputStream f(currentFileUTF8.c_str());
+		if (f.valid() && ((uint64_t)file->length() < UINT32_T_MAX)) { //cannot handle files > 4GB
+			currentSourceLen = (uint32_t) f.available();
 			currentSource = new char[currentSourceLen+1];
 			f.read(currentSource, currentSourceLen);
 			currentSource[currentSourceLen] = 0;
 
 			// whip through converting \r\n to space \n
-			for(int i=0; i<currentSourceLen-1;i++) {
+			for(int64_t i=0; i<currentSourceLen-1;i++) {
 				if (currentSource[i] == '\r' && currentSource[i+1] == '\n')
 					currentSource[i] = ' ';
 			}
-		} else {
-			core->console << "Error opening source file " << currentFile->c_str() << "\n";
+		} else if (warnMissingSource) {
+			core->console << "Could not find '" << currentFile << "'.  Try running in the same directory as the .as file.\n";
+            warnMissingSource = false;
 		}
 	}
 

@@ -71,10 +71,10 @@ namespace avmplus
 		 *    - The output buffer contains insufficient space
 		 *      to represent the entire UTF-8 sequence.
 		 */
-		static int Utf16ToUtf8(const wchar *in,
-							   int inLen,
+		static int32_t Utf16ToUtf8(const wchar *in,
+							   int32_t inLen,
 							   uint8 *out,
-							   int outMax);
+							   int32_t outMax);
 		
 		/**
 		 * Utf8ToUtf16 converts a UTF-8 sequence to UTF-16.
@@ -93,22 +93,31 @@ namespace avmplus
 		 *               is calculated.
 		 * @param outMax size available in output buffer, in # of wchars.
 		 *               Ignored if out is NULL.
+		 * @param strict if false, invalid UTF-8 sequences are copied as
+		 *               single characters; if true, the method returns
+		 *               -1. Setting strict to false conserves backwards
+		 *               compabitility, and should be revisited in a future
+		 *               release.
 		 *
 		 * @return The number of wchars decoded, or -1 if an error occurs.
 		 *
 		 *    An error occurs in any of the following conditions:
-		 *    - The UTF-8 sequence is invalid
+		 *    - The UTF-8 sequence is invalid, and strict is true.
 		 *    - The output buffer contains insufficient space
 		 *      to represent the entire UTF-8 sequence.
 		 *    - The UTF-8 sequence contains characters that cannot
-		 *      be represented in ECMAScript (code point >0x10FFFF)
+		 *      be represented in ECMAScript (code point >0x10FFFF),
+		 *      and strict is true
 		 */
-		static int Utf8ToUtf16(const uint8 *in,
-							   int inLen,
-							   wchar *out,
-							   int outMax);
+		static int32_t Utf8ToUtf16(const uint8 *in,
+					  			   int32_t inLen,
+							       wchar   *out,
+							       int32_t outMax,
+							       bool    strict);
 
-		static int Utf8Count(const uint8 *in, int inLen);
+		inline int32_t Utf8Count(const uint8 *in, int32_t inLen, bool strict) {
+			return Utf8ToUtf16(in, inLen, NULL, 0, strict);
+		}
 
 		/**
 		 * Utf8ToUcs4 converts the UTF-8 sequence "chars", which
@@ -118,9 +127,9 @@ namespace avmplus
 		 * The actual number of bytes consumed is returned, or
 		 * 0 is the UTF-8 sequence is malformed.
 		 */
-		static int Utf8ToUcs4(const uint8 *chars,
-							  int len,
-							  uint32 *out);
+		static int32_t Utf8ToUcs4(const uint8 *chars,
+							      int32_t len,
+							      uint32_t *out);
 
 		/**
 		 * Ucs4ToUtf8 takes a single 32-bit UCS-4 character as
@@ -133,8 +142,8 @@ namespace avmplus
 		 * "out", or 0 if the UCS-4 character cannot be encoded
 		 * to UTF-8 (>0x7fffffff)
 		 */
-		static int Ucs4ToUtf8(uint32 value,
-							  uint8* out);
+		static int32_t Ucs4ToUtf8(uint32_t value,
+							      uint8* out);
 	};
 }
 

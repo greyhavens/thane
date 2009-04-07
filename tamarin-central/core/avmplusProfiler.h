@@ -68,7 +68,7 @@ namespace avmplus
 		 * @param url the URL of the new source file, as encoded
 		 *            in the OP_debugfile bytecode
 		 */
-		virtual void sendDebugFileUrl(UTF8String *url) = 0;
+		virtual void sendDebugFileURL(String* url) = 0;
 
 		/**
 		 * This will be called to notify the profiler that the
@@ -98,7 +98,7 @@ namespace avmplus
 		 *
 		 * @param method  the method being entered
 		 */
-		virtual void sendFunctionEnter(AbstractFunction* method) = 0;
+		virtual void sendFunctionEnter(MethodInfo* method) = 0;
 
 		/**
 		 * This will be called to notify the profiler that a
@@ -116,7 +116,7 @@ namespace avmplus
 		 *
 		 * @param method  the method being entered
 		 */
-		virtual void sendCatch(AbstractFunction* method) = 0;
+		virtual void sendCatch(MethodInfo* method) = 0;
 
 		/**
 		 * Is profiling wanted at all?

@@ -26,6 +26,16 @@ After this, engines named 'application/ecmascript;version=4' and
 identical.  Note that no file extension is currently registered for this 
 engine, so the engine name will need to be explicitly specified.
 
+To create a binary
+------------------
+
+The NSIS installer is used - if you have installed the mozilla build tools,
+then you have NSIS available.  The current binary is built using the command:
+
+  %MOZ_BUILD_TOOLS%\nsis-2.33u\makensisu.exe axtam.nsi
+
+which will create setup-axtam-YYYYMMDD.exe
+
 Test it
 --------
 

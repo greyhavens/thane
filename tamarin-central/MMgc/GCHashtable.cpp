@@ -36,44 +36,70 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
-
 #include "MMgc.h"
+
+//#define DOPROF
+
+#ifdef DOPROF
+#include "../vprof/vprof.h"
+#endif
 
 namespace MMgc
 {
 	const void *GCHashtable::DELETED = (const void*)1;
+	
+	static const void *EMPTY[2] = { NULL, NULL };
 
-	GCHashtable::GCHashtable(unsigned int capacity)
+	GCHashtable::GCHashtable(unsigned int capacity, int options) : options(options), table(0), numValues(0), numDeleted(0)
 	{
 		tableSize = capacity*2;
-		table = new const void*[tableSize];
-		memset(table, 0, tableSize * sizeof(void*));
-		numValues = 0;
-		numDeleted = 0;
+		if(tableSize > 0)
+			grow();
+		else {
+			tableSize = 4;
+			numValues = 4;
+			table = EMPTY;
+		}
 	}
 
 	GCHashtable::~GCHashtable()
 	{
-		delete [] table;
+		if(options & OPTION_MALLOC) {
+			if(table)
+				VMPI_free((char*)table);
+		}	else {
+			delete [] table;
+		}
 		table = 0;
 		tableSize = 0;
 		numDeleted = 0;
 		numValues = 0;
 	}
 
+//Werner's intern table improvement, improves things a little with lots of removes, still doesn't solve completely
+//#define CONSUME_DELETED_SLOTS
+	// this does solve it completely
+	// FIXME: make this a C++ template option so the hashtable consumer can choose linear or quadratic probe
+//#define LINEAR_PROBE
+
 	void GCHashtable::put(const void *key, const void *value)
 	{
+		GCAssert(table != NULL);
 		int i = find(key, table, tableSize);
-		if (table[i] != key) {
+		if (!equals(table[i], key)) {
 			// .75 load factor, note we don't take numDeleted into account
-			// we want to rehash a table with lots of deleted slots
-			if(numValues * 8 > tableSize * 3)
+			// numValues includes numDeleted
+			if(numValues * 8 >= tableSize * 3)
 			{
 				grow();
 				// grow rehashes
 				i = find(key, table, tableSize);
 			}
+
+#ifdef CONSUME_DELETED_SLOTS
+			if(table[i] == DELETED)
+				numDeleted--;
+#endif
 			table[i] = key;
 			numValues++;
 		}
@@ -85,10 +111,21 @@ namespace MMgc
 		const void *ret = NULL;
 		int i = find(key, table, tableSize);
 		if (table[i] == key) {
-			table[i] = (const void*)DELETED;
+#ifdef LINEAR_PROBE
+			int bitmask = (tableSize - 1) & ~0x1;
+			// if we are the end of the chain we can trim the chain
+			if(i  > 0 && table[(i+2) & bitmask] == NULL)
+				table[i] = NULL;
+			else
+#endif
+				table[i] = (const void*)DELETED;
 			ret = table[i+1];
 			table[i+1] = NULL;
 			numDeleted++;
+			// this helps a bit on pathologic memory profiler use case, needs more investigation
+			// 5% deleted == rehash
+			//if(numDeleted * 40 >= tableSize)
+			//	grow();
 		}		
 		return ret;
 	}
@@ -98,28 +135,75 @@ namespace MMgc
 		return table[find(key, table, tableSize)+1];
 	}
 
+	unsigned GCHashtable::equals(const void *k1, const void *k2)
+	{
+		if(k1 == k2) 
+			return true;
+		if(k1 && k2 && (options & OPTION_STRINGS))
+			return VMPI_strcmp((const char*)k1, (const char*)k2) == 0;
+		return false;
+	}
+	
+	unsigned GCHashtable::hash(const void *key)
+	{
+		if(options & OPTION_STRINGS) {
+			unsigned hashCode = 0;
+			const char *s = (const char*)key;
+			while (*s++) {
+				hashCode = (hashCode >> 28) ^ (hashCode << 4) ^ ((uintptr_t)*s << ((uintptr_t)s & 0x3));
+			}
+			return hashCode;
+		}
+		return (0x7FFFFFFF & (uintptr_t)key);
+	}
+
 	/* static */
 	int GCHashtable::find(const void *key, const void **table, unsigned int tableSize)
 	{	
 		GCAssert(key != (const void*)DELETED);
-		int bitmask = (tableSize - 1) & ~0x1;
 
-        // this is a quadratic probe but we only hit even numbered slots since those hold keys.
-        int n = 7 << 1;
-		#ifdef _DEBUG
+#ifndef LINEAR_PROBE
+		// this is a quadratic probe but we only hit even numbered slots since those hold keys.
+		int n = 7 << 1;
+#endif
+
+		#if defined(DOPROF) || defined(_DEBUG)
 		unsigned loopCount = 0;
 		#endif
-		// Note: Mask off MSB to avoid negative indices.  Mask off bottom
-		// 2 bits because of alignment.  Double it because names, values stored adjacently.
-        unsigned i = ((0x7FFFFFF8 & (uintptr)key)>>1) & bitmask;  
-        const void *k;
-        while ((k=table[i]) != key && k != NULL)
+
+		int bitmask = (tableSize - 1) & ~0x1;
+	    unsigned i = hash(key) & bitmask;  
+		const void *k;
+#ifdef CONSUME_DELETED_SLOTS
+		int firstDeletedSlot = -1;
+#endif
+    while (equals((k=table[i]), key) == false && k != NULL)
 		{
+#ifdef CONSUME_DELETED_SLOTS
+			if(k == DELETED && firstDeletedSlot == -1)
+				firstDeletedSlot = i;
+#endif
+
+#ifdef LINEAR_PROBE
+			i = (i+2) & bitmask;
+#else
 			i = (i + (n += 2)) & bitmask;		// quadratic probe
-			GCAssert(loopCount++ < tableSize);			// don't scan forever
+#endif
+#if defined(DOPROF) || defined(_DEBUG)
+			loopCount++;
+#endif
+			GCAssert(loopCount < tableSize);			// don't scan forever
 		}
+#ifdef CONSUME_DELETED_SLOTS
+		if(k == NULL && firstDeletedSlot == (int)i) {
+			i = firstDeletedSlot;
+		}
+#endif
+#ifdef DOPROF
+		_nvprof("loopCount", loopCount);
+#endif
 		GCAssert(i <= ((tableSize-1)&~0x1));
-        return i;
+		return i;
 	}
 
 	void GCHashtable::grow()
@@ -127,7 +211,7 @@ namespace MMgc
 		int newTableSize = tableSize;
 
 		unsigned int occupiedSlots = numValues - numDeleted;
-        GCAssert(numValues >= numDeleted);
+		GCAssert(numValues >= numDeleted);
 
 		// grow or shrink as appropriate:
 		// if we're greater than %50 full grow
@@ -136,33 +220,49 @@ namespace MMgc
 		if (4*occupiedSlots > tableSize)
 			newTableSize <<= 1;
 		else if(20*occupiedSlots < tableSize && 
-				tableSize > kDefaultSize)
+				tableSize > kDefaultSize && table)
 			newTableSize >>= 1;
 
-		const void **newTable = new const void*[newTableSize];
-		memset(newTable, 0, newTableSize*sizeof(void*));
+		const void **newTable;
+		if(options & OPTION_MALLOC) {
+			newTable = (const void**)VMPI_alloc(newTableSize*sizeof(void*));
+		} else {
+			newTable = new const void*[newTableSize];
+		}
+		VMPI_memset(newTable, 0, newTableSize*sizeof(void*));
 
 		numValues = 0;
 		numDeleted = 0;
 
-        for (int i=0, n=tableSize; i < n; i += 2)
+		if(table)
+		{
+			for (int i=0, n=tableSize; i < n; i += 2)	
+      {
+        const void *oldKey;
+        if ((oldKey=table[i]) != NULL)
         {
-            const void *oldKey;
-            if ((oldKey=table[i]) != NULL)
-            {
-                // inlined & simplified version of put()
-				if(oldKey != (const void*)DELETED) {
-					int j = find(oldKey, newTable, newTableSize);
-					newTable[j] = oldKey;
-					newTable[j+1] = table[i+1];
-					numValues++;
+           // inlined & simplified version of put()
+					if(oldKey != (const void*)DELETED) {
+						int j = find(oldKey, newTable, newTableSize);
+						newTable[j] = oldKey;
+						newTable[j+1] = table[i+1];
+						numValues++;
+					}
 				}
 			}
-        }
+		}
 	
-		delete [] table;
+		if(table != EMPTY) {
+			if(options & OPTION_MALLOC) {
+				if(table)	
+					VMPI_free((char*)table);
+			} else {
+				delete [] table;
+			}
+		}
 		table = newTable;
 		tableSize = newTableSize;
+		GCAssert(table != NULL);
 	}
 
 	int GCHashtable::nextIndex(int index)

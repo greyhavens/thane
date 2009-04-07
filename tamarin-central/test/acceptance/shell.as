@@ -244,10 +244,10 @@ function writeFormattedResult( expect, actual, string, passed ) {
 */
 
 function writeLineToLog( string	) {
-	print( string );
+	_print( string );
 }
 function writeHeaderToLog( string )	{
-	print( string );
+	_print( string );
 }
 // end of print functions
 
@@ -270,9 +270,6 @@ function stopTest()	{
 
 function getTimeZoneDiff()
 {
-  // re-hard coding to -8 because Date object is not implemented yet
-  // mtilburg 3/15/2004
-  //return -8;
   return -((new Date(2000, 1, 1)).getTimezoneOffset())/60;
 }
 
@@ -369,7 +366,7 @@ function DaysInYear( y ) {
 	if ( (y	% 400 == 0)	){
 		return 366;
 	} else {
-		print("ERROR: DaysInYear("	+ y	+ ") case not covered");
+		_print("ERROR: DaysInYear("	+ y	+ ") case not covered");
 		return Math.NaN; //"ERROR: DaysInYear("	+ y	+ ") case not covered";
 	}
 }
@@ -485,7 +482,6 @@ function DayWithinYear(	t )	{
 function DateFromTime( t ) {
 	var	day	= DayWithinYear(t);
 	var	month =	MonthFromTime(t);
-
 	if ( month == 0	) {
 		return ( day + 1 );
 	}
@@ -556,11 +552,23 @@ function UTC( t	) {
 }
 
 function DaylightSavingTA( t ) {
-	t =	t -	LocalTZA();
-
-	var	dst_start =	GetSecondSundayInMarch(t) + 2*msPerHour;
-        var k = new Date(dst_start);
-	var	dst_end	  =	GetFirstSundayInNovember(t)+ 2*msPerHour;
+	var dst_start;
+	var dst_end;
+    // Windows fix for 2007 DST change made all previous years follow new DST rules
+    // check to see if 3/13/2006 12pm getHours is 12 or 13
+    var dstPrev:Boolean=(new Date(1142269200000).getHours()==13);
+	if (TZ_DIFF<=-4 && TZ_DIFF>=-8) {
+        if (dstPrev || YearFromTime(t)>=2007) {
+   	        dst_start = GetSecondSundayInMarch(t) + 2*msPerHour;
+            dst_end = GetFirstSundayInNovember(t) + 2*msPerHour;
+        } else {
+            dst_start = GetFirstSundayInApril(t) + 2*msPerHour;
+            dst_end = GetLastSundayInOctober(t) + 2*msPerHour;
+        }        
+	} else {
+	    dst_start = GetLastSundayInMarch(t) + 2*msPerHour;
+	    dst_end = GetLastSundayInOctober(t) + 2*msPerHour;
+    }
 	if ( t >= dst_start	&& t < dst_end ) {
 		return msPerHour;
 	} else {
@@ -570,20 +578,36 @@ function DaylightSavingTA( t ) {
 
 	// Daylight	Savings	Time starts	on the second Sunday	in March at	2:00AM in
 	// PST.	 Other time	zones will need	to override	this function.
-	print( new Date( UTC(dst_start + LocalTZA())) );
+	_print( new Date( UTC(dst_start + LocalTZA())) );
 
 	return UTC(dst_start  +	LocalTZA());
-}function GetSecondSundayInMarch(t )	{
+}
+function GetLastSundayInMarch(t) {
 	var	year = YearFromTime(t);
 	var	leap = InLeapYear(t);
-	var	march =	TimeFromYear(year) + TimeInMonth(0,leap) +	TimeInMonth(1,leap);
+	var	march =	TimeFromYear(year) + TimeInMonth(0,leap) +	TimeInMonth(1,leap)-LocalTZA()+2*msPerHour;
+    var sunday;
+	for( sunday=march;WeekDay(sunday)>0;sunday +=msPerDay ){;}
+	var last_sunday;
+	while (true) {
+	   sunday=sunday+7*msPerDay;
+	   if (MonthFromTime(sunday)>2)
+	       break;
+	   last_sunday=sunday;
+	}
+	return last_sunday;
+}
+function GetSecondSundayInMarch(t )	{
+	var	year = YearFromTime(t);
+	var	leap = InLeapYear(t);
+	var	march =	TimeFromYear(year) + TimeInMonth(0,leap) +	TimeInMonth(1,leap)-LocalTZA()+2*msPerHour;
         
 	for	( var first_sunday = march;	WeekDay(first_sunday) >0;
 		first_sunday +=msPerDay )
 	{
 		;
 	}
-        second_sunday=first_sunday+7*msPerDay;
+    second_sunday=first_sunday+7*msPerDay;
 	return second_sunday;
 }
 
@@ -592,16 +616,52 @@ function DaylightSavingTA( t ) {
 function GetFirstSundayInNovember( t ) {
 	var	year = YearFromTime(t);
 	var	leap = InLeapYear(t);
-
-	for	( var nov =	TimeFromYear(year),	m =	0; m < 10; m++ )	{
+        var     nov,m;
+	for	( nov =	TimeFromYear(year),	m =	0; m < 10; m++ )	{
 		nov	+= TimeInMonth(m, leap);
 	}
+	nov=nov-LocalTZA()+2*msPerHour;
 	for	( var first_sunday =	nov; WeekDay(first_sunday)	> 0;
 		first_sunday	+= msPerDay	)
 	{
 		;
 	}
 	return first_sunday;
+}
+function GetFirstSundayInApril( t ) {
+	var	year = YearFromTime(t);
+	var	leap = InLeapYear(t);
+    var     apr,m;
+	for	( apr =	TimeFromYear(year),	m =	0; m < 3; m++ )	{
+		apr	+= TimeInMonth(m, leap);
+	}
+	apr=apr-LocalTZA()+2*msPerHour;
+
+	for	( var first_sunday =	apr; WeekDay(first_sunday)	> 0;
+		first_sunday	+= msPerDay	)
+	{
+		;
+	}
+	return first_sunday;
+}
+function GetLastSundayInOctober(t) {
+	var	year = YearFromTime(t);
+	var	leap = InLeapYear(t);
+	var oct,m;
+	for	(oct =	TimeFromYear(year),	m =	0; m < 9; m++ )	{
+		oct	+= TimeInMonth(m, leap);
+	}
+	oct=oct-LocalTZA()+2*msPerHour;
+    var sunday;
+	for( sunday=oct;WeekDay(sunday)>0;sunday +=msPerDay ){;}
+	var last_sunday;
+	while (true) {
+	   last_sunday=sunday;
+	   sunday=sunday+7*msPerDay;
+	   if (MonthFromTime(sunday)>9)
+	       break;
+	}
+	return last_sunday;
 }
 function LocalTime(	t )	{
 	return ( t + LocalTZA()	+ DaylightSavingTA(t) );
@@ -693,6 +753,20 @@ function MakeDate( day,	time ) {
 	}
 	return ( day * msPerDay	) +	time;
 }
+
+
+// Compare 2 dates, they are considered equal if the difference is less than 1 second
+function compareDate(d1, d2) {
+    //Dates may be off by a second
+    if (d1 == d2) {
+        return true;
+    } else if (Math.abs(new Date(d1) - new Date(d2)) <= 1000) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 function TimeClip( t ) {
 	if ( isNaN(	t )	) {
 		return ( Number.NaN	);
@@ -721,7 +795,7 @@ function ToInteger(	t )	{
 function Enumerate ( o ) {
 	var	p;
 	for	( p	in o ) {
-		print( p +": " + o[p] );
+		_print( p +": " + o[p] );
 	}
 }
 
@@ -745,9 +819,9 @@ function START(summary)
     tf.width = 200;
     tf.height = 400;*/
 
-    print(summary);
+    _print(summary);
     var summaryParts = summary.split(" ");
-    print("section: " + summaryParts[0] + "!");
+    _print("section: " + summaryParts[0] + "!");
     //fileName = summaryParts[0];
 
 }
@@ -923,7 +997,7 @@ function printStatus (msg)
     var l;
 
     for (var i=0; i<lines.length; i++)
-        print(STATUS + lines[i]);
+        _print(STATUS + lines[i]);
 
 }
 function reportCompare (expected, actual, description)
@@ -955,4 +1029,16 @@ function reportCompare (expected, actual, description)
             	reportFailure (output);
         }
     stopTest();
+}
+// encapsulate output in shell
+function _print(s) {
+  print(s);
+//  trace(s);
+}
+// workaround for Debugger vm where error contains more details
+function parseError(error,len) {
+  if (error.length>len) {
+    error=error.substring(0,len);
+  }
+  return error;
 }

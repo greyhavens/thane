@@ -61,8 +61,6 @@ namespace avmplus
 
 		ATOM_WB kindex;
 		ATOM_WB kinput;
-
-		DECLARE_NATIVE_MAP(RegExpClass)
 	};
 }
 

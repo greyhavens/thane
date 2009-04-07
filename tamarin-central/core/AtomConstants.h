@@ -86,6 +86,7 @@ namespace avmplus
 		 */
 		/*@{*/
 		// cannot use 0 as tag, breaks atomWriteBarrier
+		const Atom kUnusedAtomTag = 0;
 		const Atom kObjectType	  = 1;	// null=1
 		const Atom kStringType    = 2;	// null=2
 		const Atom kNamespaceType = 3;	// null=3
@@ -94,6 +95,16 @@ namespace avmplus
 		const Atom kIntegerType   = 6;
 		const Atom kDoubleType    = 7;
 		/*@}*/
+
+	//	inline AtomConstants::AtomKind atomKind(Atom a) { return AtomConstants::AtomKind(uintptr_t(a) & 7); }
+	//	inline void* atomPtr(Atom a) { return (void*)(uintptr_t(a) & ~7); }
+	//	// note that this needs to be signed (NOT unsigned) to maintain existing semantics
+	//	inline intptr_t atomInt(Atom a) { return intptr_t(a) >> 3; }
+
+		// sadly, this generates better code than the inlines above...
+		#define atomKind(a)	((Atom)((uintptr_t(a) & 7)))
+		#define atomPtr(a)	((void*)(uintptr_t(a) & ~7))
+		#define atomInt(a)	(intptr_t(a) >> 3)
 
 		#define	ISNULL(a) (((uintptr)a) < (uintptr)kSpecialType)
 
@@ -127,22 +138,24 @@ namespace avmplus
 		const Atom falseAtom      = kBooleanType|0x00; // 0x05
 		/*@}*/
 
-		/**
-		 * @name BIND constants
-		 * These BIND constants are used similarly to atom kinds.  Since we
-		 * have a conservative collector, the codes aren't important.
-		 */
-		/*@{*/
-		const Binding BIND_NONE      = 0;       // no such binding
-		const Binding BIND_AMBIGUOUS = -1;
-		const Binding BIND_METHOD    = 1;       // int disp_id local method number
-		const Binding BIND_VAR       = 2;       // int local slot number (r/w var)
-		const Binding BIND_CONST     = 3;       // int local slot number (r/o const)
-		const Binding BIND_ITRAMP    = 4;       // interface trampoline in imt table
-		const Binding BIND_GET       = 5;		// get-only property   101
-		const Binding BIND_SET		 = 6;       // set-only property   110
-		const Binding BIND_GETSET    = 7;       // readwrite property  111
-		/*@}*/
+		enum BindingKind
+		{
+			BKIND_NONE				= 0,		// no such binding (id == 0)			000
+			BKIND_METHOD			= 1,		// MethodEnv*							001
+			BKIND_VAR				= 2,		// int local slot number (r/w var)		010
+			BKIND_CONST				= 3,		// int local slot number (r/o const)	011
+#if defined FEATURE_NANOJIT
+			BKIND_ITRAMP			= 4,		// interface trampoline in imt table	100
+#endif
+			BKIND_GET				= 5,		// get-only property					101
+			BKIND_SET				= 6,		// set-only property					110
+			BKIND_GETSET			= 7			// readwrite property					111
+		};
+
+		// A couple of common Binding results that are worth having constants for
+		const Binding BIND_AMBIGUOUS = (Binding)-1;
+		const Binding BIND_NONE      = (Binding)BKIND_NONE;      // no such binding
+
 	}
 }
 

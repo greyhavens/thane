@@ -37,54 +37,10 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(DateClass)
-		NATIVE_METHOD(Date_parse,   DateClass::parse)
-		NATIVE_METHOD(Date_UTC,     DateClass::UTC)
-		NATIVE_METHOD(Date_private__toString, DateObject::dateToString)
-		NATIVE_METHOD(Date_AS3_valueOf, DateObject::valueOf)
-		NATIVE_METHOD(Date_private__setTime, DateObject::setTime)
-		NATIVE_METHOD(Date_private__get, DateObject::get)
-
-		NATIVE_METHOD1(Date_AS3_getUTCFullYear, DateObject::get, Date::kUTCFullYear)
-		NATIVE_METHOD1(Date_AS3_getUTCMonth, DateObject::get, Date::kUTCMonth)
-		NATIVE_METHOD1(Date_AS3_getUTCDate, DateObject::get, Date::kUTCDate)
-		NATIVE_METHOD1(Date_AS3_getUTCDay, DateObject::get, Date::kUTCDay)
-		NATIVE_METHOD1(Date_AS3_getUTCHours, DateObject::get, Date::kUTCHours)
-		NATIVE_METHOD1(Date_AS3_getUTCMinutes, DateObject::get, Date::kUTCMinutes)
-		NATIVE_METHOD1(Date_AS3_getUTCSeconds, DateObject::get, Date::kUTCSeconds)
-		NATIVE_METHOD1(Date_AS3_getUTCMilliseconds, DateObject::get, Date::kUTCMilliseconds)
-		NATIVE_METHOD1(Date_AS3_getFullYear, DateObject::get, Date::kFullYear)
-		NATIVE_METHOD1(Date_AS3_getMonth, DateObject::get, Date::kMonth)
-		NATIVE_METHOD1(Date_AS3_getDate, DateObject::get, Date::kDate)
-		NATIVE_METHOD1(Date_AS3_getDay, DateObject::get, Date::kDay)
-		NATIVE_METHOD1(Date_AS3_getHours, DateObject::get, Date::kHours)
-		NATIVE_METHOD1(Date_AS3_getMinutes, DateObject::get, Date::kMinutes)
-		NATIVE_METHOD1(Date_AS3_getSeconds, DateObject::get, Date::kSeconds)
-		NATIVE_METHOD1(Date_AS3_getMilliseconds, DateObject::get, Date::kMilliseconds)
-		NATIVE_METHOD1(Date_AS3_getTimezoneOffset, DateObject::get, Date::kTimezoneOffset)
-		NATIVE_METHOD1(Date_AS3_getTime, DateObject::get, Date::kTime)
-
-		NATIVE_METHODV1(Date_AS3_setFullYear, DateObject::set, 1)
-		NATIVE_METHODV1(Date_AS3_setMonth, DateObject::set, 2)
-		NATIVE_METHODV1(Date_AS3_setDate, DateObject::set, 3)
-		NATIVE_METHODV1(Date_AS3_setHours, DateObject::set, 4)
-		NATIVE_METHODV1(Date_AS3_setMinutes, DateObject::set, 5)
-		NATIVE_METHODV1(Date_AS3_setSeconds, DateObject::set, 6)
-		NATIVE_METHODV1(Date_AS3_setMilliseconds, DateObject::set, 7)
-
-		NATIVE_METHODV1(Date_AS3_setUTCFullYear, DateObject::set, -1)
-		NATIVE_METHODV1(Date_AS3_setUTCMonth, DateObject::set, -2)
-		NATIVE_METHODV1(Date_AS3_setUTCDate, DateObject::set, -3)
-		NATIVE_METHODV1(Date_AS3_setUTCHours, DateObject::set, -4)
-		NATIVE_METHODV1(Date_AS3_setUTCMinutes, DateObject::set, -5)
-		NATIVE_METHODV1(Date_AS3_setUTCSeconds, DateObject::set, -6)
-		NATIVE_METHODV1(Date_AS3_setUTCMilliseconds, DateObject::set, -7)
-
-	END_NATIVE_MAP()
-
 	DateClass::DateClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
@@ -100,8 +56,8 @@ namespace avmplus
 		AvmCore* core = this->core();
 		if (argc == 1) {
 			double dateAsDouble = ( core->isString(argv[1]) ?
-									stringToDateDouble( *(core->string(argv[1])) ) :
-									core->number(argv[1]) );
+									stringToDateDouble(core->string(argv[1])) :
+									AvmCore::number(argv[1]) );
 			
 			Date   date(dateAsDouble);
 			return (new (core->GetGC(), ivtable()->getExtraSize()) DateObject(this, date))->atom();
@@ -112,7 +68,7 @@ namespace avmplus
 			if (argc > 7)
 				argc = 7;
 			for (i=0; i<argc; i++) {
-				num[i] = core->number(argv[i+1]);
+				num[i] = AvmCore::number(argv[i+1]);
 			}
 			Date date(num[0],
 					  num[1],
@@ -144,7 +100,7 @@ namespace avmplus
 		wchar buffer[256];
 		int len;
 		date.toString(buffer, Date::kToString, len);
-		return (new (gc()) String(buffer, len))->atom();
+		return core()->newStringUTF16(buffer, len)->atom();
     }
 	
 	// static function UTC(year, month, date, hours, minutes, seconds, ms, ... rest)
@@ -152,14 +108,13 @@ namespace avmplus
 						Atom hours, Atom minutes, Atom seconds, Atom ms,
 						Atom* /*argv*/, int /*argc*/) // rest
 	{
-		AvmCore* core = this->core();
-		Date d(core->number(year),
-				  core->number(month),
-				  core->number(date),
-				  core->number(hours),
-				  core->number(minutes),
-				  core->number(seconds),
-				  core->number(ms),
+		Date d(AvmCore::number(year),
+				  AvmCore::number(month),
+				  AvmCore::number(date),
+				  AvmCore::number(hours),
+				  AvmCore::number(minutes),
+				  AvmCore::number(seconds),
+				  AvmCore::number(ms),
 				  true);
 		return d.getTime();
 	}
@@ -168,7 +123,7 @@ namespace avmplus
 	{
 		AvmCore* core = this->core();
 		Stringp s = core->string(input);
-		return stringToDateDouble( *s );
+		return stringToDateDouble(s);
 	}
 
 	
@@ -182,7 +137,7 @@ namespace avmplus
 	//  or timeZoneOffset appropriately.  Return false if keyword is
 	//  invalid.   Assumes that <offset> is the start of a word in <s> and
 	//  <offset> + <count> marks the end of that word.
-	inline bool parseDateKeyword(String &s, int offset, int count, int& hour, 
+	inline bool parseDateKeyword(const StringIndexer& s, int offset, int count, int& hour, 
 								 int& month, double& timeZoneOffset)
 	{
 		static const char kDayAndMonthKeywords[] = "JanFebMarAprMayJunJulAugSepOctNovDecSunMonTueWedThuFriSatGMTUTC";
@@ -194,19 +149,17 @@ namespace avmplus
 			return false;
 
 		// string case must match.  Case insensitivity is not necessary for compliance.
-		wchar  subString16[kKeyWordLength+1];
-		char   subString[kKeyWordLength*2+1];
 
-		memcpy(subString16, s.c_str()+offset, count*sizeof(wchar));
-		subString16[count] = 0;
-		int subStringLength = UnicodeUtils::Utf16ToUtf8( subString16,
-														 count,
-														 (uint8 *)subString,  
-														 kKeyWordLength*2 );
-		if (subStringLength != count)
-			return false; // there are no double byte characters in any of the keywords we accept.
-
-		subString16[count] = 0;
+		char subString[kKeyWordLength+1];
+		StringIndexer str_idx(s);
+		for (int i = 0; i < count; i++)
+		{
+			utf32_t ch = str_idx[offset + i];
+			// must be alphabetic
+			if (ch < 'A' || ch > 'z' || (ch > 'Z' && ch < 'a'))
+				return false;
+			subString[i] = (char) ch;
+		}
 		if (count == 3)
 		{
 			for(int x=0; x < 7+12+2; x++)
@@ -248,7 +201,7 @@ namespace avmplus
 	// Parses a number out of the string and updates year/month/day/hour/min/timeZoneOffset as
 	//  appropriate (based on whatever has already been parsed).  Assumes that s[i] is an integer
 	//  character.  (broken out into a seperate function from stringToDateDouble() for readability)
-	static inline bool parseDateNumber(String &s, int sLength, int &i, wchar &c, wchar prevc, 
+	static inline bool parseDateNumber(const StringIndexer& s, int sLength, int &i, wchar &c, wchar prevc, 
 									   double &timeZoneOffset, int &year, int &month, int &day, 
 									   int &hour, int &min, int &sec)
 	{
@@ -347,8 +300,10 @@ namespace avmplus
     }  
 
 	// used by both Date::parse() and the Date(String) constructor
-	double DateClass::stringToDateDouble(String &s) 
+	double DateClass::stringToDateDouble(Stringp _s) 
 	{
+		StringIndexer s(_s);
+		
         int year = -1;
         int month = -1;
         int day = -1;
@@ -362,7 +317,7 @@ namespace avmplus
 		//  suite, however (for instance "1/1/1999 13:30 PM"), but we don't handle timezone keywords
 		//  or instance.
 
-        int sLength = s.length();
+        int sLength = s->length();
 		wchar c, prevc = 0;
         int i = 0;
         while (i < sLength) 
@@ -392,7 +347,7 @@ namespace avmplus
 			{
 				if (parseDateNumber(s,sLength,i,c,prevc,timeZoneOffset,year,month,day,hour,
 								    min,sec) == false)
-					return MathUtils::nan();
+					return MathUtils::kNaN;
 				prevc = 0;
 			}
 
@@ -408,16 +363,16 @@ namespace avmplus
                     i++;
                 }
                 if (i <= st + 1)
-                    return MathUtils::nan();
+                    return MathUtils::kNaN;
 
 				// check keyword substring against known keywords, modify hour/month/timeZoneOffset as appropriate
 				if (parseDateKeyword(s, st, i-st, hour, month, timeZoneOffset) == false)
-					return MathUtils::nan();
+					return MathUtils::kNaN;
                 prevc = 0;
             }
         }
         if (year < 0 || month < 0 || day < 0)
-            return MathUtils::nan();
+            return MathUtils::kNaN;
         if (sec < 0)
             sec = 0;
         if (min < 0)

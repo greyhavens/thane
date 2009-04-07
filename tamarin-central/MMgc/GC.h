@@ -40,116 +40,34 @@
 #ifndef __GC__
 #define __GC__
 
-#if defined MMGC_IA32
-
-#ifdef WIN32
-// save all registers: they might have pointers in them.  In theory, only
-// need to save callee-saved regs.  In practice, saving three extra pointers
-// is cheap insurance.
-//
-// These macros do not use the "do { ... } while (0)" idiom because they
-// work by introducing local variables (save1, save2, ...) into the block
-// where the macro is called.  If the macro enclosed these variables in a
-// nested block, like a do-while block, they would go out of scope too
-// soon.
-//
-#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size) \
-		int save1,save2,save3,save4,save5,save6,save7;\
-		__asm mov save1, eax \
-		__asm mov save2, ebx \
-		__asm mov save3, ecx \
-		__asm mov save4, edx \
-		__asm mov save5, ebp \
-		__asm mov save6, esi \
-		__asm mov save7, edi \
-		__asm { mov _stack,esp } ;\
-		MEMORY_BASIC_INFORMATION __mib;\
-		VirtualQuery(_stack, &__mib, sizeof(MEMORY_BASIC_INFORMATION)); \
-	    _size = __mib.RegionSize - ((uintptr) _stack - (uintptr)__mib.BaseAddress);
-
-#elif defined SOLARIS
-#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size) \
-		_stack = (void *) _getsp();\
-		_size = (uintptr)_gc->GetStackTop() - (uintptr)_stack;
+#if defined(MMGC_PORTING_API)
+	// When the porting API is in use, we exclude
+	// stdlib functions or use them through
+	// #defines for portability to platforms
+	// that don't have them.
+	#include "portapi_mmgc.h"
 #else
-#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size) \
-		volatile auto int save1,save2,save3,save4,save5,save6,save7;\
-		asm("movl %%eax,%0" : "=r" (save1));\
-		asm("movl %%ebx,%0" : "=r" (save2));\
-		asm("movl %%ecx,%0" : "=r" (save3));\
-		asm("movl %%edx,%0" : "=r" (save4));\
-		asm("movl %%ebp,%0" : "=r" (save5));\
-		asm("movl %%esi,%0" : "=r" (save6));\
-		asm("movl %%edi,%0" : "=r" (save7));\
-		asm("movl %%esp,%0" : "=r" (_stack));\
-		_size = (uintptr)_gc->GetStackTop() - (uintptr)_stack;
-#endif 
 
-#elif defined MMGC_AMD64
-#ifdef _MSC_VER // inline assembler not allowed in x64 MSVC
-struct saveregs {
-	size_t	save1;
-	size_t	save2;
-	size_t	save3;
-	size_t	save4;
-	size_t	save5;
-	size_t	save6;
-	size_t	save7;
-	size_t	save8;
-	size_t	save9;
-	size_t	save10;
-};
-extern "C" void saveRegs64(void* saves, const void* stack, int* size);
+#define MMGC_GCENTER(_gc)  MMgc::GCAutoExit __mmgc_auto_exit(_gc);
 
-#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size) \
-		saveregs saves;\
-		saves.save1 = 0;\
-		saveRegs64(&saves, &_stack, (int*)&_size);
+#if defined(MMGC_IA32) && defined(_MSC_VER)
+
+#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size)						\
+	jmp_buf __mmgc_env;													\
+	setjmp(__mmgc_env);													\
+	__asm { mov _stack,esp };											\
+	GCAssertMsg(_gc->GetStackEnter() != 0, "Missing MMGC_GCENTER macro"); \
+	_size = (uint32_t)(_gc->GetStackEnter() - (uintptr_t)_stack);
 
 #else
-// 64bit - r8-r15?
-#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size) \
-		do { \
-		volatile auto int64 save1,save2,save3,save4,save5,save6,save7;\
-		asm("mov %%rax,%0" : "=r" (save1));\
-		asm("mov %%rbx,%0" : "=r" (save2));\
-		asm("mov %%rcx,%0" : "=r" (save3));\
-		asm("mov %%rdx,%0" : "=r" (save4));\
-		asm("mov %%rbp,%0" : "=r" (save5));\
-		asm("mov %%rsi,%0" : "=r" (save6));\
-		asm("mov %%rdi,%0" : "=r" (save7));\
-		asm("mov %%rsp,%0" : "=r" (_stack));\
-		_size = (uintptr)_gc->GetStackTop() - (uintptr)_stack;	} while (0)	
-#endif
 
-#elif defined MMGC_PPC
+#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size)						\
+	jmp_buf __mmgc_env;													\
+	setjmp(__mmgc_env);													\
+	_stack = &__mmgc_env;												\
+	GCAssertMsg(_gc->GetStackEnter() != 0, "Missing MMGC_GCENTER macro"); \
+	_size = (uint32_t)(_gc->GetStackEnter() - (uintptr_t)_stack);
 
-/* On PowerPC, we need to mark the PPC non-volatile registers,
- * since they may contain register variables that aren't
- * anywhere on the machine stack. */
-// TPR - increasing to 20 causes this code to not get optimized out
-
-#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size) \
-		int __ppcregs[20]; \
-		asm("stmw r13,0(%0)" : : "b" (__ppcregs));\
-		_stack = __ppcregs;\
-		_size = _gc->GetStackTop() - (uintptr) _stack;
-
-#elif defined MMGC_ARM
-
-// Store nonvolatile registers r4-r10
-// Find stack pointer
-#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size) \
-		int regs[7];\
-		asm("stmia %0,{r4-r10}" : : "r" (regs));\
-		asm("mov %0,sp" : "=r" (_stack));\
-		_size = (uintptr)StackTop - (uintptr)_stack;
-
-#elif defined MMGC_SPARC
-#define MMGC_GET_STACK_EXTENTS(_gc, _stack, _size) \
-		asm("ta 3");\
-		_stack = (void *) _getsp();\
-		_size = (uintptr)_gc->GetStackTop() - (uintptr)_stack;
 #endif
 
 #ifdef MMGC_THREADSAFE
@@ -163,15 +81,36 @@ extern "C" void saveRegs64(void* saves, const void* stack, int* size);
 #define MMGC_ASSERT_EXCLUSIVE_GC(gc) ((void) 0)
 #endif
 
-#ifdef DEBUGGER
+#endif // MMGC_PORTING_API
+
+// Enable our own alloca() replacement that always allocates in the heap, this is good on
+// systems with limited memory or limited stack
+#define AVMPLUS_PARAM_ALLOCA_CUTOFF		4000	// Don't make real alloca() blow the stack; this limit is heuristic
+#define AVMPLUS_PARAM_ALLOCA_DEFSIZE	1000	// Default number of bytes in a stack segment for heap-based alloca()
+#ifdef AVMPLUS_HEAP_ALLOCA
+#  define VMPI_alloca(core, autoptr, nbytes)	core->gc->allocaPush(nbytes, autoptr)
+#  define VMPI_alloca_gc(gc, autoptr, nbytes)	gc->allocaPush(nbytes, autoptr)
+#else
+#  define VMPI_alloca(core, autoptr, nbytes)  (nbytes > AVMPLUS_PARAM_ALLOCA_CUTOFF ? core->gc->allocaPush(nbytes, autoptr) : alloca(nbytes))
+#  define VMPI_alloca_gc(gc, autoptr, nbytes)  (nbytes > AVMPLUS_PARAM_ALLOCA_CUTOFF ? gc->allocaPush(nbytes, autoptr) : alloca(nbytes))
+#endif
+
 namespace avmplus
 {
 	class AvmCore;
 }
-#endif
 
 namespace MMgc
 {
+	class GCAutoExit
+	{
+	public:
+		GCAutoExit(GC *_gc);
+		~GCAutoExit();
+	private:
+		GC* gc;
+	};
+
 	/**
 	 * Conservative collector unit of work
 	 */
@@ -179,10 +118,10 @@ namespace MMgc
 	{
 	public:
 		GCWorkItem() : ptr(NULL), _size(0) { }
-		inline GCWorkItem(const void *p, uint32 s, bool isGCItem);
+		inline GCWorkItem(const void *p, uint32_t s, bool isGCItem);
 
-		uint32 GetSize() const { return _size & ~1; }
-		uint32 IsGCItem() const { return _size & 1; }
+		uint32_t GetSize() const { return _size & ~1; }
+		uint32_t IsGCItem() const { return _size & 1; }
 
 		// If a WI is a GC item, `ptr` is the UserPointer; it must not
 		// be the RealPointer nor an interior pointer
@@ -190,7 +129,7 @@ namespace MMgc
 
 		// The low bit of _size stores whether this is a GC item.
 		// Always access this through `GetSize` and `IsGCItem`
-		uint32 _size;
+		uint32_t _size;
 	};
 
 	/**
@@ -200,6 +139,8 @@ namespace MMgc
 	class MMGC_API GCRoot
 	{
 		friend class GC;
+		GCRoot();
+		void init(GC*gc, const void *object, size_t size);
 	public:
 		/** subclassing constructor */
 		GCRoot(GC *gc);
@@ -208,14 +149,14 @@ namespace MMgc
 		virtual ~GCRoot();
 
 		// override new and delete so we can know the objects extents (via FixedMalloc::Size())
-        void *operator new(size_t size)
-        {
-			return FixedMalloc::GetInstance()->Alloc(size);
-        }
+    void *operator new(size_t size)
+    {
+			return GCHeap::GetGCHeap()->GetFixedMalloc()->Alloc(size);
+    }
         
 		void operator delete (void *object)
 		{
-			FixedMalloc::GetInstance()->Free(object);
+			GCHeap::GetGCHeap()->GetFixedMalloc()->Free(object);
 		}
 
 		const void *Get() const { return object; }
@@ -226,7 +167,6 @@ namespace MMgc
 		void Destroy();
 	
 	private:
-		FixedMalloc* fm;
 		GC * gc;
 
 		/** @access Requires(gc->m_rootListLock) */
@@ -236,7 +176,7 @@ namespace MMgc
 		const void *object;
 		size_t size;
 
-		GCWorkItem GetWorkItem() const { return GCWorkItem(object, (uint32)size, false); }
+		GCWorkItem GetWorkItem() const { return GCWorkItem(object, (uint32_t)size, false); }
 	};
 
 	/**
@@ -276,13 +216,11 @@ namespace MMgc
 		 */
 		virtual void heapgrew() {}
 
-#ifdef MMGC_DRC
 		// called before a ZCT reap begins
 		virtual void prereap() {}
 
 		// called after a ZCT reap completes
 		virtual void postreap() {}
-#endif
 
 		/**
 		 * This callback is the first thing a collecting thread does once it
@@ -331,15 +269,8 @@ namespace MMgc
 		 * This method is called before an RC object is reaped
 		 */
 		virtual void prereap(void* /*rcobj*/) {}
-
-#ifdef DEBUGGER
 		virtual void log(const char* /*str*/) {}
-
-		virtual void startGCActivity() {}	
-		virtual void stopGCActivity() {}
-		// negative when blocks are reclaimed
-		virtual void allocActivity(int /*blocks*/) {}
-#endif
+		virtual void oom(MemoryStatus) {}
 
 	private:
 		GC *gc;
@@ -348,11 +279,9 @@ namespace MMgc
 	};
 
 	#ifdef MMGC_64BIT
-	#define HIDDENPTRSHIFT 32
-	#define HIDDENPTRMASK 0xFFFFFFFF
+	#define HIDDENPTRMASK (uintptr_t(0x1L)<<63)
 	#else
-	#define HIDDENPTRSHIFT 16
-	#define HIDDENPTRMASK 0x0000FFFF
+	#define HIDDENPTRMASK (uintptr_t(0x1L)<<31)
 	#endif
 
 	template <class T>
@@ -360,13 +289,13 @@ namespace MMgc
 	{
 	public:
 		GCHiddenPointer(T obj=NULL) { set(obj); }
-		operator T() const { return (T) (low|high<<HIDDENPTRSHIFT);	 }
+		operator T() const { return (T) (val^HIDDENPTRMASK);	 }
 		T operator=(T tNew) 
 		{ 
 			set(tNew); 
 			return (T)this; 
 		}
-		T operator->() const { return (T) (low|high<<HIDDENPTRSHIFT); }
+		T operator->() const { return (T) (val^HIDDENPTRMASK); }
 
 	private:
 		// private to prevent its use and someone adding it, GCC creates
@@ -375,12 +304,10 @@ namespace MMgc
 		
 		void set(T obj) 
 		{
-			uintptr p = (uintptr)obj;
-			high = p >> HIDDENPTRSHIFT;
-			low = p & HIDDENPTRMASK;
+			uintptr_t p = (uintptr_t)obj;
+			val = p ^ HIDDENPTRMASK;
 		}
-		uintptr high;
-		uintptr low;
+		uintptr_t val;
 	};
 
 	/**
@@ -395,16 +322,17 @@ namespace MMgc
 		// size of table in pages
 		static const int ZCT_START_SIZE;
 	public:
-		ZCT(GCHeap *heap);
+		ZCT();
 		~ZCT();
 		void Add(RCObject *obj);
 		void Remove(RCObject *obj);
 		void Reap();
 	private:
 		// for MMGC_GET_STACK_EXTENTS
-		uintptr StackTop;
+		uintptr_t StackTop;
 
 		GC *gc;
+		void SetGC(GC*);
 
 		// in pages
 		int zctSize;
@@ -470,7 +398,7 @@ namespace MMgc
 	 * to find the optimum value.
 	 *
 	 */
-	class MMGC_API GC : public GCAllocObject
+	class MMGC_API GC
 	{
 		friend class GCRoot;
 		friend class GCCallback;
@@ -493,9 +421,7 @@ namespace MMgc
 		void *GetGCContextVariable(int var) const { return m_contextVars[var]; }
 		void SetGCContextVariable(int var, void *val) { m_contextVars[var] = val; }
 		
-#ifdef DEBUGGER
 		avmplus::AvmCore *core() const { return (avmplus::AvmCore*)GetGCContextVariable(GCV_AVMCORE); }
-#endif
 
 		/**
 		 * greedy is a debugging flag.  When set, every allocation
@@ -542,22 +468,10 @@ namespace MMgc
 		 */
 		size_t collectThreshold;
 
-		/**
-		 * If true, log some statistics during each collection.
-		 * The output goes to gclog().
-		 *
-		 * In an MMGC_THREADSAFE build, the GC reads this flag only during
-		 * stop-the-world collection.  Set it during initialization, before
-		 * the GC is visible to multiple threads.
-		 *
-		 * @access Requires(exclusiveGC)
-		 */
-		bool gcstats;
-
 		bool dontAddToZCTDuringCollection;
+		bool incrementalValidation;
 
 #ifdef _DEBUG
-		bool incrementalValidation;
 		bool incrementalValidationPedantic;
 #endif
 
@@ -627,10 +541,40 @@ namespace MMgc
 		 *
 		 * @access Requires(request)
 		 */
-		void *Alloc(size_t size, int flags=0, int skip=3);
+		void *Alloc(size_t size, int flags=0);
+
+#ifdef MMGC_RCROOT_SUPPORT
+		
+	private:
+		class RCRootSegment : public GCRoot
+		{
+		public:
+			RCRootSegment(GC* gc, void* mem, size_t size);
+			void*			mem;
+			size_t			size;
+			RCRootSegment*	prev;
+			RCRootSegment*	next;
+		};
+		
+		RCRootSegment* rcRootSegments;
+		
+	public:
+		
+		/**
+		 * Allocate memory that will be scanned for pointers to GC memory
+		 * and from which pointers to RC objects will pin those objects.
+		 */
+		void* AllocRCRoot(size_t size);
+		
+		/**
+		 * Free memory allocated with AllocRCRoot.
+		 */
+		void FreeRCRoot(void* mem);
+		
+#endif // MMGC_RCROOT_SUPPORT
 
 		/** @access Requires(request && m_lock) */
-		void *AllocAlreadyLocked(size_t size, int flags=0, int skip=3);
+		void *AllocAlreadyLocked(size_t size, int flags=0);
 
 		
 		/**
@@ -642,7 +586,7 @@ namespace MMgc
 		 *
 		 * @access Requires(request)
 		 */
-		void *Calloc(size_t num, size_t elsize, int flags=0, int skip=3);
+		void *Calloc(size_t num, size_t elsize, int flags=0);
 
 		/**
 		 * One can free a GC allocated pointer, this will throw an assertion
@@ -673,20 +617,12 @@ namespace MMgc
 		 *
 		 * @access Requires(request || exclusiveGC)
 		 */
-		static int GetMark(const void *item)
-		{
-			item = GetRealPointer(item);
-			if (GCLargeAlloc::IsLargeBlock(item)) {
-				return GCLargeAlloc::GetMark(item);
-			} else {
-				return GCAlloc::GetMark(item);
-			}
-		}
+		static int GetMark(const void *item);
 
 		static int SetMark(const void *item)
 		{
 			GCAssert(item != NULL);
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 			GC *gc = GetGC(item);	
 			item = GetRealPointer(item);
 			GCAssert(gc->IsPointerToGCPage(item));
@@ -700,7 +636,7 @@ namespace MMgc
 		
 		void SetQueued(const void *item)
 		{
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 			item = GetRealPointer(item);
 			GCAssert(IsPointerToGCPage(item));
 #endif 			
@@ -713,7 +649,7 @@ namespace MMgc
 
 		static void ClearFinalized(const void *item)
 		{
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 			GC *gc = GetGC(item);	
 			item = GetRealPointer(item);
 			GCAssert(gc->IsPointerToGCPage(item));
@@ -727,7 +663,7 @@ namespace MMgc
 
 		static void SetFinalize(const void *item)
 		{
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 			GC *gc = GetGC(item);	
 			item = GetRealPointer(item);
 			GCAssert(gc->IsPointerToGCPage(item));
@@ -741,7 +677,7 @@ namespace MMgc
 
 		static int IsFinalized(const void *item)
 		{
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 			GC *gc = GetGC(item);	
 			item = GetRealPointer(item);
 			GCAssert(gc->IsPointerToGCPage(item));
@@ -755,7 +691,7 @@ namespace MMgc
 
 		static int HasWeakRef(const void *item)
 		{
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 			GC *gc = GetGC(item);	
 			item = GetRealPointer(item);
 			GCAssert(gc->IsPointerToGCPage(item));
@@ -773,7 +709,7 @@ namespace MMgc
 		 */
 		static GC* GetGC(const void *item)
 		{
-			GC **gc = (GC**) ((uintptr)item&~0xfff);
+			GC **gc = (GC**) ((uintptr_t)item&~0xfff);
 			return *gc;
 		}
 
@@ -785,16 +721,14 @@ namespace MMgc
 		void* AllocBlock(int size, int pageType, bool zero=true);
 
 		/** @access Requires((request && m_lock) || exclusiveGC) */
-		void FreeBlock(void *ptr, uint32 size);
+		void FreeBlock(void *ptr, uint32_t size);
 
 		GCHeap *GetGCHeap() const { return heap; }
 
-#ifdef MMGC_DRC
 		void ReapZCT() { zct.Reap(); }
 		bool Reaping() { return zct.reaping; }
 #ifdef _DEBUG
 		void RCObjectZeroCheck(RCObject *);
-#endif
 #endif
 
 		/**
@@ -805,12 +739,12 @@ namespace MMgc
 		/**
 		 * Do as much marking as possible in time milliseconds
 		 */
-		void IncrementalMark(uint32 time=10);
+		void IncrementalMark();
 
 		/**
 		 * Are we currently marking
 		 */
-		bool IncrementalMarking() { return marking; }
+		inline bool IncrementalMarking() const { return marking; }
 
 		/**
 		 * A magical write barrier that finds the container's address and the
@@ -828,7 +762,7 @@ namespace MMgc
 		void writeBarrier(const void *container, const void *address, const void *value)
 		{
 			GCAssert(!container || IsPointerToGCPage(container));
-			GCAssert(((uintptr)address & 3) == 0);
+			GCAssert(((uintptr_t)address & 3) == 0);
 
 			if (container) {
 				GCAssert(address >= container);
@@ -854,7 +788,7 @@ namespace MMgc
 		 */
 		__forceinline void WriteBarrierNoSubstitute(const void *container, const void *value)
 		{
-			WriteBarrierTrap(container, (const void*)((uintptr)value&~7));
+			WriteBarrierTrap(container, (const void*)((uintptr_t)value&~7));
 		}
 			
 		/**
@@ -866,7 +800,7 @@ namespace MMgc
 		__forceinline void WriteBarrierTrap(const void *container, const void *valuePtr)
 		{
 			GCAssert(IsPointerToGCPage(container));
-			GCAssert(((uintptr)valuePtr&7) == 0);
+			GCAssert(((uintptr_t)valuePtr&7) == 0);
 			GCAssert(IsPointerToGCPage(container));
 			if(marking && valuePtr && GetMark(container) && IsWhite(valuePtr))
 			{
@@ -879,6 +813,15 @@ namespace MMgc
 			if(IsPointerToGCPage(address))
 				WriteBarrierNoSubstitute(FindBeginning(address), value);
 		}
+
+		void MemoryStatusChange(MemoryStatus from, MemoryStatus to)
+		{
+			pendingStatusChange = true;
+			statusFrom = from;
+			statusTo = to;
+		}
+
+		void Poke();
 
 	private:
 		__forceinline void WriteBarrierWrite(const void *address, const void *value);
@@ -893,10 +836,11 @@ namespace MMgc
 		void *FindBeginning(const void *gcItem)
 		{
 			GCAssert(gcItem != NULL);
+			GCAssert(GetPageMapValue((uintptr_t)gcItem) != 0);
 			void *realItem = NULL;
-			if((uintptr)gcItem < memStart || (uintptr)gcItem >= memEnd)
+			if((uintptr_t)gcItem < memStart || (uintptr_t)gcItem >= memEnd)
 				return NULL;
-			int bits = GetPageMapValue((uintptr)gcItem);
+			int bits = GetPageMapValue((uintptr_t)gcItem);
 			switch(bits)
 			{
 			case kGCAllocPage:
@@ -908,25 +852,21 @@ namespace MMgc
 			case kGCLargeAllocPageRest:
 				while(bits == kGCLargeAllocPageRest)
 				{
-					gcItem = (void*) ((uintptr)gcItem - GCHeap::kBlockSize);
-					bits = GetPageMapValue((uintptr)gcItem);
+					gcItem = (void*) ((uintptr_t)gcItem - GCHeap::kBlockSize);
+					bits = GetPageMapValue((uintptr_t)gcItem);
 				}
 				realItem = GCLargeAlloc::FindBeginning(gcItem);
 				break;
 			default:
 				return NULL;
 			}		
-#ifdef MEMORY_INFO
+#ifdef MMGC_MEMORY_INFO
 			realItem = GetUserPointer(realItem);
 #endif
 			return realItem;
 		}
 
-#ifdef MMGC_DRC
 		bool IsRCObject(const void *);
-#else 
-		bool IsRCObject(const void *) { return false; }
-#endif
 
 		/**
 		 * True during Sweep phase.  Application code can use this to
@@ -947,12 +887,9 @@ namespace MMgc
 		/** @access Requires(request || exclusiveGC) */
 		bool IsQueued(const void *item);
 
-		static uint64 GetPerformanceCounter();
-		static uint64 GetPerformanceFrequency();
-		
-		static double duration(uint64 start) 
+		static double duration(uint64_t start) 
 		{
-			return (double(GC::GetPerformanceCounter() - start) * 1000) / GC::GetPerformanceFrequency();
+			return (double(VMPI_getPerformanceCounter() - start) * 1000) / VMPI_getPerformanceFrequency();
 		}
 
 #ifndef MMGC_THREADSAFE
@@ -960,26 +897,18 @@ namespace MMgc
 #endif
 
 		/** GC initialization time, in ticks.  Used for logging. */
-		const uint64 t0;
+		const uint64_t t0;
 
-		// a tick is the unit of GetPerformanceCounter()
-		static uint64 ticksToMicros(uint64 ticks) 
+		// a tick is the unit of VMPI_getPerformanceFrequency()
+		static uint64_t ticksToMicros(uint64_t ticks) 
 		{ 
-#ifdef WIN32
-			return (ticks*1000000)/GetPerformanceFrequency();
-#else
-			return ticks;
-#endif
+			return (ticks*1000000)/VMPI_getPerformanceFrequency();
 		}
 
 
-		static uint64 ticksToMillis(uint64 ticks) 
+		static uint64_t ticksToMillis(uint64_t ticks) 
 		{ 
-#ifdef WIN32
-			return (ticks*1000)/GetPerformanceFrequency();
-#else
-			return ticks/1000;
-#endif
+			return (ticks*1000)/VMPI_getPerformanceFrequency();
 		}
 
 		/**
@@ -989,7 +918,7 @@ namespace MMgc
 		 *
 		 * @access ReadWrite(request, exclusiveGC)
 		 */
-		uint64 bytesMarked;
+		uint64_t bytesMarked;
 
 		/**
 		 * Total time spent doing incremental marking, in ticks.  See
@@ -997,23 +926,23 @@ namespace MMgc
 		 *
 		 * @access ReadWrite(request, exclusiveGC)
 		 */
-		uint64 markTicks;
+		uint64_t markTicks;
 
 		// calls to mark item
-		uint32 lastStartMarkIncrementCount;
-		uint32 markIncrements;
+		uint32_t lastStartMarkIncrementCount;
+		uint32_t markIncrements;
 
 		/**
 		 * Number of calls to MarkItem().
 		 * @access ReadWrite(request, exclusiveGC)
 		 */
-		uint32 marks;
+		uint32_t marks;
 
 		/**
 		 * Number of calls to Sweep().
 		 * @access ReadWrite(request, exclusiveGC)
 		 */
-        uint32 sweeps;
+        uint32_t sweeps;
 
 		/**
 		 * Number of calls to MarkItem() during the current (or most recent)
@@ -1021,7 +950,7 @@ namespace MMgc
 		 *
 		 * @access ReadWrite(request, exclusiveGC)
 		 */
-		uint32 numObjects;
+		uint32_t numObjects;
 
 		/**
 		 * Number of bytes scanned in MarkItem() during the current (or most
@@ -1029,14 +958,14 @@ namespace MMgc
 		 *
 		 * @access ReadWrite(request, exclusiveGC)
 		 */
-		uint32 objSize;
+		size_t objSize;
 
 		/**
 		 * Time of the latest FinishIncrementalMark() call, in ticks.
 		 *
 		 * @access ReadWrite(request, exclusiveGC)
 		 */
-		uint64 sweepStart;
+		uint64_t sweepStart;
 
 		/**
 		 * True if we emptied the work queue during the most recent
@@ -1058,18 +987,27 @@ namespace MMgc
 
 		/** @access Requires(request) */
 		static GCWeakRef *GetWeakRef(const void *obj);
-
+		
+		// a WeakRef that always refers to null. useful if you need one.
+		GCWeakRef* emptyWeakRef;
+	
 		/** @access Requires((request && m_lock) || exclusiveGC) */
 		void ClearWeakRef(const void *obj);
 
-		uintptr	GetStackTop() const;
+		const void *GetStackTop() const { return (const void*) GetStackEnter(); }
+		uintptr_t GetStackEnter() const { return stackEnter; }
+		void SetStackEnter(void *enter);
 
 		// for deciding a tree of things should be scanned from presweep
 		void PushWorkItem(GCWorkItem &item) { PushWorkItem(m_incrementalWork, item); }
 
 	private:
 
+		void *heapAlloc(size_t size, bool expand=true, bool zero=true);
+		void heapFree(void *ptr, size_t siz=0);
+
 		void gclog(const char *format, ...);
+		void log_mem(const char *name, size_t s, size_t comp );
 
 		const static int kNumSizeClasses = 40;
 
@@ -1077,22 +1015,22 @@ namespace MMgc
 		const static int kPageUsableSpace = 3936;
 
 		/** @access Requires(request && m_lock) */
-		uint32 *GetBits(int numBytes, int sizeClass);
+		uint32_t *GetBits(int numBytes, int sizeClass);
 
 		/** @access Requires((request && m_lock) || exclusiveGC) */
-		void FreeBits(uint32 *bits, int sizeClass)
+		void FreeBits(uint32_t *bits, int sizeClass)
 		{
 #ifdef _DEBUG
-			for(int i=0, n=noPointersAllocs[sizeClass]->m_numBitmapBytes; i<n;i++) GCAssert(((uint8*)bits)[i] == 0);
+			for(int i=0, n=noPointersAllocs[sizeClass]->m_numBitmapBytes; i<n;i++) GCAssert(((uint8_t*)bits)[i] == 0);
 #endif
-			*(uint32**)bits = m_bitsFreelists[sizeClass];
+			*(uint32_t**)bits = m_bitsFreelists[sizeClass];
 			m_bitsFreelists[sizeClass] = bits;
 		}
 
 		/** @access Requires((request && m_lock) || exclusiveGC) */
-		uint32 *m_bitsFreelists[kNumSizeClasses];
+		uint32_t *m_bitsFreelists[kNumSizeClasses];
 		/** @access Requires((request && m_lock) || exclusiveGC) */
-		uint32 *m_bitsNext;
+		uint32_t *m_bitsNext;
 
 		/** @access Requires((request && m_lock) || exclusiveGC) */
 		GCHashtable weakRefs;
@@ -1109,13 +1047,22 @@ namespace MMgc
 		 */
 		size_t heapSizeAtLastAlloc;
 
+		// we track the top and bottom of the stack for cleaning purposes.
+		// the top tells us how far up the stack as been dirtied.
+		// the bottom is also tracked so we can ensure we're on the same
+		// stack that the GC responsible for cleaning.  necessary if multiple
+		// threads use the GC.  only thread that creates the GC will have its stack
+		// tracked and cleaned.
 		bool stackCleaned;
 		const void *rememberedStackTop;
+		uintptr_t stackEnter;
 
 #ifndef MMGC_THREADSAFE
 		// for external which does thread safe multi-thread AS execution
 		bool disableThreadCheck;
 #endif
+
+		GCRoot* emptyWeakRefRoot;
 
 		/**
 		 * True if incremental marking is on and some objects have been marked.
@@ -1135,12 +1082,12 @@ namespace MMgc
 		int IsWhite(const void *item);
 		
 		/** @access ReadWrite(request, exclusiveGC) */
-		uint64 lastMarkTicks;
+		uint64_t lastMarkTicks;
 		/** @access ReadWrite(request, exclusiveGC) */
-		uint64 lastSweepTicks;
+		uint64_t lastSweepTicks;
 
-		const static int16 kSizeClasses[kNumSizeClasses];		
-		const static uint8 kSizeClassIndex[246];
+		const static int16_t kSizeClasses[kNumSizeClasses];		
+		const static uint8_t kSizeClassIndex[246];
 
 		void *m_contextVars[GCV_COUNT];
 
@@ -1150,9 +1097,9 @@ namespace MMgc
 		// 3 - used by GCLargeAlloc
 
 		/** @access Requires(pageMapLock) */
-		uintptr memStart;
+		uintptr_t memStart;
 		/** @access Requires(pageMapLock) */
-		uintptr memEnd;
+		uintptr_t memEnd;
 
 		/** @access Requires(m_lock) */
 		size_t totalGCPages;
@@ -1176,31 +1123,20 @@ namespace MMgc
 		/**
 		 * This spinlock covers memStart, memEnd, and the contents of pageMap.
 		 */
-		mutable GCSpinLock pageMapLock;
+#ifdef MMGC_THREADSAFE
+		mutable vmpi_spin_lock_t pageMapLock;
+#endif
 
-		inline int GetPageMapValue(uintptr addr) const
+		inline int GetPageMapValue(uintptr_t addr) const
 		{
+#ifdef MMGC_THREADSAFE
 			GCAcquireSpinlock lock(pageMapLock);
+#endif
 			return GetPageMapValueAlreadyLocked(addr);
 		}
 
 		/** @access Requires(pageMapLock) */
-		inline int GetPageMapValueAlreadyLocked(uintptr addr) const
-		{
-			uintptr index = (addr-memStart) >> 12;
-
-#ifdef MMGC_AMD64
-			GCAssert((index >> 2) < uintptr(64*65536) * uintptr(GCHeap::kBlockSize));
-#else
-			GCAssert(index >> 2 < 64 * GCHeap::kBlockSize);
-#endif
-			// shift amount to determine position in the byte (times 2 b/c 2 bits per page)
-			uint32 shiftAmount = (index&0x3) * 2;
-			// 3 ... is mask for 2 bits, shifted to the left by shiftAmount
-			// finally shift back by shift amount to get the value 0, 1 or 3
-			//return (pageMap[addr >> 2] & (3<<shiftAmount)) >> shiftAmount;
-			return (pageMap[index >> 2] >> shiftAmount) & 3;
-		}
+		int GetPageMapValueAlreadyLocked(uintptr_t addr) const;
 
 		/**
 		 * Set the pageMap bits for the given address.  Those bits must be
@@ -1208,17 +1144,17 @@ namespace MMgc
 		 *
 		 * @access Requires(pageMapLock)
 		 */
-		void SetPageMapValue(uintptr addr, int val);
+		void SetPageMapValue(uintptr_t addr, int val);
 
 		/**
 		 * Zero out the pageMap bits for the given address.
 		 *
 		 * @access Requires(pageMapLock)
 		 */
-		void ClearPageMapValue(uintptr addr);
+		void ClearPageMapValue(uintptr_t addr);
 
-		void MarkGCPages(void *item, uint32 numpages, int val);
-		void UnmarkGCPages(void *item, uint32 numpages);
+		void MarkGCPages(void *item, uint32_t numpages, int val);
+		void UnmarkGCPages(void *item, uint32_t numpages);
 		
 		/**
 		 * Mark a region of memory, this will search all memory pointed to recursively
@@ -1227,9 +1163,7 @@ namespace MMgc
 		void ConservativeMarkRegion(const void *base, size_t bytes);
 
 		GCAlloc *containsPointersAllocs[kNumSizeClasses];
-#ifdef MMGC_DRC
 		GCAlloc *containsPointersRCAllocs[kNumSizeClasses];
-#endif
 		GCAlloc *noPointersAllocs[kNumSizeClasses];
 		GCLargeAlloc *largeAlloc;
 		GCHeap *heap;
@@ -1275,7 +1209,7 @@ namespace MMgc
 		public:
 		// sometimes useful for mutator to call this
 		/** @access Requires(exclusiveGC) */
-		void Trace(const void *stackStart=NULL, uint32 stackSize=0);
+		void Trace(const void *stackStart=NULL, uint32_t stackSize=0);
 		private:
 #endif
 
@@ -1355,8 +1289,8 @@ namespace MMgc
 		 */
 		GCLargeAlloc::LargeBlock *largeEmptyPageList;
 		
-#ifdef GCHEAP_LOCK
-		GCSpinLock m_rootListLock;
+#ifdef MMGC_LOCKING
+		vmpi_spin_lock_t m_rootListLock;
 #endif
 
 		/** @access Requires(m_rootListLock) */
@@ -1365,7 +1299,7 @@ namespace MMgc
 		void RemoveRoot(GCRoot *root);
 		
 #ifdef MMGC_THREADSAFE
-		GCSpinLock m_callbackListLock;
+		vmpi_spin_lock_t m_callbackListLock;
 #endif
 
 		/**
@@ -1377,7 +1311,6 @@ namespace MMgc
 		void AddCallback(GCCallback *cb);
 		void RemoveCallback(GCCallback *cb);
 
-#ifdef MMGC_DRC
 		// Deferred ref counting implementation
 		ZCT zct;
 		void AddToZCT(RCObject *obj) { zct.Add(obj); }
@@ -1386,15 +1319,12 @@ namespace MMgc
 public:
 		void RemoveFromZCT(RCObject *obj) { zct.Remove(obj); }
 private:
-#endif
 
-		static const void *Pointer(const void *p) { return (const void*)(((uintptr)p)&~7); }
+		static const void *Pointer(const void *p) { return (const void*)(((uintptr_t)p)&~7); }
 
-#ifdef MEMORY_INFO
 public:
 		void DumpMemoryInfo();
 private:
-#endif
 
 #ifndef MMGC_THREADSAFE
 		void CheckThread();
@@ -1402,17 +1332,10 @@ private:
 
 		void PushWorkItem(GCStack<GCWorkItem> &stack, GCWorkItem item);
 
-#ifdef DEBUGGER
-		// sent for Collect (fullgc)
-		// and Start/IncrementalMark/Sweep for incremental
-		void StartGCActivity();
-		void StopGCActivity();
-		void AllocActivity(int blocks);
-#endif
-
-#ifdef _DEBUG
+#ifdef _DEBUG		
 		void CheckFreelist(GCAlloc *gca);
 		void CheckFreelists();
+
 
 		int m_gcLastStackTrace;
 
@@ -1454,8 +1377,9 @@ private:
 #endif
 
 public:
-#ifdef MEMORY_INFO
-		void DumpBackPointerChain(void *o);
+#ifdef MMGC_MEMORY_INFO
+		typedef void (*pDumpBackCallbackProc)(void* pContext, void *obj, const char *type );
+		void DumpBackPointerChain(void *o, pDumpBackCallbackProc p = NULL, void *context = NULL);
 
 		// debugging routine that records who marked who, can be used to
 		// answer the question, how did I get marked?  also could be used to
@@ -1471,8 +1395,16 @@ public:
 		 * Used by WhosPointingAtMe.
 		 * @access Requires(pageMapLock)
 		 */
-    	void ProbeForMatch(const void *mem, size_t size, uintptr value, int recurseDepth, int currentDepth);
+    	void ProbeForMatch(const void *mem, size_t size, uintptr_t value, int recurseDepth, int currentDepth);
 #endif
+
+		int DumpAlloc(GCAlloc*);
+		size_t GetBytesInUse();
+		size_t GetNumBlocks() { return totalGCPages; }
+
+
+		bool pendingStatusChange;
+		MemoryStatus statusFrom, statusTo;		
 
 #ifdef MMGC_THREADSAFE
 	public:
@@ -1648,6 +1580,93 @@ public:
 		 */
 		GCCondition m_condNoRequests;
 #endif
+
+		/* A portable replacement for alloca().
+		 *
+		 * Memory is allocated from the heap and not from the stack.  It is freed in 
+		 * one of two ways: If the function returns normally then an auto_ptr like
+		 * mechanism frees the memory.  If the function leaves by throwing an exception
+		 * (or if one of its callees throws an exception) then the exception
+		 * handling mechanism in Exception.{h,cpp} frees the memory by releasing 
+		 * everything that is still allocated that was allocated since the exception
+		 * handler was erected.
+		 *
+		 * The auto_ptr mechanism, based on the class MMgc::GC::AllocaAutoPtr, cannot be
+		 * circumvented, as allocaPush() takes a reference to such an object as an argument.
+		 *
+		 * Typical usage:
+		 *
+		 *    MMgc::GC::AllocaAutoPtr _ptr;                      // by convention prefixed by "_"
+		 *    int* ptr = (int*)core->allocaPush(_ptr, nbytes);  // by convention same name, no "_"
+		 *
+		 * In practice the VMPI_alloca() macro, defined in avmbuild.h, should be used so that
+		 * real alloca() can be used on platforms where that makes sense.
+		 *
+		 * Benchmarks suggest that the performance differences from using this mechanism
+		 * instead of real alloca() are slight to nonexistent, and that the heap allocation
+		 * sometimes provides a performance improvement.
+		 */
+	public:
+		struct AllocaStackSegment
+		{
+			void* start;				// first address; also, the RCRoot pointer
+			void* limit;				// address past data
+			void* top;					// address past live if this segment is not the top
+			AllocaStackSegment* prev;	// segments further from the top
+		};
+		
+		void allocaInit();
+		void allocaShutdown();
+		void allocaPopToSlow(void* top);
+		void* allocaPushSlow(size_t nbytes);
+		void pushAllocaSegment(size_t nbytes);
+		void popAllocaSegment();
+
+		AllocaStackSegment* top_segment;// segment at the stack top
+		void* stacktop;					// current first free word in top_segment
+#ifdef _DEBUG
+		size_t stackdepth;				// useful to have for debugging
+#endif
+		
+	public:
+		/* See documentation above */
+		
+		class AllocaAutoPtr
+		{
+			friend class GC;
+		public:
+			AllocaAutoPtr() : unwindPtr(NULL), gc(NULL) {}  // initialization of 'gc' to pacify gcc
+			~AllocaAutoPtr() { if (unwindPtr) gc->allocaPopTo(unwindPtr); }
+		private:
+			GC* gc;
+			void* unwindPtr;
+		};
+				
+		inline void* allocaTop() 
+		{
+			return stacktop;
+		}
+		
+		inline void allocaPopTo(void* top)
+		{ 
+			if (top >= top_segment->start && top <= top_segment->limit)
+				stacktop = top;
+			else
+				allocaPopToSlow(top);
+		}
+	
+		inline void* allocaPush(size_t nbytes, AllocaAutoPtr& x) 
+		{
+			GCAssert(x.unwindPtr == NULL);
+			x.gc = this;
+			x.unwindPtr = stacktop;
+			nbytes = (nbytes + 7) & ~7;
+			if ((char*)stacktop + nbytes <= top_segment->limit) {
+				stacktop = (char*)stacktop + nbytes;
+				return x.unwindPtr;
+			}
+			return allocaPushSlow(nbytes);
+		}
 	};
 
 	// helper class to wipe out vtable pointer of members for DRC
@@ -1660,7 +1679,7 @@ public:
 		void set(const void * _v, size_t _size) { this->v = (int*)_v; this->size = _size; }
 		~Cleaner() { 
 			if(v) 
-				memset(v, 0, size);
+				VMPI_memset(v, 0, size);
 			v = 0; 
 			size = 0;
 		}
@@ -1668,9 +1687,9 @@ public:
 		size_t size;
 	};
 
-	inline GCWorkItem::GCWorkItem(const void *p, uint32 s, bool isGCItem)
+	inline GCWorkItem::GCWorkItem(const void *p, uint32_t s, bool isGCItem)
 		: ptr(p)
-		, _size(s | uint32(isGCItem))
+		, _size(s | uint32_t(isGCItem))
 	{
 #ifdef _DEBUG
 		if (IsGCItem()) {

@@ -21,9 +21,11 @@ var ITERS:int = 100;
 
     var size:int;
 
-    var datasizes:Vector.<int> = new Vector.<int>(2);
-    datasizes[0] = 8;
-    datasizes[1] = 13;
+    var datasizes:Vector.<int> = new Vector.<int>(4);
+    datasizes[0] = 6;
+    datasizes[1] = 8;
+    datasizes[2] = 13;
+    datasizes[3] = 3;
 
     var interactions:int = 0;
 
@@ -78,9 +80,11 @@ var ITERS:int = 100;
     }
 
     function JGFvalidate():void {
-        var refval:Vector.<Number> = new Vector.<Number>(2);
+        var refval:Vector.<Number> = new Vector.<Number>(4);
           refval[0] = 1731.4306625334357;
           refval[1] = 7397.392307839352;
+          refval[2] = 7397.392307839352;
+          refval[3] = 7397.392307839352;
         var dev:Number = Math.abs(ek - refval[size]);
         if (dev > 1.0e-12) {
             print("Validation failed");
@@ -550,8 +554,15 @@ class particle {
 
         }
 	}
-	var start=new Date();
-	JGFrun(0);
-	var elapsed=new Date()-start;
-	print("metric jsbench-moldyn "+elapsed);
+    if (CONFIG::desktop) {
+        var start = new Date();
+        JGFrun(0);
+        var elapsed = new Date() - start;
+    }
+    else { // mobile
+        var start = getTimer();
+        JGFrun(3);
+        var elapsed = getTimer() - start;
+    }
+	print("metric time "+elapsed);
 

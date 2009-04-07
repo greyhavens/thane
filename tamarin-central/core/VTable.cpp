@@ -41,30 +41,45 @@
 namespace avmplus
 {
 	
-	VTable::VTable(Traits* traits, VTable* base, ScopeChain* scope, AbcEnv* abcEnv, Toplevel* toplevel)
+	VTable::VTable(Traits* _traits, VTable* _base, ScopeChain* scope, AbcEnv* _abcEnv, Toplevel* toplevel) :
+		_scope(scope),
+		_toplevel(toplevel),
+		abcEnv(_abcEnv),
+		init(NULL),
+		base(_base),
+		ivtable(NULL),
+		traits(_traits),
+		linked(false)
 	{
 		AvmAssert(traits != NULL);
-		this->traits = traits;
-		this->base = base;
-		this->scope = scope;
-		this->abcEnv = abcEnv;
-		this->toplevel = toplevel;
-		this->linked = false;
-		this->init = NULL;
+		AVMPLUS_TRAITS_MEMTRACK_ONLY( tmt_add_inst(TMT_vtable, this); )
 	}
+
+#ifdef AVMPLUS_TRAITS_MEMTRACK 
+	VTable::~VTable()
+	{
+		AVMPLUS_TRAITS_MEMTRACK_ONLY( tmt_sub_inst(TMT_vtable, this); )
+	}
+#endif
 
 	void VTable::resolveSignatures()
 	{
 		if( this->linked )
 			return;
 		linked = true;
-		if (!traits->linked)
-			traits->resolveSignatures(toplevel);
+		if (!traits->isResolved())
+			traits->resolveSignatures(toplevel());
 
+#if defined(DEBUG) || defined(_DEBUG)
+		// have to use local variables for CodeWarrior
+		Traits* traitsBase = traits->base;
+		Traits* baseTraits = base ? base->traits : 0;
 		// make sure the traits of the base vtable matches the base traits
-		AvmAssert(base == NULL && traits->base == NULL || base != NULL && traits->base == base->traits);
+		AvmAssert(base == NULL && traits->base == NULL || base != NULL && traitsBase == baseTraits );
+#endif // DEBUG
 
 		AvmCore* core = traits->core;
+		MMgc::GC* gc = core->GetGC();
 
 		if (traits->init && !this->init)
 		{
@@ -73,108 +88,92 @@ namespace avmplus
 
 		// populate method table
 
-		if (base)
+		const TraitsBindingsp td = traits->getTraitsBindings();
+		const TraitsBindingsp btd = td->base;
+		for (uint32_t i = 0, n = td->methodCount; i < n; i++)
 		{
-			// inheriting
-			int baseMethodCount = base->traits->methodCount;
-			for (int i=0, n=traits->methodCount; i < n; i++)
-			{
-				AbstractFunction* method = traits->getMethod(i);
+			MethodInfo* method = td->getMethod(i);
 
-				if (i < baseMethodCount && method == traits->base->getMethod(i))
-				{
+			if (btd && i < btd->methodCount && method == btd->getMethod(i))
+			{
 					// inherited method
 					//this->methods[i] = base->methods[i];
-					WB(core->GetGC(), this, &methods[i], base->methods[i]);
-				}
-				else
-				{
-					// new definition
-					if (method != NULL)
-					{
-						//this->methods[i] = new (core->GetGC()) MethodEnv(method, this);
-						WB(core->GetGC(), this, &methods[i], makeMethodEnv(method));
-					}
-					#ifdef AVMPLUS_VERBOSE
-					else if (traits->pool->verbose)
-					{
-						// why would the compiler assign sparse disp_id's?
-						traits->core->console << "WARNING: empty disp_id " << i << " on " << traits << "\n";
-					}
-					#endif
-				}
+				WB(gc, this, &methods[i], base->methods[i]);
+				continue;
 			}
+					// new definition
+			if (method != NULL)
+			{
+				//this->methods[i] = new (gc) MethodEnv(method, this);
+				WB(gc, this, &methods[i], makeMethodEnv(method));
+				continue;
+			}
+			#ifdef AVMPLUS_VERBOSE
+			if (traits->pool->verbose)
+			{
+				// why would the compiler assign sparse disp_id's?
+				traits->core->console << "WARNING: empty disp_id " << i << " on " << traits << "\n";
+			}
+			#endif
+		}
 
 			// this is done here b/c this property of the traits isn't set until the
 			// Dictionary's ClassClosure is called
+		if (base)
 			traits->isDictionary = base->traits->isDictionary;
-		}
-		else
-		{
-			// not inheriting
-			for (int i=0, n=traits->methodCount; i < n; i++)
-			{
-				AbstractFunction* method = traits->getMethod(i);
-				if (method != NULL)
-				{
-					MethodEnv *env = makeMethodEnv(method);
-					//this->methods[i] = env;
-					WB(core->GetGC(), this, &methods[i], env);
-				}
-				#ifdef AVMPLUS_VERBOSE
-				else if (traits->pool->verbose)
-				{
-					// why would the compiler assign sparse disp_id's?
-					traits->core->console << "WARNING: empty disp_id " << i << " on " << traits << "\n";
-				}
-				#endif
-			}
-		}
 
-		if(traits->hasInterfaces)
+#if defined FEATURE_NANOJIT
 		{
-			for (int i=0; i < Traits::IMT_SIZE; i++)
+			for (uint32_t i=0; i < Traits::IMT_SIZE; i++)
 			{
 				Binding b = traits->getIMT()[i];
 				if (AvmCore::isMethodBinding(b))
 				{
 					//imt[i] = methods[AvmCore::bindingToMethodId(b)];
-					WB(core->GetGC(), this, &imt[i], methods[AvmCore::bindingToMethodId(b)]);
+					WB(gc, this, &imt[i], methods[AvmCore::bindingToMethodId(b)]);
 				}
-				else if ((b&7) == BIND_ITRAMP)
+				else if (AvmCore::bindingKind(b) == BKIND_ITRAMP)
 				{
-					if (base && traits->base->hasInterfaces && b == traits->base->getIMT()[i])
+					if (base && b == traits->base->getIMT()[i])
 					{
 						// copy down imt stub from base class
 						//imt[i] = base->imt[i];
-						WB(core->GetGC(), this, &imt[i], base->imt[i]);
+						WB(gc, this, &imt[i], base->imt[i]);
 					}
 					else
 					{
 						// create new imt stub
-						//imt[i] = new (core->GetGC()) MethodEnv((void*)(b&~7));
-						WB(core->GetGC(), this, &imt[i], new (core->GetGC()) MethodEnv((void*)(b&~7), this));
+#if VMCFG_METHODENV_IMPL32
+						MethodEnv* e = new (gc) MethodEnv(MethodEnv::kTrampStub, AvmCore::getITrampAddr(b), this);
+#else
+						//imt[i] = new (gc) MethodEnv((void*)(b&~7));
+						// note that the only field of this that's really used is _impl32...
+						MethodInfo* mi = new (gc) MethodInfo(AvmCore::getITrampAddr(b), this->traits);
+						MethodEnv* e = new (gc) MethodEnv(mi, this);
+#endif
+						WB(gc, this, &imt[i], e);
 					}
 				}
 			}
 		}
+#endif
 	}
 
-	MethodEnv *VTable::makeMethodEnv(AbstractFunction *func)
+	MethodEnv *VTable::makeMethodEnv(MethodInfo *func)
 	{
 		AvmCore *core = traits->core;
 		MethodEnv *methodEnv = new (core->GetGC()) MethodEnv(func, this);
 		// register this env in the callstatic method table
-		int method_id = func->method_id;
+		int method_id = func->method_id();
 		if (method_id != -1)
 		{
-			AvmAssert(abcEnv->pool == (PoolObject *) func->pool);
-			if (abcEnv->methods[method_id] == NULL)
+			AvmAssert(abcEnv->pool() == func->pool());
+			if (abcEnv->getMethod(method_id) == NULL)
 			{
 				abcEnv->setMethod(method_id, methodEnv);
 			}
 			#ifdef AVMPLUS_VERBOSE
-			else if (func->pool->verbose)
+			else if (func->pool()->verbose)
 			{
 				core->console << "WARNING: tried to re-register global MethodEnv for " << func << "\n";
 			}
@@ -191,16 +190,16 @@ namespace avmplus
 		if(ivtable != NULL)
 			size += ivtable->size();
 
-		size += traits->numTriplets * 3;
+		const TraitsBindingsp td = traits->getTraitsBindings();
+		const uint32_t n = td->methodCount;
+		const uint32_t baseMethodCount = base ? td->base->methodCount : 0;
+		size += td->methodCount*sizeof(MethodInfo*);
 
-		size += traits->methodCount*sizeof(AbstractFunction*);
-
-		int baseMethodCount = base ? base->traits->methodCount : 0;
-		for (int i=0, n=traits->methodCount; i < n; i++)
+		for (uint32_t i=0; i < n; i++)
 		{
-			AbstractFunction* method = traits->getMethod(i);
+			MethodInfo* method = td->getMethod(i);
 			
-			if (i < baseMethodCount && traits->base && method == traits->base->getMethod(i))
+			if (i < baseMethodCount && td->base && method == td->base->getMethod(i))
 			{
 				continue;
 			}
@@ -212,4 +211,45 @@ namespace avmplus
 		return size;
 	}
 #endif
+
+	VTable* VTable::newParameterizedVTable(Traits* param_traits, Stringp fullname)
+	{
+		Toplevel* toplevel = this->toplevel();
+		AvmCore* core = toplevel->core();
+		Namespacep traitsNs = this->traits->ns;
+		PoolObject* traitsPool = this->traits->pool;
+
+		Stringp classname = core->internString(fullname->appendLatin1("$"));
+		Traits* ctraits = traitsPool->getTraits(Multiname(traitsNs, classname), toplevel);
+		Traits* itraits;
+		if (!ctraits)
+		{
+			ctraits = this->traits->newParameterizedCTraits(classname, traitsNs);
+			itraits = traitsPool->resolveParameterizedType(toplevel, this->ivtable->traits, param_traits);
+			ctraits->itraits = itraits;
+		}
+		else
+		{
+			itraits = ctraits->itraits;
+		}
+
+		AvmAssert(itraits != NULL);
+		itraits->resolveSignatures(toplevel);
+		ctraits->resolveSignatures(toplevel);
+
+		VTable* objVecVTable = toplevel->objectVectorClass->vtable;
+		AbcEnv* objVecAbcEnv = objVecVTable->abcEnv;
+		Toplevel* objVecToplevel = objVecVTable->toplevel();
+		VTable* objVecIVTable = objVecVTable->ivtable;
+
+		VTable* cvtab = core->newVTable(ctraits, objVecToplevel->class_ivtable, objVecVTable->scope(), objVecAbcEnv, objVecToplevel); 
+		VTable* ivtab = core->newVTable(itraits, objVecIVTable, objVecIVTable->scope(), objVecAbcEnv, objVecToplevel);
+		cvtab->ivtable = ivtab;
+		ivtab->init = objVecIVTable->init;
+
+		cvtab->resolveSignatures();
+		ivtab->resolveSignatures();
+		
+		return cvtab;
+	}
 }

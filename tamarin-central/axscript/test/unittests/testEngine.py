@@ -292,11 +292,77 @@ class TestNames(TestCaseInitialized):
 
 class TestExceptions(TestCaseInitialized):
     expecting_errors = True # stop base class from complaining about exceptions
+
+    # The 'ulStartingLineNumber' param to the AXScript functions is ambiguous:
+    # MSDN says "Zero-based value that specifies which line the parsing will
+    # begin at", but it can be simply demonstrated JS uses a 1-based scheme
+    # (but I guess it depends how you define 0-based :)  Sadly, the docs for
+    # GetSourcePosition, which is impacted by the ulStartingLineNumber, doesn't
+    # say anything about this.
+    # So: let's just prove we do the same as Microsoft's javascript.
+    def testJSLineOffset(self):
+        site = AXTestSite(self)
+        # javascript comes with Windows, so we can assume its installed.
+        engine = pythoncom.CoCreateInstance("javascript", None, 
+                                            pythoncom.CLSCTX_SERVER,
+                                            pythoncom.IID_IUnknown)
+
+        try:
+            ias = engine.QueryInterface(axscript.IID_IActiveScript)
+            ias.SetScriptSite(wrap(site))
+            iasp = engine.QueryInterface(axscript.IID_IActiveScriptParse)
+            iasp.InitNew()
+            ias.SetScriptState(axscript.SCRIPTSTATE_CONNECTED)
+
+            # A SyntaxError on "line 2"
+            code = "// comment\nfoo]\n"
+            # pass a startLine of 0, JS says the error is on line 1.
+            sln = 0
+            try:
+                iasp.ParseScriptText(code, None, None, None, 0, sln, 0)
+            except pythoncom.com_error:
+                pass
+            ctx, line, col = site.last_error.GetSourcePosition()
+            self.failUnlessEqual(line, 1)
+            # pass a startLine of 1, JS says the error is on line 2.
+            sln = 1
+            try:
+                iasp.ParseScriptText(code, None, None, None, 0, sln, 0)
+            except pythoncom.com_error:
+                pass
+            ctx, line, col = site.last_error.GetSourcePosition()
+            self.failUnlessEqual(line, 2)
+            #
+            #
+            # Check a runtime error works  the same way.
+            code = "// a comment line\nx = bad_name\n"
+            # pass a startLine of 0, JS says the error is on line 1.
+            sln = 0
+            try:
+                iasp.ParseScriptText(code, None, None, None, 0, sln, 0)
+            except pythoncom.com_error:
+                pass
+            ctx, line, col = site.last_error.GetSourcePosition()
+            self.failUnlessEqual(line, 1)
+            # pass a startLine of 1, JS says the error is on line 2.
+            sln = 1
+            try:
+                iasp.ParseScriptText(code, None, None, None, 0, sln, 0)
+            except pythoncom.com_error:
+                pass
+            ctx, line, col = site.last_error.GetSourcePosition()
+            self.failUnlessEqual(line, 2)
+
+            # See the later tests of our engine which test the same thing.
+        finally:
+            ias.Close()
+            iasp = None # incase a traceback holds on to it.
+
     def testLineNumber(self):
         code = "// a comment line\nx = bad_name\n"
         self.parseScriptText(code, expect_exc=True)
         ctx, line, col = self.site.last_error.GetSourcePosition()
-        # zero-based line numbers, so its reported as 1
+        # zero-based line numbers, so its reported as 1 (see JS test above)
         self.failUnlessEqual(line, 1)
         # and so it again just to prove we aren't faking.
         code = "// a comment line\n//\n//\n//\nx = bad_name\n"
@@ -309,10 +375,10 @@ class TestExceptions(TestCaseInitialized):
         # Tell the script engine the source-code really started on line 10
         # of a file, so numbers should be adjusted accordingly.
         code = "// a comment line\nx = bad_name\n"
-        self.parseScriptText(code, expect_exc=True, startLineNumber=10)
+        self.parseScriptText(code, expect_exc=True, startLineNumber=1)
         ctx, line, col = self.site.last_error.GetSourcePosition()
-        # zero-based line numbers, so its reported as 11
-        self.failUnlessEqual(line, 11)
+        # zero-based line numbers, so its reported as 2 (see JS test above)
+        self.failUnlessEqual(line, 2)
 
     def testContext(self):
         code = "// a comment line\nx = bad_name\n"
@@ -331,9 +397,9 @@ class TestExceptions(TestCaseInitialized):
         scode, hlp, desc, blah, blah, hresult = self.site.last_error.GetExceptionInfo()
         self.failUnless(desc.startswith("COM Error"), desc)
 
-    def testSyntaxError(self):
-        code = "\n\nfoo]"
-        self.parseScriptText(code, expect_exc=True)
+    def testSyntaxError(self, startLineNumber=0):
+        code = "\nfoo]\n"
+        self.parseScriptText(code, expect_exc=True, startLineNumber=startLineNumber)
         scode, hlp, desc, blah, blah, hresult = self.site.last_error.GetExceptionInfo()
         self.failUnless(desc.startswith("Syntax"), desc)
         # we aren't expecting a traceback, as it would only be to the
@@ -341,8 +407,11 @@ class TestExceptions(TestCaseInitialized):
         self.failIf('\n' in desc, desc)
 
         ctx, line, col = self.site.last_error.GetSourcePosition()
-        self.failUnlessEqual(line, 2) # zero based
+        self.failUnlessEqual(line, startLineNumber+1) # zero based
         # no column available :( ...
+
+    def testSyntaxErrorAdjusted(self):
+        self.testSyntaxError(startLineNumber=1)
 
     def testFilename(self):
         # Make sure the 'filename' of our script block is reported in both

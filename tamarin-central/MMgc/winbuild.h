@@ -38,9 +38,9 @@
 
 
 /**
- * Critical section on GCHeap allocations.
+ * Critical sections needed
  */
-#define GCHEAP_LOCK
+#define MMGC_LOCKING
 
 /**
  * IA32 (Intel architecture)
@@ -57,15 +57,9 @@
 /**
  * Define this to get stack traces.  Helps with memory leaks.
  */
-#if defined(_DEBUG)
-#define MEMORY_INFO
+#ifdef _DEBUG
+#define MMGC_MEMORY_INFO
 #endif
-
-/**
- * This turns on incremental collection as well as all of
- * the write barriers.
- */
-#define WRITE_BARRIERS
 
 /**
  * Define this if MMgc is being integrated with avmplus.
@@ -74,31 +68,13 @@
 #define MMGC_AVMPLUS
 
 /**
- * Use VirtualAlloc to reserve/commit memory
- */
-#define USE_MMAP
-
-/**
- * Define this to track GC pause times
- */
-// uncommenting requires you to link with C runtime
-//#define GC_STATS
-
-/**
- * Turn this on to decommit memory 
- */
-#define DECOMMIT_MEMORY
-
-/**
- * Controls whether DRC is in use
- */
-#define MMGC_DRC
-
-/**
  * This makes JIT code buffers read-only to reduce the probability of
  * heap overflow attacks.
  */
 #define AVMPLUS_JIT_READONLY
+
+// windows builds need malloc.h for alloca
+#define HAVE_MALLOC_H
 
 /**
  * compiled with the /W4 warning level
@@ -106,6 +82,7 @@
  */
 #ifdef _MSC_VER
 
+    #pragma warning(disable:4611) // interaction between '_setjmp' and C++ object destruction is non-portable
 	#pragma warning(disable:4201) // nonstandard extension used : nameless struct/union
 	#pragma warning(disable:4512) //assignment operator could not be generated
 	#pragma warning(disable:4511) //can't generate copy ctor

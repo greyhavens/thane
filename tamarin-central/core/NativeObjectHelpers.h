@@ -48,13 +48,13 @@ namespace avmplus
 		//  the array length).  To deal with this, ClampIndex replaces ClampA
 		// i.e. instead of doing this:
 
-		//  int start = core->integer(argv[0]);
-		//  int end   = core->integer(argv[1]]);
+		//  int start = AvmCore::integer(argv[0]);
+		//  int end   = AvmCore::integer(argv[1]]);
 		//  ClampA(start,end,a->getLength());
 		//
 		//  do this:
-		//  uint32 start = ClampArrayIndex( core->toInteger(argv[0]), a->getLength() );
-		//  uint32 end   = ClampArrayIndex( core->toInteger(argv[1]), a->getLength() );
+		//  uint32 start = ClampArrayIndex( AvmCore::toInteger(argv[0]), a->getLength() );
+		//  uint32 end   = ClampArrayIndex( AvmCore::toInteger(argv[1]), a->getLength() );
 		//  if (end < start)
 		//    end == start;
 		inline uint32 ClampIndex(double intValue, uint32 length)

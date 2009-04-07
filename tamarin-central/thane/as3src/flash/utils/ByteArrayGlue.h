@@ -39,7 +39,7 @@
 #ifndef BYTEARRAYGLUE_INCLUDED
 #define BYTEARRAYGLUE_INCLUDED
 
-namespace thane
+namespace avmthane
 {
 	class ByteArray
 	{
@@ -57,7 +57,34 @@ namespace thane
 		bool Grow(uint32 newCapacity);
 		U8 *GetBuffer() const { return m_array; }
 
+ 		typedef void (Domain::*GlobalMemoryNotifyFunc)(unsigned char *, uint32) const;
+ 
+ 		bool GlobalMemorySubscribe(const Domain *subscriber, GlobalMemoryNotifyFunc notify);
+ 		bool GlobalMemoryUnsubscribe(const Domain *subscriber);
+
 	protected:
+ 		// singly linked list of all subscribers to this ByteArray...
+ 		// in practice, there isn't much liklihood of too many
+ 		// subscribers at a time and notifications should be rare
+ 		// hence the slower, simpler, smaller structures and algorithms
+ 
+ 		// links are removed explicitly via GlobalMemoryUnsubscribe
+ 		// or implicitly when the backing store changes
+ 		struct SubscriberLink : public MMgc::GCObject
+ 		{
+ 			// weak reference to the subscriber DomainEnv so
+ 			// multiple DomainEnvs subscribing to the same
+ 			// ByteArray don't result in a DomainEnv not being
+ 			// collectable because a ByteArray refers to it and
+ 			// is referenced by another live DomainEnv
+ 			MMgc::GCWeakRef *weakDomain;
+ 			GlobalMemoryNotifyFunc notify;
+ 			// next link
+ 			SubscriberLink *next;
+ 		};
+ 		SubscriberLink *m_subscriberRoot;
+ 
+ 		void NotifySubscribers();
 		void ThrowMemoryError();
 
 		uint32 m_capacity;
@@ -92,7 +119,7 @@ namespace thane
 	public:
 		ByteArrayObject(VTable *ivtable, ScriptObject *delegate);
 
-		void fill(const void *b, int len);
+		void fill(const void *b, uint32_t len);
 	
 		void checkNull(void *instance, const char *name);
 
@@ -104,8 +131,6 @@ namespace thane
 		virtual Atom getAtomProperty(Atom name) const;
 		virtual Atom getUintProperty(uint32 i) const;
 		virtual void setUintProperty(uint32 i, Atom value);
-
-		virtual void setMultinameProperty(Multiname* name, Atom value);
 
 		void readBytes(ByteArrayObject *bytes, uint32 offset, uint32 length);
 		void writeBytes(ByteArrayObject *bytes, uint32 offset, uint32 length);
@@ -138,9 +163,12 @@ namespace thane
 		String* readUTF();
 		String* readUTFBytes(uint32 length);		
 		
-		int available();
-		int getFilePointer();
-		void seek(int offset);
+		int get_bytesAvailable();
+		int get_position();
+		void set_position(int offset);
+		inline int available() { return get_bytesAvailable(); }
+		inline int getFilePointer() { return get_position(); }
+		inline void seek(int offset) { set_position(offset); }
 
 		uint32 get_length();
 		void set_length(uint32 value);
@@ -151,7 +179,16 @@ namespace thane
 		ByteArray& GetByteArray() { return m_byteArray; }
 		ByteArrayFile& GetByteArrayFile() { return m_byteArray; }
 
+ 	protected:
+		// If this ByteArray is attached as MOPS memory to the
+		// domain, must notify of changes.
+		friend class avmplus::Domain;
+ 
 	private:
+ 		bool globalMemorySubscribe(const Domain *subscriber,
+ 			ByteArray::GlobalMemoryNotifyFunc notify);
+ 		bool globalMemoryUnsubscribe(const Domain *subscriber);
+
 		MMgc::Cleaner c;
 		ByteArrayFile m_byteArray;
 	};
@@ -166,8 +203,6 @@ namespace thane
 		ByteArrayClass(VTable *vtable);
 
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
-
-		DECLARE_NATIVE_MAP(ByteArrayClass)
     };
 }
 

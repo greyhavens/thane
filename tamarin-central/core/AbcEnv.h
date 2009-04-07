@@ -41,41 +41,64 @@
 
 namespace avmplus
 {
-
 	// runtime info associated with a pool
 	class AbcEnv : public MMgc::GCObject
 	{
+		#if defined FEATURE_NANOJIT
+		friend class CodegenLIR;
+		#endif
+
 	public:
-		PoolObject* const pool;
-		DomainEnv* const domainEnv;
-		CodeContext* const codeContext;
-		MultinameHashtable privateScriptEnvs;
-		MethodEnv* methods[1]; // actual size will hold pool->methodCount methods
+		AbcEnv(PoolObject* _pool, DomainEnv* _domainEnv, CodeContext * _codeContext);
 
-		AbcEnv(PoolObject* _pool,
-			   DomainEnv* _domainEnv,
-		       CodeContext * _codeContext)
-			: pool(_pool),
-			  domainEnv(_domainEnv),
-			  codeContext(_codeContext)
-		{
-		}
+		inline PoolObject* pool() const { return m_pool; }
+		inline DomainEnv* domainEnv() const { return m_domainEnv; }
+		inline CodeContext* codeContext() const { return m_codeContext; }
 
-		void setMethod(int i, MethodEnv* env)
-		{
-			WB(pool->core->GetGC(), this, &methods[i], env);
+		inline MethodEnv* getMethod(uint32_t i) const { return m_methods[i]; }
+		inline void setMethod(uint32_t i, MethodEnv* env) { WB(m_pool->core->GetGC(), this, &m_methods[i], env); }
+
+#ifdef DEBUGGER
+		inline uint64_t& invocationCount(uint32_t i) 
+		{ 
+			AvmAssert(m_invocationCounts != NULL); 
+			AvmAssert(i < m_pool->methodCount()); 
+			return m_invocationCounts[i]; 
 		}
+#endif
 
 		static size_t calcExtra(PoolObject* pool)
 		{
-			if (pool->methodCount <= 1)
-				return 0;
-			else
-				return sizeof(MethodEnv*)*(pool->methodCount-1);
+			const uint32_t c = pool->methodCount();
+			return (c <= 1) ? 0 : (sizeof(MethodEnv*)*(c-1));
+		}
+		
+		// these peek into the DomainEnv as appropriate
+		ScriptEnv* getScriptEnv(Stringp name, Namespacep ns);
+		ScriptEnv* getScriptEnv(const Multiname& m);
+
+		// these peek only into m_privateScriptEnvs
+		inline ScriptEnv* getPrivateScriptEnv(Stringp name) const { return (ScriptEnv*)m_privateScriptEnvs->getName(name); }
+		inline ScriptEnv* getPrivateScriptEnv(Stringp name, Namespacep ns) const { return (ScriptEnv*)m_privateScriptEnvs->get(name, ns); }
+		inline ScriptEnv* getPrivateScriptEnv(const Multiname& m) const { return (ScriptEnv*)m_privateScriptEnvs->getMulti(m); }
+
+		inline void addPrivateScriptEnv(Stringp name, Namespacep ns, ScriptEnv* scriptEnv) 
+		{ 
+			AvmAssert(!getPrivateScriptEnv(name, ns));
+			return m_privateScriptEnvs->add(name, ns, (Binding) scriptEnv); 
 		}
 
-		ScriptEnv* getScriptEnv(Stringp name, Namespacep ns);
-		ScriptEnv* getScriptEnv(Multiname *m);
+	// ------------------------ DATA SECTION BEGIN
+	private:
+		PoolObject* const			m_pool;
+		DomainEnv* const			m_domainEnv;
+		CodeContext* const			m_codeContext;
+		DWB(MultinameHashtable*)	m_privateScriptEnvs;
+#ifdef DEBUGGER
+		DWB(uint64_t*)				m_invocationCounts;	// actual size will hold pool->methodCount methods, only allocated if debugger exists
+#endif
+		MethodEnv*					m_methods[1];		// actual size will hold pool->methodCount methods
+	// ------------------------ DATA SECTION END
 	};
 
 }

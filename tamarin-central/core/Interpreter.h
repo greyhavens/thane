@@ -38,55 +38,38 @@
 #ifndef __avmplus_Interpreter__
 #define __avmplus_Interpreter__
 
-
-#ifdef AVMPLUS_INTERP
 namespace avmplus
 {
-	class Interpreter
-	{
-	public:
-		/**
-		 * interp32/N() is the main loop of the AVM+ interpreter.
-		 *
-		 * The native code compiler CodegenMIR is used by default
-		 * for executing AVM+ bytecode, since it is faster by
-		 * nature, but the AVM+ interpreter is used in some cases:
-		 *
-		 * - It is used to execute AVM+ code when the turbo flag is
-		 *   set to false (-Dinterp in command-line shell)
-		 * - It is also used when a debug session is in progress.
-		 * - It is used when the target platform does not support
-		 *   the native code compiler.
-		 *
-		 * @param methodEnv   The method to execute.
-		 * @param argc number of args
-		 * @param ap arg list
-		 * @return The return value of the method that was executed.
-		 * @throws Exception if the method throws an exception.
-		 */
-		static Atom interp32(MethodEnv* method, int argc, uint32 *ap);
-		static double interpN(MethodEnv* method, int argc, uint32 *ap);
-
-	private:
-		static Atom interp(MethodEnv* method, int argc, uint32 *ap);
-		static Atom* initMultiname(MethodEnv* env, Multiname &name, Atom* sp, bool isDelete=false);
-		static Traits* getTraits(Multiname* name, PoolObject* pool, Toplevel* toplevel, AvmCore* core);
-
-		static int readS24(const byte *pc) { return AvmCore::readS24(pc); }
-		static int readU16(const byte *pc) { return AvmCore::readU16(pc); }
-		static int readU30(const byte *&pc) { return AvmCore::readU30(pc); }
-
-#ifdef AVMPLUS_VERBOSE
-		
-		/**
-		 * display contents of current stack frame only.
-		 */
-		static void showState(MethodInfo* info, AbcOpcode opcode, int off,
-					   Atom* framep, int sp, int scopep, int scopeBase, int stackBase,
-					   const byte *code_start);
+	/**
+	 * interp32/N() is the main loop of the AVM+ interpreter.
+	 *
+	 * The native code compiler is used by default
+	 * for executing AVM+ bytecode, since it is faster by
+	 * nature, but the AVM+ interpreter is used in some cases:
+	 *
+	 * - It is used to execute AVM+ code when the turbo flag is
+	 *   set to false (-Dinterp in command-line shell)
+	 * - It is also used when a debug session is in progress.
+	 * - It is used when the target platform does not support
+	 *   the native code compiler.
+	 *
+	 * @param methodEnv   The method to execute.
+	 * @param argc number of args
+	 * @param ap arg list
+	 * @return The return value of the method that was executed.
+	 * @throws Exception if the method throws an exception.
+	 */
+	Atom interp32(MethodEnv* method, int argc, uint32 *ap);		// does not actually return an atom!
+	double interpN(MethodEnv* method, int argc, uint32 *ap);
+	// note, the MethodSignature passed in *must* correspond to method->method->getMethodSignature --
+	// it is an argument because all callers already have the correct MethodSignature available
+	// and it makes a significant speed difference in interp mode (vs re-grabbing from the cache)
+	Atom interpA(MethodEnv* method, int argc, Atom* ap, MethodSignaturep ms);	// actually returns an atom!
+#ifdef AVMPLUS_DIRECT_THREADED
+	void** interpGetOpcodeLabels();
 #endif
-	};
 }
-#endif /* AVMPLUS_INTERP */
+
+//#  define LAST_SUPERWORD_OPCODE    ((50<<8) | OP_ext)
 
 #endif // __avmplus_Interpreter__

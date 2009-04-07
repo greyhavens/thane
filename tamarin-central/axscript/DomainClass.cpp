@@ -87,7 +87,7 @@ namespace axtam
 			domainToplevel = parentDomain->domainToplevel;
 			baseDomainEnv  = parentDomain->domainEnv;
 		} else {
-			domainToplevel = core->initAXTamBuiltins();
+			domainToplevel = core->initAXTamBuiltins(false);
 			baseDomainEnv = domainToplevel->domainEnv();
 		}
 		domainEnv = new (core->GetGC()) DomainEnv(core, domain, baseDomainEnv);

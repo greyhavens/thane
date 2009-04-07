@@ -39,7 +39,7 @@
 #ifndef DATAIO_INCLUDED
 #define DATAIO_INCLUDED
 
-namespace thane
+namespace avmthane
 {
 	template <class T>
 	inline void CoreSwap(T& a, T& b)
@@ -123,10 +123,12 @@ namespace thane
 
 		Endian GetNativeEndian() const
 		{
-			#if defined(AVMPLUS_IA32) || defined(AVMPLUS_AMD64)
+			#if defined(AVMPLUS_LITTLE_ENDIAN)
 			return kLittleEndian;
-			#else
+			#elif defined(AVMPLUS_BIG_ENDIAN)
 			return kBigEndian;
+			#else
+			#error
 			#endif
 		}
 			
@@ -155,8 +157,7 @@ namespace thane
 		void ReadByteArray(ByteArray& buffer, uint32 offset, uint32 count);
 
 	protected:
-		// FIXME: make const
-		DRC(Toplevel *) m_toplevel;
+		Toplevel* const m_toplevel;
 
 		void ThrowEOFError();
 		void ThrowMemoryError();
@@ -181,8 +182,7 @@ namespace thane
 		void WriteByteArray(ByteArray& buffer, uint32 offset, uint32 count);
 
 	protected:
-		// FIXME: make const
-		DRC(Toplevel *) m_toplevel;
+		Toplevel* const m_toplevel;
 
 		void ThrowRangeError();
 

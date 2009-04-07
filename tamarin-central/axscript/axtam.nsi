@@ -44,7 +44,7 @@ Section "" ; (default section)
     ; we use a wildcard.
     file ..\ESC\bin\*.abc
     ; The DLL
-    file vc8\Release_Debugger\axtam.dll
+    file vc2008\obj\Release_Debugger\axtam.dll
     RegDll axtam.dll
     ; samples
     SetOutPath $INSTDIR\test

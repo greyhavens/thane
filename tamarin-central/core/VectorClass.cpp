@@ -38,6 +38,7 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 using namespace MMgc;
 
@@ -45,32 +46,102 @@ namespace avmplus
 {
 	bool VectorBaseObject::hasAtomProperty(Atom name) const
 	{
-		return ScriptObject::hasAtomProperty(name) || getAtomProperty(name) != undefinedAtom;
+		uint32 index;
+		bool isNumber=false;
+		if (getVectorIndex(name, index, isNumber))
+		{
+			return index < m_length;
+		}
+		else
+		{
+			if(isNumber)
+			{
+				return false;
+			}
+			return ScriptObject::hasAtomProperty(name);
+		}
 	}
 	
+	// helper method
+	// sets index to the uint32 value of name, if it can be converted
+	// isNumber is set to true if name was a number (whether it was a uint32 value or not)
+	bool VectorBaseObject::getVectorIndex(Atom name, uint32& index, bool& isNumber) const
+	{
+		AvmCore* core = this->core();
+		isNumber = false;
+		if (AvmCore::getIndexFromAtom(name, &index))
+		{
+			isNumber = true;
+			return true;
+		}
+		else
+		{
+			if( AvmCore::isString(name) )
+			{
+				Stringp s = core->string(name);
+				const wchar c = s->charAt(0);
+				// Does it look like a number?
+				if( s->length() > 0 && c >= '0' && c <= '9' )
+				{
+					double index_d = s->toNumber();
+					if( !MathUtils::isNaN(index_d) )
+					{
+						isNumber = true;
+
+						// name is a string that looks like a number
+						int i = MathUtils::real2int(index_d);
+						if ((double)i == index_d)
+						{
+							// It's an indexed property name
+							index = i;
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	void VectorBaseObject::setAtomProperty(Atom name, Atom value)
 	{
 		uint32 index;
-		if (core()->getIndexFromAtom(name, &index))
+		bool isNumber=false;
+		if (getVectorIndex(name, index, isNumber))
 		{
 			setUintProperty(index, value);
 		}
 		else
 		{
-			ScriptObject::setAtomProperty(name, value);
+			Multiname mn(core()->publicNamespace,core()->string(name));
+			// Vector is sorta sealed, can only write to "indexed" properties
+			toplevel()->throwReferenceError(kWriteSealedError, &mn, traits());
 		}
 	}
 	
 	Atom VectorBaseObject::getAtomProperty(Atom name) const
 	{
 		uint32 index;
-		if (core()->getIndexFromAtom(name, &index))
+		bool isNumber=false;
+		AvmCore* core = this->core();
+		if (getVectorIndex(name, index, isNumber))
 		{
 			return getUintProperty(index);
 		}
 		else
 		{
-			return ScriptObject::getAtomProperty(name);
+			if(isNumber)
+			{
+				// Not a valid indexed name - has a decimal part
+				Multiname mn(core->publicNamespace,core->string(name));
+				toplevel()->throwReferenceError(kReadSealedError, &mn, traits());
+			}
+			// Check the prototype chain - that will throw if there is no match
+			return getAtomPropertyFromProtoChain(name, getDelegate(), traits());
 		}
 	}
 
@@ -195,7 +266,7 @@ namespace avmplus
 		return r->atom();
 	}
 
-	uint32 VectorBaseObject::push(Atom *argv, int argc)
+	uint32 VectorBaseObject::AS3_push(Atom *argv, int argc)
 	{
 		if( m_fixed )
 			toplevel()->throwRangeError(kVectorFixedError);
@@ -209,24 +280,6 @@ namespace avmplus
 	//
 	// IntVectorClass
 	//
-
-	BEGIN_NATIVE_MAP(IntVectorClass)
-		NATIVE_METHOD(__AS3___vec_Vector_int_length_get,        IntVectorObject::get_length)
-		NATIVE_METHOD(__AS3___vec_Vector_int_length_set,        IntVectorObject::set_length)
-		NATIVE_METHOD(__AS3___vec_Vector_int_fixed_get,			IntVectorObject::get_fixed)
-		NATIVE_METHOD(__AS3___vec_Vector_int_fixed_set,			IntVectorObject::set_fixed)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_int_AS3_pop,		IntVectorObject::pop, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_int_AS3_push,		IntVectorObject::push, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_int_private__reverse,		IntVectorObject::_reverse, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_int_private__spliceHelper,		IntVectorObject::_spliceHelper, 0)
-		NATIVE_METHOD(__AS3___vec_Vector_int_private__forEach,	ArrayClass::forEach)
-		NATIVE_METHOD(__AS3___vec_Vector_int_private__every,	ArrayClass::every)
-		NATIVE_METHOD(__AS3___vec_Vector_int_private__some,		ArrayClass::some)
-		NATIVE_METHOD(__AS3___vec_Vector_int_private__sort,		ArrayClass::sort)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_int_private__map,		IntVectorObject::map, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_int_private__filter,		IntVectorObject::filter, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_int_AS3_unshift,		IntVectorObject::unshift, 0)
-	END_NATIVE_MAP()
 
 	IntVectorClass::IntVectorClass(VTable *vtable)
 		: ClassClosure(vtable)
@@ -247,7 +300,7 @@ namespace avmplus
 		{
 			toplevel()->throwArgumentError(kCoerceArgumentCountError, toplevel()->core()->toErrorString(argc));
 		}
-		if( core()->istype(argv[1], ivtable()->traits ) )
+		if( AvmCore::istype(argv[1], ivtable()->traits ) )
 			return argv[1];
 
 		IntVectorObject* v = (IntVectorObject*)createInstance(ivtable(), prototype);
@@ -276,24 +329,6 @@ namespace avmplus
 	// UIntVectorClass
 	//
 
-	BEGIN_NATIVE_MAP(UIntVectorClass)
-		NATIVE_METHOD(__AS3___vec_Vector_uint_length_get,        UIntVectorObject::get_length)
-		NATIVE_METHOD(__AS3___vec_Vector_uint_length_set,        UIntVectorObject::set_length)
-		NATIVE_METHOD(__AS3___vec_Vector_uint_fixed_get,        UIntVectorObject::get_fixed)
-		NATIVE_METHOD(__AS3___vec_Vector_uint_fixed_set,        UIntVectorObject::set_fixed)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_uint_AS3_pop,		UIntVectorObject::pop, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_uint_AS3_push,		UIntVectorObject::push, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_uint_private__reverse,		UIntVectorObject::_reverse, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_uint_private__spliceHelper,		UIntVectorObject::_spliceHelper, 0)
-		NATIVE_METHOD(__AS3___vec_Vector_uint_private__forEach, ArrayClass::forEach)
-		NATIVE_METHOD(__AS3___vec_Vector_uint_private__every,	ArrayClass::every)
-		NATIVE_METHOD(__AS3___vec_Vector_uint_private__some,		ArrayClass::some)
-		NATIVE_METHOD(__AS3___vec_Vector_uint_private__sort,		ArrayClass::sort)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_uint_private__map,		UIntVectorObject::map, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_uint_private__filter,		UIntVectorObject::filter, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_uint_AS3_unshift,		UIntVectorObject::unshift, 0)
-	END_NATIVE_MAP()
-
 	UIntVectorClass::UIntVectorClass(VTable *vtable)
 		: ClassClosure(vtable)
     {
@@ -314,7 +349,7 @@ namespace avmplus
 			toplevel()->throwArgumentError(kCoerceArgumentCountError, toplevel()->core()->toErrorString(argc));
 		}
 
-		if( core()->istype(argv[1], ivtable()->traits ) )
+		if( AvmCore::istype(argv[1], ivtable()->traits ) )
 			return argv[1];
 
 		UIntVectorObject* v = (UIntVectorObject*)createInstance(ivtable(), prototype);
@@ -342,24 +377,6 @@ namespace avmplus
 	// DoubleVectorClass
 	//
 
-	BEGIN_NATIVE_MAP(DoubleVectorClass)
-		NATIVE_METHOD(__AS3___vec_Vector_double_length_get,        DoubleVectorObject::get_length)
-		NATIVE_METHOD(__AS3___vec_Vector_double_length_set,        DoubleVectorObject::set_length)
-		NATIVE_METHOD(__AS3___vec_Vector_double_fixed_get,        DoubleVectorObject::get_fixed)
-		NATIVE_METHOD(__AS3___vec_Vector_double_fixed_set,        DoubleVectorObject::set_fixed)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_double_AS3_pop,		DoubleVectorObject::pop, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_double_AS3_push,		DoubleVectorObject::push, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_double_private__reverse,		DoubleVectorObject::_reverse, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_double_private__spliceHelper,		DoubleVectorObject::_spliceHelper, 0)
-		NATIVE_METHOD(__AS3___vec_Vector_double_private__forEach, ArrayClass::forEach)
-		NATIVE_METHOD(__AS3___vec_Vector_double_private__every,	ArrayClass::every)
-		NATIVE_METHOD(__AS3___vec_Vector_double_private__some,		ArrayClass::some)
-		NATIVE_METHOD(__AS3___vec_Vector_double_private__sort,		ArrayClass::sort)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_double_private__map,		DoubleVectorObject::map, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_double_private__filter,		DoubleVectorObject::filter, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_double_AS3_unshift,		DoubleVectorObject::unshift, 0)
-	END_NATIVE_MAP()
-
 	DoubleVectorClass::DoubleVectorClass(VTable *vtable)
 		: ClassClosure(vtable)
 	{
@@ -380,7 +397,7 @@ namespace avmplus
 			toplevel()->throwArgumentError(kCoerceArgumentCountError, toplevel()->core()->toErrorString(argc));
 		}
 
-		if( core()->istype(argv[1], ivtable()->traits ) )
+		if( AvmCore::istype(argv[1], ivtable()->traits ) )
 			return argv[1];
 
 		DoubleVectorObject* v = (DoubleVectorObject*)createInstance(ivtable(), prototype);
@@ -408,9 +425,6 @@ namespace avmplus
 	// VectorClass
 	//
 
-	BEGIN_NATIVE_MAP(VectorClass)
-	END_NATIVE_MAP()
-
 	VectorClass::VectorClass(VTable *vtable)
 	: ClassClosure(vtable)
 	{
@@ -419,86 +433,55 @@ namespace avmplus
 		instantiated_types = new (core()->GetGC(), 0)Hashtable(core()->GetGC());
 	}
 
+	/*static*/ Stringp VectorClass::makeVectorClassName(AvmCore* core, Traits* t)
+	{
+		Stringp s = core->newConstantStringLatin1("Vector.<");
+		s = s->append(t->formatClassName());
+		s = s->append(core->newConstantStringLatin1(">"));
+		// all callers want it interned, so let's do it here
+		return core->internString(s);
+	}
+
 	Atom VectorClass::applyTypeArgs(int argc, Atom* argv)
 	{
 		//Vector only takes 1 type argument
 		AvmAssert(argc==1);
-		if( argc != 1 )
+		if (argc != 1)
 		{
 			toplevel()->typeErrorClass()->throwError(kWrongTypeArgCountError, traits()->formatClassName(), core()->toErrorString(1), core()->toErrorString(argc));
 		}
 		Atom type = argv[0];
-		Stringp fullname = NULL;
 		AvmCore* core = this->core();
-		Traits* param_traits = NULL;
-		if( ISNULL(type) )
+
+		if (ISNULL(type))
 			return toplevel()->objectVectorClass->atom();
-		if( (type&7) == kObjectType )
+
+		if (atomKind(type) != kObjectType)
+			toplevel()->throwVerifyError(kCorruptABCError);
+
+		ScriptObject* so = AvmCore::atomToScriptObject(type);
+
+		if (so == toplevel()->intClass)
+			return toplevel()->intVectorClass->atom();
+		else if (so == toplevel()->numberClass)
+			return toplevel()->doubleVectorClass->atom();
+		else if (so == toplevel()->uintClass)
+			return toplevel()->uintVectorClass->atom();
+
+		Traits* param_traits = so->vtable->ivtable->traits;
+		Stringp fullname = VectorClass::makeVectorClassName(core, param_traits);
+
+		if (!instantiated_types->contains(fullname->atom()))
 		{
-			ScriptObject* so = AvmCore::atomToScriptObject(type);
+			VTable* vtab = this->vtable->newParameterizedVTable(param_traits, fullname);
 
-			if (so == toplevel()->intClass)
-				return toplevel()->intVectorClass->atom();
-			else if( so == toplevel()->numberClass )
-				return toplevel()->doubleVectorClass->atom();
-			else if( so == toplevel()->uintClass )
-				return toplevel()->uintVectorClass->atom();
-
-			fullname = so->vtable->ivtable->traits->formatClassName();
-			param_traits = so->vtable->ivtable->traits;
-		}
-		fullname = core->intern(core->concatStrings(core->newString("Vector.<"), core->concatStrings(fullname, core->newString(">")))->atom());
-
-		if( !instantiated_types->contains(fullname->atom()) )
-		{
-			Traits* vecobj_traits = toplevel()->objectVectorClass->vtable->traits;
-			Multiname name;
-			name.setName(fullname);
-			name.setNamespace(this->traits()->ns);
-			Stringp classname = core->internString(core->concatStrings(fullname, core->newString("$")));
-			Multiname class_mname;
-			class_mname.setName(classname);
-			class_mname.setNamespace(this->traits()->ns);
-
-			Traits* itraits = traits()->pool->resolveParameterizedType(toplevel(), ivtable()->traits, param_traits);
-
-			Traits* ctraits = traits()->pool->getTraits(&class_mname, toplevel());
-			if( !ctraits ){
-				ctraits = core->makeParameterizedCTraits(classname, this->traits()->ns, vecobj_traits);
-			}
-
-			itraits->resolveSignatures(toplevel());
-			ctraits->resolveSignatures(toplevel());
-
-			itraits->hashTableOffset = vecobj_traits->itraits->hashTableOffset;
-			itraits->setTotalSize(itraits->hashTableOffset+sizeof(Hashtable));
-			ctraits->hashTableOffset = vecobj_traits->hashTableOffset;
-			ctraits->setTotalSize(ctraits->hashTableOffset+sizeof(Hashtable));
-
-			ctraits->itraits = itraits;
-
-			VTable* objVecVTable = toplevel()->objectVectorClass->vtable;
-			VTable* objVecIVTable = toplevel()->objectVectorClass->ivtable();
-
-			// Create vtables for the new parameterized type
-			VTable* vtab = core->newVTable(ctraits, toplevel()->class_vtable, objVecVTable->scope, objVecVTable->abcEnv, objVecVTable->toplevel); 
-			VTable* ivtab = core->newVTable(itraits, objVecIVTable, objVecIVTable->scope, objVecIVTable->abcEnv, objVecIVTable->toplevel);
-			vtab->ivtable = ivtab;
-			ivtab->init = objVecIVTable->init;
-			vtab->resolveSignatures();
-			ivtab->resolveSignatures();
-
-			ObjectVectorClass* new_type= (ObjectVectorClass*)toplevel()->objectVectorClass->createClassClosure(vtab);
+			ObjectVectorClass* new_type = new (vtab->gc(), vtab->getExtraSize()) ObjectVectorClass(vtab);
 			new_type->index_type = (ClassClosure*)AvmCore::atomToScriptObject(type);
+			new_type->setDelegate(toplevel()->classClass->prototype);
 
 			// Is this right?  Should each instantiation get its own prototype?
-			//new_type->prototype = toplevel()->objectVectorClass->prototype;
-
-			Atom args[1] = { toplevel()->objectVectorClass->atom() };
-			Atom proto = AvmCore::atomToScriptObject(toplevel()->objectVectorClass->gen_proto_method)->call(0, args);
-			new_type->prototype = AvmCore::atomToScriptObject(proto);
-
-			instantiated_types->put(fullname->atom(), new_type->atom());
+			new_type->prototype = toplevel()->objectVectorClass->prototype;
+			instantiated_types->add(fullname->atom(), new_type->atom());
 		}
 		return (Atom)instantiated_types->get(fullname->atom());
 	}
@@ -518,7 +501,7 @@ namespace avmplus
 			toplevel()->throwArgumentError(kCoerceArgumentCountError, toplevel()->core()->toErrorString(argc));
 		}
 
-		if( core()->istype(argv[1], ivtable()->traits ) )
+		if( AvmCore::istype(argv[1], ivtable()->traits ) )
 			return argv[1];
 
 		ObjectVectorObject* v = (ObjectVectorObject*)createInstance(ivtable(), prototype);
@@ -528,43 +511,17 @@ namespace avmplus
 		return v->atom();
 	}
 
-	ObjectVectorObject* VectorClass::newVector(ClassClosure* /*type*/, uint32 /*length*/)
+	ObjectVectorObject* VectorClass::newVector(ClassClosure* type, uint32 length)
 	{
-		ObjectVectorObject* v = NULL;
-		/*
-		VTable* ivtable = this->ivtable();
-		VectorObject *v = new (core()->GetGC(), ivtable->getExtraSize()) 
-			VectorObject(ivtable, prototype);
-		v->set_type(type->atom());
-		v->set_length(length);
-		*/
-		return v;
+		Atom args[1] = {type->atom()};
+
+		ObjectVectorClass* vecclass = (ObjectVectorClass*)AvmCore::atomToScriptObject(applyTypeArgs(1, args));
+		return vecclass->newVector(length);
 	}
 
 	//
 	// ObjectVectorClass
 	//
-
-	BEGIN_NATIVE_MAP(ObjectVectorClass)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_length_get,        ObjectVectorObject::get_length, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_length_set,        ObjectVectorObject::set_length, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private_type_set,        ObjectVectorObject::set_type, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private_type_get,        ObjectVectorObject::get_type, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_fixed_set,        ObjectVectorObject::set_fixed, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_fixed_get,        ObjectVectorObject::get_fixed, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_AS3_pop,		ObjectVectorObject::pop, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_AS3_push,		ObjectVectorObject::push, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private__reverse,		ObjectVectorObject::_reverse, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private__spliceHelper,		ObjectVectorObject::_spliceHelper, 0)
-		NATIVE_METHOD(__AS3___vec_Vector_object_private__forEach, ArrayClass::forEach)
-		NATIVE_METHOD(__AS3___vec_Vector_object_private__every,	ArrayClass::every)
-		NATIVE_METHOD(__AS3___vec_Vector_object_private__some,		ArrayClass::some)
-		NATIVE_METHOD(__AS3___vec_Vector_object_private__sort,		ArrayClass::sort)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private__map,		ObjectVectorObject::map, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private__filter,		ObjectVectorObject::filter, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_AS3_unshift,		ObjectVectorObject::unshift, 0)
-		NATIVE_METHOD_FLAGS(__AS3___vec_Vector_object_private_genPrototype_set,		ObjectVectorClass::set_gen_proto, 0)
-	END_NATIVE_MAP()
 
 	ObjectVectorClass::ObjectVectorClass(VTable *vtable)
 		: ClassClosure(vtable)
@@ -582,17 +539,12 @@ namespace avmplus
         return v;
     }
 
-	void ObjectVectorClass::set_gen_proto(Atom func)
-	{
-		gen_proto_method = func;
-	}
-
-	ObjectVectorObject* ObjectVectorClass::newVector(ClassClosure* type, uint32 length)
+	ObjectVectorObject* ObjectVectorClass::newVector(uint32 length)
 	{
 		VTable* ivtable = this->ivtable();
 		ObjectVectorObject *v = new (core()->GetGC(), ivtable->getExtraSize()) 
 			ObjectVectorObject(ivtable, prototype);
-		v->set_type(type->atom());
+		v->set_type(this->index_type->atom());
 		v->set_length(length);
 		return v;
 	}
@@ -670,7 +622,7 @@ namespace avmplus
 			if( m_fixed )
 				toplevel()->throwRangeError(kVectorFixedError);
 
-			memset(m_array+newLength, 0, (m_length-newLength)*sizeof(Atom));
+			VMPI_memset(m_array+newLength, 0, (m_length-newLength)*sizeof(Atom));
 			//_spliceHelper (newLength, 0, (m_length - newLength), 0, 0);
 		}
 		m_length = newLength;
@@ -702,8 +654,8 @@ namespace avmplus
 			}
 			if (m_array)
 			{
-				memcpy(newArray, m_array, m_length * sizeof(Atom));
-				memset(oldAtoms, 0, m_length*sizeof(Atom));
+				VMPI_memcpy(newArray, m_array, m_length * sizeof(Atom));
+				VMPI_memset(oldAtoms, 0, m_length*sizeof(Atom));
 				gc->Free(oldAtoms);
 			}
 			m_array = newArray;
@@ -713,7 +665,7 @@ namespace avmplus
 
 	VectorBaseObject* ObjectVectorObject::newVector(uint32 length)
 	{
-		return toplevel()->objectVectorClass->newVector(t, length);
+		return toplevel()->vectorClass->newVector(t, length);
 	}
 
 	void ObjectVectorObject::_spliceHelper(uint32 insertPoint, uint32 insertCount, uint32 deleteCount, Atom args, int offset)
@@ -733,15 +685,15 @@ namespace avmplus
 
 			// shift elements down
 			int toMove = m_length - insertPoint - deleteCount;
-			memmove (arr + insertPoint + insertCount, arr + insertPoint + deleteCount, toMove * sizeof(Atom));
+			VMPI_memmove (arr + insertPoint + insertCount, arr + insertPoint + deleteCount, toMove * sizeof(Atom));
 
-			memset (arr + m_length - numberBeingDeleted, 0, numberBeingDeleted * sizeof(Atom));
+			VMPI_memset (arr + m_length - numberBeingDeleted, 0, numberBeingDeleted * sizeof(Atom));
 		}
 		else if (l_shiftAmount > 0)
 		{
-			memmove (arr + insertPoint + l_shiftAmount, arr + insertPoint, (m_length - insertPoint) * sizeof(Atom));
+			VMPI_memmove (arr + insertPoint + l_shiftAmount, arr + insertPoint, (m_length - insertPoint) * sizeof(Atom));
 			//clear for gc purposes
-			memset (arr + insertPoint, 0, l_shiftAmount * sizeof(Atom));
+			VMPI_memset (arr + insertPoint, 0, l_shiftAmount * sizeof(Atom));
 		}
 
 		set_length(m_length + l_shiftAmount);
@@ -770,7 +722,7 @@ namespace avmplus
 		return;
 	}
 
-	Atom ObjectVectorObject::pop()
+	Atom ObjectVectorObject::AS3_pop()
 	{
 		if(m_fixed)
 			toplevel()->throwRangeError(kVectorFixedError);
@@ -784,7 +736,7 @@ namespace avmplus
 		return undefinedAtom;
 	}
 
-	uint32 ObjectVectorObject::unshift(Atom* argv, int argc)
+	uint32 ObjectVectorObject::AS3_unshift(Atom* argv, int argc)
 	{
 		// shift elements up by argc
 		// inserts args into initial spots
@@ -795,14 +747,13 @@ namespace avmplus
 				toplevel()->throwRangeError(kVectorFixedError);
 			grow (m_length + argc);
 			Atom *arr = m_array;
-			memmove (arr + argc, arr, m_length * sizeof(Atom));
+			VMPI_memmove (arr + argc, arr, m_length * sizeof(Atom));
 			// clear moved element for RC purposes
-			memset (arr, 0, argc * sizeof(Atom));
+			VMPI_memset (arr, 0, argc * sizeof(Atom));
+			m_length += argc;
 			for(int i=0; i<argc; i++) {
 				_setUintProperty(i, argv[i]);
 			}
-			// setUintProperty will up the length
-			//m_length += argc;
 		}
 		return m_length;
 	}

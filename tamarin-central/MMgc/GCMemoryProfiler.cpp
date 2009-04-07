@@ -36,290 +36,524 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 #include "MMgc.h"
 
-#ifdef MEMORY_INFO
-
-#ifndef __MWERKS__
-#include <typeinfo>
-#endif
+#if defined(MMGC_MEMORY_INFO) || defined(MMGC_MEMORY_PROFILER)
 
 namespace MMgc
 {
-	GCThreadLocal<const char*> memtag;
-	GCThreadLocal<void*> memtype;
-	GCThreadLocal<void*> lastItem;
-#ifdef MMGC_64BIT
-	GCThreadLocal<int64> lastTrace;
-#else
-	GCThreadLocal<int> lastTrace;
-#endif
 
+#ifdef MMGC_MEMORY_PROFILER
+	// increase this to get more info
+	const int kMaxStackTrace = 16; // RtlCaptureStackBackTrace stops working when this is 32
+	const int kNumTypes = 10;
+	const int kNumTracesPerType = 5;
 
-	// Turn this to see GC stack traces.
-	const bool enableTraces = false;
-
-	// this is how many stack frames we'll attempt to lookup, we may not get this many and 
-	// we may leave some out
-	const int kMaxTraceDepth = 7;
-
-	// include total and swept memory totals in memory profiling dumps
+	// include total and swept memory totals in memory profiling dumps as opposed to just "live"
 	const bool showTotal = false;	
 	const bool showSwept = false;
 
-	// controls size of table which is fixed
-    const int kNumTracesPow = 20;
-	const int kNumTraces = (enableTraces ? 1 << kNumTracesPow : 1);
-
-#ifdef GCHEAP_LOCK
-	GCCriticalSection m_traceTableLock;
-#endif
-
-	struct StackTrace
+	class StackTrace : public GCAllocObject
 	{
-		int ips[kMaxTraceDepth];
-		int size;
-		int totalSize;
-		int sweepSize;
-        int vtable;
-		const char *memtag;
-		int count;
-		int totalCount;
-		int sweepCount;
-		bool lumped;
-	};
-
-	static StackTrace traceTable[kNumTraces];
-
-	unsigned int hashTrace(int *trace)
-	{
-		unsigned int hash = *trace++;
-		while(*trace++ != 0) {
-			hash ^= *trace;
+	public:
+		StackTrace(uintptr_t *trace) 
+		{ 
+			VMPI_memset(this, 0, sizeof(StackTrace));
+			VMPI_memcpy(ips, trace, kMaxStackTrace * sizeof(void*));
 		}
-		return hash;
-	}
-
-	bool tracesEqual(int *trace1, int *trace2)
-	{
-		while(*trace1) {
-			if(*trace1 != *trace2)
-				return false;
-			trace1++;
-			trace2++;
-		}
-		return *trace1 == *trace2;
-	}
-
-	unsigned int LookupTrace(int *trace)
-	{
-#ifdef GCHEAP_LOCK
-		GCEnterCriticalSection lock(m_traceTableLock);
-#endif
-		// this is true when traces are off
-		if(*trace == 0)
-			return 0;
-		
-		static int numTraces = 0;
-		int modmask = kNumTraces - 1;
-		unsigned int hash = hashTrace(trace);
-		unsigned int index = hash & modmask;
-		unsigned int n = 17; // small number means cluster at start
-		int c = 1;
-		while(traceTable[index].ips[0] && !tracesEqual(traceTable[index].ips, trace)) {
-			// probe
-			index = (index + (n=n+c)) & modmask;
-		}
-		if(traceTable[index].ips[0] == 0) {
-			memcpy(traceTable[index].ips, trace, kMaxTraceDepth * sizeof(int));
-			numTraces++;
-		}
-		if(numTraces == kNumTraces) {
-			GCAssertMsg(false, "Increase trace table size!");
-		}
-		return index;
-	}
-
-	// increase this to get more
-	const int kNumTypes = 10;
-	const int kNumTracesPerType=5;
-
-	// data structure to gather allocations by type with the top 5 traces
-	struct TypeGroup
-	{
-		const char *name;
+		uintptr_t ips[kMaxStackTrace];
+		size_t skip;
 		size_t size;
-		int count;
-		int traces[kNumTracesPerType ? kNumTracesPerType : 1];
+		size_t totalSize;
+		size_t sweepSize;
+		const char *package;
+		const char *category;
+		const char *name;
+		size_t count;
+		size_t totalCount;
+		size_t sweepCount;
+		StackTrace *master;
 	};
 
-	const char* GetTypeName(int index, void *obj)
-	{
-		// cache
-		if(index > kNumTraces)
-			return "unknown";
-		if(traceTable[index].memtag)
-			return traceTable[index].memtag;
-		const char*name="unknown";
+	GCThreadLocal<const char*> memtag;
+	GCThreadLocal<const void*> memtype;
+	StackTrace *GetStackTrace();
+	// print stack trace of caller
+	void DumpStackTrace(int skip=1);
 
-#if (defined(WIN32) && !defined(UNDER_CE)) || defined(AVMPLUS_UNIX)
-		try {
-			const std::type_info *ti = &typeid(*(MMgc::GCObject*)obj);
-			if(ti->name())
-				name = ti->name();
-			// sometimes name will get set to bogus memory with no exceptions catch that
-			char c = *name;
-			(void)c;	// silence compiler warning
-		} catch(...) {
-			name = "unknown";
+	MemoryProfiler::MemoryProfiler() : 
+		traceTable(128, GCHashtable::OPTION_MALLOC | GCHashtable::OPTION_MT),
+		stackTraceMap(128, GCHashtable::OPTION_MALLOC | GCHashtable::OPTION_MT),
+		nameTable(128, GCHashtable::OPTION_MALLOC | GCHashtable::OPTION_STRINGS)
+	{
+	}
+
+	MemoryProfiler::~MemoryProfiler()
+	{
+		GCHashtableIterator traceIter(&stackTraceMap);
+		const void *obj;
+		while((obj = traceIter.nextKey()) != NULL)
+		{
+			StackTrace *trace = (StackTrace*)traceIter.value();
+			delete trace;
 		}
-#else
-		(void)obj;
-#endif // WIN32 || UNIX
-		// cache
-		traceTable[index].memtag = name;
+		GCHashtableIterator nameIter(&nameTable);
+		while((obj = nameIter.nextKey()) != NULL)
+		{
+			VMPI_free((void*)nameIter.value());			
+		}
+	}
+
+	const char *MemoryProfiler::GetAllocationNameFromTrace(StackTrace *trace)
+	{
+		if(trace->name)
+			return trace->name;
+
+		char *name=NULL;
+
+		int i=0;
+		uintptr_t ip;
+		while((ip = trace->ips[i++]) != 0) {
+			// everytime we lookup an ip cache the result
+			name = (char*)nameTable.get(ip);
+			if(!name) {
+				name = (char*)VMPI_alloc(256);
+				if(VMPI_getFunctionNameFromPC(ip, name, 256) == false)
+				{
+					VMPI_snprintf(name, 256, "0x%x", ip);
+				}
+				nameTable.put((const void*)ip, name);
+			}
+			// keep going until we hit mutator code
+			if(VMPI_strstr(name, "::Alloc") != NULL ||
+				VMPI_strstr(name, "::LargeAlloc") != NULL ||
+				VMPI_strstr(name, "::Calloc") != NULL ||
+				VMPI_strstr(name, "operator new") != NULL) 
+			{
+				trace->skip++;
+				continue;
+			}
+			break;
+		}
+		trace->name = name;
 		return name;
 	}
 
-#define PERCENT(all, some) ((((float)some)/(float)all)*100.0)
-
-	void DumpFatties()
+	StackTrace *MemoryProfiler::GetAllocationTrace(const void *obj)
 	{
-		// This routine only works if enableTraces is true (kNumTraces is invalid otherwise)
-		GCDebugMsg(enableTraces == false, "Need enableTraces on for valid memory profiling\r\n");
+		return (StackTrace*)traceTable.get(obj);
+	}
 
-		GCHashtable typeTable(128);
-#ifdef GCHEAP_LOCK
-		//GCEnterCriticalSection lock(m_traceTableLock);
+	const char * MemoryProfiler::GetAllocationName(const void *obj)
+	{
+		StackTrace *trace = (StackTrace*)traceTable.get(obj);
+		return GetAllocationNameFromTrace(trace);
+	}
+
+	const char *MemoryProfiler::GetAllocationCategory(StackTrace *trace)
+	{
+		if(trace->master)
+			trace = trace->master;
+		if(trace->category)
+			return trace->category;
+		const char *cat = GetAllocationNameFromTrace(trace);
+		trace->category = cat;
+		return cat;
+	}
+
+	void ChangeSize(StackTrace *trace, int delta)
+	{ 
+		trace->size += delta; 
+		trace->count += (delta > 0) ? 1 : -1;
+		GCAssert(trace->count != 0 || trace->size == 0);
+		if(delta > 0) {
+			trace->totalSize += delta; 
+			trace->totalCount++; 
+		}
+	}
+
+	void MemoryProfiler::Alloc(const void *item, size_t size)
+	{
+		StackTrace *trace = GetStackTrace();
+		traceTable.put(item, trace);
+
+		ChangeSize(trace, (int)size);
+
+		if(memtype)
+			trace->master = (StackTrace*)traceTable.get(memtype);
+		memtype = NULL;
+		
+		if(memtag)
+			trace->category = memtag;
+		memtag = NULL;
+	}
+
+	void MemoryProfiler::Free(const void *item, size_t size)
+	{
+		StackTrace *trace = (StackTrace*)traceTable.get(item);
+
+		ChangeSize(trace, -1 * int(size));
+		// FIXME: how to know this is a sweep?
+#if 0
+		if(poison == 0xba) {
+			trace->sweepSize += size;	
+			trace->sweepCount++;
+		}
 #endif
-		int residentSize=0;
-		int residentCount=0;
+	}
+	
+	StackTrace *MemoryProfiler::GetStackTrace()
+	{
+		uintptr_t trace[kMaxStackTrace];
+		VMPI_memset(trace, 0, sizeof(trace));
 
-		for(int i=0; i < kNumTraces; i++)
+		VMPI_captureStackTrace(trace, kMaxStackTrace, 2);
+		StackTrace *st = (StackTrace*)stackTraceMap.get(trace); 
+		if(!st) {
+			st = new StackTrace(trace);
+			stackTraceMap.put(st, st);
+		}
+		return st;
+	}
+	
+	class PackageGroup : public GCAllocObject
+	{
+	public:
+		PackageGroup(const char *name) : categories(16, GCHashtable::OPTION_MALLOC), name(name), size(0), count(0) {}
+		const char *name;
+		size_t size;
+		size_t count;
+		GCHashtable categories; // key == category name, value == CategoryGroup*
+	};
+
+	// data structure to gather allocations by type with the top 5 traces
+	class CategoryGroup : public GCAllocObject
+	{
+	public:
+		CategoryGroup(const char *name) : name(name), size(0), count(0) 
 		{
-			int size;
+			VMPI_memset(traces, 0, sizeof(traces));
+		}
+		const char *name;
+		size_t size;
+		size_t count;
+		// biggest kNumTracesPerType traces
+		StackTrace *traces[kNumTracesPerType ? kNumTracesPerType : 1];
+	};
+
+	const char *MemoryProfiler::Intern(const char *name, size_t len)
+	{
+		// input doesn't have to be zero terminated
+		char *buff = (char*)alloca(len+1);
+		VMPI_strncpy(buff, name, len);
+		buff[len]='\0';
+		char *iname = (char*)nameTable.get(buff);
+		if(iname)
+			return iname;
+		iname = (char*)VMPI_alloc(len+1);
+		VMPI_strncpy(iname, name, len);
+		iname[len]='\0';
+		nameTable.put(iname, iname);
+		return iname;
+	}
+
+	// TODO duplicate code in here and in GetAllocationName
+	const char *MemoryProfiler::GetPackage(StackTrace *trace)
+	{
+		if(trace->package)
+			return trace->package;
+		const char *name = GetAllocationNameFromTrace(trace);
+		const char *colons = name ? VMPI_strstr(name, "::") : NULL;
+		const char *package="global";
+		if(colons) {
+			colons += 2;
+			// two sets of colons indicates a namespace
+			const char *colons2 = VMPI_strstr(colons, "::");
+			if(colons2)
+				package = Intern(name, colons-name);
+		}
+		trace->package = package;
+		return package;
+	}
+
+#define PERCENT(all, some) (((double)some*100.0)/(double)all)
+
+	void MemoryProfiler::DumpFatties()
+	{
+		GCHashtable packageTable(128, GCHashtable::OPTION_MALLOC);
+
+		size_t residentSize=0;
+		size_t residentCount=0;
+		size_t packageCount=0;
+
+		FILE *out = GCHeap::GetGCHeap()->GetSpyFile();
+
+		// rip through all allocation sites and sort into package and categories
+		GCHashtableIterator iter(&stackTraceMap);
+		const void *obj;
+		while((obj = iter.nextKey()) != NULL)
+		{
+			StackTrace *trace = (StackTrace*)iter.value();
+			size_t size;
 
 			if(showSwept) {
-				size = traceTable[i].sweepSize;
+				size = trace->sweepSize;
 			} else if(showTotal) {
-				size = traceTable[i].totalSize;
+				size = trace->totalSize;
 			} else {
-				size = traceTable[i].size;
+				size = trace->size;
 			}
 
 			if(size == 0)
 				continue;
+
 			residentSize += size;
 
-			int count = traceTable[i].lumped ? 0 : traceTable[i].count;
-			residentCount += traceTable[i].count;
+			size_t count = trace->master != NULL ? 0 : trace->count;
+			residentCount += trace->count;
 
-			const char *name = "unknown";
-#ifndef _MAC
-#ifndef MMGC_ARM
-			name = GetTypeName(i, &traceTable[i].vtable);
-#endif //MMGC_ARM
-#endif
-			TypeGroup *tg = (TypeGroup*) typeTable.get((void*)name);
-			if(tg)  {
-				GCAssert(tg->name == name);
-				tg->size += size;
-				tg->count += count;
-				for(int j=0; j<kNumTracesPerType; j++) {
-					if(traceTable[tg->traces[j]].size < size) {
-						if(j != kNumTracesPerType-1) {
-							memmove(&tg->traces[j+1], &tg->traces[j], (kNumTracesPerType-j-1)*sizeof(int));
+			const char *pack = GetPackage(trace);
+			PackageGroup *pg = (PackageGroup*) packageTable.get((void*)pack);
+			if(!pg) {
+				pg = new PackageGroup(pack);
+				packageTable.add(pack, pg);
+				packageCount++;
+			}
+			pg->size += size;
+			pg->count += count;
+
+			const char *cat = GetAllocationCategory(trace);			
+			CategoryGroup *tg = (CategoryGroup *) pg->categories.get((void*)cat);
+			if(!tg)  {
+				tg = new CategoryGroup(cat);
+				pg->categories.add((void*)cat, tg);
+			}			
+			tg->size += size;
+			tg->count += count;
+
+			// insertion sort StackTrace
+			for(int j=0; j < kNumTracesPerType; j++) {
+				if(tg->traces[j] == trace)
+					break;
+			  if(!tg->traces[j] || tg->traces[j]->size < size) {
+					if(j != kNumTracesPerType-1) {
+						VMPI_memmove(&tg->traces[j+1], &tg->traces[j], (kNumTracesPerType-j-1)*sizeof(void*));
+					}
+					tg->traces[j] = trace;
+					break;
+				}
+			}
+		}
+
+		// reporting time....
+		PackageGroup **packages = (PackageGroup**)alloca(packageCount*sizeof(PackageGroup*));
+		VMPI_memset(packages, 0, packageCount*sizeof(PackageGroup*));
+
+		GCHashtableIterator pack_iter(&packageTable);
+		const char *package;
+		while((package = (const char*)pack_iter.nextKey()) != NULL)
+		{
+			PackageGroup* pg = (PackageGroup*)pack_iter.value();
+			for(unsigned j=0; j<packageCount; j++) {
+				if(packages[j] == NULL || packages[j]->size < pg->size) {
+					if(j != packageCount-1) {
+						VMPI_memmove(&packages[j+1], &packages[j], (packageCount-j-1)*sizeof(PackageGroup*));
+					}
+					packages[j]=pg;
+					break;
+				}
+			}				
+		}
+
+		fprintf(out, "\n\nMemory allocation report for %u allocations, totaling %u kb (%u ave) across %u packages\n", residentCount, residentSize>>10, residentSize / residentCount, packageCount);
+		for(unsigned i=0; i<packageCount; i++)
+		{
+			PackageGroup* pg = packages[i];
+
+			int numTypes = pg->categories.count();
+
+			if(numTypes == 0)
+				continue;
+
+			// sort CategoryGroup's into this array
+			CategoryGroup **residentFatties = (CategoryGroup**) alloca(numTypes * sizeof(CategoryGroup *));
+			VMPI_memset(residentFatties, 0, numTypes * sizeof(CategoryGroup *));
+			GCHashtableIterator iter(&pg->categories);
+			const char *name;
+			while((name = (const char*)iter.nextKey()) != NULL)
+			{
+				CategoryGroup *tg = (CategoryGroup*)iter.value();
+				// TODO refactor insertion sort into sub routine
+				for(int j=0; j<numTypes; j++) {
+					if(!residentFatties[j]) {
+						residentFatties[j] = tg;
+						break;
+					}
+					if(residentFatties[j]->size < tg->size) {
+						if(j != numTypes-1) {
+							VMPI_memmove(&residentFatties[j+1], &residentFatties[j], (numTypes-j-1) * sizeof(CategoryGroup *));
 						}
-						tg->traces[j] = i;
+						residentFatties[j] = tg;
 						break;
 					}
 				}			
-			} else {
-				tg = new TypeGroup();
-				tg->size = size;
-				tg->count = count;
-				tg->name = name;
-				tg->traces[0] = i;
-				if(kNumTracesPerType) {
-					int num = kNumTracesPerType - 1;
-					memset(&tg->traces[1], 0, sizeof(int)*num);
-				}
-				typeTable.put((void*)name, tg);
 			}
-		}
+			
+			fprintf(out, "%s - %3.1f%% - %u kb %u items, avg %u b\n", pg->name, PERCENT(residentSize, pg->size),  (unsigned int)pg->size>>10, pg->count, (unsigned int)(pg->count ? pg->size/pg->count : 0));
+				
+			// result capping
+			if(numTypes > kNumTypes)
+				numTypes = kNumTypes;
 
-		size_t codeSize = 0;
-
-		GCHeap* heap = GCHeap::GetGCHeap();
-		
-#ifdef MMGC_AVMPLUS
-		codeSize = heap->GetCodeMemorySize();
-#endif
-		int inUse = heap->GetUsedHeapSize() * GCHeap::kBlockSize;
-		size_t committed = heap->GetTotalHeapSize() * GCHeap::kBlockSize + codeSize;
-		int free = heap->GetFreeHeapSize() * GCHeap::kBlockSize;
-
-		int memInfo = residentCount*16;
-
-		// executive summary
-		GCDebugMsg(false, "Code Size %d kb \n", codeSize>>10);
-		GCDebugMsg(false, "Total in use (used pages, ignoring code) %d kb \n", inUse>>10);
-		GCDebugMsg(false, "Total resident (individual allocations - code) %d kb \n", (residentSize-codeSize)>>10);
-		GCDebugMsg(false, "Allocator overhead (used pages - resident, ignoring code and mem_info): %d kb \n", ((inUse-memInfo)-(residentSize-codeSize))>>10);
-		GCDebugMsg(false, "Heap overhead (unused committed pages, ignoring code): %d kb \n", free>>10);
-		GCDebugMsg(false, "Total committed (including code) %d kb \n\n", committed>>10);
-
-		TypeGroup *residentFatties[kNumTypes];
-		memset(residentFatties, 0, kNumTypes * sizeof(TypeGroup *));
-		GCHashtableIterator iter(&typeTable);
-		const char *name;
-		while((name = (const char*)iter.nextKey()) != NULL)
-		{
-			TypeGroup *tg = (TypeGroup*)iter.value();
-			for(int j=0; j<kNumTypes; j++) {
-				if(!residentFatties[j]) {
-					residentFatties[j] = tg;
+			for(int i=0; i < numTypes; i++)
+			{
+				CategoryGroup *tg = residentFatties[i];
+				if(!tg) 
 					break;
-				}
-				if(residentFatties[j]->size < tg->size) {
-					if(j != kNumTypes-1) {
-						memmove(&residentFatties[j+1], &residentFatties[j], (kNumTypes-j-1) * sizeof(TypeGroup *));
+				fprintf(out, "\t%s - %3.1f%% - %u kb %u items, avg %u b\n", tg->name, PERCENT(residentSize, tg->size), (unsigned int)tg->size>>10, tg->count, (unsigned int)(tg->count ? tg->size/tg->count : 0));
+				for(int j=0; j < kNumTracesPerType; j++) {
+					StackTrace *trace = tg->traces[j];
+					if(trace) {
+						size_t size = trace->size;
+						size_t count = trace->count;
+						if(showSwept) {
+							size = trace->sweepSize;
+							count = trace->sweepCount;
+						} else if(showTotal) {
+							size = trace->totalSize;
+							count = trace->totalCount;
+						}
+						fprintf(out,"\t\t %3.1f%% - %u kb - %u items - ", PERCENT(tg->size, size), size>>10, count);
+						PrintStackTraceByTrace(trace);
 					}
-					residentFatties[j] = tg;
-					break;
-				}
-			}			
-		}
-
-		for(int i=0; i < kNumTypes; i++)
-		{
-			TypeGroup *tg = residentFatties[i];
-			if(!tg) 
-				break;
-			GCDebugMsg(false, "%s - %3.1f%% - %d kb %d items, avg %d b\n", tg->name, PERCENT(residentSize, tg->size), tg->size>>10, tg->count, tg->count ? tg->size/tg->count : 0);
-			for(int j=0; j < kNumTracesPerType; j++) {
-				int traceIndex = tg->traces[j];
-				if(traceIndex) {
-					int size = traceTable[traceIndex].size;
-					int count = traceTable[traceIndex].count;
-					if(showSwept) {
-						size = traceTable[traceIndex].sweepSize;
-						count = traceTable[traceIndex].sweepCount;
-					} else if(showTotal) {
-						size = traceTable[traceIndex].totalSize;
-						count = traceTable[traceIndex].totalCount;
-					}
-					GCDebugMsg(false, "\t %3.1f%% - %d kb - %d items - ", PERCENT(tg->size, size), size>>10, count);
-					PrintStackTraceByIndex(traceIndex);
 				}
 			}
 		}
 
-		GCHashtableIterator iter2(&typeTable);
-		while(iter2.nextKey() != NULL)
-			delete (TypeGroup*)iter2.value();
+		GCHashtableIterator pi(&packageTable);
+		while(pi.nextKey() != NULL)
+		{
+			PackageGroup* pg = (PackageGroup*)pi.value();
+			GCHashtableIterator iter(&pg->categories);
+			while(iter.nextKey() != NULL)
+				delete (CategoryGroup*)iter.value();
+			delete pg;
+		}
 	}
+	
+	void SetMemTag(const char *s)
+	{
+		if(memtag == NULL)
+			memtag = s;
+	}
+	void SetMemType(const void *s)
+	{
+		GCAssert(GC::GetGC(s)->IsGCMemory(s));
+		if(memtype == NULL)
+			memtype = s;
+	}
+	
+	void DumpStackTraceHelper(uintptr_t *trace)
+	{
+		char out[2048];
+		char *tp = out;
+		*tp++ = '\n';
+		for(int i=0; trace[i] != 0; i++) {
+			char buff[256];
+			*tp++ = '\t';		*tp++ = '\t';		*tp++ = '\t';		
+			if(VMPI_getFunctionNameFromPC(trace[i], buff, sizeof(buff)) == false)
+			{
+				VMPI_snprintf(buff, sizeof(buff), "0x%x", trace[i]);
+			}
+			VMPI_strncpy(tp, buff, sizeof(buff));
+			tp += VMPI_strlen(buff);
+
+			uint32_t lineNum;
+			if(VMPI_getFileAndLineInfoFromPC(trace[i], buff, sizeof(buff), &lineNum) == false)
+			{
+				VMPI_snprintf(buff, sizeof(buff), "0x%x", trace[i]);
+			}
+			else
+			{
+				VMPI_snprintf(buff, sizeof(buff), "%s:%d", buff, lineNum);
+			}
+			*tp++ = '(';
+			VMPI_strncpy(tp, buff, sizeof(buff));
+			tp += VMPI_strlen(buff);
+			*tp++ = ')';
+			tp += VMPI_sprintf(tp, " - 0x%x", (unsigned int) trace[i]);
+			*tp++ = '\n';
+			if(tp - out > 1500) {
+				GCLog(out);
+				GCLog("\n");
+				tp = out;
+			}
+		}
+		*tp++ = '\n';
+		*tp = '\0';
+
+		fputs(out, GCHeap::GetGCHeap()->GetSpyFile());
+	}
+
+	void PrintStackTraceByTrace(StackTrace *trace)
+	{
+		DumpStackTraceHelper(&trace->ips[trace->skip]);
+	}
+
+	void PrintStackTrace(const void *item)
+	{
+		if(GCHeap::GetGCHeap()->GetProfiler()) {
+			StackTrace *trace = GCHeap::GetGCHeap()->GetProfiler()->GetAllocationTrace(item);
+			GCAssertMsg(trace != NULL, "Trace was null");
+			PrintStackTraceByTrace(trace);
+		}
+	}
+
+	const char* GetAllocationName(const void *obj)
+	{
+		if(GCHeap::GetGCHeap()->GetProfiler())
+			return GCHeap::GetGCHeap()->GetProfiler()->GetAllocationName(obj);
+		return NULL;
+	}
+
+	void ChangeSizeForObject(const void *object, int size)
+	{
+		if(GCHeap::GetGCHeap()->GetProfiler()) {
+			StackTrace *st = GCHeap::GetGCHeap()->GetProfiler()->GetAllocationTrace(object);
+			if(st)
+				st->size += size;
+			GCAssert(int(st->size) >= 0);
+		}
+	}
+
+	unsigned GCStackTraceHashtable::equals(const void *k, const void *k2)
+	{
+		if(k == NULL || k2 == NULL)
+			return false;
+		return VMPI_memcmp(k, k2, kMaxStackTrace * sizeof(void*)) == 0;
+	}
+
+	unsigned GCStackTraceHashtable::hash(const void *k)
+	{
+		const int *array = (const int*)k;
+		int hash = 0;
+		for(int i=0;i<kMaxStackTrace; i++)
+			hash += array[i];
+		return hash;
+	}
+
+#else
+
+	void PrintStackTrace(const void *) {}
+	const char* GetAllocationName(const void *) { return NULL; }
+	void ChangeSizeForObject(const void *, int ) {}
+
+#endif
+
+
+#ifdef MMGC_MEMORY_INFO
+
+// end user servicable parts
  
 	size_t DebugSize()
 	{ 
@@ -348,83 +582,28 @@ namespace MMgc
 	 * the table size or to an unused table entry) or if the size gets mangled and the
 	 * end tag isn't at mem+size.  
 	*/
-	void *DebugDecorate(void *item, size_t size, int skip)
+	void DebugDecorate(const void *item, size_t size)
 	{
-		if (!item) return NULL;
-
-#ifndef _MAC
-		if(lastItem)
-		{
-			// this guy might be deleted so swallow access violations
-			try {
-				traceTable[(int)lastTrace].vtable = *(int*)((void*)lastItem);
-			} catch(...) {}
-			lastItem = 0;
-		}
-#endif
-
-		int traceIndex;
-
-		// get index into trace table
-		{
-#ifdef GCHEAP_LOCK
-			GCEnterCriticalSection lock(m_traceTableLock);
-#endif
-			traceIndex = GetStackTraceIndex(skip);
-		}
-
-		if(GCHeap::GetGCHeap()->enableMemoryProfiling && memtype)
-		{
-			// if an allocation is tagged with MMGC_MEM_TYPE its a sub
-			// allocation of a "master" type and this flag prevents it
-			// from contributing to the count so averages make more sense
-			traceTable[traceIndex].lumped = true;
-		}
-
-		// subtract decoration space
-		size -= DebugSize();
-
-		ChangeSize(traceIndex, (int)size);
+		item = GetRealPointer(item);
 
 		int *mem = (int*)item;
 		// set up the memory
 		*mem++ = (int)size;
-		*mem++ = traceIndex;
-		void *ret = mem;
+		*mem++ = 0;
 		mem += (size>>2);
 		*mem++ = 0xdeadbeef;
 		*mem = 0;
 	#ifdef MMGC_64BIT
 		*(mem+1) = 0;
 		*(mem+2) = 0;
-	#endif	
-
-		// save these off so we can save the vtable (which is assigned after memory is
-		// allocated)
-		if(GCHeap::GetGCHeap()->enableMemoryProfiling)
-		{
-			if(memtag || memtype) {
-				if(memtag)
-					traceTable[traceIndex].memtag = memtag;
-				else
-					traceTable[traceIndex].vtable =  *(int*)(void*)memtype;
-				memtag = NULL;
-				memtype = NULL;
-			} else {
-				lastTrace = traceIndex;
-				lastItem = ret;
-			}
-		}
-
-		return ret;
+	#endif
 	}
 
-	void DebugFreeHelper(const void *item, int poison, int skip)
+	void DebugFreeHelper(const void *item, int poison, size_t wholeSize)
 	{
 		int *ip = (int*) item;
 		int size = *ip;
-		int traceIndex = *(ip+1);
-		int *endMarker = ip + 2 + (size>>2);
+ 		int *endMarker = ip + 2 + (size>>2);
 
 		// clean up
 		*ip = 0;
@@ -434,142 +613,29 @@ namespace MMgc
 		if(size == 0)
 			return;
 
-		if (*endMarker != (int32)0xdeadbeef)
+		if (*endMarker != (int32_t)0xdeadbeef)
 		{
 			// if you get here, you have a buffer overrun.  The stack trace about to
 			// be printed tells you where the block was allocated from.  To find the
 			// overrun, put a memory breakpoint on the location endMarker is pointing to.
 			GCDebugMsg("Memory overwrite detected\n", false);
-			PrintStackTraceByIndex(traceIndex);
+			PrintStackTrace(item);
 			GCAssert(false);
 		}
-	
-		{
-#ifdef GCHEAP_LOCK
-			GCEnterCriticalSection lock(m_traceTableLock);
-#endif
-			ChangeSize(traceIndex, -1 * size);
-			if(poison == 0xba) {
-				traceTable[traceIndex].sweepSize += size;	
-				traceTable[traceIndex].sweepCount++;
-			}
-			traceIndex = GetStackTraceIndex(skip);
-		}
-
-		// whack the entire thing except the first 8 bytes,
-		// the free list
-		if(poison == 0xca || poison == 0xba)
-			size = (uint32)GC::Size(ip);
-		else
-			size = (uint32)FixedMalloc::GetInstance()->Size(ip);
 
 		// size is the non-Debug size, so add 4 to get last 4 bytes, don't
 		// touch write back pointer space
-		memset(ip, poison, size+4);
-		// write stack index to ip (currently 3rd 4 bytes of item)			
-		*ip = traceIndex;
+		VMPI_memset(ip, poison, wholeSize+4);
 	}
 
-	void *DebugFree(const void *item, int poison, int skip)
+	void *DebugFree(const void *item, int poison, size_t size)
 	{
 		item = (int*) item - 2;
-		DebugFreeHelper(item, poison, skip);
+		DebugFreeHelper(item, poison, size);
 		return (void*)item;
 	}
+#endif // defined MMGC_MEMORY_INFO
 
-	void *DebugFreeReverse(void *item, int poison, int skip)
-	{
-		DebugFreeHelper(item,  poison, skip);
-		item = (int*) item + 2;
-		return item;
-	}
+} // namespace MMgc
 
-	void ChangeSize(int traceIndex, int delta)
-	{ 
-#ifdef GCHEAP_LOCK
-		GCEnterCriticalSection lock(m_traceTableLock);
-#endif
-		if(!enableTraces)
-			return;
-		traceTable[traceIndex].size += delta; 
-		traceTable[traceIndex].count += (delta > 0) ? 1 : -1;
-		GCAssert(traceTable[traceIndex].size >= 0);
-		if(delta > 0) {
-			traceTable[traceIndex].totalSize += delta; 
-			traceTable[traceIndex].totalCount++; 
-		}
-	}
-
-	unsigned int GetStackTraceIndex(int skip)
-	{
-		if(!enableTraces)
-			return 0;
-		int trace[kMaxTraceDepth]; // an array of pcs
-		GetStackTrace(trace, kMaxTraceDepth, skip);
-
-		// get index into trace table
-		return LookupTrace(trace);
-	}
-
-	void DumpStackTraceHelper(int *trace)
-	{
-		if(!enableTraces)
-			return;
-
-		char out[2048];
-		char *tp = out;
-		for(int i=0; trace[i] != 0; i++) {
-			char buff[256];
-			GetInfoFromPC(trace[i], buff, 256);
-			strcpy(tp, buff);
-			tp += strlen(buff);
-			*tp++ = ' ';		
-		}
-		*tp++ = '\n';
-		*tp = '\0';
-
-		GCDebugMsg(out, false);
-	}
-
-	void DumpStackTrace(int skip)
-	{
-		if(!enableTraces)
-			return;
-		int trace[kMaxTraceDepth];
-		GetStackTrace(trace, kMaxTraceDepth, skip);
-		DumpStackTraceHelper(trace);
-	}
- 
-	void PrintStackTrace(const void *item)
-	{ 
-		if (item)
-			PrintStackTraceByIndex(*((int*)item - 1)); 
-	}
-
-	void PrintStackTraceByIndex(int i)
-	{
-#ifdef GCHEAP_LOCK
-		GCEnterCriticalSection lock(m_traceTableLock);
-#endif
-		if(i < kNumTraces)
-			DumpStackTraceHelper(traceTable[i].ips);
-	}
-	
-	void ChangeSizeForObject(void *object, int size)
-	{
-		int traceIndex = *(((int*)object)-1);
-		ChangeSize(traceIndex, size);
-	}
-
-	void SetMemTag(const char *s)
-	{
-		if(memtag == NULL)
-			memtag = s;
-	}
-	void SetMemType(void *s)
-	{
-		if(memtype == NULL)
-			memtype = s;
-	}
-}
-#endif
+#endif // defined(MMGC_MEMORY_INFO) || defined(MMGC_MEMORY_PROFILER)

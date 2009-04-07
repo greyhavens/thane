@@ -70,12 +70,15 @@ namespace avmplus
 	
 	double MathUtils::ceil(double value)
 	{
+// MacOS X Intel 10.5 incorrectly make ceil(-0.5) -> 0.0 instead of -0.0
+// special-case and correct.
+#if defined(AVMPLUS_MAC) && (defined(AVMPLUS_IA32) || defined(AVMPLUS_AMD64))
+		double r = ::ceil(value);
+		if (r == 0.0 && value < 0.0) r = -0.0;
+		return r;
+#else
 		return ::ceil(value);
-	}
-
-	double MathUtils::copysign(double x, double y)
-	{
-		return ::copysign(x, y);
+#endif
 	}
 
 	double MathUtils::cos(double value)

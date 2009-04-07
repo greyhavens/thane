@@ -41,12 +41,12 @@ avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
   $(curdir)/AbcEnv.cpp \
   $(curdir)/AbcGen.cpp \
   $(curdir)/AbcParser.cpp \
-  $(curdir)/AbstractFunction.cpp \
   $(curdir)/ActionBlockConstants.cpp \
   $(curdir)/ArrayClass.cpp \
   $(curdir)/ArrayObject.cpp \
   $(curdir)/AtomArray.cpp \
   $(curdir)/AvmCore.cpp \
+  $(curdir)/AvmLog.cpp \
   $(curdir)/avmplusDebugger.cpp \
   $(curdir)/avmplusHashtable.cpp \
   $(curdir)/avmplusProfiler.cpp \
@@ -55,18 +55,19 @@ avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
   $(curdir)/BuiltinTraits.cpp \
   $(curdir)/ClassClass.cpp \
   $(curdir)/ClassClosure.cpp \
+  $(curdir)/CodegenLIR.cpp \
+  $(curdir)/Coder.cpp \
   $(curdir)/DateClass.cpp \
   $(curdir)/DateObject.cpp \
+  $(curdir)/DescribeTypeClass.cpp \
   $(curdir)/Domain.cpp \
   $(curdir)/DomainEnv.cpp \
-  $(curdir)/DynamicProfiler.cpp \
   $(curdir)/E4XNode.cpp \
   $(curdir)/ErrorClass.cpp \
   $(curdir)/ErrorConstants.cpp \
   $(curdir)/Exception.cpp \
   $(curdir)/FrameState.cpp \
   $(curdir)/FunctionClass.cpp \
-  $(curdir)/GrowableBuffer.cpp \
   $(curdir)/IntClass.cpp \
   $(curdir)/Interpreter.cpp \
   $(curdir)/MathClass.cpp \
@@ -82,9 +83,10 @@ avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
   $(curdir)/NativeFunction.cpp \
   $(curdir)/NumberClass.cpp \
   $(curdir)/ObjectClass.cpp \
-  $(curdir)/opcodes.cpp \
+  $(curdir)/peephole.cpp \
   $(curdir)/PoolObject.cpp \
   $(curdir)/PrintWriter.cpp \
+  $(curdir)/QCache.cpp \
   $(curdir)/RegExpClass.cpp \
   $(curdir)/RegExpObject.cpp \
   $(curdir)/Sampler.cpp \
@@ -92,16 +94,19 @@ avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
   $(curdir)/ScriptBuffer.cpp \
   $(curdir)/ScriptObject.cpp \
   $(curdir)/StackTrace.cpp \
-  $(curdir)/StaticProfiler.cpp \
   $(curdir)/StringBuffer.cpp \
   $(curdir)/StringClass.cpp \
   $(curdir)/StringObject.cpp \
   $(curdir)/Toplevel.cpp \
   $(curdir)/Traits.cpp \
+  $(curdir)/TypeDescriber.cpp \
   $(curdir)/UnicodeUtils.cpp \
   $(curdir)/VectorClass.cpp \
   $(curdir)/Verifier.cpp \
   $(curdir)/VTable.cpp \
+  $(curdir)/WordcodeEmitter.cpp \
+  $(curdir)/WordcodeTranslator.cpp \
+  $(curdir)/wopcodes.cpp \
   $(curdir)/XMLClass.cpp \
   $(curdir)/XMLListClass.cpp \
   $(curdir)/XMLListObject.cpp \
@@ -112,13 +117,9 @@ avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
   $(curdir)/AvmPlusScriptableObject.cpp \
   $(NULL)
 
-ifeq (windows,$(TARGET_OS))
+ifdef ENABLE_DEBUG
 avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
-  $(curdir)/AvmDebugWin.cpp \
-  $(NULL)
-else
-avmplus_CXXSRCS := $(avmplus_CXXSRCS) \
-  $(curdir)/AvmDebugUnix.cpp \
+  $(curdir)/AvmDebug.cpp \
   $(NULL)
 endif
 

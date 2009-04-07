@@ -46,7 +46,7 @@ namespace avmplus
 	public:
 		DictionaryObject(VTable *vtable, ScriptObject *delegate);
 		~DictionaryObject();
-		void constructDictionary(bool weakKeys);
+		void init(bool weakKeys);
 	
 		virtual Hashtable* getTable() const { return table; }
 	
@@ -59,6 +59,7 @@ namespace avmplus
 		virtual Atom nextName(int index);
 		virtual int nextNameIndex(int index);
 
+		bool isUsingWeakKeys() const { return weakKeys; }
 	private:
 		DWB(Hashtable*) table;
 		bool weakKeys;
@@ -72,7 +73,6 @@ namespace avmplus
 	public:
 		DictionaryClass(VTable *vtable);
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
-		DECLARE_NATIVE_MAP(DictionaryClass)
 	};
 }
 

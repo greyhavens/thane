@@ -42,54 +42,13 @@
 
 namespace avmshell
 {
-	BEGIN_NATIVE_MAP(ByteArrayClass)
-		NATIVE_METHOD(flash_utils_ByteArray_toString,          ByteArrayObject::_toString)
-		NATIVE_METHOD(flash_utils_ByteArray_length_get,        ByteArrayObject::get_length)
-		NATIVE_METHOD(flash_utils_ByteArray_length_set,        ByteArrayObject::set_length)
-
-		NATIVE_METHOD(flash_utils_ByteArray_readBytes,         ByteArrayObject::readBytes)
-		NATIVE_METHOD(flash_utils_ByteArray_writeBytes,        ByteArrayObject::writeBytes)
-
-		NATIVE_METHOD(flash_utils_ByteArray_writeBoolean,      ByteArrayObject::writeBoolean)
-		NATIVE_METHOD(flash_utils_ByteArray_writeByte,         ByteArrayObject::writeByte)
-		NATIVE_METHOD(flash_utils_ByteArray_writeShort,        ByteArrayObject::writeShort)
-		NATIVE_METHOD(flash_utils_ByteArray_writeInt,          ByteArrayObject::writeInt)
-		NATIVE_METHOD(flash_utils_ByteArray_writeUnsignedInt,  ByteArrayObject::writeUnsignedInt)		
-		NATIVE_METHOD(flash_utils_ByteArray_writeFloat,        ByteArrayObject::writeFloat)
-		NATIVE_METHOD(flash_utils_ByteArray_writeDouble,       ByteArrayObject::writeDouble)
-		NATIVE_METHOD(flash_utils_ByteArray_writeUTF,          ByteArrayObject::writeUTF)
-		NATIVE_METHOD(flash_utils_ByteArray_writeUTFBytes,     ByteArrayObject::writeUTFBytes)		
-	
-		NATIVE_METHOD(flash_utils_ByteArray_readBoolean,       ByteArrayObject::readBoolean)
-		NATIVE_METHOD(flash_utils_ByteArray_readByte,          ByteArrayObject::readByte)
-		NATIVE_METHOD(flash_utils_ByteArray_readUnsignedByte,  ByteArrayObject::readUnsignedByte)
-		NATIVE_METHOD(flash_utils_ByteArray_readShort,         ByteArrayObject::readShort)
-		NATIVE_METHOD(flash_utils_ByteArray_readUnsignedShort, ByteArrayObject::readUnsignedShort)
-		NATIVE_METHOD(flash_utils_ByteArray_readInt,           ByteArrayObject::readInt)
-		NATIVE_METHOD(flash_utils_ByteArray_readUnsignedInt,   ByteArrayObject::readUnsignedInt)		
-		NATIVE_METHOD(flash_utils_ByteArray_readFloat,         ByteArrayObject::readFloat)
-		NATIVE_METHOD(flash_utils_ByteArray_readDouble,        ByteArrayObject::readDouble)
-		NATIVE_METHOD(flash_utils_ByteArray_readUTF,           ByteArrayObject::readUTF)
-		NATIVE_METHOD(flash_utils_ByteArray_readUTFBytes,      ByteArrayObject::readUTFBytes)		
-		
-		NATIVE_METHOD(flash_utils_ByteArray_bytesAvailable_get,         ByteArrayObject::available)
-		NATIVE_METHOD(flash_utils_ByteArray_position_get,    ByteArrayObject::getFilePointer)
-		NATIVE_METHOD(flash_utils_ByteArray_position_set,              ByteArrayObject::seek)
-		NATIVE_METHOD(flash_utils_ByteArray_compress,          ByteArrayObject::zlib_compress)
-		NATIVE_METHOD(flash_utils_ByteArray_uncompress,        ByteArrayObject::zlib_uncompress)
-		NATIVE_METHOD(flash_utils_ByteArray_endian_get,    ByteArrayObject::get_endian)
-		NATIVE_METHOD(flash_utils_ByteArray_endian_set,              ByteArrayObject::set_endian)
-		NATIVE_METHOD(flash_utils_ByteArray_writeFile,	ByteArrayObject::writeFile)
-
-		NATIVE_METHOD(flash_utils_ByteArray_readFile, ByteArrayClass::readFile)
-	END_NATIVE_MAP()
-		
 	//
 	// ByteArray
 	//
 	
 	ByteArray::ByteArray()
 	{
+		m_subscriberRoot = NULL;
 		m_capacity = 0;
 		m_length   = 0;
 		m_array    = NULL;
@@ -97,6 +56,7 @@ namespace avmshell
 
 	ByteArray::ByteArray(const ByteArray &lhs)
 	{
+		m_subscriberRoot = NULL;
 		m_array    = new U8[lhs.m_length];
 		if (!m_array)
 		{
@@ -107,11 +67,12 @@ namespace avmshell
 		m_capacity = lhs.m_length;
 		m_length   = lhs.m_length;
 
-		memcpy(m_array, lhs.m_array, m_length);
+		VMPI_memcpy(m_array, lhs.m_array, m_length);
 	}
 
 	ByteArray::~ByteArray()
 	{
+		m_subscriberRoot = NULL;
 		if (m_array)
 		{
 			delete [] m_array;
@@ -147,12 +108,13 @@ namespace avmshell
 			}
 			if (m_array)
 			{
-				memcpy(newArray, m_array, m_length);
+				VMPI_memcpy(newArray, m_array, m_length);
 				delete [] m_array;
 			}
-			memset(newArray+m_length, 0, newCapacity-m_capacity);
+			VMPI_memset(newArray+m_length, 0, newCapacity-m_capacity);
 			m_array = newArray;
 			m_capacity = newCapacity;
+			NotifySubscribers();
 		}
 		return true;
 	}
@@ -172,6 +134,7 @@ namespace avmshell
 		{
 			Grow(index+1);
 			m_length = index+1;
+			NotifySubscribers();
 		}
 		return m_array[index];
 	}
@@ -183,17 +146,21 @@ namespace avmshell
 			Grow(m_length + 1);
 		}
 		m_array[m_length++] = value;
+		NotifySubscribers();
 	}
 		
 	void ByteArray::Push(const U8 *data, uint32 count)
 	{
 		Grow(m_length + count);
-		memcpy(m_array + m_length, data, count);
+		VMPI_memcpy(m_array + m_length, data, count);
 		m_length += count;
+		NotifySubscribers();
 	}
 	
 	void ByteArray::SetLength(uint32 newLength)
 	{
+ 		if(m_subscriberRoot && m_length < Domain::GLOBAL_MEMORY_MIN_SIZE)
+ 			ThrowMemoryError();
 		if (newLength > m_capacity)
 		{
 			if (!Grow(newLength))
@@ -203,6 +170,65 @@ namespace avmshell
 			}
 		}
 		m_length = newLength;
+		NotifySubscribers();
+	}
+
+ 	void ByteArray::NotifySubscribers()
+ 	{
+ 		SubscriberLink *curLink = m_subscriberRoot;
+ 		SubscriberLink **prevNext = &m_subscriberRoot;
+ 
+ 		while(curLink != NULL) // notify subscribers
+ 		{
+ 			AvmAssert(m_length >= Domain::GLOBAL_MEMORY_MIN_SIZE);
+ 
+ 			Domain *dom = (Domain *)curLink->weakDomain->get();
+ 
+ 			if(dom)
+ 			{
+ 				(dom->*(curLink->notify))(m_array, m_length);
+ 				prevNext = &curLink->next;
+ 			}
+ 			else
+ 				// Domain went away? remove link
+ 				MMgc::GC::WriteBarrier(prevNext, curLink->next);
+ 			curLink = curLink->next;
+ 		}
+ 	}
+ 
+ 	bool ByteArray::GlobalMemorySubscribe(const Domain *subscriber, GlobalMemoryNotifyFunc notify)
+ 	{
+ 		if(m_length >= Domain::GLOBAL_MEMORY_MIN_SIZE)
+ 		{
+ 			GlobalMemoryUnsubscribe(subscriber);
+			SubscriberLink *newLink = new (MMgc::GC::GetGC(subscriber)) SubscriberLink;
+ 			newLink->weakDomain = subscriber->GetWeakRef();
+ 			newLink->notify = notify;
+ 			MMgc::GC::WriteBarrier(&newLink->next, m_subscriberRoot);
+ 			MMgc::GC::WriteBarrier(&m_subscriberRoot, newLink);
+ 			// notify the new "subscriber" of the current state of the world
+ 			(subscriber->*notify)(m_array, m_length);
+ 			return true;
+ 		}
+ 		return false;
+ 	}
+ 
+ 	bool ByteArray::GlobalMemoryUnsubscribe(const Domain *subscriber)
+ 	{
+ 		SubscriberLink **prevNext = &m_subscriberRoot;
+ 		SubscriberLink *curLink = m_subscriberRoot;
+ 
+ 		while(curLink)
+ 		{
+ 			if(curLink->weakDomain->get() == (MMgc::GCObject *)subscriber)
+ 			{
+ 				MMgc::GC::WriteBarrier(prevNext, curLink->next);
+ 				return true;
+ 			}
+ 			prevNext = &curLink->next;
+ 			curLink = curLink->next;
+ 		}
+ 		return false;
 	}
 
 	//
@@ -239,7 +265,7 @@ namespace avmshell
 
 		if (count > 0)
 		{
-			memcpy(buffer, m_array+m_filePointer, count);
+			VMPI_memcpy(buffer, m_array+m_filePointer, count);
 			m_filePointer += count;
 		}
 	}
@@ -250,7 +276,7 @@ namespace avmshell
 			Grow(m_filePointer+count);
 			m_length = m_filePointer+count;
 		}
-		memcpy(m_array+m_filePointer, buffer, count);
+		VMPI_memcpy(m_array+m_filePointer, buffer, count);
 		m_filePointer += count;
 	}
 
@@ -277,16 +303,15 @@ namespace avmshell
 	
 	void ByteArrayObject::setUintProperty(uint32 i, Atom value)
 	{
-		m_byteArray[i] = (U8)(core()->integer(value));
+		m_byteArray[i] = (U8)(AvmCore::integer(value));
 	}
 	
 	Atom ByteArrayObject::getAtomProperty(Atom name) const
 	{
-		AvmCore *core = this->core();
 		uint32 index;
-		if (core->getIndexFromAtom(name, &index)) {
+		if (AvmCore::getIndexFromAtom(name, &index)) {
 			if (index < (uint32) m_byteArray.GetLength()) {
-				return core->intToAtom(m_byteArray[index]);
+				return core()->intToAtom(m_byteArray[index]);
 			} else {
 				return undefinedAtom;
 			}
@@ -297,10 +322,9 @@ namespace avmshell
 	
 	void ByteArrayObject::setAtomProperty(Atom name, Atom value)
 	{
-		AvmCore *core = this->core();
 		uint32 index;
-		if (core->getIndexFromAtom(name, &index)) {
-			int intValue = core->integer(value);
+		if (AvmCore::getIndexFromAtom(name, &index)) {
+			int intValue = AvmCore::integer(value);
 			m_byteArray[index] = (U8)(intValue);
 		} else {
 			ScriptObject::setAtomProperty(name, value);
@@ -327,17 +351,17 @@ namespace avmshell
 		setLength(value);
 	}
 
-	int ByteArrayObject::getFilePointer()
+	int ByteArrayObject::get_position()
 	{
 		return m_byteArray.GetFilePointer();
 	}
 
-	int ByteArrayObject::available()
+	int ByteArrayObject::get_bytesAvailable()
 	{
 		return m_byteArray.Available();
 	}
 	
-	void ByteArrayObject::seek(int offset)
+	void ByteArrayObject::set_position(int offset)
 	{
 		if (offset >= 0) {
 			m_byteArray.Seek(offset);
@@ -346,7 +370,7 @@ namespace avmshell
 
 	String* ByteArrayObject::_toString()
 	{
-		unsigned char *c = (unsigned char*)m_byteArray.GetBuffer();
+		uint8_t *c = (uint8_t*)m_byteArray.GetBuffer();
 		uint32 len = m_byteArray.GetLength();
 
 		if (len >= 3)
@@ -354,42 +378,25 @@ namespace avmshell
 			// UTF8 BOM
 			if ((c[0] == 0xef) && (c[1] == 0xbb) && (c[2] == 0xbf))
 			{
-				return core()->newString(((char *)c) + 3, len - 3);
+				return core()->newStringUTF8((const char*)c + 3, len - 3);
 			}
 			else if ((c[0] == 0xfe) && (c[1] == 0xff))
 			{
 				//UTF-16 big endian
 				c += 2;
 				len = (len - 2) >> 1;
-				Stringp out = new (core()->GetGC()) String(len);
-				wchar *buffer = out->lockBuffer();
-				for (uint32 i = 0; i < len; i++)
-				{
-					buffer[i] = (c[0] << 8) + c[1];
-					c += 2;
-				}
-				out->unlockBuffer();
-
-				return out;
+				return core()->newStringEndianUTF16(/*littleEndian*/false, (const wchar*)c, len);
 			}
 			else if ((c[0] == 0xff) && (c[1] == 0xfe))
 			{
 				//UTF-16 little endian
-				c += 2;
-				len = (len - 2) >> 1;
-				Stringp out = new (core()->GetGC()) String(len);
-				wchar *buffer = out->lockBuffer();
-				for (uint32 i = 0; i < len; i++)
-				{
-					buffer[i] = (c[1] << 8) + c[0];
-					c += 2;
-				}
-				out->unlockBuffer();
-				return out;
+				return core()->newStringEndianUTF16(/*littleEndian*/true, (const wchar*)c, len);
 			}
 		}
 
-		return core()->newString(((char *)c), len);
+		// Use newStringUTF8() with "strict" explicitly set to false to mimick old,
+		// buggy behavior, where malformed UTF-8 sequences are stored as single characters.
+		return core()->newStringUTF8((const char*)c, len, false);
 	}
 	
 	int ByteArrayObject::readByte()
@@ -500,7 +507,7 @@ namespace avmshell
 			return; 
 
 		U8 *gzdata = new U8[gzlen];
-        memcpy(gzdata, m_byteArray.GetBuffer(), gzlen);
+        VMPI_memcpy(gzdata, m_byteArray.GetBuffer(), gzlen);
 
         // Clear the buffer
         m_byteArray.Seek(0);
@@ -595,11 +602,21 @@ namespace avmshell
 		m_byteArray.WriteUTFBytes(value);
 	}
 
-	void ByteArrayObject::fill(const void *b, int len)
+	void ByteArrayObject::fill(const void *b, uint32_t len)
 	{
 		m_byteArray.Write(b, len);
 	}
 	
+ 	bool ByteArrayObject::globalMemorySubscribe(const Domain *subscriber, ByteArray::GlobalMemoryNotifyFunc notify)
+ 	{
+ 		return m_byteArray.GlobalMemorySubscribe(subscriber, notify);
+ 	}
+ 
+ 	bool ByteArrayObject::globalMemoryUnsubscribe(const Domain *subscriber)
+ 	{
+ 		return m_byteArray.GlobalMemoryUnsubscribe(subscriber);
+ 	}
+
 	//
 	// ByteArrayClass
 	//
@@ -623,28 +640,39 @@ namespace avmshell
 		if (!filename) {
 			toplevel->throwArgumentError(kNullArgumentError, "filename");
 		}
-		UTF8String* filenameUTF8 = filename->toUTF8String();
-		FILE *fp = fopen(filenameUTF8->c_str(), "rb");
-		if (fp == NULL) {
+		StUTF8String filenameUTF8(filename);
+
+		File* fp = Platform::GetInstance()->createFile();
+		if (fp == NULL || !fp->open(filenameUTF8.c_str(), File::OPEN_READ_BINARY)) 
+		{
+			if(fp)
+			{
+				Platform::GetInstance()->destroyFile(fp);
+			}
 			toplevel->throwError(kFileOpenError, filename);
 		}
-		fseek(fp, 0L, SEEK_END);
-		long len = ftell(fp);
-		rewind(fp);
 
-		unsigned char *c = new unsigned char[len+1];
+		int64_t len = fp->size();
+		if((uint64_t)len >= UINT32_T_MAX) //ByteArray APIs cannot handle files > 4GB
+		{
+			toplevel->throwRangeError(kOutOfRangeError, filename);
+		}
+
+		uint32_t readCount = (uint32_t)len;
+
+		unsigned char *c = new unsigned char[readCount+1];
 
 		Atom args[1] = {nullObjectAtom};
 		ByteArrayObject *b = (ByteArrayObject*)AvmCore::atomToScriptObject(construct(0,args));
 		b->setLength(0);
 
-		while (len > 0)
+		while (readCount > 0)
 		{
-			int actual = (int)fread(c, 1, len, fp);
+			uint32_t actual = (uint32_t) fp->read(c, readCount);
 			if (actual > 0)
 			{
 				b->fill(c, actual);
-				len -= actual;
+				readCount -= readCount;
 			}
 			else
 			{
@@ -654,23 +682,27 @@ namespace avmshell
 		b->seek(0);
 
 		delete [] c;
+
+		fp->close();
+		Platform::GetInstance()->destroyFile(fp);
+
 		return b;
 	}
 
 	Stringp ByteArrayObject::get_endian()
 	{
-		return (m_byteArray.GetEndian() == kBigEndian) ? core()->constantString("bigEndian") : core()->constantString("littleEndian");
+		return (m_byteArray.GetEndian() == kBigEndian) ? core()->internConstantStringLatin1("bigEndian") : core()->internConstantStringLatin1("littleEndian");
 	}
 
 	void ByteArrayObject::set_endian(Stringp type)
 	{
 		AvmCore* core = this->core();
 		type = core->internString(type);
-		if (type == core->constantString("bigEndian"))
+		if (type == core->internConstantStringLatin1("bigEndian"))
 		{
 			m_byteArray.SetEndian(kBigEndian);
 		}
-		else if (type == core->constantString("littleEndian"))
+		else if (type == core->internConstantStringLatin1("littleEndian"))
 		{
 			m_byteArray.SetEndian(kLittleEndian);
 		}
@@ -687,16 +719,71 @@ namespace avmshell
 			toplevel->throwArgumentError(kNullArgumentError, "filename");
 		}
 
-		UTF8String* filenameUTF8 = filename->toUTF8String();
-		FILE *fp = fopen(filenameUTF8->c_str(), "wb");
-		if (fp == NULL) {
+		StUTF8String filenameUTF8(filename);
+
+		File* fp = Platform::GetInstance()->createFile();
+		if (fp == NULL || !fp->open(filenameUTF8.c_str(), File::OPEN_WRITE_BINARY)) 
+		{
+			if(fp)
+			{
+				Platform::GetInstance()->destroyFile(fp);
+			}
 			toplevel->throwError(kFileWriteError, filename);
 		}
 
-		fwrite(&(this->GetByteArray())[0], this->get_length(), 1, fp);
-		fclose(fp);
+		int32_t len = this->get_length();
+		bool success = (int32_t)fp->write(&(this->GetByteArray())[0], len) == len;
+		
+		fp->close();
+		Platform::GetInstance()->destroyFile(fp);
+		
+		if (!success) {
+			toplevel->throwError(kFileWriteError, filename);
+		}
 	}
+
 
 }	
 
+namespace avmplus {
+ 	// memory object glue
+ 	bool Domain::isMemoryObject(Traits *t) const
+ 	{
+		Traits *cur = t;
 
+		// walk the traits to find a builtin pool
+		while(cur && !cur->pool->isBuiltin)
+			cur = cur->base;
+
+		// have a traits with a builtin pool
+		if(cur)
+		{
+			Stringp uri = core->internConstantStringLatin1("flash.utils");
+			Namespace* ns = core->internNamespace(core->newNamespace(uri));
+			// try to get traits from flash.utils.ByteArray
+			Traits *baTraits = cur->pool->getTraits(core->internConstantStringLatin1("ByteArray"), ns);
+			// and see if the original traits contains it!
+			return t->containsInterface(baTraits) != 0;
+		}
+		return false;
+ 	}
+ 
+ 	bool Domain::globalMemorySubscribe(ScriptObject *mem) const
+ 	{
+		if(isMemoryObject(mem->traits()))
+		{
+			avmshell::ByteArray::GlobalMemoryNotifyFunc notify = &Domain::notifyGlobalMemoryChanged;
+ 			return ((avmshell::ByteArrayObject *)mem)->globalMemorySubscribe(this, notify);
+		}
+		return false;
+ 	}
+ 
+ 	bool Domain::globalMemoryUnsubscribe(ScriptObject *mem) const
+ 	{
+		if(isMemoryObject(mem->traits()))
+		{
+	 		return ((avmshell::ByteArrayObject *)mem)->globalMemoryUnsubscribe(this);
+		}
+		return false;
+ 	}
+}	

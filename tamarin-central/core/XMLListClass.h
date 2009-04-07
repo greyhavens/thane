@@ -60,8 +60,6 @@ namespace avmplus
 		Atom construct(int argc, Atom* argv);
 
 		Atom ToXMLList(Atom arg);
-
-		DECLARE_NATIVE_MAP(XMLListClass)
 	};
 }
 

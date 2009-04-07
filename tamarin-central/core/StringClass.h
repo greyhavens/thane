@@ -60,15 +60,15 @@ namespace avmplus
 		Atom construct(int argc, Atom* argv);
 		
 		// native methods.  see String.as
-		ArrayObject *match(Stringp s, Atom pattern);
-		Stringp replace(Stringp in, Atom pattern, Atom replacementAtom);
-		int search(Stringp in, Atom regexpAtom);
-		ArrayObject* split(Stringp in, Atom delimAtom, uint32 limit);
+		ArrayObject* _match(Stringp s, Atom pattern);
+		Stringp _replace(Stringp in, Atom pattern, Atom replacementAtom);
+		int _search(Stringp in, Atom regexpAtom);
+		ArrayObject* _split(Stringp in, Atom delimAtom, uint32 limit);
 
-		//cn: defined via NATIVE_METHODV to allow length = 1 and support calling with no args... ES3 spec says length = 1
-		Stringp fromCharCode(Atom *argv, int argc);
+		// defined via rest args to allow length = 1 and support calling with no args... ES3 spec says length = 1
+		Stringp AS3_fromCharCode(Atom *argv, int argc);
 
-		DECLARE_NATIVE_MAP(StringClass)
+		inline Stringp fromCharCode(Atom *argv, int argc) { return AS3_fromCharCode(argv, argc); }
 	};
 }
 

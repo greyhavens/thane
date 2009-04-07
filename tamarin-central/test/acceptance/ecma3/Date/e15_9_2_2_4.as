@@ -53,9 +53,9 @@ function getTestCases() {
 
     // Dates around feb 29, 2000
 
-    array[item++] = new TestCase( SECTION, "Date( 2000,1,29,0,0,0)",        true, (new Date()).toString() == Date(2000,1,29,0,0,0));
-    array[item++] = new TestCase( SECTION, "Date( 2000,1,28,23,59,59)",     true, (new Date()).toString() == Date( 2000,1,28,23,59,59));
-    array[item++] = new TestCase( SECTION, "Date( 2000,1,27,16,0,0)",       true, (new Date()).toString() == Date(2000,1,27,16,0,0));
+    array[item++] = new TestCase( SECTION, "Date( 2000,1,29,0,0,0)",        true,  compareDate((new Date()).toString(), Date(2000,1,29,0,0,0)));
+    array[item++] = new TestCase( SECTION, "Date( 2000,1,28,23,59,59)",     true,  compareDate((new Date()).toString(), Date( 2000,1,28,23,59,59)));
+    array[item++] = new TestCase( SECTION, "Date( 2000,1,27,16,0,0)",       true,  compareDate((new Date()).toString(), Date(2000,1,27,16,0,0)));
 
 /*
     // Dates around jan 1, 2005

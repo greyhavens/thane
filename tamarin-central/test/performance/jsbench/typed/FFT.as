@@ -1,8 +1,10 @@
 var size:int=0;
-var datasizes:Vector.<int> = new Vector.<int>(3);
-datasizes[0] = 2097152;
-datasizes[1] = 8388608;
-datasizes[2] = 16777216;
+var datasizes:Vector.<int> = new Vector.<int>(5);
+datasizes[0] = 524288;
+datasizes[1] = 2097152;
+datasizes[2] = 8388608;
+datasizes[3] = 16777216;
+datasizes[4] = 32768;
 var RANDOM_SEED:int = 10101010;
 var JDKtotal:Number = 0.0;
 var JDKtotali:Number = 0.0;
@@ -23,10 +25,17 @@ var lastRandom:int=RANDOM_SEED;
     return result;
   }
   
-var start=new Date();
-JGFrun(1);
-var elapsed=new Date()-start;
-print("metric jsbench-fft "+elapsed);
+if (CONFIG::desktop) {
+    var start = new Date();
+    JGFrun(0);
+    var elapsed = new Date() - start;
+}
+else { // mobile
+    var start = getTimer();
+    JGFrun(4);
+    var elapsed = getTimer() - start;
+}
+print("metric time "+elapsed);
 
 function JGFrun(sizei):void {
     JGFsetsize(sizei);
@@ -52,14 +61,18 @@ function JGFrun(sizei):void {
 
   }
   function JGFvalidate():void {
-    var refval:Vector.<Number> = new Vector.<Number>(3);
+    var refval:Vector.<Number> = new Vector.<Number>(5);
     refval[0] = 2.236789124999579; 
     refval[1] = 8.947156499999005;
     refval[2] = 13.815703907167297;
-    var refvali:Vector.<Number> = new Vector.<Number>(3);
+    refval[3] = 13.815703907167297;
+    refval[4] = 0.034949830078124584;
+    var refvali:Vector.<Number> = new Vector.<Number>(5);
     refvali[0] = 2.0971823750001506; 
     refvali[1] = 8.388607500000056;
     refvali[2] = 16.778094422092604;
+    refvali[3] = 13.815703907167297;
+    refvali[4] = 0.03286470898437495;
     var dev:Number = Math.abs(JDKtotal - refval[size]);
     var devi:Number = Math.abs(JDKtotali - refvali[size]);
     

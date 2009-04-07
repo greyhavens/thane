@@ -49,7 +49,7 @@ namespace avmplus
 	 * Its methods are not virtual for performance reasons.
 	 * For default script buffer behavior, use BasicScriptBufferImpl. 
 	 */
-	class ScriptBufferImpl
+	class ScriptBufferImpl : public MMgc::GCFinalizedObject
 	{
 	public:
 		operator byte* () const { return buffer; }
@@ -81,7 +81,7 @@ namespace avmplus
 		// override to skip memset and prevent marking
 		static void *operator new(size_t size, MMgc::GC *gc, size_t extra = 0)
 		{
-			return gc->Alloc(size + extra, 0, 4);
+			return gc->Alloc(size + extra, 0);
 		}
 	};
 

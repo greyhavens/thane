@@ -50,12 +50,18 @@ startTest();                							// leave this alone
 
 var obj:DynamicClass = new DynamicClass();
 
+
 // *****************************
 // Add the function to a dynamic class
 // *****************************
 obj.getDate = function():Date { return this.date; }
 AddTestCase( "*** add the method to a dynamic object ***", 1, 1 );
-AddTestCase( "obj.getDate()", 1969, obj.getDate().getFullYear() );
+var year=1969;
+if (getTimeZoneDiff()>=0) {
+    var year=1970;
+}
+
+AddTestCase( "obj.getDate()", year, obj.getDate().getFullYear() );
 
 
 // *****************************

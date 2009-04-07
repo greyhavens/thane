@@ -39,9 +39,26 @@
 #ifndef __GCHeap__
 #define __GCHeap__
 
-
 namespace MMgc
 {
+	class MMGC_API GCHeapConfig
+	{
+	public:
+		GCHeapConfig();
+		
+		size_t initialSize;
+		size_t heapLimit;
+		const bool useVirtualMemory;
+		bool trimVirtualMemory;
+		bool verbose;
+		bool returnMemory;
+#ifdef MMGC_MEMORY_PROFILER
+		bool enableProfiler;
+#endif
+		bool gcstats;
+		bool autoGCStats;
+	};
+	
 	/**
 	 * GCHeap is a heap manager for the Flash Player's garbage collector.
 	 *
@@ -88,8 +105,12 @@ namespace MMgc
 		/** Size of a block */
 		const static int kBlockSize = 4096;
 
-		/** Default size of address space reserved per region */
+		/** Default size of address space reserved per region in blocks */
+#ifdef MMGC_64BIT
 		const static int kDefaultReserve = 4096;
+#else
+		const static int kDefaultReserve = 256;
+#endif
 		
 		/** Sizes up to this many blocks each have their own free list. */
 		const static int kUniqueThreshold = 16;
@@ -109,28 +130,25 @@ namespace MMgc
 		/** Minimum heap increment, in blocks */
 		const static int kMinHeapIncrement = 32;
 
-		/** if this much of the heap stays free for kDecommitThresholdMillis decommit some memory */
+		/** if this much of the heap is free decommit some memory */
 		const static int kDecommitThresholdPercentage = 25;
-
-		
-		const static int kDecommitThresholdMillis = 1000;
-
-		/** The native VM page size (in bytes) for the current architecture */
-		int kNativePageSize;
-
-		bool heapVerbose;
-
-#ifdef _DEBUG
-		/**
-		 * turn on memory profiling
-		 */
-		bool enableMemoryProfiling;
-#endif
+		/** if this much of the heap is free un-reserve it */
+		const static int kReleaseThresholdPercentage = 50;
 
 		/**
 		 * Init must be called to set up the GCHeap singleton
 		 */
-		static void Init(GCMallocFuncPtr malloc = NULL, GCFreeFuncPtr free = NULL, int initialSize=128);
+		static void Init(GCHeapConfig& props);
+		/* legacy API */
+		static void Init(GCMallocFuncPtr malloc = NULL, GCFreeFuncPtr free = NULL, int initialSize=128)
+		{
+			GCAssertMsg(false, "Switch to other Init method please");
+			(void)malloc;
+			(void)free;
+			GCHeapConfig props;
+			props.initialSize = initialSize;
+			Init(props);
+		}
 
 		/**
 		 * Destroy the GCHeap singleton
@@ -140,7 +158,9 @@ namespace MMgc
 		/**
 		 * Get the GCHeap singleton
 		 */
-		static GCHeap *GetGCHeap() { GCAssert(instance != NULL); return instance; }
+		inline static GCHeap *GetGCHeap() { GCAssert(instance != NULL); return instance; }
+
+		inline FixedMalloc* GetFixedMalloc() { return &fixedMalloc; }
 
 		/**
 		 * Allocates a block from the heap.
@@ -157,6 +177,8 @@ namespace MMgc
 		 *             a call to Alloc.
 		 */
 		void Free(void *item);
+		void Free(void *item, size_t /*ignore*/) { Free(item); }
+
 
 		size_t Size(const void *item);
 
@@ -224,14 +246,14 @@ namespace MMgc
 		 * space actually used by allocated objects.
 		 * @return the minimum heap size in pages (kBlockSize bytes apiece)
 		 */
-		unsigned int GetUsedHeapSize() const { return numAlloc; }
+		size_t GetUsedHeapSize() const { return numAlloc; }
 
 		/**
 		 * Returns the "free heap size", that is, the difference in the
 		 * total heap size and the used heap size
 		 * @return the minimum heap size in pages (kBlockSize bytes apiece)
 		 */
-		unsigned int GetFreeHeapSize() const { return GetTotalHeapSize()-numAlloc; }
+		size_t GetFreeHeapSize() const { return GetTotalHeapSize()-numAlloc; }
 
 		/**
 		 * Returns the total heap size, that is, the total amount
@@ -239,20 +261,61 @@ namespace MMgc
 		 * free space.
 		 * @return the total heap size in pages (kBlockSize bytes apiece)
 		 */
-		unsigned int GetTotalHeapSize() const { return blocksLen - numDecommitted; }
+		size_t GetTotalHeapSize() const;
 		
 		/**
 		 * gives memory back to the OS when there hasn't been any memory activity in a while
 		 * and we have lots of free memory
 		 */
 		void Decommit();
+
+		static size_t SizeToBlocks(size_t bytes) { return ((bytes + kBlockSize - 1) & ~(kBlockSize-1)) / kBlockSize; }
+
+		static size_t GetPrivateBytes();
+		
+		void SetHeapLimit(size_t numpages) { config.heapLimit = numpages; }
+
+		/* controls whether AllocHook and FreeHook are called */
+		void EnableHooks() { hooksEnabled = true; }
+		bool HooksEnabled() const { return hooksEnabled; }
+		void AllocHook(const void *item, size_t size);
+		// called when object is determined to be garbage but we can't write to it yet
+		void FinalizeHook(const void *item, size_t size);
+		// called when object is really dead and can be poisoned
+		void FreeHook(const void *item, size_t size, int poison);
+		
+#ifdef MMGC_MEMORY_PROFILER
+		MemoryProfiler *GetProfiler() { return profiler; }
+		bool IsProfilingEnabled() { return config.enableProfiler; }
+		void DumpFatties() { profiler->DumpFatties(); }
+#endif
+
+		void AddGC(GC *gc);
+		void RemoveGC(GC *gc);
+		void Abort();
+		MemoryStatus GetStatus() { return status; }
+
+		/** The native VM page size (in bytes) for the current architecture */
+		static const size_t kNativePageSize;
+
+		// OS abstraction to determine native page size
+		static uint32_t vmPageSize();
+
+		GCHeapConfig &Config() { return config; }
+
+		void log_percentage(const char *, size_t bytes, size_t relativeTo);
+
+		FILE* GetSpyFile() { return spyFile; }
+
+		void DumpMemoryInfo();
+
 	private:
 
 		// -- Implementation
 		static GCHeap *instance;
-		GCHeap(GCMallocFuncPtr m, GCFreeFuncPtr f, int initialSize);
+		GCHeap(GCHeapConfig &config);
 		~GCHeap();
-		
+
 		// Heap regions
 		class Region : public GCAllocObject
 		{
@@ -276,22 +339,17 @@ namespace MMgc
 			HeapBlock *next;      // next entry on free list
 			bool committed;   // is block fully committed?
 			bool dirty;		  // needs zero'ing, only valid if committed
-#ifdef MEMORY_INFO
-			int allocTrace;
-			int freeTrace;
+#ifdef MMGC_MEMORY_PROFILER
+			StackTrace *allocTrace;
+			StackTrace *freeTrace;
 #endif
-			bool inUse() { return prev == NULL; }
+			bool inUse() const { return prev == NULL; }
+			char *endAddr() const { return baseAddr + size*kBlockSize; }
 		};
 
-		bool ExpandHeapPrivate(int size);
+		bool ExpandHeapLocked(int size);
+		bool ExpandHeapLockedUnchecked(int size);
 
-		// Core data structures
-		HeapBlock *blocks;
-		unsigned int blocksLen;
-		unsigned int numDecommitted;
-		HeapBlock freelists[kNumFreeLists];
-		unsigned int numAlloc;
-		
 		// Core methods
 		void AddToFreeList(HeapBlock *block);
 		void AddToFreeList(HeapBlock *block, HeapBlock* pointToInsert);
@@ -300,26 +358,25 @@ namespace MMgc
 		void FreeAll();
 	
 		HeapBlock *Split(HeapBlock *block, int size);
+		void RemoveBlock(HeapBlock *block);
 
-#ifdef DECOMMIT_MEMORY
 		void Commit(HeapBlock *block);
-#endif
 
 #ifdef _DEBUG
 		friend class GC;
 #endif
+
 		HeapBlock *AddrToBlock(const void *item) const;
 		Region *AddrToRegion(const void *item) const;
 		void RemoveRegion(Region *r);
 
-		// only used on mac
-		GCMallocFuncPtr m_malloc;
-		GCFreeFuncPtr m_free;
-
 		// debug only freelist consistency checks
 		void CheckFreelist();
 		bool BlocksAreContiguous(void *item1, void *item2);
-
+		
+		// textual heap representation, very nice!
+		void DumpHeapRep();
+		
 		// Remove a block from a free list (inlined for speed)
 		inline void RemoveFromList(HeapBlock *block)
 		{
@@ -328,7 +385,6 @@ namespace MMgc
 			block->next->prev = block->prev;
 			block->next = block->prev = 0;
 		}			
-
 
 		// Map a number of blocks to the appropriate large block free list index
 		// (inlined for speed)
@@ -343,82 +399,52 @@ namespace MMgc
 			}
 		}
 
-		// used for decommit smoothing
-		// millis to wait before decommitting anything
-		uint64 decommitTicks;
-		uint64 decommitThresholdTicks;
+		void StatusChangeNotify(MemoryStatus from, MemoryStatus to);
 
-#ifdef GCHEAP_LOCK
-		GCSpinLock m_spinlock;
-#endif /* GCHEAP_LOCK */
+		void ValidateHeapBlocks();
 
-#ifdef MMGC_AVMPLUS
-		// OS abstraction to determine native page size
-		int vmPageSize();
-		size_t committedCodeMemory;
-
-		#ifdef WIN32
-		bool useGuardPages;
-		#endif
-		
-		// mir buffer management, share a common pool across threads
-		GCSpinLock m_mirBufferLock;
-		typedef struct _MirMemInfo
-		{
-			void* addr;
-			size_t size;
-			bool free;
-		} 
-		MirMemInfo;
-
-		static const int MirBufferCount = 8;
-		MirMemInfo m_mirBuffers[MirBufferCount];
-
-		void InitMirMemory();
-		void FlushMirMemory();
-		
-public:
-
-		// support for Mir buffers
-		void* ReserveMirMemory(size_t size);		
-		void  ReleaseMirMemory(void* addr, size_t size);
-
-		// support for jit buffers
-		void* ReserveCodeMemory(void* address, size_t size);
-		void* CommitCodeMemory(void* address, size_t size=0);  // size=0 => 1 page
-		void* DecommitCodeMemory(void* address, size_t size=0);  // size=0 => 1 page
-		void ReleaseCodeMemory(void* address, size_t size);
-		bool SetGuardPage(void *address);
-#ifdef AVMPLUS_JIT_READONLY
-		void SetExecuteBit(void *address, size_t size, bool executeFlag);
-#endif /* AVMPLUS_JIT_READONLY */
-		size_t GetCodeMemorySize() const { return committedCodeMemory; }
-#endif
-
-#ifdef USE_MMAP
-	public:
-		char *ReserveMemory(char *address, size_t size);
-		bool CommitMemory(char *address, size_t size);
-		bool DecommitMemory(char *address, size_t size);
 		void ReleaseMemory(char *address, size_t size);
 
+		// data section
+	
+		HeapBlock *blocks;
+		unsigned int blocksLen;
+		unsigned int numDecommitted;
+		HeapBlock freelists[kNumFreeLists];
+		unsigned int numAlloc;
+		FixedMalloc fixedMalloc;
 
-		bool CommitMemoryThatMaySpanRegions(char *address, size_t size);
-		bool DecommitMemoryThatMaySpanRegions(char *address, size_t size);		
-#else
-		char *AllocateMemory(size_t size);
-		void ReleaseMemory(char *address);
+#ifdef MMGC_LOCKING
+		vmpi_spin_lock_t m_spinlock;
+#endif /* MMGC_LOCKING */
+
+		size_t committedCodeMemory;
+
+		GCHeapConfig config;
+		
+public:
+		// TODO: remove legacy var, replaced by env var or GCHeapConfig
+		bool enableMemoryProfiling;
+public:
+
+	private:
+
+		GCThreadLocal<EnterFrame*> enterFrame;
+		friend class EnterFrame;
+		MemoryStatus status;
+		GC **gcs;
+		uint32_t gcs_count;
+
+#ifdef MMGC_MEMORY_PROFILER
+		MemoryProfiler *profiler;
 #endif
-
-private:
-
-#ifdef _DEBUG
-		/* m_megamap is a debugging aid for finding bugs in this
-		   memory allocator.  It tracks allocated/free pages in
-		   the crudest way possible ... a 1MB byte array with a
-		   0/1 byte for every page in the 32-bit address space. */
-		static uint8 m_megamap[1048576];
-#endif
+		bool hooksEnabled;
+		uint32_t signal;
+		FILE *spyFile;		
+		
+		// some OS's are loose with how with virtual memory is dealt with and we don't have to track
+		// each region individually (ie multiple contiguous mmap's can be munmap'd all at once)
+		const bool mergeContiguousRegions;
 	};
 }
 

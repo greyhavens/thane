@@ -101,25 +101,44 @@ function cordicsincos() {
             CurrAngle -= Angles[Step];
         }
     }
+    return CurrAngle;
 }
-
 ///// End CORDIC
 
 function cordic( runs ) {
-  var start = new Date();
+  var start = (new Date).getTime();
 
   for ( var i = 0 ; i < runs ; i++ ) {
       cordicsincos();
   }
 
-  var end = new Date();
+  var end = (new Date).getTime();
 
-  return end.getTime() - start.getTime();
+  return end - start;
 }
+
+function verifyTest() {
+  if (Math.abs(cordicsincos() - 1834995.3515519998)<0.00001) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function runMathCordic() {
-var _sunSpiderStartDate = new Date();
-cordic(25000);
-var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-return(_sunSpiderInterval);
+  if (CONFIG::desktop) {
+      var _sunSpiderStartDate = (new Date).getTime();
+      cordic(25000);
+      var _sunSpiderInterval = (new Date).getTime() - _sunSpiderStartDate;
+  }
+  else { // mobile
+      var _sunSpiderStartDate = getTimer();
+      cordic(25000);
+      var _sunSpiderInterval = getTimer() - _sunSpiderStartDate;
+  }
+  return(_sunSpiderInterval);
 }
-print("metric math-cordic "+runMathCordic());
+
+if (verifyTest()) {
+  print("metric time "+runMathCordic());
+}

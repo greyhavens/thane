@@ -5,6 +5,7 @@ CVS/**
 *.bat
 *.jar
 test/**.abc
+test/acceptance/test.*
 *.pyc
 *~
 pcre/doc/*.1
@@ -14,21 +15,19 @@ ErrorConstants.xml
 extensions/Sampler*
 classicprefix_*.pch++
 stale.xml
-MMgc/obj_7/**
-platform/win32/obj_7/**
-platform/win32/obj_8/**
-platform/win32/x64/**
-platform/mac/MMgc/build/**
-platform/mac/avmplus/build/**
-platform/mac/shell/build/**
-MMgc/obj_8/**
+MMgc/obj*/**
 MMgc/x64/**
+MMgc/Windows Mobile*
+platform/win32/obj*/**
+platform/win32/x64/**
+platform/win32/Windows Mobile*
+platform/mac/*/build*/**
+utils/avmc/build/**
 objdir-*/**
 *_DBG.OBJ/**
 *_OPT.OBJ/**
 .DS_Store
-*.mode2
-*.mode2v3
+*.mode2*
 *.pbxuser
 test/acceptance/*.html
 *.ncb
@@ -47,3 +46,13 @@ esc/src/*.es.abc
 esc/safebin*
 esc/src/*.es.abc
 obj-dir/**
+axscript/vc2008/obj/**
+axscript/vc2008/*.ncb
+axscript/vc2008/axtam.vcproj.*.user
+core/*.out
+shell/*.out
+util/lastsizereport.txt
+*.pp
+*.ii
+*.deps
+*.class

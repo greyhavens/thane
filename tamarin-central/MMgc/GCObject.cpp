@@ -53,7 +53,7 @@ namespace MMgc
   
 	void* GCFinalizedObject::operator new(size_t size, GC *gc, size_t extra)
 	{
-		return gc->Alloc(size + extra, GC::kFinalize|GC::kContainsPointers|GC::kZero, 4);
+		return gc->Alloc(size + extra, GC::kFinalize|GC::kContainsPointers|GC::kZero);
 	}
 
 	void GCFinalizedObject::operator delete (void *gcObject)
@@ -63,7 +63,7 @@ namespace MMgc
 
 	void* GCFinalizedObjectOptIn::operator new(size_t size, GC *gc, size_t extra)
 	{
-		return gc->Alloc(size + extra, GC::kContainsPointers|GC::kZero, 4);
+		return gc->Alloc(size + extra, GC::kContainsPointers|GC::kZero);
 	}
 
 	void GCFinalizedObjectOptIn::operator delete (void *gcObject)
@@ -71,15 +71,17 @@ namespace MMgc
 		GC::GetGC(gcObject)->Free(gcObject);
 	}		
 
-#if defined(MMGC_DRC) && defined(_DEBUG)
+#if defined(MMGC_MEMORY_INFO)
 	void RCObject::DumpHistory()
 	{			
 		GCDebugMsg(false, "Ref count modification history for object 0x%x:\n", this);
+#if 0
 		int *traces = history.GetData();
 		for(int i=0, n=history.Count(); i<n; i++)
 		{
 			PrintStackTraceByIndex(traces[i]);
 		}
+#endif
 	}
 #endif
 }

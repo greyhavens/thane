@@ -294,9 +294,9 @@ function getTestCases() {
 
     // new Date(0) has '31' or '01' at index 8 depending on whether tester is (GMT-) or (GMT+), respectively
     array[item++] = new TestCase( SECTION,
-                                  "var d = new Date(0); d.indexOf = String.prototype.indexOf; d.getTimezoneOffset()>0 ? d.indexOf('31') : d.indexOf('01')",
+                                  "var d = new Date(0); d.indexOf = String.prototype.indexOf; d.getTimezoneOffset()>0 ? d.indexOf('31') : d.indexOf('1')",
                                   8,
-                                  (d = new Date(0), d.indexOf = String.prototype.indexOf, d.getTimezoneOffset()>0 ? d.indexOf('31') : d.indexOf('01') ) );
+                                  (d = new Date(0), d.indexOf = String.prototype.indexOf, d.getTimezoneOffset()>0 ? d.indexOf('31') : d.indexOf('1') ) );
 
 
     return array;

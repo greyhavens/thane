@@ -40,7 +40,7 @@
 
 namespace avmplus
 {
-	void AbcGen::writeInt(unsigned int v)
+	void AbcGen::writeInt(uint32_t v)
 	{
 		if( v < 128 )
 		{

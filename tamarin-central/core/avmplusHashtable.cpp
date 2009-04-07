@@ -52,6 +52,11 @@ using namespace MMgc;
 
 namespace avmplus
 {	
+	Hashtable::Hashtable(MMgc::GC *gc, int capacity)
+	{
+		initialize(gc, capacity);
+	}
+
 	void Hashtable::initialize(GC *gc, int capacity)
 	{
 		capacity = MathUtils::nextPowerOfTwo(capacity);
@@ -71,9 +76,7 @@ namespace avmplus
 	{
 		if(atoms) {
 			GC *gc = GC::GetGC(atoms);
-#ifdef MMGC_DRC
 			AvmCore::decrementAtomRegion(atoms, getNumAtoms());
-#endif
 			gc->Free (atoms);
 		}
 		atoms = NULL;

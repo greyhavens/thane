@@ -402,7 +402,7 @@ do
       if (utf8)
         {
         start_bits[24] |= 0xf0;              /* Bits for 0xc4 - 0xc8 */
-        memset(start_bits+25, 0xff, 7);      /* Bits for 0xc9 - 0xff */
+        VMPI_memset(start_bits+25, 0xff, 7);      /* Bits for 0xc9 - 0xff */
         }
 #endif
       /* Fall through */
@@ -544,7 +544,7 @@ compile_block.ctypes = tables + ctypes_offset;
 
 /* See if we can find a fixed set of initial characters for the pattern. */
 
-memset(start_bits, 0, 32 * sizeof(uschar));
+VMPI_memset(start_bits, 0, 32 * sizeof(uschar));
 if (set_start_bits(code, start_bits, (re->options & PCRE_CASELESS) != 0,
   (re->options & PCRE_UTF8) != 0, &compile_block) != SSB_DONE) return NULL;
 
@@ -570,7 +570,7 @@ extra->study_data = study;
 
 study->size = sizeof(pcre_study_data);
 study->options = PCRE_STUDY_MAPPED;
-memcpy(study->start_bits, start_bits, sizeof(start_bits));
+VMPI_memcpy(study->start_bits, start_bits, sizeof(start_bits));
 
 return extra;
 }

@@ -71,11 +71,11 @@ class ABCFile
         function emitArray(a, len) {
             if (len)
                 bytes.uint30(a.length);
-            for ( var i=0 ; i < a.length ; i++ )
+            for ( let i=0, limit=a.length ; i < limit ; i++ )
                 a[i].serialize(bytes);
         }
 
-        var bytes = new ABCByteStream;
+        let bytes = new ABCByteStream;
 
         Util::assert(constants);
         Util::assert(scripts.length != 0);
@@ -108,8 +108,8 @@ class ABCFile
     }
 
     function addClassAndInstance(cls, inst)/*: uint*/ {
-        var x = addClass(cls);
-        var y = addInstance(inst);
+        let x = addClass(cls);
+        let y = addInstance(inst);
         Util::assert( x == y );
         return x;
     }
@@ -135,33 +135,27 @@ class ABCFile
 class ABCConstantPool
 {
     function ABCConstantPool() {
-        function eq_numbers(n1, n2) {
-            return n1 == n2;
-        }
+        function eq_numbers(n1, n2)
+            n1 == n2;
 
-        function eq_strings(s1, s2) { 
-            return s1 == s2; 
-        }
+        function eq_strings(s1, s2)
+            s1 == s2; 
 
-        function hash_namespace(ns) {
-            return ns.kind ^ ns.name;          // Fairly arbitrary
-        }
+        function hash_namespace(ns)
+            ns.kind ^ ns.name;          // Fairly arbitrary
 
-        function eq_namespaces(ns1, ns2) {
-            return ns1.kind == ns2.kind && ns1.name == ns2.name;
-        }
+        function eq_namespaces(ns1, ns2)
+            ns1.kind == ns2.kind && ns1.name == ns2.name;
 
-        function hash_multiname(m) {
-            return m.kind ^ m.name ^ m.ns;     // Fairly arbitrary
-        }
+        function hash_multiname(m)
+            m.kind ^ m.name ^ m.ns;     // Fairly arbitrary
 
-        function eq_multinames(m1, m2) {
-            return m1.kind == m2.kind && m1.ns == m2.ns && m1.name == m2.name;
-        }
+        function eq_multinames(m1, m2)
+            m1.kind == m2.kind && m1.ns == m2.ns && m1.name == m2.name;
 
         function hash_namespaceset(nss) {
-            var hash = nss.length;
-            for ( var i=0, limit=nss.length ; i < limit ; i++ )
+            let hash = nss.length;
+            for ( let i=0, limit=nss.length ; i < limit ; i++ )
                 hash = ((hash << 5) + hash) + nss[i];
             return hash >>> 0;
         }
@@ -169,11 +163,17 @@ class ABCConstantPool
         function eq_namespacesets(nss1, nss2) {
             if (nss1.length != nss2.length)
                 return false;
-            for ( var i=0, limit=nss1.length ; i < limit ; i++ )
+            for (let i=0, limit=nss1.length ; i < limit ; i++)
                 if (nss1[i] != nss2[i])
                     return false;
             return true;
         }
+
+        function hash_name(n: Token::Tok)
+            n.hash;
+
+        function eq_names(n1: Token::Tok, n2: Token::Tok)
+            n1 === n2;
 
         // All pools and counts start at 1.  Counts are
         // initialized in the property definitions.
@@ -183,14 +183,14 @@ class ABCConstantPool
         int_map = new Hashtable(Util::hash_number, eq_numbers, 0);
         uint_map = new Hashtable(Util::hash_number, eq_numbers, 0);
         double_map = new Hashtable(Util::hash_number, eq_numbers, 0);
-        utf8_map = new Hashtable(Util::hash_string, eq_strings, 0);
+        utf8_map = new Hashtable(hash_name, eq_names, 0);
         namespace_map = new Hashtable(hash_namespace, eq_namespaces, 0);
         namespaceset_map = new Hashtable(hash_namespaceset, eq_namespacesets, 0);
         multiname_map = new Hashtable(hash_multiname, eq_multinames, 0);
     }
 
     function int32(n:int):uint {
-        var probe = int_map.read(n);
+        let probe = int_map.read(n);
         if (probe == 0) {
             probe = int_count++;
             int_map.write(n, probe);
@@ -200,7 +200,7 @@ class ABCConstantPool
     }
 
     function uint32(n:uint):uint {
-        var probe = uint_map.read(n);
+        let probe = uint_map.read(n);
         if (probe == 0) {
             probe = uint_count++;
             uint_map.write(n, probe);
@@ -210,7 +210,7 @@ class ABCConstantPool
     }
 
     function float64(n: Number):uint {
-        var probe = double_map.read(n);
+        let probe = double_map.read(n);
         if (probe == 0) {
             probe = double_count++;
             double_map.write(n, probe);
@@ -219,17 +219,23 @@ class ABCConstantPool
         return probe;
     }
 
-    function stringUtf8(s) {
-        if (!(s is String))
-            s = s+"";
-        var probe = utf8_map.read(s);
+    function symbolUtf8(s) {
+        if (!(s is Token::Tok))
+            throw new Error("Not a token: <" + s + ">: " + (s is String) + " " + (s is Number));
+        let probe = utf8_map.read(s);
         if (probe == 0) {
             probe = utf8_count++;
             utf8_map.write(s, probe);
-            utf8_bytes.uint30(utf8length(s));
-            utf8_bytes.utf8(s);
+            utf8_bytes.uint30(utf8length(s.text));
+            utf8_bytes.utf8(s.text);
         }
         return probe;
+    }
+
+    function stringUtf8(s) {
+        if (!(s is String))
+            throw new Error("Not a string: <" + s + ">");
+        return symbolUtf8(Token::intern(s));
     }
 
     // The virtue of this solution is that it caters to the common
@@ -256,7 +262,7 @@ class ABCConstantPool
     function namespace(kind/*:uint*/, name/*:uint*/) {
         tmp_namespace.kind = kind;
         tmp_namespace.name = name;
-        var probe = namespace_map.read(tmp_namespace);
+        let probe = namespace_map.read(tmp_namespace);
         if (probe == 0) {
             probe = namespace_count++;
             namespace_map.write({"kind": tmp_namespace.kind, "name": tmp_namespace.name}, probe);
@@ -267,14 +273,14 @@ class ABCConstantPool
     }
 
     function namespaceset(namespaces:Array) {
-        var probe = namespaceset_map.read(namespaces);
+        let probe = namespaceset_map.read(namespaces);
         if (probe == 0) {
             probe = namespaceset_count++;
             // Not necessary to copy here at the moment, as the array is a fresh
             // copy created from flattening a NamespaceSetList.
             namespaceset_map.write(/*Util::copyArray*/(namespaces), probe);
             namespaceset_bytes.uint30(namespaces.length);
-            for ( var i=0, limit=namespaces.length ; i < limit ; i++ )
+            for ( let i=0, limit=namespaces.length ; i < limit ; i++ )
                 namespaceset_bytes.uint30(namespaces[i]);
         }
         return probe;
@@ -296,21 +302,21 @@ class ABCConstantPool
         tmp_multiname.kind = kind;
         tmp_multiname.name = name;
         tmp_multiname.ns = ns;
-        var probe = multiname_map.read(tmp_multiname);
+        let probe = multiname_map.read(tmp_multiname);
         if (probe != 0)
             return probe;
 
         // Allocate
         probe = multiname_pool.length;
-        var entry = {"kind":tmp_multiname.kind, "name":tmp_multiname.name, "ns":tmp_multiname.ns}
+        let entry = {"kind":tmp_multiname.kind, "name":tmp_multiname.name, "ns":tmp_multiname.ns}
         multiname_pool.push(entry);           // need "kind" for later, could optimize here --
         multiname_map.write(entry, probe);    //   but need to save the whole entry anyway
         return -probe;
     }
 
     function QName(ns/*: uint*/, name/*: uint*/, is_attr: Boolean) {
-        var kind = is_attr ? CONSTANT_QNameA : CONSTANT_QName;
-        var idx = multinameLookup( kind, name, ns );
+        let kind = is_attr ? CONSTANT_QNameA : CONSTANT_QName;
+        let idx = multinameLookup( kind, name, ns );
         if (idx < 0) {
             multiname_bytes.uint8(kind);
             multiname_bytes.uint30(ns);
@@ -321,8 +327,8 @@ class ABCConstantPool
     }
 
     function RTQName(name/*: uint*/, is_attr: Boolean) {
-        var kind = is_attr ? CONSTANT_RTQNameA : CONSTANT_RTQName;
-        var idx = multinameLookup( kind, name, 0 );
+        let kind = is_attr ? CONSTANT_RTQNameA : CONSTANT_RTQName;
+        let idx = multinameLookup( kind, name, 0 );
         if (idx < 0) {
             multiname_bytes.uint8(kind);
             multiname_bytes.uint30(name); 
@@ -332,8 +338,8 @@ class ABCConstantPool
     }
 
     function RTQNameL(is_attr: Boolean) {
-        var kind = is_attr ? CONSTANT_RTQNameLA : CONSTANT_RTQNameL;
-        var idx = multinameLookup( kind, 0, 0 );
+        let kind = is_attr ? CONSTANT_RTQNameLA : CONSTANT_RTQNameL;
+        let idx = multinameLookup( kind, 0, 0 );
         if (idx < 0) {
             multiname_bytes.uint8(kind);
             idx = -idx;
@@ -342,8 +348,8 @@ class ABCConstantPool
     }
 
     function Multiname(nsset/*: uint*/, name/*: uint*/, is_attr: Boolean) {
-        var kind = is_attr ? CONSTANT_MultinameA : CONSTANT_Multiname;
-        var idx = multinameLookup(kind, name, nsset );
+        let kind = is_attr ? CONSTANT_MultinameA : CONSTANT_Multiname;
+        let idx = multinameLookup(kind, name, nsset );
         if (idx < 0) {
             multiname_bytes.uint8(kind);
             multiname_bytes.uint30(name);
@@ -354,8 +360,8 @@ class ABCConstantPool
     }
 
     function MultinameL(nsset/*: uint*/, is_attr: Boolean) {
-        var kind = is_attr ? CONSTANT_MultinameLA : CONSTANT_MultinameL;
-        var idx = multinameLookup(kind, 0, nsset);
+        let kind = is_attr ? CONSTANT_MultinameLA : CONSTANT_MultinameL;
+        let idx = multinameLookup(kind, 0, nsset);
         if (idx < 0) {
             multiname_bytes.uint8(kind);
             multiname_bytes.uint30(nsset);
@@ -365,8 +371,8 @@ class ABCConstantPool
     }
 
     function hasRTNS(index) {
-        var kind = multiname_pool[index].kind;
-        var result;
+        let kind = multiname_pool[index].kind;
+        let result;
         switch (kind) {
         case CONSTANT_RTQName:
         case CONSTANT_RTQNameA:
@@ -380,8 +386,8 @@ class ABCConstantPool
     }
 
     function hasRTName(index) {
-        var kind = multiname_pool[index].kind;
-        var result;
+        let kind = multiname_pool[index].kind;
+        let result;
         switch (multiname_pool[index].kind) {
         case CONSTANT_RTQNameL:
         case CONSTANT_RTQNameLA:
@@ -484,10 +490,10 @@ class ABCMethodInfo
     }
 
     function serialize(bs) {
-        var i;
+        let i, limit;
         bs.uint30(param_types.length);
         bs.uint30(return_type);
-        for ( i=0 ; i < param_types.length ; i++ )
+        for ( i=0, limit=param_types.length ; i < limit ; i++ )
             bs.uint30(param_types[i]);
         bs.uint30(name);
         if (options != null) {
@@ -499,14 +505,14 @@ class ABCMethodInfo
         bs.uint8(flags);
         if (options != null) {
             bs.uint30(options.length);
-            for ( i=0 ; i < options.length ; i++ ) {
+            for ( i=0, limit=options.length ; i < limit ; i++ ) {
                 bs.uint30(options[i].val);
                 bs.uint8(options[i].kind);
             }
         }
         if (param_names != null) {
             Util::assert( param_names.length == param_types.length );
-            for ( i=0 ; i < param_names.length ; i++ )
+            for ( i=0, limit=param_names.length ; i < limit ; i++ )
                 bs.uint30(param_names[i]);
         }
     }
@@ -526,7 +532,7 @@ class ABCMetadataInfo
     function serialize(bs) {
         bs.uint30(name);
         bs.uint30(items.length);
-        for ( var i=0 ; i < items.length ; i++ ) {
+        for ( let i=0, limit=items.length ; i < limit ; i++ ) {
             bs.uint30(items[i].key);
             bs.uint30(items[i].value);
         }
@@ -556,7 +562,7 @@ class ABCInstanceInfo
     }
 
     function serialize(bs) {
-        var i;
+        let i, limit;
 
         Util::assert( iinit != undefined || (flags & CONSTANT_ClassInterface) != 0);
 
@@ -566,13 +572,13 @@ class ABCInstanceInfo
         if (flags & CONSTANT_ClassProtectedNs)
             bs.uint30(protectedNS);
         bs.uint30(interfaces.length);
-        for ( i=0 ; i < interfaces.length ; i++ ) {
+        for ( i=0, limit=interfaces.length ; i < limit ; i++ ) {
             Util::assert( interfaces[i] != 0 );
             bs.uint30(interfaces[i]);
         }
         bs.uint30(iinit);
         bs.uint30(traits.length);
-        for ( i=0 ; i < traits.length ; i++ )
+        for ( i=0, limit=traits.length ; i < limit ; i++ )
             traits[i].serialize(bs);
     }
 
@@ -633,7 +639,7 @@ class ABCSlotTrait /// extends ABCTrait
         inner_serialize(bs);
         if (metadata.length > 0) {
             bs.uint30(metadata.length);
-            for ( var i=0 ; i < metadata.length ; i++ )
+            for ( let i=0, limits=metadata.length ; i < limit ; i++ )
                 bs.uint30(metadata[i]);
         }
     }
@@ -678,7 +684,7 @@ class ABCOtherTrait /// extends ABCTrait  // removed for esc
         inner_serialize(bs);
         if (metadata.length > 0) {
             bs.uint30(metadata.length);
-            for ( var i=0 ; i < metadata.length ; i++ )
+            for ( let i=0, limit=metadata.length ; i < limit ; i++ )
                 bs.uint30(metadata[i]);
         }
     }
@@ -702,7 +708,7 @@ class ABCClassInfo
         Util::assert( cinit != undefined );
         bs.uint30(cinit);
         bs.uint30(traits.length);
-        for ( var i=0 ; i < traits.length ; i++ )
+        for ( let i=0, limit=traits.length ; i < limit ; i++ )
             traits[i].serialize(bs);
     }
 
@@ -728,7 +734,7 @@ class ABCScriptInfo
         Util::assert( init != undefined );
         bs.uint30(init);
         bs.uint30(traits.length);
-        for ( var i=0 ; i < traits.length ; i++ )
+        for ( let i=0, limit=traits.length ; i < limit ; i++ )
             traits[i].serialize(bs);
     }
 
@@ -768,10 +774,10 @@ class ABCMethodBodyInfo
         bs.uint30(code.length);
         code.serialize(bs);
         bs.uint30(exceptions.length);
-        for ( var i=0 ; i < exceptions.length ; i++ )
+        for ( let i=0, limit=exceptions.length ; i < limit ; i++ )
             exceptions[i].serialize(bs);
         bs.uint30(traits.length);
-        for ( var i=0 ; i < traits.length ; i++ )
+        for ( let i=0, limit=traits.length ; i < limit ; i++ )
             traits[i].serialize(bs);
     }
 

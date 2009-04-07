@@ -3,7 +3,7 @@ var startSearchBench = new JGFSearchBench();
 var start=new Date();
 startSearchBench.JGFrun(0);
 var elapsed=new Date()-start;
-print("metric jsbench-search "+elapsed);
+print("metric time "+elapsed);
 	
 class Game {
 	static var TRANSIZE = 1050011;

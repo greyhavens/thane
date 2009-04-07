@@ -1,8 +1,10 @@
-var size=0;
-var datasizes = new Array(3);
-datasizes[0] = 2097152;
-datasizes[1] = 8388608;
-datasizes[2] = 16777216;
+var size=4;
+var datasizes = new Array(5);
+datasizes[0] = 524288;
+datasizes[1] = 2097152;
+datasizes[2] = 8388608;
+datasizes[3] = 16777216;
+datasizes[4] = 32768;
 var RANDOM_SEED = 10101010;
 var JDKtotal = 0.0;
 var JDKtotali = 0.0;
@@ -21,10 +23,17 @@ var JDKtotali = 0.0;
 		}
 		return result;
 	}
-var start=new Date();
-JGFrun(1);
-var elapsed=new Date()-start;
-print("metric jsbench-fft "+elapsed);
+if (CONFIG::desktop) {
+    var start = new Date();
+    JGFrun(0);
+    var elapsed = new Date() - start;
+}
+else { // mobile
+    var start = getTimer();
+    JGFrun(4);
+    var elapsed = getTimer() - start;
+}
+print("metric time "+elapsed);
 function JGFrun(sizei) {
 		JGFsetsize(sizei);
 		JGFinitialise();

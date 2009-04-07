@@ -41,6 +41,37 @@
 
 namespace avmplus
 {
+#ifdef FEATURE_NANOJIT
+    class PageMgr;
+#endif
+
+#ifdef AVMPLUS_WORD_CODE
+	
+	// This needs to be a root because there are GCObjects referenced from the multinames
+	// that are not protected by write barriers (namely, the NamespaceSet objects).
+	// Other objects in the multinames are RC; the PrecomputedMultinames constructor
+	// explicitly increments their reference counts, and the destructor decrements
+	// them.  There are no barriers here, because we want to be able to reach in
+	// and reference a Multiname structure directly.
+	
+	class PrecomputedMultinames : public MMgc::GCRoot
+	{
+	public:
+		void *operator new(size_t size, size_t extra=0)
+		{
+			// 	GCRoot requires this allocation to come from FixedMalloc 
+			return MMgc::FixedMalloc::GetInstance()->Alloc(size+extra);
+		}
+
+		PrecomputedMultinames(MMgc::GC* gc, PoolObject* pool);		
+		~PrecomputedMultinames();
+		void Initialize(PoolObject* pool);		// Eagerly parses all multinames
+		uint32 nNames;							// Number of elements
+		Multiname multinames[1];				// Allocated size is MAX(1,nName)
+	};
+	
+#endif  // AVMPLUS_WORD_CODE
+	
 	/**
 	 * The PoolObject class is a container for the pool of resources
 	 * decoded from an ABC file: the constant pool, the methods
@@ -48,35 +79,37 @@ namespace avmplus
 	 */
 	class PoolObject : public MMgc::GCFinalizedObject
 	{
+		friend class AbcParser;
+		
 	public:
 		AvmCore *core;
 
 		/** constants */
-		List<int, LIST_NonGCObjects> cpool_int;
-		List<uint32, LIST_NonGCObjects> cpool_uint;
-		List<double*, LIST_GCObjects> cpool_double;
-		List<Stringp, LIST_RCObjects> cpool_string;
-		List<Namespace*, LIST_RCObjects> cpool_ns;
-		List<NamespaceSet*, LIST_GCObjects> cpool_ns_set;
+		List<int32_t> cpool_int;
+		List<uint32_t> cpool_uint;
+		List<double*, LIST_GCObjects> cpool_double;	// explicitly specify LIST_GCObject b/c these are GC-allocated ptrs
+		List<Stringp> cpool_string;
+		List<Namespacep> cpool_ns;
+		List<NamespaceSetp> cpool_ns_set;
 
-		// LIST_NonGCObjects b/c these aren't really atoms, they are offsets
+#ifndef AVMPLUS_64BIT
+		// lists to keep int/uint atoms "sticky".
+		// @todo this can/should go away when we convert to 64-bit Box atoms.
+		List<Atom, LIST_GCObjects> cpool_int_atoms;	
+		List<Atom, LIST_GCObjects> cpool_uint_atoms;	
+#endif
+
+		// explicitly specify LIST_NonGCObjects b/c these aren't really atoms, they are offsets
 		List<Atom,LIST_NonGCObjects> cpool_mn;
 
-		/** all methods */
-		List<AbstractFunction*, LIST_GCObjects> methods;
-
-		/** metadata */
-		List<const byte*,LIST_NonGCObjects> metadata_infos;
+		/** metadata -- ptrs into ABC, not gc-allocated */
+		List<const byte*> metadata_infos;
 
 		/** domain */
 		DWB(Domain*) domain;
 		
 		/** constructors for class objects, for op_newclass */
-		List<AbstractFunction*, LIST_GCObjects> cinits;  // TODO just use methods array, dont need new cinits array
-		List<AbstractFunction*, LIST_GCObjects> scripts;
-
-		/** # of elements in methods array */
-		uint32 methodCount;
+		List<MethodInfo*> scripts;
 
 		/** # of elements in metadata array */
 		uint32 metadataCount;
@@ -91,60 +124,63 @@ namespace avmplus
 		uint32 constantNsSetCount;
 		uint32 constantMnCount;
 
-		/** # of elements in classes array */
-		uint32 classCount;
-
 		/** # of elements in scripts array */
 		uint32 scriptCount;
 
-		// true if this pool is baked into the player.  used to control
-		// whether callees will set their context.
-		bool isBuiltin;
+		/** flags to control certain bugfix behavior */
+		uint32 bugFlags;
+		// Numbers here correspond to Bugzilla bug numbers (i.e. bugzilla bug 444630 is kbug444630
+		enum {
+			kbug444630 = 0x00000001
+		};
 
-		#ifdef AVMPLUS_MIR
-		/** buffer containing generated machine code for all methods */
-		GrowableBuffer *codeBuffer;
-		sintptr stackOverflowHandler; // address of stack overflow handler
-		#endif /*AVMPLUS_MIR */
+#ifdef AVMPLUS_WORD_CODE
+		struct 
+		{
+			PrecomputedMultinames* cpool_mn;	// a GCRoot
+		} word_code;
+		void initPrecomputedMultinames();
+#endif
+		
+        #ifdef FEATURE_NANOJIT
+        DWB(PageMgr*) codePages;
+        #endif
 
 		PoolObject(AvmCore* core, ScriptBuffer& sb, const byte* startpos);
 		~PoolObject();
 
-		AbstractFunction* getMethodInfo(uint32 index);
+		MethodInfo* getNamedScript(const Multiname* multiname) const;
 
-		AbstractFunction* getNamedScript(Multiname* multiname) const;
-
-		const byte* getMetadataInfoPos(uint32 index);
-		Traits* getTraits(Stringp name, Namespace* ns, bool recursive=true) const;
-		Traits* getTraits(Multiname* n, const Toplevel* toplevel, bool recursive=true) const;
+		inline const byte* getMetadataInfoPos(uint32 index) { return metadata_infos[index]; }
+		Traits* getTraits(Stringp name, Namespacep ns, bool recursive=true) const;
+		Traits* getTraits(const Multiname& n, const Toplevel* toplevel, bool recursive=true) const;
 		Traits* getTraits(Stringp name, bool recursive=true) const;
 
 		Traits* getBuiltinTraits(Stringp name) const;
 
-		void addPrivateNamedScript(Stringp name, Namespace* ns, AbstractFunction *a);
-		void addNamedTraits(Stringp name, Namespace* ns, Traits* traits);
+		void addPrivateNamedScript(Stringp name, Namespacep ns, MethodInfo *a);
+		void addNamedTraits(Stringp name, Namespacep ns, Traits* traits);
 		
 		//
 		// deferred parsing
 		//
 
 		void parseMultiname(const byte *pos, Multiname& m) const;
-		void resolveTraits(Traits *traits, int firstSlot, const Toplevel* toplevel);
-		Traits* resolveTypeName(const byte* &pc, const Toplevel* toplevel, bool allowVoid=false) const;
+
 		Traits* resolveTypeName(uint32 index, const Toplevel* toplevel, bool allowVoid=false) const;
-		Atom resolveQName(const byte* &p, Multiname &m, const Toplevel* toplevel) const;
+		Traits* resolveTypeName(const byte*& pc, const Toplevel* toplevel, bool allowVoid=false) const
+		{
+			return resolveTypeName(AvmCore::readU30(pc), toplevel, allowVoid);
+		}
+
+		void resolveQName(uint32_t index, Multiname &m, const Toplevel* toplevel) const;
+		void resolveQName(const byte* &p, Multiname &m, const Toplevel* toplevel) const
+		{
+			resolveQName(AvmCore::readU30(p), m, toplevel);
+		}
 
 		Traits* resolveParameterizedType(const Toplevel* toplevel, Traits* base, Traits* type_param) const;
 
-
-
-		/**
-		* we allow early binding to a type if it is defined in 
-		* the same abc file as the reference, or if the type is
-		* specially marked to allow early binding by making it's
-		* Traits->pool pointer be null.  We only do this for Object
-		*/
-		void allowEarlyBinding(Traits* t, bool& slot) const;
 
 		void parseMultiname(Multiname& m, int index) const
 		{
@@ -158,51 +194,76 @@ namespace avmplus
 			parseMultiname(atomToPos(a), m);
 		}
 
-		Namespace* getNamespace(int index) const;
-		NamespaceSet* getNamespaceSet(int index) const;
+		Namespacep getNamespace(int index) const;
+		NamespaceSetp getNamespaceSet(int index) const;
 		Stringp getString(int index) const;
 
-		Atom getDefaultValue(const Toplevel* toplevel, uint32 index, CPoolKind kind, Traits* t) const;
+		Atom getLegalDefaultValue(const Toplevel* toplevel, uint32 index, CPoolKind kind, Traits* t);
+		static bool isLegalDefaultValue(BuiltinType bt, Atom value);
 
 		Atom posToAtom(const byte* pos) const
 		{
-			return (pos - abcStart)<<3 | kObjectType;
+			return (pos - _abcStart)<<3 | kObjectType;
 		}
 
 		const byte* atomToPos(Atom a) const
 		{
 			AvmAssert((a&7)==kObjectType);
-			return abcStart + urshift(a,3);
+			return _abcStart + urshift(a,3);
 		}
 
-
-#ifdef AVMPLUS_VERIFYALL
-		List<AbstractFunction*, LIST_GCObjects> verifyQueue;
-		void enq(AbstractFunction* f);
-		void enq(Traits* t);
-		void processVerifyQueue(Toplevel* toplevel);
-#endif
-		#ifdef AVMPLUS_VERBOSE
-		bool verbose;
-		#endif
+		// Index of the metadata info that means skip the associated definition
+		List<uint32_t> stripMetadataIndexes;
 
 		int version;
 		
 		ScriptBuffer code() 
 		{ 
-			return (ScriptBufferImpl*)m_code; 
+			return (ScriptBufferImpl*)_code; 
 		}
 
 		bool isCodePointer(const byte* pos)
 		{
-			return pos > &code()[0] && pos < m_code->getBuffer() + code().getSize();
+			return pos > &code()[0] && pos < _code->getBuffer() + code().getSize();
 		}
 
+	public:
+		inline uint32_t classCount() const { return _classes.size(); }
+		inline Traits* getClassTraits(uint32_t i) const { return _classes[i]; }
+
+		inline uint32_t methodCount() const { return _methods.size(); }
+		inline MethodInfo* getMethodInfo(uint32_t i) const { return _methods[i]; }
+#ifdef DEBUGGER
+		inline DebuggerMethodInfo* getDebuggerMethodInfo(uint32_t i) const { return (i < _method_dmi.size()) ? _method_dmi[i] : NULL; }
+#endif
+#if VMCFG_METHOD_NAMES
+		Stringp getMethodInfoName(uint32_t i);
+#endif
+		
 	private:
-		DWB(MultinameHashtable*) namedTraits;
-		MultinameHashtable privateNamedScripts;
-		DWB(ScriptBufferImpl*) m_code;
-		const byte * const abcStart;
+		DWB(MultinameHashtable*)					_namedTraits;
+		DWB(MultinameHashtable*)					_privateNamedScripts;
+		DWB(ScriptBufferImpl*)						_code;
+		const byte * const							_abcStart;
+		List<Traits*, LIST_GCObjects>				_classes;
+		List<MethodInfo*, LIST_GCObjects>			_methods;
+#ifdef DEBUGGER
+		List<DebuggerMethodInfo*, LIST_GCObjects>	_method_dmi;
+#endif
+#if VMCFG_METHOD_NAMES
+		// only allocated & populated if core->config.methodName is true...
+		// if positive, an index into cpool_string; if negative, an index into cpool_mn
+		// (always safe because those indices are limited to 30 bits)
+		List<int32_t, LIST_NonGCObjects>			_method_name_indices;	
+#endif
+
+
+	public:
+		// @todo, privatize & make into bitfield (requires API churn)
+		bool						isBuiltin;	// true if this pool is baked into the player.  used to control whether callees will set their context.
+	#ifdef AVMPLUS_VERBOSE
+		bool						verbose;
+	#endif
 	};
 }
 

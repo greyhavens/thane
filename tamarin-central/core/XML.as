@@ -39,9 +39,7 @@ package {
 	
 // E4X definitions.  based on ECMA-357
 	
-// {DontEnum} length=1
-public native function isXMLName(str=void 0):Boolean
-
+[native(cls="XMLClass", instance="XMLObject", methods="auto")]
 public final dynamic class XML extends Object
 {
 	// { ReadOnly, DontDelete, DontEnum }
@@ -143,7 +141,12 @@ public final dynamic class XML extends Object
 	AS3 function length ():int { return 1; }
 	AS3 native function localName ():Object; // null or String;
 	AS3 native function name ():Object; // null or String;
-	AS3 native function namespace (prefix=null):*; // prefix is optional
+	private native function _namespace (prefix:*, argc:int):*; 
+	AS3 function namespace (prefix = null):* // prefix is optional
+	{
+		// can't use .apply() here, XML getproperty hacking confuses name lookup
+		return arguments.length ? _namespace(prefix, 1) : _namespace(null, 0);
+	}
 	AS3 native function namespaceDeclarations ():Array;
 	AS3 native function nodeKind ():String;
 	AS3 native function normalize ():XML;
@@ -315,7 +318,7 @@ public final dynamic class XML extends Object
 	
 	prototype.namespace = function(prefix=null):* {
 		var x:XML = this
-		return x.AS3::namespace.apply(x, arguments)
+		return x.AS3::namespace.AS3::apply(x, arguments)
 	}
 
 	prototype.namespaceDeclarations = function():Array {
@@ -392,6 +395,7 @@ public final dynamic class XML extends Object
     _dontEnumPrototype(prototype);
 }
 
+[native(cls="XMLListClass", instance="XMLListObject", methods="auto")]
 public final dynamic class XMLList extends Object
 {
 	// { ReadOnly, DontDelete, DontEnum }
@@ -436,7 +440,12 @@ public final dynamic class XMLList extends Object
 	AS3 native function insertChildAfter (child1, child2):*; // undefined or this
 	AS3 native function insertChildBefore (child1, child2):*; // undefined or this
 	AS3 native function nodeKind ():String;
-	AS3 native function namespace (prefix=null):*; // prefix is optional
+	private native function _namespace (prefix:*, argc:int):*; 
+	AS3 function namespace (prefix = null):* // prefix is optional
+	{
+		// can't use .apply() here, XML getproperty hacking confuses name lookup
+		return arguments.length ? _namespace(prefix, 1) : _namespace(null, 0);
+	}
 	AS3 native function localName ():Object; // null or String
 	AS3 native function namespaceDeclarations ():Array;
 	AS3 native function prependChild (value):XML;
@@ -589,7 +598,7 @@ public final dynamic class XMLList extends Object
 	
 	prototype.namespace = function(prefix=null):* {
 		var x:XMLList = this
-		return x.AS3::namespace.apply(x, arguments)
+		return x.AS3::namespace.AS3::apply(x, arguments)
 	}
 
 	prototype.namespaceDeclarations = function():Array {
@@ -666,6 +675,7 @@ public final dynamic class XMLList extends Object
 
 }
 
+[native(cls="QNameClass", instance="QNameObject", methods="auto")]
 public final class QName extends Object
 {
 	// E262 {DontDelete, ReadOnly, DontEnum}

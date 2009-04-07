@@ -47,8 +47,6 @@ namespace avmplus
     class IntClass : public ClassClosure
     {
 	public:
-		DECLARE_NATIVE_MAP(IntClass)
-		
 		IntClass(VTable* cvtable);
 
 		// this = argv[0] (ignored)
@@ -71,8 +69,6 @@ namespace avmplus
     class UIntClass : public ClassClosure
     {
 	public:
-		DECLARE_NATIVE_MAP(UIntClass)
-
 		UIntClass(VTable* cvtable);
 
 		// this = argv[0] (ignored)

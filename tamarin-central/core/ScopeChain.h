@@ -41,41 +41,38 @@ namespace avmplus
 
 	/**
 	 * type descriptor for a captured scope chain
+	 *
+	 * Note: ScopeTypeChain is now immutable; once created it cannot be modified
 	 */
 	class ScopeTypeChain : public MMgc::GCObject
 	{
-		ScopeTypeChain(ScopeTypeChain* outer, int capture, int extra)
-		{
-			if (outer)
-			{
-				size = outer->size + capture;
-				for (int i=0, n=outer->size; i < n; i ++)
-					scopes[i] = outer->scopes[i];
-			}
-			else
-			{
-				size = capture;
-			}
-			fullsize = size + extra;
-		}
+	private:
+		inline ScopeTypeChain(int _size, int _fullsize) : size(_size), fullsize(_fullsize) { }
 
 	public:
-		int size;
-		int fullsize;
-		struct Entry {
-			Traits* traits;
-			bool isWith;
-		}
-		scopes[1]; // actual length = fullsize;
-		
-		static ScopeTypeChain* create(MMgc::GC* gc, ScopeTypeChain* outer, int capture, int extra=0)
-		{
-			int pad = capture+extra;
-			size_t padSize = sizeof(struct Entry) *
-				(((pad > 0) ? (pad - 1) : 0) + (outer ? outer->size : 0));
-			return new (gc, padSize) ScopeTypeChain(outer, capture, extra);
-		}
+		static ScopeTypeChain* create(MMgc::GC* gc, const ScopeTypeChain* outer, const FrameState* state, Traits* append, Traits* extra);
+		inline static ScopeTypeChain* createEmpty(MMgc::GC* gc) { return create(gc, NULL, NULL, NULL, NULL); }
 
+		inline Traits* getScopeTraitsAt(uint32_t i) const { return (Traits*)(_scopes[i] & ~ISWITH); }
+		inline bool getScopeIsWithAt(uint32_t i) const { return (_scopes[i] & ISWITH) != 0; }
+
+		#if VMCFG_METHOD_NAMES
+		Stringp format(AvmCore* core) const;
+		#endif
+
+	private:
+		inline void setScopeAt(uint32_t i, Traits* t, bool w) { _scopes[i] = uintptr_t(t) | (w ? ISWITH : 0); }
+
+		// Traits are MMgc-allocated, thus always 8-byte-aligned, so the low 3 bits are available for us to use
+		static const uintptr_t ISWITH = 0x01;
+
+	// ------------------------ DATA SECTION BEGIN
+	public:
+		const int32_t		size;
+		const int32_t		fullsize;
+	private:
+		uintptr_t			_scopes[1];	// actual length = fullsize;
+	// ------------------------ DATA SECTION END
     };
 
 	/**
@@ -83,63 +80,54 @@ namespace avmplus
 	*/
 	class ScopeChain : public MMgc::GCObject
 	{
-	public:
-		ScopeTypeChain* const scopeTraits;
-		DRCWB(Namespace*) const defaultXmlNamespace;
-	private:
-		friend class CodegenMIR;
-		Atom scopes[1]; // actual length == size
+		inline ScopeChain(const ScopeTypeChain* scopeTraits, Namespacep dxns) : 
+			_scopeTraits(scopeTraits), _defaultXmlNamespace(dxns)
+		{
+		}
+		
+		#if defined FEATURE_NANOJIT
+		friend class CodegenLIR;
+		#endif
 
 	public:
 
 		/*
-		dxns is modelled as a variable on an activation object.  The activation
-		object will be in several scope chains, so we can't store dxns in the SC.
-		When it changes, it's new valuable is visible in all closures in scope.
+			dxns is modelled as a variable on an activation object.  The activation
+			object will be in several scope chains, so we can't store dxns in the SC.
+			When it changes, it's new valuable is visible in all closures in scope.
 		*/
 		
-		ScopeChain(ScopeTypeChain* _scopeTraits, ScopeChain* _outer, Namespace * _dxns)
-		  : scopeTraits(_scopeTraits), defaultXmlNamespace(_dxns)
-		{
-			if (_outer)
-			{
-				for (int i=0, n=_outer->scopeTraits->size;/*_outer->getSize();*/ i < n; i ++)
-				{
-					setScope(i, _outer->scopes[i]);
-				}
-			}
-		}
-		
-		Atom getScope(int i) const
-		{
-			AvmAssert(i >= 0 && i < scopeTraits->size);
-			return scopes[i];
-		}
+		static ScopeChain* create(MMgc::GC* gc, const ScopeTypeChain* scopeTraits, const ScopeChain* outer, Namespacep dxns);
 
-		void setScope(int i, Atom value)
-		{
-			AvmAssert(i >= 0 && i < scopeTraits->size);
-			//scopes[i] = value;
-			WBATOM(MMgc::GC::GetGC(this), this, &scopes[i], value);
-		}
+		inline const ScopeTypeChain* scopeTraits() const { return _scopeTraits; }
+		inline int getSize() const { return _scopeTraits->size; }
+		inline Atom getScope(int i) const { AvmAssert(i >= 0 && i < _scopeTraits->size); return _scopes[i]; }
 
-		int getSize() const {
-		  if ( scopeTraits )
-			return scopeTraits->size;
-		  else
-		    return 0;
-		}
+		void setScope(MMgc::GC* gc, int i, Atom value);
 
-		Namespace** getDefaultNamespaceAddr() const { 
-			return (Namespace**)&defaultXmlNamespace;
-		}
-		
-		static ScopeChain* create(MMgc::GC* gc, ScopeTypeChain *scopeTraits, ScopeChain* outer, Namespace *dxns)
-		{
-			int depth = scopeTraits->size;
-			size_t padSize = depth > 0 ? sizeof(Atom) * (depth-1) : 0;
-			return new (gc, padSize) ScopeChain(scopeTraits, outer, dxns);
-		}
+		inline Namespacep getDefaultNamespace() const { return _defaultXmlNamespace; }
+
+		//
+		// Shut up these false positives:
+		//
+		// In member function avmplus::Namespacep* avmplus::ScopeChain::getDefaultNamespaceAddr() const:
+		// warning: dereferencing type-punned pointer might break strict-aliasing rules
+ 		//
+		#ifdef __GNUC__
+		#pragma GCC system_header
+		#endif // __GNUC__
+		inline Namespacep* getDefaultNamespaceAddr() const { return (Namespacep*)(&_defaultXmlNamespace); }
+
+		#if VMCFG_METHOD_NAMES
+		Stringp format(AvmCore* core) const;
+		#endif
+
+	// ------------------------ DATA SECTION BEGIN
+	private:
+		const ScopeTypeChain* const		_scopeTraits;
+		DRCWB(Namespacep) const			_defaultXmlNamespace;
+		Atom							_scopes[1];			// actual length == size
+	// ------------------------ DATA SECTION END
     };
 	
 }

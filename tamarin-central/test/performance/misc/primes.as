@@ -47,7 +47,16 @@ function prime(n:int) {
 	return true;
 }
 
-var n:int = 100000;
+
+if (CONFIG::desktop) {
+    var start:Number=new Date();
+    var n:int = 100000;
+}
+else { // mobile
+    var n:int = 10000;
+    var start:int=getTimer();
+}
+
 var numprimes:int=0;
 print("searching for primes 1.."+n)
 for(var j:int = n;j>0;--j) {
@@ -56,4 +65,9 @@ for(var j:int = n;j>0;--j) {
 	}
 }
 print("found "+numprimes);
-print("metric primes "+getTimer());
+if (CONFIG::desktop)
+    print("metric time "+(new Date()-start));
+else // mobile
+    print("metric time "+(getTimer()-start));
+
+

@@ -41,31 +41,30 @@
 
 namespace avmplus
 {
-
+#ifdef AVMPLUS_TRAITS_MEMTRACK
+	class VTable : public MMgc::GCFinalizedObject
+#else
 	class VTable : public MMgc::GCObject
+#endif
 	{
-		MethodEnv *makeMethodEnv(AbstractFunction *method);
-		void addInterface(AbstractFunction* virt, int disp_id);
+#if defined FEATURE_NANOJIT
+		friend class CodegenLIR;
+#endif
 
-		bool linked;
+		MethodEnv *makeMethodEnv(MethodInfo *method);
+		void addInterface(MethodInfo* virt, int disp_id);
+
 	public:
-		DWB(AbcEnv*) abcEnv;
-		DRCWB(Toplevel*) toplevel;   // not const because native ClassClosure ctors modify it
-		DWB(MethodEnv*) call;
-		DWB(MethodEnv*) init;
-		DWB(ScopeChain*) scope;
-		DWB(Traits*) traits;
-		DWB(VTable*) base;
-		DWB(VTable*) ivtable;
-
-		MethodEnv* imt[Traits::IMT_SIZE];
-		MethodEnv* methods[1]; // virtual method table
-
 		VTable(Traits* traits, VTable* base, ScopeChain* scope, AbcEnv* abcEnv, Toplevel* toplevel);
+#ifdef AVMPLUS_TRAITS_MEMTRACK 
+		virtual ~VTable();
+#endif
 		void resolveSignatures();
 
-		size_t getExtraSize() const { return traits->getTotalSize() - traits->sizeofInstance; }
-		MMgc::GC *gc() const { return traits->core->GetGC(); }
+		VTable* newParameterizedVTable(Traits* param_traits, Stringp fullname);
+
+		inline size_t getExtraSize() const { return traits->getExtraSize(); }
+		inline MMgc::GC *gc() const { return traits->core->GetGC(); }
 
 #ifdef AVMPLUS_VERBOSE
 		Stringp format(AvmCore* core) const
@@ -77,6 +76,28 @@ namespace avmplus
 #ifdef DEBUGGER
 		uint32 size() const;
 #endif
+
+		inline ScopeChain* scope() const { return _scope; }
+		inline Toplevel* toplevel() const { return _toplevel; }
+	
+	// ------------------------ DATA SECTION BEGIN
+	private:
+		ScopeChain* const _scope;
+		Toplevel* const _toplevel;
+	public:
+		DWB(AbcEnv*) abcEnv;
+		DWB(MethodEnv*) init;
+		DWB(VTable*) base;
+		DWB(VTable*) ivtable;
+		Traits* const traits;
+		bool linked;	// @todo -- surely there's a spare bit we can use for this.
+		bool pad[3];
+
+#if defined FEATURE_NANOJIT
+		MethodEnv* imt[Traits::IMT_SIZE];
+#endif
+		MethodEnv* methods[1]; // virtual method table
+	// ------------------------ DATA SECTION END
 	};
 
 }

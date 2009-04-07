@@ -43,7 +43,7 @@
     writeHeaderToLog( SECTION + " "+ TITLE);
 
     var testcases = getTestCases();
-    test();
+    test0();
 
 
 function getTestCases() {
@@ -69,7 +69,7 @@ function getRandom( caseno ) {
     }
 }
 
-function test() {
+function test0() {
     for ( tc=0; tc < testcases.length; tc++ ) {
         getRandom( tc );
         testcases[tc].passed = writeTestCaseResult(

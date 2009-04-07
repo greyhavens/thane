@@ -38,8 +38,7 @@
 
 package
 {
-
-	public namespace AS3 = "http://adobe.com/AS3/2006/builtin"
+	public namespace AS3 = "http://adobe.com/AS3/2006/builtin";
 
 	/**
 	* @name Toplevel Function Properties
@@ -47,27 +46,35 @@ package
 	*/
 	
 	// {DontEnum} length=1
+	[native("Toplevel::decodeURI")]
 	public native function decodeURI(uri:String="undefined"):String
 
 	// {DontEnum} length=1
+	[native("Toplevel::decodeURIComponent")]
 	public native function decodeURIComponent(uri:String="undefined"):String
 
 	// {DontEnum} length=1
+	[native("Toplevel::encodeURI")]
 	public native function encodeURI(uri:String="undefined"):String
 
 	// {DontEnum} length=1
+	[native("Toplevel::encodeURIComponent")]
 	public native function encodeURIComponent(uri:String="undefined"):String
 	
 	// {DontEnum} length=1
+	[native("Toplevel::isNaN")]
 	public native function isNaN(n:Number = void 0):Boolean
 	
 	// {DontEnum} length=1
+	[native("Toplevel::isFinite")]
 	public native function isFinite(n:Number = void 0):Boolean
 	
 	// {DontEnum} length=1
+	[native("Toplevel::parseInt")]
 	public native function parseInt(s:String = "NaN", radix:int=0):Number
 	
 	// {DontEnum} length=1
+	[native("Toplevel::parseFloat")]
 	public native function parseFloat(str:String = "NaN"):Number
  
 
@@ -77,10 +84,16 @@ package
 	*/
 	
 	// {DontEnum} length=1
+	[native("Toplevel::escape")]
 	public native function escape(s:String="undefined"):String
 
 	// {DontEnum} length=1
+	[native("Toplevel::unescape")]
 	public native function unescape(s:String="undefined"):String
+
+	// {DontEnum} length=1
+	[native("Toplevel::isXMLName")]
+	public native function isXMLName(str=void 0):Boolean	// moved here from XML.as
 
 	// value properties of global object (ECMA 15.1.1)
 

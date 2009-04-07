@@ -226,8 +226,11 @@ function binb2b64(binarray)
   return str;
 }
 
-function runCryptoSHA1() {
-var _sunSpiderStartDate = new Date();
+
+if (CONFIG::desktop)
+    var start=new Date();
+else  // mobile
+    var start=getTimer();
 var plainText = "Two households, both alike in dignity,\n\
 In fair Verona, where we lay our scene,\n\
 From ancient grudge break to new mutiny,\n\
@@ -248,9 +251,11 @@ for (var i = 0; i <4; i++) {
 }
 
 var sha1Output = hex_sha1(plainText);
-
-
-var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-return _sunSpiderInterval;
-}
-print("metric crypto-sha1 "+runCryptoSHA1());
+if (CONFIG::desktop)
+    var totaltime=new Date()-start;
+else  // mobile
+    var totaltime=getTimer()-start;
+if (sha1Output=="2524d264def74cce2498bf112bedf00e6c0b796d")
+    print("metric time "+totaltime);
+else
+    print("error hex_sha1 expected 2524d264def74cce2498bf112bedf00e6c0b796d got "+sha1Output);

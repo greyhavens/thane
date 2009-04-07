@@ -38,29 +38,51 @@
 #ifndef __avmplus_MultinameHashtable__
 #define __avmplus_MultinameHashtable__
 
+// the TC performance suites of sunspider, misc, and scimark show
+// no meaningful performance difference with MH_CACHE1 enabled, thus 
+// disabled for now until profiling evidence justifies it.
+//#define MH_CACHE1
+
+#ifdef MH_CACHE1
+	#include "NamespaceSet.h"
+#endif
 
 namespace avmplus
 {
 	/**
 	 * Hashtable for mapping <name, ns> pairs to a Binding
 	 */
+#ifdef AVMPLUS_TRAITS_MEMTRACK
+	class MultinameHashtable : public MMgc::GCFinalizedObject
+#else
 	class MultinameHashtable : public MMgc::GCObject
+#endif
 	{
-		class Triple 
+	private:
+		class Quad // 33% better!
 		{
 		public:
 			Stringp name;
-			Namespace* ns;
+			Namespacep ns;
 			Binding value;
+			// non-0 if the given name exists elsewhere w/ a different NS
+			// (also the alignment gives a speed boost)
+			uint32_t multiNS;
+			#ifdef AVMPLUS_64BIT
+			uint32_t padding;
+			#endif
 		};
+
+	private:
 
 		/**
 		 * Finds the hash bucket corresponding to the key <name,ns>
 		 * in the hash table starting at t, containing tLen
-		 * triples.
+		 * quads.
 		 */
-		static int find(Stringp name, Namespace* ns, Triple *t, unsigned tLen);
-	    void rehash(Triple *oldAtoms, int oldlen, Triple *newAtoms, int newlen);
+		static int find(Stringp name, Namespacep ns, const Quad *t, unsigned tLen);
+	    void rehash(const Quad *oldAtoms, int oldlen, Quad *newAtoms, int newlen);
+
 		/**
 		 * Called to grow the Hashtable, particularly by add.
 		 *
@@ -74,9 +96,6 @@ namespace avmplus
 		 */
 		void grow();
 
-		/** property hashtable */
-		DWB(Triple*) triples;
-
 	public:
 		/**
 		 * since identifiers are always interned strings, they can't be 0,
@@ -86,12 +105,6 @@ namespace avmplus
 
 		/** kDefaultCapacity must be a power of 2 */
 		const static int kDefaultCapacity = 8;
-
-		/** no. of properties */
-		int size;
-
-		/** size of hashtable (number of triples - actual capacity is *3) */
-		int numTriplets;
 
 		/**
 		 * initialize with a known capacity.  i.e. we can fit minSize
@@ -106,32 +119,74 @@ namespace avmplus
 		bool isFull() const;
 
 		/**
-		 * @name operations on name/ns/binding triples
+		 * @name operations on name/ns/binding quads
 		 */
 		/*@{*/
-		void    put(Stringp name, Namespace* ns, Binding value);
+		void    put(Stringp name, Namespacep ns, Binding value);
 
-		Binding get(Stringp name, Namespace* ns) const;
-		Binding get(Stringp name, NamespaceSet* nsset) const;
-		Binding getMulti(Multiname* name) const;
+#ifdef MH_CACHE1
+		inline Binding getName(Stringp name) const
+		{
+			if (m_cache1.name == name)
+				return m_cache1.value;
+			return _getName(name);
+		}
+		inline Binding get(Stringp name, Namespacep ns) const
+		{
+			if (m_cache1.name == name && m_cache1.ns == ns)
+				return m_cache1.value;
+			return _get(name, ns);
+		}
+		inline Binding get(Stringp name, NamespaceSetp nsset) const
+		{
+			if (name == m_cache1.name && !m_cache1.multiNS)
+			{
+				for (int j = 0, n = nsset->size; j < n; j++)
+					if (m_cache1.ns == nsset->namespaces[j])
+						return m_cache1.value;
+				return BIND_NONE;
+			}
+			return _get(name, nsset);
+		}
+		Binding _getName(Stringp name) const;
+		Binding _get(Stringp name, Namespacep ns) const;
+		Binding _get(Stringp name, NamespaceSetp nsset) const;
+#else
+		Binding get(Stringp name, Namespacep ns) const;
+		Binding get(Stringp name, NamespaceSetp nsset) const;
 		Binding getName(Stringp name) const;
+#endif
+		Binding getMulti(const Multiname* name) const;
+		inline Binding getMulti(const Multiname& name) const { return getMulti(&name); }
 		/*@}*/
 
 		/**
 		 * Adds a name/value pair to a hash table.  Automatically
 		 * grows the hash table if it is full.
 		 */
-		void add (Stringp name, Namespace* ns, Binding value);
+		void add(Stringp name, Namespacep ns, Binding value);
 
 		/**
 		 * Allow caller to enumerate all entries in the table.
 		 */
-		int next(int index);
-		Stringp keyAt(int index);
-		Namespace* nsAt(int index);
-		Binding valueAt(int index);
+		int next(int index) const;
+		Stringp keyAt(int index) const;
+		Namespacep nsAt(int index) const;
+		Binding valueAt(int index) const;
+		
+		size_t allocatedSize() const { return numQuads * sizeof(Quad); }
+
 	protected:
 		void Init(int capacity);
+
+	// ------------------------ DATA SECTION BEGIN
+	private:	Quad* m_quads;			// property hashtable (written with explicit WB)
+	public:		int size;				// no. of properties
+	public:		int numQuads;			// size of hashtable 
+#ifdef MH_CACHE1
+	private:	mutable Quad m_cache1;	// single-level cache
+#endif
+	// ------------------------ DATA SECTION END
 	};
 }
 

@@ -40,6 +40,8 @@
 
 namespace avmplus
 {
+	struct Sample;
+	
 	class TraceClass : public ClassClosure
 	{
     public:
@@ -49,53 +51,36 @@ namespace avmplus
 		void setLevel(int lvl, int target);
 		void setListener(ScriptObject* f);
 		ScriptObject* getListener();
-		
-		DECLARE_NATIVE_MAP(TraceClass)
     };
 
-	class SamplerScript : public ScriptObject
+	class SamplerScript
 	{
-	protected:
-		// subclasses can override this to check for security violations
-		// and prohibit certain operations. default implementation always
-		// allows but FlashPlayer takes advantage of this.
-		virtual bool trusted() { return true; }
+	private:
+		static bool trusted(ScriptObject* self) { return self->toplevel()->sampler_trusted(self); }
+		explicit SamplerScript(); // unimplemented, not constructable
 		
 	public:
-		SamplerScript(VTable *vtable, ScriptObject *delegate);
-		DECLARE_NATIVE_SCRIPT(SamplerScript)
+		enum { GET = 1, SET = 2 };
+
+		static double getSize(ScriptObject* self, Atom o);
+		static Atom getMemberNames(ScriptObject* self, Atom o, bool instanceNames);
+		static Atom getSamples(ScriptObject* self);
+		static void clearSamples(ScriptObject* self);
+		static void startSampling(ScriptObject* self);
+		static void stopSampling(ScriptObject* self);
+		static void pauseSampling(ScriptObject* self);
+		static void sampleInternalAllocs(ScriptObject* self, bool b);
+		static double getSampleCount(ScriptObject* self);
+		static void _setSamplerCallback(ScriptObject* self, ScriptObject* callback);
+		static double _getInvocationCount(ScriptObject* self, Atom a, QNameObject* qname, uint32 type);
+		static bool isGetterSetter(ScriptObject* self, Atom a, QNameObject* name);
 
 #ifdef DEBUGGER
-		static const uint32 GET=1;
-		static const uint32 SET=2;
-		double getSize(Atom o);
-		Atom getMemberNames(Atom o, bool instanceNames);
-		Atom getSamples();
-		void clearSamples();
-		void startSampling();
-		void stopSampling();
-		void pauseSampling();
-		double getSampleCount();
-
-		double getInvocationCount(Atom a, QNameObject* qname, uint32 type);
-		ScriptObject *makeSample(Sample sample);
-		bool isGetterSetter(Atom a, QNameObject* name);
 	private:		
-		VTable* const sampleIteratorVTable;
-		VTable* const slotIteratorVTable;
-		ClassClosure *getType(Atom typeOrVTable, MMgc::GCWeakRef *weakRef);
-#else
-		// stubs for release
-		double getSize(Atom ) { return 0; }
-		Atom getMemberNames(Atom, bool) { return undefinedAtom; }
-		Atom getSamples() { return undefinedAtom; }
-		void clearSamples() {}
-		void startSampling() {}
-		void stopSampling() {}
-		void pauseSampling() {}
-		double getSampleCount() { return -1; }
-		double getInvocationCount(Atom, QNameObject*, uint32) { return -1; }
-		bool isGetterSetter(Atom, QNameObject*) { return false; }
+		static ClassClosure* getType(ScriptObject* self, Atom typeOrVTable, const void *obj);
+		
+		friend class SampleIterator;
+		static ScriptObject* makeSample(ScriptObject* self, const Sample& sample);
 #endif
 	};
 
@@ -104,26 +89,30 @@ namespace avmplus
 	public:
 		SampleClass(VTable *vtable);
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
-		DECLARE_NATIVE_MAP(SampleClass)
 		
 		int typeOffset, stackOffset, timeOffset, idOffset, sizeOffset;
 		int nameOffset, fileOffset, lineOffset;
 	};
+	typedef SampleClass DeleteObjectSampleClass;
 
 	class SampleObject : public ScriptObject
 	{
 	public:
 		SampleObject(VTable *vtable, ScriptObject *delegate);
 	};
+	typedef SampleObject DeleteObjectSampleObject;
 
 	class NewObjectSampleObject : public SampleObject
 	{
 	public:
 		NewObjectSampleObject(VTable *vtable, ScriptObject *delegate);
-		Atom object_get();
-		void setWeakRef(MMgc::GCWeakRef* wr) { weakRef = wr; }
+		Atom get_object();
+		double get_size();
+		void setRef(AvmPlusScriptableObject* o) { obj = o; }
+		void setSize(uint64 s) { size = s; }
 	private:
-		MMgc::GCWeakRef *weakRef;
+		DRCWB(AvmPlusScriptableObject*) obj;
+		uint64 size;
 	};
 
 	class NewObjectSampleClass : public SampleClass
@@ -131,7 +120,6 @@ namespace avmplus
 	public:
 		NewObjectSampleClass(VTable *vtable);
 		ScriptObject *createInstance(VTable *ivtable, ScriptObject *delegate);
-		DECLARE_NATIVE_MAP(NewObjectSampleClass)
 	};
 }
 #endif // __avmplus_SamplerScript__

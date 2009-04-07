@@ -36,7 +36,6 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include "avmplus.h"
-#include <math.h>
 #include "BigInteger.h"
 
 #define X86_MATH
@@ -65,7 +64,7 @@ void BigInteger::setFromBigInteger(const BigInteger* from, int32 offset, int32 a
 {
 	numWords = amount;
 	AvmAssert(numWords <= kMaxBigIntegerBufferSize);
-	memcpy( (byte*)wordBuffer, 
+	VMPI_memcpy( (byte*)wordBuffer, 
 			(byte*)&(from->wordBuffer[offset]), 
 			amount*sizeof(uint32));
 }
@@ -314,7 +313,8 @@ BigInteger* BigInteger::quickDivMod(const BigInteger* divisor, BigInteger* resid
 	//do // need to loop over dword chunks of residual to make this handle division of any arbitrary bigIntegers
 	{
 		// guess largest factor that * divisor will fit into residual
-		factor = (uint64)(residual->wordBuffer[residual->numWords-1]) / divisor->wordBuffer[dWords-1];
+		const uint64 n = (uint64)(residual->wordBuffer[residual->numWords-1]);
+		factor = n / divisor->wordBuffer[dWords-1];
 		if ( ((factor <= 0) || (factor > 10))   // over estimate of 9 could be 10
 			 && residual->numWords > 1 && dWords > 1)
 		{

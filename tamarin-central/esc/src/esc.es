@@ -42,23 +42,40 @@
 
     let before = new Date();
 
-    let argv = ESC::commandLineArguments();
-    for ( let i=0, limit=argv.length ; i < limit ; i++ ) {
-        let fname = argv[i];
+    let files = ESC::filterCommandLine(Util::commandLineArguments());
+
+    let prof = ESC::flags.profile_compiler;
+
+    if (prof)
+        ESC::startProfile();
+
+    for ( let i=0, limit=files.length ; i < limit ; i++ ) {
+        let fname = files[i];
         let [parse,cogen] = ESC::compileFile(fname);
         total_frontend += parse;
         total_backend += cogen;
         print (fname);
         print ("  Scan+parse:  " + parse + " ms");
         print ("  Cogen:       " + cogen + " ms");
+
+        // This is a hack.  The profiler needs to be callback-based; the
+        // snapshot is captured so that the profiler won't lose data.
+        if (prof)
+            ESC::snapshotProfile();
     }
 
     let after = new Date();
 
-    if (argv.length > 1) {
+    if (files.length > 1) {
         print("");
         print("Total time: " + (after - before));
         print("Front end:  " + total_frontend);
         print("Back end:   " + total_backend);
     }
+
+    if (prof) {
+        ESC::stopProfile();
+        ESC::dumpProfile("esc.profile");
+    }
 }
+

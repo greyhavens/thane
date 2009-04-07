@@ -53,9 +53,9 @@ namespace axtam
 		void sendDebugFileUrl(UTF8String * /*url*/) {}
 		void sendLineTimestamp(int /*linenumber*/) {}
 		void setEnabled(bool /*on*/) {}
-		void sendFunctionEnter(AbstractFunction* /*method*/) {}
+		void sendFunctionEnter(MethodInfo* /*method*/) {}
 		void sendFunctionExit() {}
-		void sendCatch(AbstractFunction* /*method*/) {}
+		void sendCatch(MethodInfo* /*method*/) {}
 		void addScriptObject(ScriptObject * /*scriptObject*/) {}
 		void deleteScriptObject(ScriptObject * /*scriptObject*/) {}
 		void sendHeapDump(String * /*heapDumpName*/) {}

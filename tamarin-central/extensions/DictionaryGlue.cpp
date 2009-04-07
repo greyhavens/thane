@@ -42,16 +42,13 @@
 // player
 #include "platformbuild.h"
 #include "avmplayer.h"
+#include "DictionaryGlue.h"
 #endif
 
 using namespace MMgc;
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(DictionaryClass)
-		NATIVE_METHOD(flash_utils_Dictionary_Dictionary,        DictionaryObject::constructDictionary)
-	END_NATIVE_MAP()
-
 	DictionaryClass::DictionaryClass(VTable *vtable)
 	: ClassClosure(vtable)
 	{		
@@ -76,7 +73,7 @@ namespace avmplus
 		weakKeys = false;
 	}
 
-	void DictionaryObject::constructDictionary(bool weakKeys)
+	void DictionaryObject::init(bool weakKeys)
 	{
 		GCAssert(vtable->traits->isDictionary == true);
 		this->weakKeys = weakKeys;
@@ -93,8 +90,8 @@ namespace avmplus
 
 		// FIXME: this doesn't work, need to convert back to an XMLObject
 		// on the way out or intern XMLObject's somehow
-		//if(core()->isXML(key))
-		//	key = AvmCore::gcObjectToAtom(core()->atomToXML(key));
+		//if(AvmCore::isXML(key))
+		//	key = AvmCore::gcObjectToAtom(AvmCore::atomToXML(key));
 		
 		return key;
 	}
@@ -177,13 +174,11 @@ namespace avmplus
 		Hashtable *ht = getTable();
 
 		// this can happen if you break in debugger in a subclasses constructor before super
-		// has been called
-#ifdef DEBUGGER
-		if(!ht)
+		// has been called -- let's do it in all builds, it's better than crashing.
+		if (!ht)
 		{
 			return 0;
 		}
-#endif // DEBUGGER
 
 		// Advance to first non-empty slot.
 		int numAtoms = ht->getNumAtoms();

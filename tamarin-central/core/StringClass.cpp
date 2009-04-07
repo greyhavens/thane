@@ -37,71 +37,10 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-#ifdef __MWERKS__
-	typedef void (String::*StringHandler)();
-	
-	NativeTableEntry::Handler stringMethod(StringHandler stringHandler)
-	{
-		union 
-		{
-			StringHandler foo;
-			NativeTableEntry::Handler bar;
-		};
-		foo = stringHandler;
-		return bar;
-	}
-	
-	#define STRING_METHOD(handler) stringMethod((StringHandler)handler)
-#elif defined  __SUNPRO_CC
-	typedef void (String::*StringHandler)();
-	#define STRING_METHOD(x) reinterpret_cast <NativeTableEntry::Handler>((StringHandler)x)
-#else
-	#define STRING_METHOD(x) x
-#endif
-	
-	BEGIN_NATIVE_MAP(StringClass)
-		// instance methods
-		NATIVE_METHOD2_FLAGS(String_length_get, STRING_METHOD(&String::length), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_localeCompare, STRING_METHOD(&String::localeCompare), AbstractFunction::NEED_REST)
-
-		NATIVE_METHOD2_FLAGS(String_private__indexOf, STRING_METHOD(&String::indexOf), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_indexOf, STRING_METHOD(&String::indexOfDouble), 0)
-
-		NATIVE_METHOD2_FLAGS(String_private__lastIndexOf, STRING_METHOD(&String::lastIndexOf), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_lastIndexOf, STRING_METHOD(&String::lastIndexOfDouble), 0)
-
-		NATIVE_METHOD2_FLAGS(String_private__charAt, STRING_METHOD(&String::charAt), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_charAt, STRING_METHOD(&String::charAtDouble), 0)
-
-		NATIVE_METHOD2_FLAGS(String_private__charCodeAt, STRING_METHOD(&String::charCodeAt), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_charCodeAt, STRING_METHOD(&String::charCodeAtDouble), 0)
-
-		NATIVE_METHOD2_FLAGS(String_private__substring, STRING_METHOD(&String::substring), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_substring, STRING_METHOD(&String::substringDouble), 0)
-
-		NATIVE_METHOD2_FLAGS(String_private__slice, STRING_METHOD(&String::slice), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_slice, STRING_METHOD(&String::sliceDouble), 0)
-
-		NATIVE_METHOD2_FLAGS(String_private__substr, STRING_METHOD(&String::substr), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_substr, STRING_METHOD(&String::substrDouble), 0)
-
-		NATIVE_METHOD2_FLAGS(String_AS3_toLowerCase, STRING_METHOD(&String::toLowerCase), 0)
-		NATIVE_METHOD2_FLAGS(String_AS3_toUpperCase, STRING_METHOD(&String::toUpperCase), 0)
-
-		// static method (language feature - by design)
-		NATIVE_METHODV(String_AS3_fromCharCode, StringClass::fromCharCode)
-
-		// static methods (require AvmCore *)
-		NATIVE_METHOD2(String_private__match, &StringClass::match)
-		NATIVE_METHOD2(String_private__replace, &StringClass::replace)
-		NATIVE_METHOD2(String_private__search, &StringClass::search)
-		NATIVE_METHOD2(String_private__split, &StringClass::split)
-
-	END_NATIVE_MAP()
-		
 	StringClass::StringClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
@@ -110,9 +49,9 @@ namespace avmplus
 
 		// Some sanity tests for string/wchar* comparison routines
 #if 0 && defined(_DEBUG)
-		Stringp a = core()->newString ("a", 1);
-		Stringp b = core()->newString ("b", 1);
-		Stringp c = core()->newString ("c", 1);
+		Stringp a = core()->newConstantStringLatin1("a");
+		Stringp b = core()->newConstantStringLatin1("b");
+		Stringp c = core()->newConstantStringLatin1("c");
 
 		AvmAssert( (*a == *a));
 		AvmAssert(!(*a != *a));
@@ -194,26 +133,26 @@ namespace avmplus
 		return construct(argc, argv);
 	}
 
-	Stringp StringClass::fromCharCode(Atom *argv, int argc)
+	Stringp StringClass::AS3_fromCharCode(Atom *argv, int argc)
 	{
 		AvmCore* core = this->core();
-		Stringp out = new (core->GetGC()) String(argc);
-		wchar *ptr = out->lockBuffer();
-
-		for (int i=0; i<argc; i++) {
-			*ptr++ = wchar(core->integer(argv[i]));
+		Stringp out = core->kEmptyString;
+		for (int i=0; i<argc; i++) 
+		{
+			wchar c = wchar(AvmCore::integer(argv[i]));
+			// note: this code is allowed to construct a string
+			// containing illegal UTF16 sequences!
+			// (eg, String.fromCharCode(0xD800).charCodeAt(0) -> 0xD800).
+			out = out->append16(&c, 1);
 		}
-		*ptr = 0;
-
-		out->unlockBuffer();
 		return out;
 	}
 
-	ArrayObject *StringClass::match(Stringp in, Atom regexpAtom)
+	ArrayObject* StringClass::_match(Stringp in, Atom regexpAtom)
 	{
 		AvmCore* core = this->core();
 
-		if (!core->istype(regexpAtom, core->traits.regexp_itraits))
+		if (!AvmCore::istype(regexpAtom, core->traits.regexp_itraits))
 		{
 			// ECMA-262 15.5.4.10
 			// If the argument is not a RegExp, invoke RegExp(exp)
@@ -226,19 +165,19 @@ namespace avmplus
 		return reObj->match(in);
 	}
 
-	Stringp StringClass::replace(Stringp subject, Atom pattern, Atom replacementAtom)
+	Stringp StringClass::_replace(Stringp subject, Atom pattern, Atom replacementAtom)
 	{
 		AvmCore* core = this->core();
 
 		ScriptObject *replaceFunction = NULL;
 		Stringp replacement = NULL;
-		if (core->istype(replacementAtom, core->traits.function_itraits)) {
+		if (AvmCore::istype(replacementAtom, core->traits.function_itraits)) {
 			replaceFunction = AvmCore::atomToScriptObject(replacementAtom);
 		} else {
 			replacement = core->string(replacementAtom);
 		}
 
-		if (core->istype(pattern, core->traits.regexp_itraits)) {
+		if (AvmCore::istype(pattern, core->traits.regexp_itraits)) {
 			// RegExp mode
 			RegExpObject *reObj = (RegExpObject*) core->atomToScriptObject(pattern);
 			if (replaceFunction) {
@@ -268,28 +207,18 @@ namespace avmplus
 															   3, argv));
 			}
 
-			int newlen = subject->length() - searchString->length() + replacement->length();
-
-			Stringp out = new (core->GetGC()) String(newlen);
-
-			wchar *buffer = out->lockBuffer();
-			memcpy(buffer, subject->c_str(), index*sizeof(wchar));
-			memcpy(buffer+index, replacement->c_str(), replacement->length()*sizeof(wchar));
-			memcpy(buffer+index+replacement->length(),
-				   subject->c_str()+index+searchString->length(),
-				   (subject->length()-searchString->length()-index+1)*sizeof(wchar));
-			buffer[newlen] = 0;
-			out->unlockBuffer();
-
+			Stringp out = subject->substring(0, index);
+			out = String::concatStrings(out, replacement);
+			out = String::concatStrings(out, subject->substring(index + searchString->length(), subject->length()));
 			return out;
 		}
 	}
 
-	int StringClass::search(Stringp in, Atom regexpAtom)
+	int StringClass::_search(Stringp in, Atom regexpAtom)
 	{
 		AvmCore* core = this->core();
 
-		if (!core->istype(regexpAtom, core->traits.regexp_itraits)) {
+		if (!AvmCore::istype(regexpAtom, core->traits.regexp_itraits)) {
 			// ECMA-262 15.5.4.10
 			// If the argument is not a RegExp, invoke RegExp(exp)
 			regexpAtom = core->newRegExp(toplevel()->regexpClass(),
@@ -301,7 +230,7 @@ namespace avmplus
 		return reObj->search(in);
 	}
 
-	ArrayObject* StringClass::split(Stringp in, Atom delimAtom, uint32 limit)
+	ArrayObject* StringClass::_split(Stringp in, Atom delimAtom, uint32 limit)
     {
 		AvmCore* core = this->core();
 
@@ -316,7 +245,7 @@ namespace avmplus
 		}
 
 		// handle RegExp case
-		if (core->istype(delimAtom, core->traits.regexp_itraits))
+		if (AvmCore::istype(delimAtom, core->traits.regexp_itraits))
 		{
 			RegExpObject *reObj = (RegExpObject*) AvmCore::atomToScriptObject(delimAtom);			
 			return reObj->split(in, limit);
@@ -334,53 +263,26 @@ namespace avmplus
 			// delim is empty string, split on each char
 			for (int i = 0; i < ilen && (unsigned)i < limit; i++)
 			{
-				Stringp sub = new (core->GetGC()) String(in, i, 1);
+				Stringp sub = in->substr(i, 1);
 				out->setUintProperty(count++, sub->atom());
 			}
 			return out;
 		}
 
-		const wchar *inchar = in->c_str();
-		const wchar *delimch = delim->c_str();
+		int32_t start = 0;
 
-		wchar probe = delimch[0];	// initial char of search string
-		unsigned numSeg = 0;		// index of next slot in the array
-		int start=0;				// start index in input of next substring to extract
-		int i=0;					// index in input of next character to examine
-		int ilimit=ilen-dlen+1;		// limit for i when comparing to probe
-		for (;;) 
+		while (start <= in->length())
 		{
-again:
-			while (i < ilimit && inchar[i] != probe)
-				i++;
-			if (i >= ilimit)
+			if ((limit != 0xFFFFFFFFUL) && (count >= (int) limit))
 				break;
-			for (int j=1; j < dlen ; j++) {
-				if (inchar[i+j] != delimch[j]) {
-					i++;
-					goto again;
-				}
-			}
-
-			// Got one.  "i" has index of first char of delimiter.
-			numSeg++;
-
-			if( numSeg > limit )
-				break;
-
-			Stringp sub = new (core->GetGC()) String(in, start, i-start);
+			int32_t bgn = in->indexOf(delim, start);
+			if (bgn < 0)
+				// not found, use the string remainder
+				bgn = in->length();
+			Stringp sub = in->substring(start, bgn);
 			out->setUintProperty(count++, sub->atom());
-			
-			i = start = i+dlen;
-        }
-
-		// if numSeg is less than limit when we're done, add the rest of
-		// the string to the last element of the array
-		if( numSeg < limit )
-        {
-			Stringp sub = new (core->GetGC()) String(in, start, ilen);
-            out->setUintProperty(count, sub->atom());
-        }
+			start = bgn + delim->length();
+		}
         return out;
     }
 }

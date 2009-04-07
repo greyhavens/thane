@@ -24,6 +24,7 @@
 
 package {
 
+import avmplus.*;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 import flash.utils.IDataOutput;
@@ -37,7 +38,7 @@ public class AMF3Encoder
 {
     public static function encode (bytes :IDataOutput, value :*) :void
     {
-        _ctx = new Context(bytes);
+        _ctx = new EncoderContext(bytes);
         encodeValue(value);
     }
 
@@ -268,14 +269,14 @@ public class AMF3Encoder
         _ctx.bytes.writeBytes(bytes);
     }
 
-    private static var _ctx :Context;
+    private static var _ctx :EncoderContext;
 }
 }
 
 import flash.utils.IDataOutput;
 import flash.utils.Dictionary;
 
-class Context
+class EncoderContext
 {
     public var bytes :IDataOutput;
 
@@ -283,7 +284,7 @@ class Context
     public var sRef :References = new References();
     public var tRef :References = new References();
 
-    public function Context (bytes :IDataOutput)
+    public function EncoderContext (bytes :IDataOutput)
     {
         this.bytes = bytes;
     }

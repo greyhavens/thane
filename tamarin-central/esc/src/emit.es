@@ -77,9 +77,9 @@ class ABCEmitter
         file = new ABCFile;
         constants = new ABCConstantPool;
         file.addConstants(constants);
-        Object_name = nameFromIdent("Object");
-        Array_name = nameFromIdent("Array");
-        RegExp_name = nameFromIdent("RegExp");
+        Object_name = nameFromIdent(Token::sym_Object);
+        Array_name = nameFromIdent(Token::sym_Array);
+        RegExp_name = nameFromIdent(Token::sym_RegExp);
     }
 
     function newScript(): Script {
@@ -113,24 +113,24 @@ class ABCEmitter
     function namespace( ns: Ast::Namespace) {
         switch type ( ns ) {
         case (pn: Ast::PrivateNamespace) {
-            return constants.namespace(CONSTANT_PrivateNamespace, constants.stringUtf8(pn.name));
+            return constants.namespace(CONSTANT_PrivateNamespace, constants.symbolUtf8(pn.name));
         }
         case (pn: Ast::ProtectedNamespace) {
-            return constants.namespace(CONSTANT_ProtectedNamespace, constants.stringUtf8(pn.name));
+            return constants.namespace(CONSTANT_ProtectedNamespace, constants.symbolUtf8(pn.name));
         }
         case (pn: Ast::PublicNamespace) {
-            return constants.namespace(CONSTANT_Namespace, constants.stringUtf8(pn.name));
+            return constants.namespace(CONSTANT_Namespace, constants.symbolUtf8(pn.name));
         }
         case (int_ns: Ast::InternalNamespace) {
-            return constants.namespace(CONSTANT_PackageInternalNS, constants.stringUtf8(int_ns.name));
+            return constants.namespace(CONSTANT_PackageInternalNS, constants.symbolUtf8(int_ns.name));
         }
         case (un: Ast::ForgeableNamespace) {
             /// return constants.namespace(CONSTANT_ExplicitNamespace, constants.stringUtf8(pn.name));
-            return constants.namespace(CONSTANT_Namespace, constants.stringUtf8(un.name));
+            return constants.namespace(CONSTANT_Namespace, constants.symbolUtf8(un.name));
         }
         case (an: Ast::UnforgeableNamespace) {
             /// return constants.namespace(CONSTANT_PackageInternalNS, constants.stringUtf8(an.name));
-            return constants.namespace(CONSTANT_Namespace, constants.stringUtf8(an.name));
+            return constants.namespace(CONSTANT_Namespace, constants.symbolUtf8(an.name));
         }
         case (x:*) {
             internalError("", 0, "Unimplemented namespace " + ns);
@@ -170,17 +170,17 @@ class ABCEmitter
 
     function multiname(mname, is_attr) {
         let {nss, ident} = mname;
-        return constants.Multiname(namespaceSetList(nss), constants.stringUtf8(ident), is_attr);
+        return constants.Multiname(namespaceSetList(nss), constants.symbolUtf8(ident), is_attr);
     }
 
     function qname(qn, is_attr) {
         let {ns, id} = qn;
-        return constants.QName(this.namespace(ns), constants.stringUtf8(id), is_attr);
+        return constants.QName(this.namespace(ns), constants.symbolUtf8(id), is_attr);
     }
 
     function nameFromIdent(id) {
-        return constants.QName(constants.namespace(CONSTANT_PackageNamespace, constants.stringUtf8("")),
-                               constants.stringUtf8(id),false);
+        return constants.QName(constants.namespace(CONSTANT_PackageNamespace, constants.symbolUtf8(Token::sym_EMPTY)),
+                               constants.symbolUtf8(id),false);
     }
 
     function multinameL(nss, is_attr)
@@ -221,7 +221,7 @@ class ABCEmitter
     }
 
     function rtqname({ident:ident}, is_attr)
-        constants.RTQName(constants.stringUtf8(ident), is_attr);
+        constants.RTQName(constants.symbolUtf8(ident), is_attr);
 
     function rtqnameL(is_attr)
         constants.RTQNameL(is_attr);
@@ -233,22 +233,22 @@ class ABCEmitter
             switch type( tn.ident ){
             case(i: Ast::Identifier) {
                 let name = i.ident;
-                if( name=="String" || name=="Number" ||
-                    name=="Boolean" || name=="int" ||
-                    name=="uint" || name=="Object" ||
-                    name=="Array" || name=="Class" ||
-                    name=="Function") {
+                if( name==Token::sym_String || name==Token::sym_Number ||
+                    name==Token::sym_Boolean || name==Token::sym_int ||
+                    name==Token::sym_uint || name==Token::sym_Object ||
+                    name==Token::sym_Array || name==Token::sym_Class ||
+                    name==Token::sym_Function) {
                     return nameFromIdent(name);
                 }
-                else if( name=="string" ) {
-                    return nameFromIdent("String");
+                else if( name==Token::sym_string ) {
+                    return nameFromIdent(Token::sym_String);
                 }
-                else if( name=="boolean" ) {
-                    return nameFromIdent("Boolean");
+                else if( name==Token::sym_boolean ) {
+                    return nameFromIdent(Token::sym_Boolean);
                 }
                 else {
                     //print ("warning: unknown type name " + t + ", using Object");
-                    return nameFromIdent("Object");
+                    return nameFromIdent(Token::sym_Object);
                 }
             }
             }
@@ -284,7 +284,7 @@ class ABCEmitter
             return qname(pn.name, false);
         }
         case (tn: Ast::TempName) {
-            return qname (new Ast::Name(Ast::publicNS, "$t"+tn.index),false);  // FIXME allocate and access actual temps
+            return qname (new Ast::Name(Ast::publicNS, Token::intern("$t"+tn.index)),false);  // FIXME allocate and access actual temps
         }
         case (x:*) { 
             internalError("", 0, "Not a valid fixture name " + x);
@@ -337,7 +337,7 @@ class ABCEmitter
             return {val:val, kind:val};
         }
         case(ls: Ast::LiteralString) {
-            let val = constants.stringUtf8(ls.strValue);
+            let val = constants.symbolUtf8(ls.strValue);
             return {val:val, kind:CONSTANT_Utf8};
         }
         case(ln: Ast::LiteralNamespace) {
@@ -357,7 +357,7 @@ class ABCEmitter
             return defaultLiteralExpr(le);
         }
         case(i: Ast::Identifier) {
-            if( i.ident == "undefined" ) {
+            if( i.ident == Token::sym_undefined ) {
                 // Handle defualt expr of (... arg = undefined ...)
                 return defaultLiteralExpr(new Ast::LiteralUndefined());
             }
@@ -426,9 +426,9 @@ class Script extends TraitsTable
     }
 
     function finalize() {
-        var id = init.finalize();
-        var si = new ABCScriptInfo(id);
-        for ( var i=0 ; i < traits.length ; i++ )
+        let id = init.finalize();
+        let si = new ABCScriptInfo(id);
+        for ( let i=0, limit=traits.length  ; i < limit ; i++ )
             si.addTrait(traits[i]);
         e.file.addScript(si);
     }
@@ -463,14 +463,13 @@ class Class extends TraitsTable
     }
         
     function finalize() {
-        var instidx = instance.finalize();
-            
-        var clsinfo = new ABCClassInfo();
+        let instidx = instance.finalize();
+        let clsinfo = new ABCClassInfo();
         clsinfo.setCInit(getCInit().finalize());
-        for(let i = 0; i < traits.length; ++i)
+        for(let i = 0, limit=traits.length ; i < limit ; ++i)
             clsinfo.addTrait(traits[i]);
             
-        var clsidx = s.e.file.addClass(clsinfo);
+        let clsidx = s.e.file.addClass(clsinfo);
             
         assert(clsidx == instidx);
 
@@ -503,16 +502,17 @@ class Interface extends TraitsTable
 
     function finalize() {
         var clsinfo = new ABCClassInfo();
+        var methname_idx = script.e.constants.stringUtf8(String(methname));
 
         var iinit = new Instance(script, ifacename, 0, interfaces, CONSTANT_ClassInterface|CONSTANT_ClassSealed);
-        var cinit = (new Method(script.e, [], script.e.constants.stringUtf8(methname), false, new Ast::FuncAttr(null))).finalize();
+        var cinit = (new Method(script.e, [], methname_idx, false, new Ast::FuncAttr(null))).finalize();
         clsinfo.setCInit(cinit);
-        for(let i = 0; i < traits.length; ++i)
+        for(let i = 0, limit=traits.length ; i < limit ; ++i)
             clsinfo.addTrait(traits[i]);
 
         var clsidx = script.e.file.addClass(clsinfo);
             
-        var iinitm = new Method(script.e, [], script.e.constants.stringUtf8(methname), false, new Ast::FuncAttr(null), true);
+        var iinitm = new Method(script.e, [], methname_idx, false, new Ast::FuncAttr(null), true);
         iinit.setIInit(iinitm.finalize());
         iinit.finalize();
 
@@ -550,7 +550,7 @@ class Instance extends TraitsTable
             
         instinfo.setIInit(iinit);
             
-        for(let i = 0; i < traits.length; i++)
+        for(let i = 0, limit=traits.length ; i < limit ; i++)
             instinfo.addTrait(traits[i]);
             
         return s.e.file.addInstance(instinfo);
@@ -612,10 +612,10 @@ class Method extends TraitsTable // extends AVM2Assembler
             body.setInitScopeDepth(0);
             body.setMaxScopeDepth(asm.maxScope);
             body.setCode(asm.finalize());
-            for ( var i=0 ; i < traits.length ; i++ )
+            for ( var i=0, limit=traits.length ; i < limit ; i++ )
                 body.addTrait(traits[i]);
             
-            for ( var i=0 ; i < exceptions.length; i++ )
+            for ( var i=0, limit=exceptions.length ; i < limit ; i++ )
                 body.addException(exceptions[i]);
             
             e.file.addMethodBody(body);

@@ -47,8 +47,6 @@ namespace avmplus
 	class FunctionClass : public ClassClosure
 	{
 	public:
-		DECLARE_NATIVE_MAP(FunctionClass)
-
 		FunctionClass(VTable* cvtable);
 
 		ClassClosure *createEmptyFunction();
@@ -63,6 +61,24 @@ namespace avmplus
 		{
 			return construct(argc,argv);
 		}
+	};
+
+	class FunctionObject : public ClassClosure
+	{
+	public:
+		FunctionObject(VTable* cvtable, MethodEnv* call) : ClassClosure(cvtable), _call(call) { AvmAssert(_call != NULL); }
+		Atom AS3_call(Atom thisAtom, Atom *argv, int argc);
+		Atom AS3_apply(Atom thisAtom, Atom argArray);
+#ifdef DEBUGGER
+		virtual MethodEnv* getCallMethodEnv() { return _call; }
+#endif
+		virtual Atom construct(int argc, Atom* argv);
+		virtual Atom call(int argc, Atom* argv);
+		int get_length();
+	protected:
+		virtual Atom get_coerced_receiver(Atom a);
+	protected:
+		DWB(MethodEnv*) _call;
 	};
 }
 

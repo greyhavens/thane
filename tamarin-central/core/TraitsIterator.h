@@ -45,14 +45,14 @@ namespace avmplus
 	{
 	public:
 		TraitsIterator(Traits * _traits) :
-			traits(_traits),
+			traits(_traits ? _traits->getTraitsBindings() : NULL),
 			index(0)
 		{
 		}
 
-		bool getNext(Stringp& key, Namespace*& ns, Binding& value)
+		bool getNext(Stringp& key, Namespacep& ns, Binding& value)
 		{
-			if (index == -1)
+			if (index == -1 || !traits)
 			{
 				return false;
 			}
@@ -78,11 +78,13 @@ namespace avmplus
 		Traits* currentTraits()
 		{
 			// this value changes as we walk up the traits chain
-			return traits;
+			if (traits) return traits->owner;
+			return NULL;
 		}
 
 	private:
-		Traits *traits;
+		// this is stack-allocated so we must not use DWB()
+		TraitsBindingsp traits;
 		int index;
 	};
 }

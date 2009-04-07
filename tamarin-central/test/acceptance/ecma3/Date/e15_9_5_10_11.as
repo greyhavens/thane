@@ -74,10 +74,8 @@ function getTestCases() {
     var DST_END_1998 = UTC( GetFirstSundayInNovember(TimeFromYear(1998)) + 2*msPerHour );
 
     addTestCase( DST_END_1998 );
-/*
-    addTestCase( DST_END_1998-1 );
-    addTestCase( DST_END_1998+1 );
-*/
+    addTestCase( DST_END_1998-msPerHour );
+    addTestCase( DST_END_1998+msPerHour );
 
     array[item++] = new TestCase( SECTION,
                                     "(new Date(NaN)).getDate()",
@@ -93,7 +91,7 @@ function getTestCases() {
 	    for ( d = 0; d < TimeInMonth(MonthFromTime(t)); d+= msPerDay ) {
 	        t += d;
 	        array[item++] = new TestCase( SECTION,
-	                                    "(new Date(+t+)).getDate()",
+	                                    new Date(t)+" new Date(t).getDate()",
 	                                    DateFromTime(LocalTime(t)),
 	                                    (new Date(t)).getDate() );
 	    }

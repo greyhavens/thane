@@ -38,69 +38,49 @@
 #ifndef __avmplus_types__
 #define __avmplus_types__
 
-
-#ifdef _MAC
-#include <stdint.h>
-#endif
-
-//#define _BigEndian
+#include "GCTypes.h"
 
 namespace avmplus
 {
-	typedef unsigned char    byte;
-	typedef unsigned char    uint8;
-	typedef unsigned short   uint16;
-	typedef char             sint8;
-	typedef char             int8;
-	typedef short            sint16;
-	typedef short            int16;
-	typedef unsigned int     uint32; 
-	typedef signed int       sint32;
-	typedef signed int       int32;
-	#ifdef _MSC_VER
-	typedef __int64          int64;
-	typedef __int64          sint64;
-	typedef unsigned __int64 uint64;
-	#elif defined(_MAC)
-	typedef int64_t          int64;
-	typedef int64_t          sint64;
-	typedef uint64_t         uint64;
-	#else
-	typedef long long          int64;
-	typedef long long          sint64;
-	typedef unsigned long long         uint64;
-	#endif
 
-	/* wchar is our version of wchar_t, since wchar_t is different sizes
-	   on different platforms, but we want to use UTF-16 uniformly. */
-	typedef unsigned short wchar;
-	
     #ifndef NULL
     #define NULL 0
     #endif
 
+	// Atom should really be an intptr_t, but doing so can cause problematic compiles
+	// because some platforms define intptr_t as an int64, and some as a long, which
+	// create different overload possibilities in a few cases. Ideally, Atom should
+	// be a unique pointer type (as it is in TT) but for now, avoid the code churn
+	// by defining it the "old" way
+	//
 	// math friendly pointer (64 bits in LP 64 systems)
 	#if defined (_MSC_VER) && (_MSC_VER >= 1300)
 	    #define AVMPLUS_TYPE_IS_POINTER_SIZED __w64
 	#else
 	    #define AVMPLUS_TYPE_IS_POINTER_SIZED
 	#endif	
-	
 	#ifdef AVMPLUS_64BIT
-	typedef AVMPLUS_TYPE_IS_POINTER_SIZED uint64 uintptr;
-	typedef AVMPLUS_TYPE_IS_POINTER_SIZED int64 sintptr;
+	typedef AVMPLUS_TYPE_IS_POINTER_SIZED int64_t Atom;
 	#else
-	typedef AVMPLUS_TYPE_IS_POINTER_SIZED uint32 uintptr;
-	typedef AVMPLUS_TYPE_IS_POINTER_SIZED int32 sintptr;
+	typedef AVMPLUS_TYPE_IS_POINTER_SIZED int32_t Atom;
 	#endif
 	
-	typedef sintptr          Atom;
-	typedef sintptr			 Binding;
-	typedef sintptr          CodeContextAtom;
+	typedef struct Binding_* Binding;
+	typedef struct CodeContextAtom_* CodeContextAtom;
 
 	inline uint32 urshift(Atom atom, int amount)
 	{
 		return ((uint32)atom >> amount);
+	}
+
+	inline uint32 urshift(Binding b, int amount)
+	{
+		return (uint32_t(uintptr_t(b)) >> amount);
+	}
+
+	inline uint32 urshift(CodeContextAtom c, int amount)
+	{
+		return (uint32_t(uintptr_t(c)) >> amount);
 	}
 }
 

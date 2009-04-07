@@ -39,6 +39,10 @@
 #ifndef __GCStack__
 #define __GCStack__
 
+#ifdef __SYMBIAN32__
+#include <e32cmn.h>
+#endif
+
 #ifdef UNIX
 #include <string.h>
 #endif
@@ -70,7 +74,7 @@ namespace MMgc
 			if ( ( m_iCount + 1 ) > m_iAllocSize ) 
 			{
 				// need to allocate a new block first
-				m_iAllocSize = m_iAllocSize ? m_iAllocSize*2 : kDefSize;
+				m_iAllocSize = m_iAllocSize ? m_iAllocSize*2 : (unsigned int)kDefSize;
 				Alloc();
 			}
 
@@ -81,8 +85,7 @@ namespace MMgc
 		{
 			T t = m_items[--m_iCount];
 #ifdef _DEBUG
-			GCAssert(m_iCount>=0);
-			memset(&m_items[m_iCount], 0, sizeof(T));
+			VMPI_memset(&m_items[m_iCount], 0, sizeof(T));
 #endif
 			return t;
 		}
@@ -119,7 +122,7 @@ namespace MMgc
 				T* items = new T[ m_iAllocSize ];
 				if ( items )
 				{
-					::memcpy(items, m_items, m_iCount * sizeof(T));
+					VMPI_memcpy(items, m_items, m_iCount * sizeof(T));
 				}
 				delete [] m_items;
 				m_items = items;

@@ -96,6 +96,7 @@ package flash.sampler
      * @keyword Sample      
      * @see package.html#getSamples() flash.sampler.getSamples()
      */
+	[native(cls="SampleClass", instance="SampleObject", methods="auto")]
     public class Sample
     {
 		/**
@@ -127,6 +128,7 @@ package flash.sampler
     * @see package.html#getSamples() flash.sampler.getSamples()
     * @includeExample examples\SampleTypesExample.as -noswf    
     */
+	[native(cls="NewObjectSampleClass", instance="NewObjectSampleObject", methods="auto")]
     public final class NewObjectSample extends Sample
     {
     	/** 
@@ -157,7 +159,8 @@ package flash.sampler
          * @see flash.sampler.DeleteObjectSample         
     	 */
     	public native function get object():*;
-   
+
+        public native function get size() : Number;
     };
 	
 	/**
@@ -169,6 +172,7 @@ package flash.sampler
     * @see package.html#getSamples() flash.sampler.getSamples()
     * @includeExample examples\SampleTypesExample.as -noswf    
     */    
+	[native(cls="DeleteObjectSampleClass", instance="DeleteObjectSampleObject", methods="auto")]
     public final class DeleteObjectSample extends Sample
     {
     	/** 
@@ -188,19 +192,20 @@ package flash.sampler
          * @keyword DeleteObjectSample, DeleteObjectSample.size, size  
          * @see flash.sampler.NewObjectSample#id
          */
-	public const size:Number;
+		public const size:Number;
     };
 
 
     /**
      * Clears the current set of Sample objects. This method is usually called after calling <code>getSamples()</code>
-     * For Flash Player debugger version only.
      * and iterating over the Sample objects.
+     * For Flash Player debugger version only.
      * @playerversion Flash 9.0.115.0
      * @langversion 3.0     
      * @keyword clearSamples      
      * @see package.html#getSamples() getSamples()
      */
+    [native("SamplerScript::clearSamples")]
 	public native function clearSamples():void;
 
     /**
@@ -212,6 +217,7 @@ package flash.sampler
      * @keyword startSampling      
      * @see flash.sampler.Sample Sample class
      */
+    [native("SamplerScript::startSampling")]
 	public native function startSampling():void;
 
 	/**
@@ -223,6 +229,7 @@ package flash.sampler
      * @keyword stopSampling      
      * @see flash.sampler.Sample Sample class
 	 */
+    [native("SamplerScript::stopSampling")]
 	public native function stopSampling():void;
 
 	/**
@@ -233,8 +240,55 @@ package flash.sampler
      * @keyword pauseSampling      
      * @see package.html#startSampling() startSampling()
 	 */
+    [native("SamplerScript::pauseSampling")]
 	public native function pauseSampling():void;
 	
+	/**
+     * Tells the sampler if it should create NewObjectSamples for internal allocations from the flash player.
+     * If this is set to true, then every allocation will generate a NewObjectSample.  These internal allocs will
+     * not have a type, or a reference to the Object.  They will have the ActionScript stack trace that triggered the
+     * allocation.  Defaults to false, which only collects allocations for ActionScript objects.
+     * @langversion 3.0
+     * @keyword sampleInternalAllocs
+     */
+    [native("SamplerScript::sampleInternalAllocs")]
+	public native function sampleInternalAllocs(b:Boolean):void;
+
+	/**
+     * Set a callback function for the sampler - this function will be called when the sample stream is almost
+     * exhausted.  This should be used to process samples before the sample buffer is filled.  pauseSampling will be called
+     * before the callback is called, and startSampling will be called after the callback has been executed.
+     * @langversion 3.0
+     * @keyword sampleInternalAllocs
+     */
+	public function setSamplerCallback(f:Function):void
+    {
+        if( f != null )
+        {
+            // Use a wrapper to swallow any exceptions thrown by the callback.
+            var wrapper = function() 
+            {
+                var ret:Boolean = true;
+                try
+                {
+                    f();
+                }
+                catch(e)
+                {
+                    ret = false; 
+                }
+                return ret;
+            }
+            _setSamplerCallback(wrapper);
+        }
+        else
+        {
+            _setSamplerCallback(null);
+        }
+    }
+    [native("SamplerScript::_setSamplerCallback")]
+    native function _setSamplerCallback(f:Function):void;
+    
 	/**
 	* Returns the size in memory of a specified object when used with the Flash Player 9.0.115.0 or later debugger version. If 
     * used with a Flash Player that is not the debugger version, this method returns <code>0</code>.
@@ -245,6 +299,7 @@ package flash.sampler
     * @langversion 3.0     
     * @keyword getSize      
 	*/
+    [native("SamplerScript::getSize")]
 	public native function getSize(o:*):Number;
 
     /**
@@ -265,6 +320,7 @@ package flash.sampler
      * @see ../../statements.html#for_each..in for each..in    
      * 
      */
+    [native("SamplerScript::getMemberNames")]
     public native function getMemberNames(o:Object, instanceNames:Boolean=false):Object;
 
  
@@ -277,6 +333,7 @@ package flash.sampler
      * @keyword getSamples     
      * @see flash.sampler.Sample
      */
+    [native("SamplerScript::getSamples")]
     public native function getSamples():Object;
 
     /** 
@@ -288,6 +345,7 @@ package flash.sampler
      * @keyword getSampleCount     
      * @see flash.sampler.Sample    
      */
+    [native("SamplerScript::getSampleCount")]
     public native function getSampleCount():Number;
  
    /**
@@ -339,6 +397,7 @@ package flash.sampler
     /** 
     * @private
     */
+    [native("SamplerScript::_getInvocationCount")]
     native function _getInvocationCount(obj:Object, qname:QName, type:uint):Number;
 
    /**
@@ -359,5 +418,6 @@ package flash.sampler
      * @see package.html#getSetterInvocationCount() getSetterInvocationCount() 
      * @see package.html#getGetterInvocationCount() getGetterInvocationCount() 
      */
+    [native("SamplerScript::isGetterSetter")]
     public native function isGetterSetter(obj:Object, qname:QName):Boolean;
 };

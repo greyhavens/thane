@@ -48,47 +48,13 @@
 #endif /* AVMPLUS_MACH_EXCEPTIONS */
 
 #ifdef AVMPLUS_UNIX
-#include <pthread.h>
-#include <stdio.h>
+	#ifndef AVMPLUS_SYMBIAN
+		#include <pthread.h>
+	#endif
 #endif /* AVMPLUS_UNIX */
 
 namespace avmplus
 {
-	class GrowableBuffer : public MMgc::GCObject
-	{
-	public:
-		GrowableBuffer(MMgc::GCHeap* heap, bool forMir=false);
-		virtual ~GrowableBuffer();
-
-		byte* reserve(size_t amt);
-		void  free();
-		byte* decommitUnused();
-		byte* growBy(size_t amt);
-		byte* grow();
-		byte* shrinkTo(size_t amt);
-
-		size_t	pageSize()		{ return heap->kNativePageSize; }
-		byte*	start()			{ return first; }
-		byte*	end()			{ return last; }
-		size_t	size()			{ return last-first; }
-		byte*	uncommitted()	{ return uncommit; }
-		byte*	getPos()		{ return current; }
-		void	setPos(byte* c)	{ current = c; /* AvmAssert(c >= start && c <= end); */ }
-
-	private:
-		void	init();
-		byte*	pageFor(byte* addr)		{ return (byte*) ( (size_t)addr & ~(pageSize()-1) ); }
-		byte*	pageAfter(byte* addr)	{ return (byte*) ( (size_t)(addr+pageSize()) & ~(pageSize()-1) ); }
-
-		MMgc::GCHeap* const heap;
-		byte* first;		// reservation starting address
-		byte* last;			// reservation ending address
-		byte* uncommit;		// next uncommitted page in region
-		byte* current;		// current position in buffer
-		bool  forMir;		// set if a mir buffer
-
-		friend class GrowthGuard;
-	};
 
 #ifdef FEATURE_BUFFER_GUARD
 
@@ -236,37 +202,6 @@ namespace avmplus
 		jmp_buf *jmpBuf;
 	};
 
-	// used to expand GrowableBuffer for generated code
-	class GrowthGuard : public GenericGuard
-	{
-	public:
-		GrowthGuard(GrowableBuffer* buffer);
-		virtual ~GrowthGuard();
-
-		#ifdef AVMPLUS_UNIX
-		virtual bool handleException(byte*);
-		#endif
-
-	protected:
-		#ifdef AVMPLUS_WIN32
-		#ifdef _WIN64
-		virtual void registerHandler();
-		virtual void unregisterHandler();
-		#endif
-		virtual int handleException(struct _EXCEPTION_RECORD *exceptionRecord,
-									void *establisherFrame,
-									struct _CONTEXT *contextRecord,
-									void *dispatcherContext);
-		#endif
-
-		#ifdef AVMPLUS_MACH_EXCEPTIONS
-		virtual bool handleException(kern_return_t& returnCode);
-		#endif
-
-	private:
-		// pointer to buffer we are guarding
-		GrowableBuffer* buffer;
-	};
 #endif /* FEATURE_BUFFER_GUARD */
 }
 #endif /*___avmplus_GrowableBuffer_H_*/

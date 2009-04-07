@@ -40,18 +40,30 @@
 
 namespace avmplus
 {
+	enum CodeContextKind 
+	{
+		CONTEXTKIND_ENV = 0,	// MethodEnv* pointer
+		CONTEXTKIND_OBJECT = 1	// CodeContext* object
+	};
+
 	const CodeContextAtom CONTEXT_NONE   = 0; // No CodeContext present
-	const CodeContextAtom CONTEXT_ENV    = 0; // MethodEnv* pointer
-	const CodeContextAtom CONTEXT_OBJECT = 1; // CodeContext* object
+
+	inline CodeContextKind getCodeContextKind(CodeContextAtom c) { return CodeContextKind(uintptr_t(c) & 7); }
+
+	inline MethodEnv* getCodeContextEnv(CodeContextAtom c) { AvmAssert(getCodeContextKind(c) == CONTEXTKIND_ENV); return (MethodEnv*)(uintptr_t(c) & ~7); }
+	inline CodeContext* getCodeContextObject(CodeContextAtom c) { AvmAssert(getCodeContextKind(c) == CONTEXTKIND_OBJECT); return (CodeContext*)(uintptr_t(c) & ~7); }
+
+	inline CodeContextAtom makeCodeContextAtom(MethodEnv* e) { return CodeContextAtom(uintptr_t(e) | CONTEXTKIND_ENV); }
+	inline CodeContextAtom makeCodeContextAtom(CodeContext* c) { return CodeContextAtom(uintptr_t(c) | CONTEXTKIND_OBJECT); }
 
 	// CodeContext is used to track which security context we are in.
 	// When an AS3 method is called, the AS3 method will set core->codeContext to its code context.
 	class CodeContext : public MMgc::GCObject
 	{
 	public:		
-#ifdef DEBUGGER
-		virtual DomainEnv *domainEnv() const = 0;
 		virtual ~CodeContext() {}
+#ifdef DEBUGGER
+		virtual DomainEnv* domainEnv() const = 0;
 #endif
 	};
 
@@ -60,11 +72,11 @@ namespace avmplus
 	public:
 		EnterCodeContext(AvmCore * _core, MethodEnv *env)
 		{
-			initialize(_core, (CodeContextAtom)env | CONTEXT_ENV);
+			initialize(_core, makeCodeContextAtom(env));
 		}
 		EnterCodeContext(AvmCore * _core, CodeContext *codeContext)
 		{
-			initialize(_core, (CodeContextAtom)codeContext | CONTEXT_OBJECT);
+			initialize(_core, makeCodeContextAtom(codeContext));
 		}
 		~EnterCodeContext()
 		{

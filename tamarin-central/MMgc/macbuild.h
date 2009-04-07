@@ -36,6 +36,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+#include <AvailabilityMacros.h>
 
 #ifdef DEBUG
 #ifndef _DEBUG
@@ -46,7 +47,7 @@
 /**
  * Critical section on GCHeap allocations.
  */
-#define GCHEAP_LOCK
+#define MMGC_LOCKING
 
 /**
  * PowerPC (MacOS)
@@ -58,6 +59,9 @@
   #define MMGC_64BIT
 #elif defined (__ppc__)
   #define MMGC_PPC
+#elif defined (__ppc64__)
+  #define MMGC_PPC
+  #define MMGC_64BIT
 #endif
 
 #define MMGC_MAC
@@ -66,14 +70,8 @@
  * Define this to get stack traces.  Helps with memory leaks.
  */
 #ifdef DEBUG
-#define MEMORY_INFO
+#define MMGC_MEMORY_INFO
 #endif
-
-/**
- * This turns on incremental collection as well as all of
- * the write barriers.
- */
-#define WRITE_BARRIERS
 
 /**
  * Define this if MMgc is being integrated with avmplus.
@@ -82,23 +80,10 @@
 #define MMGC_AVMPLUS
 
 /**
- *
- */
-#define DECOMMIT_MEMORY
-
-/**
- * USE_MMAP only for MACHO builds
- */
-#if TARGET_RT_MAC_MACHO
-#ifndef USE_MMAP
-#define USE_MMAP
-#endif
-#endif
-
-#define MMGC_DRC
-
-/**
  * This makes JIT code buffers read-only to reduce the probability of
  * heap overflow attacks.
  */
 #define AVMPLUS_JIT_READONLY
+
+#define MMGC_HAVE_PTHREAD_H
+#define MMGC_HAVE_STDARG_H

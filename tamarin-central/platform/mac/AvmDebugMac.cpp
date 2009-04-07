@@ -42,10 +42,8 @@
 #include <stdarg.h>
 #include <string.h>
 
-#ifdef MEMORY_CHECK
-#include <malloc.h>
-#include <DbgHelp.h>
-#include <strsafe.h>
+#if defined(AVMPLUS_CUSTOM_DEBUG_MESSAGE_HANDLER)
+	void AVMPlusCustomDebugMessageHandler(const char *message);
 #endif
 
 namespace avmplus
@@ -53,6 +51,7 @@ namespace avmplus
 	#ifdef DARWIN
 	void AvmDebugMsg(bool debuggerBreak, const char* format, ...)
 	{
+#ifdef _DEBUG
 		char buf[4096];
 		va_list args;
 		va_start(args, format);
@@ -60,23 +59,31 @@ namespace avmplus
 		vsprintf(buf, format, args);
 		va_end(args);
 		AvmDebugMsg(buf, debuggerBreak);
+#else
+		(void)debuggerBreak;
+		(void)format;
+#endif
 	}
 
 	void AvmDebugMsg(const char* p, bool debugBreak)
 	{
-		CFStringRef cfStr = ::CFStringCreateWithCString(NULL, p, kCFStringEncodingUTF8);
-		if(debugBreak) {
-			Str255 buf;
-			CFStringGetPascalString (cfStr, buf, 255, kCFStringEncodingUTF8);
-			DebugStr(buf);
-		} else {
-			::CFShow(cfStr);
-		}
-		::CFRelease (cfStr);
+#ifdef _DEBUG
+        #if defined(AVMPLUS_CUSTOM_DEBUG_MESSAGE_HANDLER)
+            AVMPlusCustomDebugMessageHandler(p);
+		#else
+			fprintf(stderr, "%s\n", p);
+		#endif
+			if (debugBreak)
+				abort();
+#else
+		(void)p;
+		(void)debugBreak;
+#endif
 	}	
 	#else
 	void AvmDebugMsg(bool debuggerBreak, const char* format, ...)
 	{
+#ifdef _DEBUG
 		char buf[4096];
 		va_list args;
 		va_start(args, format);
@@ -87,14 +94,27 @@ namespace avmplus
 		{
 			AvmDebugMsg(buf, debuggerBreak);
 		}
+#else
+		(void)debuggerBreak;
+		(void)format;
+#endif
 	}
 
 	void AvmDebugMsg(const char* p, bool debugBreak)
 	{
+#ifdef _DEBUG
 		char buf[256];
-		strcpy(buf, p);
+		VMPI_strcpy(buf, p);
 		::CopyCStringToPascal(buf, (StringPtr)buf);
-		DebugStr((StringPtr) buf);
+		if(debugBreak)
+		{
+			DebugStr((StringPtr) buf);
+			exit(1);	// ensure we die
+		}
+#else
+		(void)p;
+		(void)debugBreak;
+#endif
 	}
 	#endif
 }

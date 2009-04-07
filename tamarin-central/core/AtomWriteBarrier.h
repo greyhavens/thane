@@ -41,10 +41,6 @@
 
 namespace avmplus
 {
-#ifndef WRITE_BARRIERS
-#define ATOM_WB Atom
-#define WBATOM(gc, c, a, v) *(a) = v
-#else
 		// Optimized Atom write barrier
 		class AtomWB
 		{
@@ -87,8 +83,6 @@ namespace avmplus
 		};
 #define ATOM_WB AtomWB
 #define WBATOM(gc, c, a, v) AvmCore::atomWriteBarrier(gc, c, a, v)
-#endif // WRITE_BARRIERS
-
 }
 
 #endif /* __avmplus_AtomWriteBarrier__ */

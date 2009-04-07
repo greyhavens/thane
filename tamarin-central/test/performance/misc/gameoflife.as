@@ -39,8 +39,8 @@ package{
 
 	public class DrawGrid {
 
-		private var rows:int =40;
-		private var cols:int= 40;
+		private var rows:int =100;
+		private var cols:int= 100;
 		private var cells:Array = new Array(rows*cols);
 		private var gen =1;
 		public var k:uint=0;
@@ -55,18 +55,21 @@ package{
 
 		private function Simulation():void{
 			Iterations=0;
-
-			var generations:int=200;
+            if (CONFIG::desktop)
+                var generations:int=500;
+            else // mobile
+                var generations:int=50;
+			
 			for (var i=0;i<generations;i++){
 				Iterations++;
 
-				var start2 = getTimer();
+				var start2:Number = new Date();
 
 				step();
 				draw();
-				var end2 = getTimer();
+				var end2:Number = new Date();
 				var t2 = end2-start2;
-				print("The time taken for generation: "+Iterations+" is:"+t2 +" ms"+"\n");
+//				print("The time taken for generation: "+Iterations+" is:"+t2 +" ms"+"\n");
 			}
 		}
 
@@ -187,8 +190,16 @@ package{
 	}
 	
 	
-	var t = getTimer();
+	if (CONFIG::desktop)
+        var t:Number = new Date();
+    else // mobile
+        var t:int = getTimer();
+	
 	var k = new DrawGrid();
-	t = getTimer() - t;
-	print("metric gameoflife "+t);
+    if (CONFIG::desktop)
+        t = new Date() - t;
+    else // mobile
+        t = getTimer() - t;
+	
+	print("metric time "+t);
 }

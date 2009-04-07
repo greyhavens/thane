@@ -39,6 +39,8 @@
 #ifndef __avmplus_VectorClass__
 #define __avmplus_VectorClass__
 
+#include "AvmCore.h"
+#include "Toplevel.h"
 
 namespace avmplus
 {
@@ -76,10 +78,10 @@ namespace avmplus
 		Atom nextValue(int index);
 		int nextNameIndex(int index);
 
-		Atom map (ScriptObject *callback, Atom thisObject);
-		Atom filter (ScriptObject *callback, Atom thisObject);
+		Atom map(ScriptObject *callback, Atom thisObject);
+		Atom filter(ScriptObject *callback, Atom thisObject);
 
-		uint32 push(Atom *args, int argc);
+		uint32 AS3_push(Atom *args, int argc);
 
 		uint32 m_length;
 	protected:
@@ -88,6 +90,8 @@ namespace avmplus
 
 		virtual void grow(uint32 newCapacity, bool exact=false) = 0;
 		virtual VectorBaseObject* newVector(uint32 length = 0) = 0;
+
+		bool getVectorIndex(Atom name, uint32& index, bool& isNumber) const;
 	};
 
 	template <class T>
@@ -105,6 +109,9 @@ namespace avmplus
 			delete [] m_array;
 			m_array = NULL;
 		}
+
+		ArrayObject* _filter(ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_filter(toplevel(), this->atom(), callback, thisObject); }
+		ArrayObject* _map(ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_map(toplevel(), this->atom(), callback, thisObject); }
 
 		virtual Atom getUintProperty(uint32 index) const
 		{
@@ -198,12 +205,12 @@ namespace avmplus
 		{
 			if( newLength < m_length )
 			{
-				memset(m_array+newLength, 0, (m_length-newLength)*sizeof(T));
+				VMPI_memset(m_array+newLength, 0, (m_length-newLength)*sizeof(T));
 			}
 			VectorBaseObject::set_length(newLength);
 		}
 
-		uint32 unshift(Atom* argv, int argc)
+		uint32 AS3_unshift(Atom* argv, int argc)
 		{
 			// shift elements up by argc
 			// inserts args into initial spots
@@ -214,7 +221,7 @@ namespace avmplus
 					toplevel()->throwRangeError(kVectorFixedError);
 				grow (m_length + argc);
 				T *arr = m_array;
-				memmove (arr + argc, arr, m_length * sizeof(T));
+				VMPI_memmove (arr + argc, arr, m_length * sizeof(T));
 				for(int i=0; i<argc; i++) {
 					atomToValue(argv[i], m_array[i]);
 				}
@@ -253,15 +260,15 @@ namespace avmplus
 
 				// shift elements down
 				int toMove = m_length - insertPoint - deleteCount;
-				memmove (arr + insertPoint + insertCount, arr + insertPoint + deleteCount, toMove * sizeof(T));
+				VMPI_memmove (arr + insertPoint + insertCount, arr + insertPoint + deleteCount, toMove * sizeof(T));
 
-				//memset (arr + m_length - numberBeingDeleted, 0, numberBeingDeleted * sizeof(T));
+				//VMPI_memset (arr + m_length - numberBeingDeleted, 0, numberBeingDeleted * sizeof(T));
 			}
 			else if (l_shiftAmount > 0)
 			{
-				memmove (arr + insertPoint + l_shiftAmount, arr + insertPoint, (m_length - insertPoint) * sizeof(T));
+				VMPI_memmove (arr + insertPoint + l_shiftAmount, arr + insertPoint, (m_length - insertPoint) * sizeof(T));
 				//
-				//memset (arr + insertPoint, 0, l_shiftAmount * sizeof(T));
+				//VMPI_memset (arr + insertPoint, 0, l_shiftAmount * sizeof(T));
 			}
 
 			set_length(m_length + l_shiftAmount);
@@ -271,7 +278,7 @@ namespace avmplus
 			{
 				if( vec_args && (offset+insertCount <= vec_args->m_length) )
 				{
-					memmove(arr+insertPoint, vec_args->m_array+offset, insertCount*sizeof(T));
+					VMPI_memmove(arr+insertPoint, vec_args->m_array+offset, insertCount*sizeof(T));
 				}
 				else if( so_args )
 				{
@@ -286,7 +293,7 @@ namespace avmplus
 			return;
 		}
 
-		T pop() 
+		T AS3_pop() 
 		{
 			if(m_fixed)
 				toplevel()->throwRangeError(kVectorFixedError);
@@ -308,7 +315,7 @@ namespace avmplus
 			ScriptObject* so_args = (obj&7)==kObjectType ?  AvmCore::atomToScriptObject(obj) : 0;
 			if( so_args )
 			{
-				uint32 len = toplevel()->arrayClass->getLengthHelper(so_args);
+				uint32 len = ArrayClass::getLengthHelper(toplevel(), so_args);
 				for( uint32 i = 0; i < len; ++i )
 				{
 					this->setUintProperty(i, so_args->getUintProperty(i));
@@ -325,7 +332,7 @@ namespace avmplus
 
 		void atomToValue(Atom atom, sint16& value)
 		{
-			value = (sint16) core()->integer(atom);						
+			value = (sint16) AvmCore::integer(atom);						
 		}
 		void atomToValue(Atom atom, uint16& value)
 		{
@@ -333,27 +340,27 @@ namespace avmplus
 		}
 		void atomToValue(Atom atom, sint32& value)
 		{
-			value = core()->integer(atom);						
+			value = AvmCore::integer(atom);						
 		}
 		void atomToValue(Atom atom, sint64& value)
 		{
-			value = core()->integer(int(atom));						
+			value = AvmCore::integer(int(atom));						
 		}
 		void atomToValue(Atom atom, uint32& value)
 		{
-			value = core()->toUInt32(atom);			
+			value = AvmCore::toUInt32(atom);			
 		}
 		void atomToValue(Atom atom, float& value)
 		{
-			value = (float) core()->number(atom);
+			value = (float) AvmCore::number(atom);
 		}
 		void atomToValue(Atom atom, double& value)
 		{
-			value = core()->number(atom);
+			value = AvmCore::number(atom);
 		}
 		void atomToValue(Atom atom, ScriptObject*& value)
 		{
-			value = core()->atomToScriptObject(atom);
+			value = AvmCore::atomToScriptObject(atom);
 		}
 
 		Atom valueToAtom(sint16 value) const
@@ -391,7 +398,7 @@ namespace avmplus
 
 		TypedVectorObject<T>* isVector(Atom instance)
 		{
-			if (core()->istype(instance, vtable->traits))
+			if (AvmCore::istype(instance, vtable->traits))
 				return (TypedVectorObject<T>*)AvmCore::atomToScriptObject(instance);
 			return NULL;
 		}
@@ -410,10 +417,10 @@ namespace avmplus
 				}
 				if (m_array)
 				{
-					memcpy(newArray, m_array, m_length * sizeof(T));
+					VMPI_memcpy(newArray, m_array, m_length * sizeof(T));
 					delete [] m_array;
 				}
-				memset(newArray+m_length, 0, (newCapacity-m_capacity) * sizeof(T));
+				VMPI_memset(newArray+m_length, 0, (newCapacity-m_capacity) * sizeof(T));
 				m_array = newArray;
 				m_capacity = newCapacity;
 			}
@@ -475,9 +482,7 @@ namespace avmplus
 
 		~ObjectVectorObject()
 		{
-#ifdef MMGC_DRC
 			AvmCore::decrementAtomRegion(m_array, m_length);
-#endif
 			m_length = 0;
 			if(m_array) {
 				MMgc::GC::GetGC(m_array)->Free(m_array);
@@ -501,10 +506,10 @@ namespace avmplus
 
 		//void _reverse();
 		// insert array of arguments at front of array
-		uint32 unshift(Atom* argv, int argc);
+		uint32 AS3_unshift(Atom* argv, int argc);
 		void _spliceHelper(uint32 insertPoint, uint32 insertCount, uint32 deleteCount, Atom args, int offset);
 
-		Atom pop();
+		Atom AS3_pop();
 
 	protected:
 		virtual void grow(uint32 newCapacity, bool exact=false);
@@ -513,7 +518,7 @@ namespace avmplus
 	private:
 		ObjectVectorObject* isVector(Atom instance)
 		{
-			if (instance && core()->istype(instance, vtable->traits))
+			if (instance && AvmCore::istype(instance, vtable->traits))
 				return (ObjectVectorObject*)AvmCore::atomToScriptObject(instance);
 			return NULL;
 		}
@@ -533,7 +538,10 @@ namespace avmplus
 
 		IntVectorObject* newVector(uint32 length = 0);
 
-		DECLARE_NATIVE_MAP(IntVectorClass)
+		void _forEach(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_forEach(toplevel(), thisAtom, callback, thisObject); }
+		bool _every(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_every(toplevel(), thisAtom, callback, thisObject); }
+		bool _some(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_some(toplevel(), thisAtom, callback, thisObject); }
+		Atom _sort(Atom thisAtom, ArrayObject *args) { return ArrayClass::generic_sort(toplevel(), thisAtom, args); }
     };
 
 	class UIntVectorClass : public ClassClosure
@@ -547,7 +555,10 @@ namespace avmplus
 
 		UIntVectorObject* newVector(uint32 length = 0);
 
-		DECLARE_NATIVE_MAP(UIntVectorClass)
+		void _forEach(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_forEach(toplevel(), thisAtom, callback, thisObject); }
+		bool _every(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_every(toplevel(), thisAtom, callback, thisObject); }
+		bool _some(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_some(toplevel(), thisAtom, callback, thisObject); }
+		Atom _sort(Atom thisAtom, ArrayObject *args) { return ArrayClass::generic_sort(toplevel(), thisAtom, args); }
     };
 
 	class DoubleVectorClass : public ClassClosure
@@ -561,7 +572,10 @@ namespace avmplus
 
 		DoubleVectorObject* newVector(uint32 length = 0);
 
-		DECLARE_NATIVE_MAP(DoubleVectorClass)
+		void _forEach(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_forEach(toplevel(), thisAtom, callback, thisObject); }
+		bool _every(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_every(toplevel(), thisAtom, callback, thisObject); }
+		bool _some(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_some(toplevel(), thisAtom, callback, thisObject); }
+		Atom _sort(Atom thisAtom, ArrayObject *args) { return ArrayClass::generic_sort(toplevel(), thisAtom, args); }
     };
 
 	class VectorClass : public ClassClosure
@@ -574,8 +588,8 @@ namespace avmplus
 		ObjectVectorObject* newVector(ClassClosure* type, uint32 length = 0);
 
 		virtual Atom applyTypeArgs(int argc, Atom* argv);
-
-		DECLARE_NATIVE_MAP(VectorClass)
+	
+		static Stringp makeVectorClassName(AvmCore* core, Traits* t);
 	
 	private:
 		DWB(Hashtable*) instantiated_types;
@@ -591,15 +605,15 @@ namespace avmplus
 
 		Atom call(int argc, Atom* argv);
 
-		ObjectVectorObject* newVector(ClassClosure* type, uint32 length = 0);
-
-		void set_gen_proto(Atom func);
-
-		DECLARE_NATIVE_MAP(ObjectVectorClass)
+		ObjectVectorObject* newVector(uint32 length = 0);
 	
+		void _forEach(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_forEach(toplevel(), thisAtom, callback, thisObject); }
+		bool _every(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_every(toplevel(), thisAtom, callback, thisObject); }
+		bool _some(Atom thisAtom, ScriptObject* callback, Atom thisObject) { return ArrayClass::generic_some(toplevel(), thisAtom, callback, thisObject); }
+		Atom _sort(Atom thisAtom, ArrayObject *args) { return ArrayClass::generic_sort(toplevel(), thisAtom, args); }
+
 	private:
 		DRCWB(ClassClosure*) index_type;
-		ATOM_WB gen_proto_method;
 	};
 
 }	

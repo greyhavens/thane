@@ -37,42 +37,15 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-// Took workaround code from StringClass.cpp.  Same code except for "Namespace::" part
-#ifdef __MWERKS__
-	typedef void (Namespace::*StringHandler)();
-	
-	NativeTableEntry::Handler stringMethod(StringHandler stringHandler)
-	{
-		union 
-		{
-			StringHandler foo;
-			NativeTableEntry::Handler bar;
-		};
-		foo = stringHandler;
-		return bar;
-	}
-	
-	#define STRING_METHOD(handler) stringMethod((StringHandler)handler)
-#elif defined  __SUNPRO_CC
-	typedef void (Namespace::*StringHandler)();
-	#define STRING_METHOD(x) reinterpret_cast <NativeTableEntry::Handler>((StringHandler)x)
-#else
-	#define STRING_METHOD(x) x
-#endif
-
-	BEGIN_NATIVE_MAP(NamespaceClass)
-		NATIVE_METHOD2(Namespace_prefix_get, STRING_METHOD(&Namespace::getPrefix))
-		NATIVE_METHOD2(Namespace_uri_get, STRING_METHOD(&Namespace::getURI))
-	END_NATIVE_MAP()
-
 	NamespaceClass::NamespaceClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
 		toplevel()->namespaceClass = this;
-		AvmAssert(traits()->sizeofInstance == sizeof(NamespaceClass));
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(NamespaceClass));
 		createVanillaPrototype();
 	}
 

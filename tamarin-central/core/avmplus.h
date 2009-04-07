@@ -49,12 +49,14 @@
  * the "Classic AVM" in Flash Player 7.  Our performance target is 10X.
  *
  * AVM+ implements ActionScript 3.0, the new version of the ActionScript
- * language that is compliant with the ECMAScript Edition 4 standard.
+ * language that is based on ECMAScript, 3rd Edition (ES3) and
+ * ECMAScript for XML (E4X), and which also incorporates many
+ * extensions to those languages, including packages, classes, interfaces,
+ * and optional type annotations.
  *
  * AVM+ is also built for modularity.  It will be part of the Flash Player,
  * but is a self-contained module which can be incorporated into other
- * programs with ease.  It may also be submitted to the ECMA standards
- * organization as a reference implementation of ECMAScript Edition 4.
+ * programs with ease.
  *
  * \section usage Using This Document
  *
@@ -72,16 +74,12 @@
  *
  * \section contact Who To Contact
  *
- * For questions about AVM+, please contact:
+ * For questions about AVM+, contact information, and so on please see:
  *
- * Gary Grossman (ggrossman@macromedia.com)<br>
- * Edwin Smith (edsmith@macromedia.com)<br>
- * Jeff Dyer (jdyer@macromedia.com)
+ * https://developer.mozilla.org/En/Tamarin
  */
  
-// Needed for memset, memcpy et al.
-#include <string.h>
-
+#include "VMPI.h"
 #include "avmbuild.h"
 
 #if defined(_MAC)
@@ -89,45 +87,47 @@
 #endif
 
 #ifdef UNIX
-#ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#else // HAVE_ALLOCA_H
-#include <stdlib.h>
-#endif // HAVE_ALLOCA_H
+	#ifndef AVMPLUS_SYMBIAN
+		#include <stdint.h>
+	#endif
+	#ifdef HAVE_ALLOCA_H
+		#include <alloca.h>
+	#else // HAVE_ALLOCA_H
+		#include <stdlib.h>
+	#endif // HAVE_ALLOCA_H
 #endif // UNIX
 
 #ifdef WIN32
-#include <windows.h>
-#include <malloc.h>
-#include <math.h>
-#ifdef AVMPLUS_ARM
-typedef unsigned int uintptr_t;
-#else
-#ifdef AVMPLUS_AMD64
-#include <setjmpex.h>
-#endif
-// Newer versions of the Windows SDK set up the intrinsics slightly differently
-// than VC8. Only include intrin.h if the SDK doesn't declare it.
-#ifndef InterlockedBitTestAndSet
-#include <intrin.h>
-#endif
-#include <emmintrin.h>
-#ifdef VTUNE
-#include "JITProfiling.h"
-#endif
-#endif // AVMPLUS_ARM
+	#include <windows.h>
+	#include <malloc.h>
+	#include <math.h>
+	#ifdef AVMPLUS_ARM
+		typedef unsigned int uintptr_t;
+	#else
+		#ifdef AVMPLUS_AMD64
+			#include <setjmpex.h>
+		#endif
+		// Newer versions of the Windows SDK set up the intrinsics slightly differently
+		// than VC8. Only include intrin.h if the SDK doesn't declare it.
+		#ifndef InterlockedBitTestAndSet
+			#include <intrin.h>
+		#endif
+		#include <emmintrin.h>
+		#ifdef VTUNE
+			#include "JITProfiling.h"
+		#endif
+	#endif // AVMPLUS_ARM
 #endif // WIN32
-
-#include <stdarg.h>
 
 #include "avmsetjmp.h"
 
 #include "avmplusTypes.h"
 #include "avmplusVersion.h"
 #include "AvmDebug.h"
+#include "AvmLog.h"
 #include "AtomConstants.h"
 #include "ActionBlockConstants.h"
-#include "AvmError.h"
+#include "wopcodes.h"
 #include "ErrorConstants.h"
 #include "NativeObjectHelpers.h"
 
@@ -143,7 +143,6 @@ namespace avmplus
 	class AbcGen;
 	class AbcEnv;
 	class AbcParser;
-	class AbstractFunction;
 	class Accessor;
 	class ArrayClass;
 	class ArrayObject;
@@ -151,7 +150,6 @@ namespace avmplus
 	class AtomArray;
 	class AvmCore;
 	class BooleanClass;
-	class BufferGuard;
 	class BuiltinTraits;
 	class CallStackNode;
 	class ClassClass;
@@ -163,9 +161,12 @@ namespace avmplus
 	class DateClass;
 	class DateObject;
 	class Debugger;
+#ifdef DEBUGGER
+	class DebuggerMethodInfo;
+#endif
+	class DescribeTypeClass;
 	class Domain;
 	class DomainEnv;
-	class DynamicProfiler;
 	class E4XNode;
 	class ErrorClass;
 	class ErrorObject;
@@ -174,10 +175,8 @@ namespace avmplus
 	class ExceptionHandler;
 	class ExceptionHandlerTable;
 	class FrameState;
-	class GrowableBuffer;
 	class Hashtable;
 	class HeapMultiname;
-	class Interpreter;
 	class IntVectorObject;
 	class DoubleVectorObject;
 	class UIntVectorObject;
@@ -188,13 +187,13 @@ namespace avmplus
 	class MethodClosure;
 	class MethodEnv;
 	class MethodInfo;
+	class MethodSignature;
 	class Multiname;
 	class Namespace;
 	class NamespaceSet;
 	class NamespaceClass;
-	class NativeMethod;
-	class NativeClassFactory;
-	class NativeScriptFactory;
+	class NativeInitializer;
+	struct NativeMethodInfo;
 	class NumberClass;
 	class IntClass;
 	class UIntClass;
@@ -213,12 +212,18 @@ namespace avmplus
 	class ScriptEnv;
 	class ScriptObject;
 	class StackTrace;
-	class StaticProfiler;
 	class StringBuffer;
 	class StringClass;
 	class String;
 	class Toplevel;
 	class Traits;
+	class TraitsBindings;
+	class TraitsMetadata;
+#ifdef AVMPLUS_WORD_CODE
+	class TranslatedCode;
+	class WordcodeTranslator;
+	class WordcodeEmitter;
+#endif
 	class UnicodeUtils;
 	class Value;
 	class Verifier; 
@@ -233,26 +238,23 @@ namespace avmplus
 	class XMLParser;
 	class XMLTag;
 
-	struct NativeClassInfo;
-	struct NativeScriptInfo;
-	struct NativeTableEntry;
+	struct WordOpcodeAttr;
 
 	typedef Traits* Traitsp;
+	// Stringp and Namespacep should be const, but RCObject doens't allow it yet
 	typedef String* Stringp;
 	typedef Namespace* Namespacep;
-}
-
-namespace avmplus
-{
-	namespace NativeID
-	{
-        #include "builtin.h"
-	}
+	typedef const NamespaceSet* NamespaceSetp;
+	typedef const TraitsBindings* TraitsBindingsp;
+	typedef const TraitsMetadata* TraitsMetadatap;
+	typedef const MethodSignature* MethodSignaturep;
 }
 
 #include "MMgc.h"
 
-#include "GrowableBuffer.h"
+#define MMGC_SUBCLASS_DECL : public GCObject
+
+#include "QCache.h"
 #include "MathUtils.h"
 #include "UnicodeUtils.h"
 #include "OSDep.h"
@@ -270,37 +272,28 @@ namespace avmplus
 #include "BuiltinTraits.h"
 #include "NamespaceSet.h"
 #include "Multiname.h"
-#include "DynamicProfiler.h"
-#include "StaticProfiler.h"
 #include "Sampler.h"
 #include "AvmCore.h"
 #include "AtomWriteBarrier.h"
 #include "avmplusHashtable.h"
 #include "CodeContext.h"
+#include "Traits.h"
+#include "VTable.h"
+#include "ScriptObject.h"
+#include "NativeFunction.h"
+#include "Coder.h"
+#include "WordcodeTranslator.h"
+#include "WordcodeEmitter.h"
+#include "MethodInfo.h"
 #include "PoolObject.h"
 #include "AbcEnv.h"
-#include "AbstractFunction.h"
-#include "Traits.h"
 #include "TraitsIterator.h"
-#include "VTable.h"
 #include "MethodEnv.h"
 #include "ScopeChain.h"
-#include "ScriptObject.h"
 #include "avmplusProfiler.h"
 #include "StringBuffer.h"
-
-#ifdef AVMPLUS_ARM
-#include "ArmAssembler.h"
-#endif
-
-#ifdef AVMPLUS_MIR
-#include "CodegenMIR.h"
-#endif
-
 #include "AtomArray.h"
 #include "Verifier.h"
-#include "FrameState.h"
-#include "NativeFunction.h"
 #include "ClassClosure.h"
 #include "ClassClass.h"
 #include "FunctionClass.h"
@@ -320,11 +313,13 @@ namespace avmplus
 #include "Date.h"
 #include "DateClass.h"
 #include "DateObject.h"
+#include "DescribeTypeClass.h"
 #include "Domain.h"
 #include "DomainEnv.h"
 #include "ObjectClass.h"
 #include "ErrorClass.h"
 #include "MathClass.h"
+#include "eval-avmplus.h"
 #include "Toplevel.h"
 #include "AbcParser.h"
 #include "RegExpObject.h"

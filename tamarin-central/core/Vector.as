@@ -37,10 +37,12 @@
 
 package __AS3__.vec
 {
+	[native(cls="VectorClass", instance="ObjectVectorObject", methods="auto")]
     dynamic final public class Vector
     {
     }
 
+	[native(cls="ObjectVectorClass", instance="ObjectVectorObject", methods="auto")]
 	dynamic final class Vector$object
 	{
         public function Vector$object(length:uint=0, fixed:Boolean=false)
@@ -121,42 +123,9 @@ package __AS3__.vec
             return -1;
         }
 
-        private static var proto = {};
-        
-        proto.toString = prototype.toString;
-        proto.toLocalString = prototype.toLocaleString;
-        proto.join = prototype.join;
-        proto.concat = prototype.concat;
-        proto.every = prototype.every;
-        proto.filter = prototype.filter;
-        proto.forEach = prototype.forEach;
-        proto.indexOf = prototype.indexOf;
-        proto.lastIndexOf = prototype.lastIndexOf;
-        proto.map = prototype.map;
-        proto.pop = prototype.pop;
-        proto.push = prototype.push;
-        proto.reverse = prototype.reverse;
-        proto.shift = prototype.shift;
-        proto.slice = prototype.slice;
-        proto.some = prototype.some;
-        proto.sort = prototype.sort;
-        proto.splice = prototype.splice;
-        proto.unshift = prototype.unshift;
-
-        private static native function set genPrototype(f : Object) : void;
-        genPrototype = function()
-        {
-            var p : Object = new Object();
-            
-            for( i in proto ) {
-                p[i] = proto[i];
-            } 
-            
-            return p;
-        }
-            
 	}
     
+	[native(cls="IntVectorClass", instance="IntVectorObject", methods="auto")]
 	dynamic final class Vector$int
 	{
         
@@ -235,6 +204,7 @@ package __AS3__.vec
 	}
     
     
+	[native(cls="UIntVectorClass", instance="UIntVectorObject", methods="auto")]
 	dynamic final class Vector$uint
 	{
         public function Vector$uint(length:uint=0, fixed:Boolean=false)
@@ -312,6 +282,7 @@ package __AS3__.vec
 
 	}
     
+	[native(cls="DoubleVectorClass", instance="DoubleVectorObject", methods="auto")]
 	dynamic final class Vector$double
 	{
         public function Vector$double(length:uint=0, fixed:Boolean=false)

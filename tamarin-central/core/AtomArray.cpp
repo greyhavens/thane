@@ -120,7 +120,7 @@ namespace avmplus
 		Atom *arr = m_atoms;
 		Atom retAtom = arr[0];
 		setAtInternal(0, 0);
-		memmove (arr, arr + 1, (m_length - 1) * sizeof(Atom));
+		VMPI_memmove (arr, arr + 1, (m_length - 1) * sizeof(Atom));
 		arr[m_length - 1] = 0; // clear item so GC can collect it.
 		m_length--;
 
@@ -150,16 +150,16 @@ namespace avmplus
 
 			// shift elements down
 			int toMove = m_length - insertPoint - deleteCount;
-			memmove (arr + insertPoint + insertCount, arr + insertPoint + deleteCount, toMove * sizeof(Atom));
+			VMPI_memmove (arr + insertPoint + insertCount, arr + insertPoint + deleteCount, toMove * sizeof(Atom));
 
 			// clear top part for RC purposes
-			memset (arr + m_length - numberBeingDeleted, 0, numberBeingDeleted * sizeof(Atom));
+			VMPI_memset (arr + m_length - numberBeingDeleted, 0, numberBeingDeleted * sizeof(Atom));
 		}
 		else if (l_shiftAmount > 0)
 		{
-			memmove (arr + insertPoint + l_shiftAmount, arr + insertPoint, (m_length - insertPoint) * sizeof(Atom));
+			VMPI_memmove (arr + insertPoint + l_shiftAmount, arr + insertPoint, (m_length - insertPoint) * sizeof(Atom));
 			// clear for RC purposes
-			memset (arr + insertPoint, 0, l_shiftAmount * sizeof(Atom));
+			VMPI_memset (arr + insertPoint, 0, l_shiftAmount * sizeof(Atom));
 		}
 
 		// Add the items to insert
@@ -184,9 +184,9 @@ namespace avmplus
 
 		checkCapacity (m_length + argc);
 		Atom *arr = m_atoms;
-		memmove (arr + argc, arr, m_length * sizeof(Atom));
+		VMPI_memmove (arr + argc, arr, m_length * sizeof(Atom));
 		// clear moved element for RC purposes
-		memset (arr, 0, argc * sizeof(Atom));
+		VMPI_memset (arr, 0, argc * sizeof(Atom));
 		for(int i=0; i<argc; i++) {
 			setAtInternal(i, args[i]);
 		}
@@ -216,8 +216,8 @@ namespace avmplus
 			setAtoms(gc, newAtoms);
 			if(oldAtoms) {
 				// use a memcpy to skip ref counting
-				memcpy(m_atoms, oldAtoms, m_length*sizeof(Atom));
-				memset(oldAtoms, 0, m_length*sizeof(Atom));
+				VMPI_memcpy(m_atoms, oldAtoms, m_length*sizeof(Atom));
+				VMPI_memset(oldAtoms, 0, m_length*sizeof(Atom));
 				gc->Free(oldAtoms);
 			}
 		}
@@ -240,7 +240,6 @@ namespace avmplus
 	void AtomArray::removeAt (uint32 index)
 	{
 		AvmAssert (m_length > 0);
-		AvmAssert (index >= 0);
 		AvmAssert (index < uint32(m_length));
 		if (!m_length)
 			return;
@@ -254,7 +253,7 @@ namespace avmplus
 		if (m_length)
 		{
 			// shift down entries
-			memmove (arr + index, arr + index + 1, (this->m_length - index) * sizeof(Atom));
+			VMPI_memmove (arr + index, arr + index + 1, (this->m_length - index) * sizeof(Atom));
 		}
 		arr[m_length] = 0; // clear our entry so GC can collect it
 	}
@@ -268,7 +267,7 @@ namespace avmplus
 
 		Atom *arr = m_atoms;
 		// shift entries up by one to make room
-		memmove (arr + index + 1, arr + index, (m_length - index - 1) * sizeof(Atom));
+		VMPI_memmove (arr + index + 1, arr + index, (m_length - index - 1) * sizeof(Atom));
 		// this element is still in the array so don't let setAtInternal decrement its count
 		m_atoms[index] = 0;
 		setAtInternal(index, a);
@@ -298,9 +297,7 @@ namespace avmplus
 
 	void AtomArray::clear()
 	{
-#ifdef MMGC_DRC
 		AvmCore::decrementAtomRegion(m_atoms, m_length);
-#endif
 		m_length = 0;
 		if(m_atoms) {
 			GC::GetGC(m_atoms)->Free(m_atoms);

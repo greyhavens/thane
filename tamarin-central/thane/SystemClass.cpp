@@ -38,18 +38,8 @@
 
 #include "avmthane.h"
 
-#include <stdlib.h>
-
-namespace thane
+namespace avmthane
 {
-	BEGIN_NATIVE_MAP(SystemClass)
-		NATIVE_METHOD(avmplus_System_private_doExit, SystemClass::exit)
-		NATIVE_METHOD(avmplus_System_getAvmplusVersion, SystemClass::getAvmplusVersion)
-		NATIVE_METHOD(avmplus_System_trace, SystemClass::trace)
-		NATIVE_METHOD(avmplus_System_getTimer, SystemClass::getTimer)
-		NATIVE_METHOD(avmplus_System_private_getArgv, SystemClass::getArgv)
-	END_NATIVE_MAP()
-					  
 	SystemClass::SystemClass(VTable *cvtable)
 		: ClassClosure(cvtable)
     {
@@ -64,9 +54,9 @@ namespace thane
 		// todo note this is currently routed to the performance counter
 		// for benchmark purposes.
 		#ifdef PERFORMANCE_GETTIMER
-		initialTime = MMgc::GC::getPerformanceCounter();
+		initialTime = VMPI_getPerformanceCounter();
 		#else
-		initialTime = OSDep::currentTimeMillis();		
+		initialTime = VMPI_getTime();		
 		#endif // PERFORMANCE_GETTIMER
 
 	}
@@ -76,14 +66,14 @@ namespace thane
 		initialTime = 0;
 	}
 
-	void SystemClass::exit(int status)
+	void SystemClass::doExit(int status)
 	{
-		::exit(status);
+		Platform::GetInstance()->exit(status);
 	}
 
 	Stringp SystemClass::getAvmplusVersion()
 	{
-		return core()->newString(AVMPLUS_VERSION_USER " " AVMPLUS_BUILD_CODE);
+		return core()->newConstantStringLatin1(AVMPLUS_VERSION_USER " " AVMPLUS_BUILD_CODE);
 	}
 
 	void SystemClass::trace(Stringp prefix, ArrayObject* a)
@@ -92,22 +82,22 @@ namespace thane
 			toplevel()->throwArgumentError(kNullArgumentError, "array");
 		AvmCore* core = this->core();
 		PrintWriter& console = core->console;
-		if (prefix != NULL) console << *prefix;
+		if (prefix != NULL) console << prefix;
 		for (int i=0, n = a->getLength(); i < n; i++)
 		{
 			if (i > 0)
                 console << ' ';
-			Stringp s = core->string(a->getUintProperty(i));
+			StringIndexer s(core->string(a->getUintProperty(i)));
 			for (int j = 0; j < s->length(); j++)
 			{
-				wchar c = (*s)[j];
+				wchar c = s[j];
 				// '\r' gets converted into '\n'
 				// '\n' is left alone
 				// '\r\n' is left alone
 				// in all cases, the prefix is appended after '\n'
 				if (c == '\r')
 				{
-					if (((j+1) < s->length()) && (*s)[j+1] == '\n')
+					if (((j+1) < s->length()) && s[j+1] == '\n')
 					{
 						console << '\r';	
 						j++;
@@ -119,7 +109,7 @@ namespace thane
 				{
 					console << c;
 				}
-				if (c == '\n' && prefix != NULL) console << *prefix;
+				if (c == '\n' && prefix != NULL) console << prefix;
 			}
 		}
 		console << '\n';
@@ -128,11 +118,11 @@ namespace thane
 	unsigned SystemClass::getTimer()
 	{
 #ifdef PERFORMANCE_GETTIMER
-		double time = ((double) (MMgc::GC::getPerformanceCounter() - initialTime) * 1000.0 /
-					   (double)MMgc::GC::getPerformanceFrequency());
+		double time = ((double) (VMPI_getPerformanceCounter() - initialTime) * 1000.0 /
+					   (double)VMPI_getPerformanceFrequency());
 		return (uint32)time;
 #else
-		return (uint32)(OSDep::currentTimeMillis() - initialTime);
+		return (uint32)(VMPI_getTime() - initialTime);
 #endif /* PERFORMANCE_GETTIMER */
 
     }
@@ -148,8 +138,25 @@ namespace thane
 
 		ArrayObject *array = toplevel->arrayClass->newArray();
 		for(int i=0; i<user_argc;i++)
-			array->setUintProperty(i, core->newString(user_argv[i])->atom());
+			array->setUintProperty(i, core->newStringUTF8(user_argv[i])->atom());
 
 		return array;
+	}
+
+	double SystemClass::get_totalMemory()
+	{
+		MMgc::GCHeap* gcheap = core()->GetGC()->GetGCHeap();
+		return double(gcheap->GetUsedHeapSize() * MMgc::GCHeap::kBlockSize);
+	}
+
+	double SystemClass::get_freeMemory()
+	{
+		MMgc::GCHeap* gcheap = core()->GetGC()->GetGCHeap();
+		return double(gcheap->GetFreeHeapSize() * MMgc::GCHeap::kBlockSize);
+	}
+	
+	double SystemClass::get_privateMemory()
+	{
+		return double(MMgc::GCHeap::GetPrivateBytes() * MMgc::GCHeap::kBlockSize);
 	}
 }

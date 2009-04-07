@@ -37,16 +37,36 @@
 INCLUDES += \
   -I$(topsrcdir) \
   -I$(topsrcdir)/MMgc \
+  -I$(topsrcdir)/MMgc/platform \
   -I$(topsrcdir)/core \
-  -I$(topsrcdir)/codegen \
   -I$(topsrcdir)/pcre \
+  -I$(topsrcdir)/eval \
+  -I$(topsrcdir)/platform \
   $(NULL)
 
 $(call RECURSE_DIRS,MMgc)
+$(call RECURSE_DIRS,MMgc/platform)
 
 ifdef ENABLE_TAMARIN
-$(call RECURSE_DIRS,core pcre codegen)
-
+$(call RECURSE_DIRS,core pcre vprof)
+ifeq (sparc,$(TARGET_CPU))
+$(call RECURSE_DIRS,nanojit)
+endif
+ifeq (i686,$(TARGET_CPU))
+$(call RECURSE_DIRS,nanojit)
+endif
+ifeq (x86_64,$(TARGET_CPU))
+$(call RECURSE_DIRS,nanojit)
+endif
+ifeq (arm,$(TARGET_CPU))
+$(call RECURSE_DIRS,nanojit)
+endif
+ifeq (powerpc,$(TARGET_CPU))
+$(call RECURSE_DIRS,nanojit)
+endif
+ifeq (ppc64,$(TARGET_CPU))
+$(call RECURSE_DIRS,nanojit)
+endif
 ifeq (darwin,$(TARGET_OS))
 $(call RECURSE_DIRS,platform/mac)
 endif
@@ -64,6 +84,7 @@ $(call RECURSE_DIRS,platform/unix)
 endif
 endif
 
+$(call RECURSE_DIRS,eval)
 ifdef ENABLE_SHELL
 $(call RECURSE_DIRS,shell)
 endif

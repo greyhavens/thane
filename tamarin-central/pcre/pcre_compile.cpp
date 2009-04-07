@@ -861,7 +861,7 @@ top = _pcre_utt_size;
 while (bot < top)
   {
   i = (bot + top) >> 1;
-  c = strcmp(name, _pcre_utt[i].name);
+  c = VMPI_strcmp(name, _pcre_utt[i].name);
   if (c == 0)
     {
     *dptr = _pcre_utt[i].value;
@@ -1087,7 +1087,7 @@ for (; *ptr != 0; ptr++)
   thisname = ptr;
   while (*ptr != term) ptr++;
   if (name != NULL && lorn == ptr - thisname &&
-      strncmp((const char *)name, (const char *)thisname, lorn) == 0)
+      VMPI_strncmp((const char *)name, (const char *)thisname, lorn) == 0)
     return count;
   }
 
@@ -1822,7 +1822,7 @@ register int yield = 0;
 while (posix_name_lengths[yield] != 0)
   {
   if (len == posix_name_lengths[yield] &&
-    strncmp((const char *)ptr, posix_names[yield], len) == 0) return yield;
+    VMPI_strncmp((const char *)ptr, posix_names[yield], len) == 0) return yield;
   yield++;
   }
 return -1;
@@ -2095,7 +2095,7 @@ if ((options & PCRE_EXTENDED) != 0)
 
 /* If the next thing is itself optional, we have to give up. */
 
-if (*ptr == '*' || *ptr == '?' || strncmp((char *)ptr, "{0,", 3) == 0)
+if (*ptr == '*' || *ptr == '?' || VMPI_strncmp((char *)ptr, "{0,", 3) == 0)
   return FALSE;
 
 /* Now compare the next item with the previous opcode. If the previous is a
@@ -2506,7 +2506,7 @@ for (;; ptr++)
       {
       if (previous > orig_code)
         {
-        memmove(orig_code, previous, code - previous);
+        VMPI_memmove(orig_code, previous, code - previous);
         code -= previous - orig_code;
         previous = orig_code;
         }
@@ -2693,7 +2693,7 @@ for (;; ptr++)
       if (c == '\\')
         {
         if (ptr[1] == 'E') ptr++;
-          else if (strncmp((const char *)ptr+1, "Q\\E", 3) == 0) ptr += 3;
+          else if (VMPI_strncmp((const char *)ptr+1, "Q\\E", 3) == 0) ptr += 3;
             else break;
         }
       else if (!negate_class && c == '^')
@@ -2713,7 +2713,7 @@ for (;; ptr++)
     than 256), because in that case the compiled code doesn't use the bit map.
     */
 
-    memset(classbits, 0, 32 * sizeof(uschar));
+    VMPI_memset(classbits, 0, 32 * sizeof(uschar));
 
 #ifdef SUPPORT_UTF8
     class_utf8 = FALSE;                       /* No chars >= 256 */
@@ -2808,7 +2808,7 @@ for (;; ptr++)
 
         /* Copy in the first table (always present) */
 
-        memcpy(pbits, cbits + posix_class_maps[posix_class],
+        VMPI_memcpy(pbits, cbits + posix_class_maps[posix_class],
           32 * sizeof(uschar));
 
         /* If there is a second table, add or remove it as required. */
@@ -3407,8 +3407,8 @@ for (;; ptr++)
       if (class_charcount > 0)
         {
         *code++ |= XCL_MAP;
-        memmove(code + 32, code, class_utf8data - code);
-        memcpy(code, classbits, 32);
+        VMPI_memmove(code + 32, code, class_utf8data - code);
+        VMPI_memcpy(code, classbits, 32);
         code = class_utf8data + 32;
         }
       else code = class_utf8data;
@@ -3446,7 +3446,7 @@ for (;; ptr++)
 	  *code++ = (inverted_class ? OP_NCLASS : OP_CLASS);
 
 	  /* cn: end modified code */
-      memcpy(code, classbits, 32);
+      VMPI_memcpy(code, classbits, 32);
       }
     code += 32;
     break;
@@ -3539,7 +3539,7 @@ for (;; ptr++)
         uschar *lastchar = code - 1;
         while((*lastchar & 0xc0) == 0x80) lastchar--;
         c = code - lastchar;            /* Length of UTF-8 character */
-        memcpy(utf8_char, lastchar, c); /* Save the char */
+        VMPI_memcpy(utf8_char, lastchar, c); /* Save the char */
         c |= 0x80;                      /* Flag c as a length */
         }
       else
@@ -3688,7 +3688,7 @@ for (;; ptr++)
 #ifdef SUPPORT_UTF8
           if (utf8 && c >= 128)
             {
-            memcpy(code, utf8_char, c & 7);
+            VMPI_memcpy(code, utf8_char, c & 7);
             code += c & 7;
             }
           else
@@ -3713,7 +3713,7 @@ for (;; ptr++)
 #ifdef SUPPORT_UTF8
           if (utf8 && c >= 128)
             {
-            memcpy(code, utf8_char, c & 7);
+            VMPI_memcpy(code, utf8_char, c & 7);
             code += c & 7;
             }
           else
@@ -3743,7 +3743,7 @@ for (;; ptr++)
 #ifdef SUPPORT_UTF8
       if (utf8 && c >= 128)
         {
-        memcpy(code, utf8_char, c & 7);
+        VMPI_memcpy(code, utf8_char, c & 7);
         code += c & 7;
         }
       else
@@ -3859,7 +3859,7 @@ for (;; ptr++)
           {
           *code = OP_END;
           adjust_recurse(previous, 1, utf8, cd, save_hwm);
-          memmove(previous+1, previous, len);
+          VMPI_memmove(previous+1, previous, len);
           code++;
           *previous++ = OP_BRAZERO + repeat_type;
           }
@@ -3877,7 +3877,7 @@ for (;; ptr++)
           int offset;
           *code = OP_END;
           adjust_recurse(previous, 2 + LINK_SIZE, utf8, cd, save_hwm);
-          memmove(previous + 2 + LINK_SIZE, previous, len);
+          VMPI_memmove(previous + 2 + LINK_SIZE, previous, len);
           code += 2 + LINK_SIZE;
           *previous++ = OP_BRAZERO + repeat_type;
           *previous++ = OP_BRA;
@@ -3930,7 +3930,7 @@ for (;; ptr++)
               {
               uschar *hc;
               uschar *this_hwm = cd->hwm;
-              memcpy(code, previous, len);
+              VMPI_memcpy(code, previous, len);
               for (hc = save_hwm; hc < this_hwm; hc += LINK_SIZE)
                 {
                 PUT(cd->hwm, 0, GET(hc, 0) + len);
@@ -3996,7 +3996,7 @@ for (;; ptr++)
             PUTINC(code, 0, offset);
             }
 
-          memcpy(code, previous, len);
+          VMPI_memcpy(code, previous, len);
           for (hc = save_hwm; hc < this_hwm; hc += LINK_SIZE)
             {
             PUT(cd->hwm, 0, GET(hc, 0) + len + ((i != 0)? 2+LINK_SIZE : 1));
@@ -4101,7 +4101,7 @@ for (;; ptr++)
         case OP_NOTUPTO:  *tempcode = OP_NOTPOSUPTO; break;
 
         default:
-        memmove(tempcode + 1+LINK_SIZE, tempcode, len);
+        VMPI_memmove(tempcode + 1+LINK_SIZE, tempcode, len);
         code += 1 + LINK_SIZE;
         len += 1 + LINK_SIZE;
         tempcode[0] = OP_ONCE;
@@ -4156,7 +4156,7 @@ for (;; ptr++)
       for (i = 0; i < verbcount; i++)
         {
         if (namelen == verbs[i].len &&
-            strncmp((char *)name, verbs[i].name, namelen) == 0)
+            VMPI_strncmp((char *)name, verbs[i].name, namelen) == 0)
           {
           *code = verbs[i].op;
           if (*code++ == OP_ACCEPT) cd->had_accept = TRUE;
@@ -4326,7 +4326,7 @@ for (;; ptr++)
         slot = cd->name_table;
         for (i = 0; i < cd->names_found; i++)
           {
-          if (strncmp((char *)name, (char *)slot+2, namelen) == 0) break;
+          if (VMPI_strncmp((char *)name, (char *)slot+2, namelen) == 0) break;
           slot += cd->name_entry_size;
           }
 
@@ -4381,7 +4381,7 @@ for (;; ptr++)
         /* Similarly, check for the (?(DEFINE) "condition", which is always
         false. */
 
-        else if (namelen == 6 && strncmp((char *)name, "DEFINE", 6) == 0)
+        else if (namelen == 6 && VMPI_strncmp((char *)name, "DEFINE", 6) == 0)
           {
           code[1+LINK_SIZE] = OP_DEF;
           skipbytes = 1;
@@ -4540,7 +4540,7 @@ for (;; ptr++)
             slot = cd->name_table;
             for (i = 0; i < cd->names_found; i++)
               {
-              int crc = memcmp(name, slot+2, namelen);
+              int crc = VMPI_memcmp(name, slot+2, namelen);
               if (crc == 0)
                 {
                 if (slot[2+namelen] == 0)
@@ -4555,7 +4555,7 @@ for (;; ptr++)
                 }
               if (crc < 0)
                 {
-                memmove(slot + cd->name_entry_size, slot,
+                VMPI_memmove(slot + cd->name_entry_size, slot,
                   (cd->names_found - i) * cd->name_entry_size);
                 break;
                 }
@@ -4563,7 +4563,7 @@ for (;; ptr++)
               }
 
             PUT2(slot, 0, cd->bracount + 1);
-            memcpy(slot + 2, name, namelen);
+            VMPI_memcpy(slot + 2, name, namelen);
             slot[2+namelen] = 0;
             }
           }
@@ -4615,7 +4615,7 @@ for (;; ptr++)
           slot = cd->name_table;
           for (i = 0; i < cd->names_found; i++)
             {
-            if (strncmp((char *)name, (char *)slot+2, namelen) == 0) break;
+            if (VMPI_strncmp((char *)name, (char *)slot+2, namelen) == 0) break;
             slot += cd->name_entry_size;
             }
 
@@ -5884,15 +5884,15 @@ offset for later. */
 if (ptr[0] == '(' && ptr[1] == '*')
   {
   int newnl = 0;
-  if (strncmp((char *)(ptr+2), "CR)", 3) == 0)
+  if (VMPI_strncmp((char *)(ptr+2), "CR)", 3) == 0)
     { skipatstart = 5; newnl = PCRE_NEWLINE_CR; }
-  else if (strncmp((char *)(ptr+2), "LF)", 3)  == 0)
+  else if (VMPI_strncmp((char *)(ptr+2), "LF)", 3)  == 0)
     { skipatstart = 5; newnl = PCRE_NEWLINE_LF; }
-  else if (strncmp((char *)(ptr+2), "CRLF)", 5)  == 0)
+  else if (VMPI_strncmp((char *)(ptr+2), "CRLF)", 5)  == 0)
     { skipatstart = 7; newnl = PCRE_NEWLINE_CR + PCRE_NEWLINE_LF; }
-  else if (strncmp((char *)(ptr+2), "ANY)", 4) == 0)
+  else if (VMPI_strncmp((char *)(ptr+2), "ANY)", 4) == 0)
     { skipatstart = 6; newnl = PCRE_NEWLINE_ANY; }
-  else if (strncmp((char *)(ptr+2), "ANYCRLF)", 8)  == 0)
+  else if (VMPI_strncmp((char *)(ptr+2), "ANYCRLF)", 8)  == 0)
     { skipatstart = 10; newnl = PCRE_NEWLINE_ANYCRLF; }
   if (skipatstart > 0)
     options = (options & ~PCRE_NEWLINE_BITS) | newnl;
@@ -5965,7 +5965,7 @@ cd->start_workspace = cworkspace;
 cd->start_code = cworkspace;
 cd->hwm = cworkspace;
 cd->start_pattern = (const uschar *)pattern;
-cd->end_pattern = (const uschar *)(pattern + strlen(pattern));
+cd->end_pattern = (const uschar *)(pattern + VMPI_strlen(pattern));
 cd->req_varyopt = 0;
 cd->nopartial = FALSE;
 cd->external_options = options;
@@ -6151,18 +6151,18 @@ case when building a production library. */
 
 #ifdef PCRE_DEBUG
 
-printf("Length = %d top_bracket = %d top_backref = %d\n",
+AvmLog("Length = %d top_bracket = %d top_backref = %d\n",
   length, re->top_bracket, re->top_backref);
 
-printf("Options=%08x\n", re->options);
+AvmLog("Options=%08x\n", re->options);
 
 if ((re->options & PCRE_FIRSTSET) != 0)
   {
   int ch = re->first_byte & 255;
   const char *caseless = ((re->first_byte & REQ_CASELESS) == 0)?
     "" : " (caseless)";
-  if (isprint(ch)) printf("First char = %c%s\n", ch, caseless);
-    else printf("First char = \\x%02x%s\n", ch, caseless);
+  if (VMPI_isprint(ch)) AvmLog("First char = %c%s\n", ch, caseless);
+    else AvmLog("First char = \\x%02x%s\n", ch, caseless);
   }
 
 if ((re->options & PCRE_REQCHSET) != 0)
@@ -6170,8 +6170,8 @@ if ((re->options & PCRE_REQCHSET) != 0)
   int ch = re->req_byte & 255;
   const char *caseless = ((re->req_byte & REQ_CASELESS) == 0)?
     "" : " (caseless)";
-  if (isprint(ch)) printf("Req char = %c%s\n", ch, caseless);
-    else printf("Req char = \\x%02x%s\n", ch, caseless);
+  if (VMPI_isprint(ch)) AvmLog("Req char = %c%s\n", ch, caseless);
+    else AvmLog("Req char = \\x%02x%s\n", ch, caseless);
   }
 
 pcre_printint(re, stdout, TRUE);

@@ -50,17 +50,17 @@ namespace avmplus
 	// Made available in non-AVMPLUS_VERBOSE builds for describeType
 	Stringp NamespaceSet::format(AvmCore* core) const
 	{
-		Stringp s = core->newString("{");
+		Stringp s = core->newConstantStringLatin1("{");
 		for (int i=0,n=size; i < n; i++) 
 		{
 			if ((Namespace*)namespaces[i]==core->publicNamespace)
-				s = core->concatStrings(s, core->newString("public"));
+				s = core->concatStrings(s, core->newConstantStringLatin1("public"));
 			else
 				s = core->concatStrings(s, namespaces[i]->getURI());
 			if (i+1 < n)
-				s = core->concatStrings(s, core->newString(","));
+				s = core->concatStrings(s, core->newConstantStringLatin1(","));
 		}
-		s = core->concatStrings(s, core->newString("}"));
+		s = core->concatStrings(s, core->newConstantStringLatin1("}"));
 		return s;
 	}
 //#endif

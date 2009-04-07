@@ -37,17 +37,10 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(ObjectClass)
-		NATIVE_METHOD(Object_private__hasOwnProperty, ObjectClass::objectHasOwnProperty)
-		NATIVE_METHOD(Object_private__propertyIsEnumerable, ObjectClass::objectPropertyIsEnumerable)		
-		NATIVE_METHOD(Object_protected__setPropertyIsEnumerable, ObjectClass::objectSetPropertyIsEnumerable)		
-		NATIVE_METHOD(Object_private__isPrototypeOf, ObjectClass::objectIsPrototypeOf)
-		NATIVE_METHOD(Object_private__toString, ObjectClass::objectToString)
-	END_NATIVE_MAP()
-
 	ObjectClass::ObjectClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
@@ -57,7 +50,7 @@ namespace avmplus
 		// bootstrapping
 		//ivtable()->scope = cvtable->scope;
 
-		AvmAssert(traits()->sizeofInstance == sizeof(ObjectClass));
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(ObjectClass));
         // it is correct call construct() when this.prototype == null
         prototype = construct();
 	}
@@ -66,8 +59,8 @@ namespace avmplus
 	{
 		// patch global.__proto__ = Object.prototype
 		Toplevel* toplevel = this->toplevel();
-		toplevel->setDelegate( prototype );						// global.__proto__ = Object.prototype
-		this->setDelegate( toplevel->classClass->prototype );	// Object.__proto__ = Class.prototype
+		toplevel->global()->setDelegate(prototype);				// global.__proto__ = Object.prototype
+		this->setDelegate(toplevel->classClass->prototype);		// Object.__proto__ = Class.prototype
 	}
 
 	ScriptObject* ObjectClass::construct()
@@ -116,32 +109,37 @@ namespace avmplus
 		4. Return true.
 		NOTE Unlike [[HasProperty]] (section 8.6.2.4), this method does not consider objects in the prototype chain.
      */
-	bool ObjectClass::objectHasOwnProperty(Atom thisAtom, Stringp name)
+	bool ObjectClass::_hasOwnProperty(Atom thisAtom, Stringp name)
 	{
 		AvmCore* core = this->core();
 		name = name ? core->internString(name) : (Stringp)core->knull;
 
-		switch (thisAtom&7)
+		Traitsp t = NULL;
+		switch (atomKind(thisAtom))
 		{
-		case kObjectType:
-		{
-			// ISSUE should this look in traits and dynamic vars, or just dynamic vars.
-			ScriptObject* obj = AvmCore::atomToScriptObject(thisAtom);
-			return obj->traits()->findBinding(name, core->publicNamespace) != BIND_NONE ||
-					 obj->hasStringProperty(name);
+			case kObjectType:
+			{
+				// ISSUE should this look in traits and dynamic vars, or just dynamic vars.
+				ScriptObject* obj = AvmCore::atomToScriptObject(thisAtom);
+				if (obj->hasStringProperty(name))
+					return true;
+				t = obj->traits();
+				break;
+			}
+			case kNamespaceType:
+			case kStringType:
+			case kBooleanType:
+			case kDoubleType:
+			case kIntegerType:
+				t = toplevel()->toTraits(thisAtom);
+				break;
+			default:
+				return false;
 		}
-		case kNamespaceType:
-		case kStringType:
-		case kBooleanType:
-		case kDoubleType:
-		case kIntegerType:
-			return toplevel()->toTraits(thisAtom)->findBinding(name, core->publicNamespace) != BIND_NONE;
-		default:
-			return false;
-		}
+		return t->getTraitsBindings()->findBinding(name, core->publicNamespace) != BIND_NONE;
 	}
 
-	bool ObjectClass::objectPropertyIsEnumerable(Atom thisAtom, Stringp name)
+	bool ObjectClass::_propertyIsEnumerable(Atom thisAtom, Stringp name)
 	{
 		AvmCore* core = this->core();
 		name = name ? core->internString(name) : (Stringp)core->knull;
@@ -164,7 +162,7 @@ namespace avmplus
 		}
 	}
 
-	void ObjectClass::objectSetPropertyIsEnumerable(Atom thisAtom, Stringp name, bool enumerable)
+	void ObjectClass::_setPropertyIsEnumerable(Atom thisAtom, Stringp name, bool enumerable)
 	{
 		AvmCore* core = this->core();
 		name = name ? core->internString(name) : (Stringp)core->knull;
@@ -192,7 +190,7 @@ namespace avmplus
 		5. If O and V refer to the same object or if they refer to objects joined to each other (section 13.1.2), return true.
 		6. Go to step 3.     
 	*/
-	bool ObjectClass::objectIsPrototypeOf(Atom thisAtom, Atom V)
+	bool ObjectClass::_isPrototypeOf(Atom thisAtom, Atom V)
 	{
 		// ECMA-262 Section 15.2.4.6
 		if (AvmCore::isNullOrUndefined(V))
@@ -210,22 +208,22 @@ namespace avmplus
 	/**
      * Object.prototype.toString()
      */
-	Stringp ObjectClass::objectToString(Atom thisAtom)
+	Stringp ObjectClass::_toString(Atom thisAtom)
 	{		
 		AvmCore* core = this->core();
 
-		if (core->istype(thisAtom, CLASS_TYPE))
+		if (AvmCore::istype(thisAtom, CLASS_TYPE))
 		{
 			ClassClosure *cc = (ClassClosure *)AvmCore::atomToScriptObject(thisAtom);
 			Traits*		t = cc->ivtable()->traits;
-			Stringp s = core->concatStrings(core->newString("[class "), t->name);
-			return core->concatStrings(s, core->newString("]"));
+			Stringp s = core->concatStrings(core->newConstantStringLatin1("[class "), t->name);
+			return core->concatStrings(s, core->newConstantStringLatin1("]"));
 		}
 		else
 		{
 			Traits*		t = toplevel()->toTraits(thisAtom);
-			Stringp s = core->concatStrings(core->newString("[object "), t->name);
-			return core->concatStrings(s, core->newString("]"));
+			Stringp s = core->concatStrings(core->newConstantStringLatin1("[object "), t->name);
+			return core->concatStrings(s, core->newConstantStringLatin1("]"));
 		}
 	}
 }

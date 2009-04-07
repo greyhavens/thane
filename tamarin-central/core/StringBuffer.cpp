@@ -64,15 +64,15 @@ namespace avmplus
 		{
 			GC* gc = MMgc::GC::GetGC(m_buffer);
 			int newCapacity = (m_length+count+1)*2;
-			char *newBuffer = (char*) gc->Alloc(newCapacity);
+			char* newBuffer = (char*) gc->Alloc(newCapacity);
 			if (!newBuffer) {
 				return 0;
 			}
-			memcpy(newBuffer, m_buffer, m_length);
+			VMPI_memcpy(newBuffer, m_buffer, m_length);
 			gc->Free(m_buffer);
 			m_buffer = newBuffer;
 		}
-		memcpy(m_buffer+m_length, buffer, count);
+		VMPI_memcpy(m_buffer+m_length, buffer, count);
 		m_length += count;
 		m_buffer[m_length] = 0;
 		return count;

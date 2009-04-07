@@ -42,7 +42,7 @@ namespace avmplus
 {
 	BuiltinTraits::BuiltinTraits()
 	{
-		memset(this, 0, sizeof(BuiltinTraits));
+		VMPI_memset(this, 0, sizeof(BuiltinTraits));
 	}
 
 	// this is called after core types are defined.  we don't want to do
@@ -51,40 +51,47 @@ namespace avmplus
 	{
 		AvmCore* core = pool->core;
 
-		class_itraits		= pool->getBuiltinTraits(core->constantString("Class"));
-		namespace_itraits	= pool->getBuiltinTraits(core->constantString("Namespace"));
-		function_itraits	= pool->getBuiltinTraits(core->constantString("Function"));
-		boolean_itraits		= pool->getBuiltinTraits(core->constantString("Boolean"));
-		number_itraits		= pool->getBuiltinTraits(core->constantString("Number"));
-		int_itraits			= pool->getBuiltinTraits(core->constantString("int"));
-		uint_itraits		= pool->getBuiltinTraits(core->constantString("uint"));
-		string_itraits		= pool->getBuiltinTraits(core->constantString("String"));
-		array_itraits		= pool->getBuiltinTraits(core->constantString("Array"));
-		regexp_itraits		= pool->getBuiltinTraits(core->constantString("RegExp"));
-		date_itraits		= pool->getBuiltinTraits(core->constantString("Date"));
-		error_itraits		= pool->getBuiltinTraits(core->constantString("Error"));		
-		qName_itraits		= pool->getBuiltinTraits(core->constantString("QName"));
-		xml_itraits			= pool->getBuiltinTraits(core->constantString("XML"));
-		xmlList_itraits     = pool->getBuiltinTraits(core->constantString("XMLList"));
-		vectorint_itraits	= pool->getBuiltinTraits(core->constantString("Vector$int"));
-		vectoruint_itraits	= pool->getBuiltinTraits(core->constantString("Vector$uint"));
-		vectordouble_itraits= pool->getBuiltinTraits(core->constantString("Vector$double"));
-		vectorobj_itraits	= pool->getBuiltinTraits(core->constantString("Vector$object"));
-		vector_itraits		= pool->getBuiltinTraits(core->constantString("Vector"));
-
-		null_itraits = core->newTraits(NULL, 0, 0, 0);
-		null_itraits->pool = pool;
+		null_itraits = Traits::newTraits(pool, NULL, 0, 0, TRAITSTYPE_NVA);
 		null_itraits->ns = core->publicNamespace;
-		null_itraits->name = core->constantString("null");
+		null_itraits->name = core->internConstantStringLatin1("null");
 		null_itraits->final = true;
-		null_itraits->linked = true;
+		null_itraits->builtinType = BUILTIN_null;
+		null_itraits->resolveSignatures(NULL);
 
-		void_itraits = core->newTraits(NULL, 0, 0, 0);
-		void_itraits->pool = pool;
+		void_itraits = Traits::newTraits(pool, NULL, 0, 0, TRAITSTYPE_NVA);
 		void_itraits->ns = core->publicNamespace;
-		void_itraits->name = core->constantString("void");
+		void_itraits->name = core->internConstantStringLatin1("void");
 		void_itraits->final = true;
-		void_itraits->linked = true;
+		void_itraits->builtinType = BUILTIN_void;
+		void_itraits->resolveSignatures(NULL);
+
+#define DO_BUILTIN(nm, clsnm)	do { nm##_itraits = pool->getBuiltinTraits(core->internConstantStringLatin1(clsnm)); nm##_itraits->builtinType = BUILTIN_##nm; } while (0)
+		DO_BUILTIN(array, "Array");
+		DO_BUILTIN(boolean, "Boolean");
+		DO_BUILTIN(class, "Class");
+		DO_BUILTIN(date, "Date");
+		DO_BUILTIN(error, "Error");
+		DO_BUILTIN(function, "Function");
+		DO_BUILTIN(int, "int");
+		DO_BUILTIN(math, "Math");
+		DO_BUILTIN(methodClosure, "MethodClosure");
+		DO_BUILTIN(namespace, "Namespace");
+//		DO_BUILTIN(null, "FOO");		// handled above
+		DO_BUILTIN(number, "Number");
+//		DO_BUILTIN(object, "FOO");		// can't do yet, handled elsewhere
+		DO_BUILTIN(qName, "QName");
+		DO_BUILTIN(regexp, "RegExp");
+		DO_BUILTIN(string, "String");
+		DO_BUILTIN(uint, "uint");
+		DO_BUILTIN(vector, "Vector");
+		DO_BUILTIN(vectordouble, "Vector$double");
+		DO_BUILTIN(vectorint, "Vector$int");
+		DO_BUILTIN(vectorobj, "Vector$object");
+		DO_BUILTIN(vectoruint, "Vector$uint");
+//		DO_BUILTIN(void, "FOO");		// handled above
+		DO_BUILTIN(xmlList, "XMLList");
+		DO_BUILTIN(xml, "XML");
+#undef DO_BUILTIN
 
 		// we have fast equality checks in the core that only work
 		// because these two classes are final.  If they become non-final
@@ -93,46 +100,36 @@ namespace avmplus
 		AvmAssert(xml_itraits->final);
 		AvmAssert(xmlList_itraits->final);
 
-		object_itraits->isMachineType	= true;
-		void_itraits->isMachineType		= true;
-		int_itraits->isMachineType		= true;
-		uint_itraits->isMachineType		= true;
-		boolean_itraits->isMachineType	= true;
-		number_itraits->isMachineType	= true;
-
-		int_itraits->isNumeric			= true;
-		uint_itraits->isNumeric			= true;
-		number_itraits->isNumeric		= true;
-
 		// XML and XMLList are dynamic but do not need the
 		// standard dynamic hash table
-		xml_itraits->needsHashtable     = false;
-		xmlList_itraits->needsHashtable = false;
+		xml_itraits->set_needsHashtable(false);
+		xmlList_itraits->set_needsHashtable(false);
 
-		// All these types including XML, XMLList and QName
-		// are marked as not derived objects.
-		//array_itraits->notDerivedObjectOrXML	= true;
-		boolean_itraits->notDerivedObjectOrXML	= true;
-		class_itraits->notDerivedObjectOrXML	= true;
-		//date_itraits->notDerivedObjectOrXML	= true;
-		function_itraits->notDerivedObjectOrXML	= true;
-		namespace_itraits->notDerivedObjectOrXML= true;
-		null_itraits->notDerivedObjectOrXML		= true;
-		number_itraits->notDerivedObjectOrXML	= true;
-		int_itraits->notDerivedObjectOrXML		= true;
-		uint_itraits->notDerivedObjectOrXML		= true;
-		object_itraits->notDerivedObjectOrXML	= true;
-		//regexp_itraits->notDerivedObjectOrXML	= true;
-		string_itraits->notDerivedObjectOrXML	= true;
-		//toplevel_itraits->notDerivedObjectOrXML	= true;
-		void_itraits->notDerivedObjectOrXML		= true;
-		xml_itraits->notDerivedObjectOrXML		= true;
-		xmlList_itraits->notDerivedObjectOrXML	= true;
-		qName_itraits->notDerivedObjectOrXML	= true;
+		// types that don't use the default construct method.
+		array_itraits->hasCustomConstruct  		= true;
+		boolean_itraits->hasCustomConstruct		= true;
+		class_itraits->hasCustomConstruct		= true;
+		date_itraits->hasCustomConstruct		= true;
+		function_itraits->hasCustomConstruct	= true;
+		namespace_itraits->hasCustomConstruct	= true;
+		null_itraits->hasCustomConstruct		= true;
+		number_itraits->hasCustomConstruct		= true;
+		int_itraits->hasCustomConstruct			= true;
+		uint_itraits->hasCustomConstruct		= true;
+		object_itraits->hasCustomConstruct		= true;
+		regexp_itraits->hasCustomConstruct		= true;
+		string_itraits->hasCustomConstruct		= true;
+		void_itraits->hasCustomConstruct		= true;
+		xml_itraits->hasCustomConstruct			= true;
+		xmlList_itraits->hasCustomConstruct		= true;
+		qName_itraits->hasCustomConstruct		= true;
+		math_itraits->hasCustomConstruct		= true;
 
-		Traits* methodClosure_itraits;
-		methodClosure_itraits = pool->getBuiltinTraits(core->constantString("MethodClosure"));
-		methodClosure_itraits->notDerivedObjectOrXML = true;
+		vectordouble_itraits->name = core->internConstantStringLatin1("Vector.<Number>");
+		vectorint_itraits->name = core->internConstantStringLatin1("Vector.<int>");
+		vectoruint_itraits->name = core->internConstantStringLatin1("Vector.<uint>");
+		vectorobj_itraits->name = core->internConstantStringLatin1("Vector.<*>");
+
 	}
 
 	void BuiltinTraits::initClassTypes(PoolObject* pool)
@@ -148,13 +145,13 @@ namespace avmplus
 
 	Traits* BuiltinTraits::findCTraits(const char* cname, PoolObject* pool)
 	{
-		Stringp name = pool->core->constantString(cname);
-		for (int i=0, n=pool->cinits.capacity(); i < n; i++) 
+		Stringp name = pool->core->internConstantStringLatin1(cname);
+		for (uint32_t i=0, n=pool->classCount(); i < n; i++) 
 		{
-			AbstractFunction* cinit = pool->cinits[i];
-			if (cinit && cinit->declaringTraits->name == name) 
+			Traits* ctraits = pool->getClassTraits(i);
+			if (ctraits && ctraits->name == name) 
 			{
-				return cinit->declaringTraits;
+				return ctraits;
 			}
 		}
 		return NULL;

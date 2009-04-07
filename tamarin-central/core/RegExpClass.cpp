@@ -37,50 +37,24 @@
 
 
 #include "avmplus.h"
+#include "BuiltinNatives.h"
 
 #include "pcre.h"
 
 namespace avmplus
 {
-	BEGIN_NATIVE_MAP(RegExpClass)
-		NATIVE_METHOD(RegExp_source_get, RegExpObject::getSource)
-		NATIVE_METHOD(RegExp_global_get, RegExpObject::isGlobal)
-		NATIVE_METHOD(RegExp_lastIndex_get, RegExpObject::getLastIndex)
-		NATIVE_METHOD(RegExp_lastIndex_set, RegExpObject::setLastIndex)
-		NATIVE_METHOD1(RegExp_ignoreCase_get, RegExpObject::hasOption, PCRE_CASELESS)
-		NATIVE_METHOD1(RegExp_multiline_get, RegExpObject::hasOption, PCRE_MULTILINE)
-		NATIVE_METHOD1(RegExp_dotall_get, RegExpObject::hasOption, PCRE_DOTALL)
-		NATIVE_METHOD1(RegExp_extended_get, RegExpObject::hasOption, PCRE_EXTENDED)
-
-		NATIVE_METHOD(RegExp_AS3_exec, RegExpObject::execSimple)
-	END_NATIVE_MAP()
-
-	// make pcre's allocators use Flash's
-	void *fmalloc(size_t size)
-	{
-		return new char[size];
-	}
-
-	void ffree(void *data)
-	{
-		char *ptr = (char*) data;
-		delete [] ptr;
-	}
-
 	RegExpClass::RegExpClass(VTable* cvtable)
 		: ClassClosure(cvtable)
 	{
-		AvmAssert(traits()->sizeofInstance == sizeof(RegExpClass));
-		pcre_malloc = &fmalloc;
-		pcre_free = &ffree;
+		AvmAssert(traits()->getSizeOfInstance() == sizeof(RegExpClass));
 
 		AvmCore* core = this->core();
 
 		ScriptObject* object_prototype = toplevel()->objectClass->prototype;
 		prototype = new (core->GetGC(), ivtable()->getExtraSize()) RegExpObject(this,object_prototype);
 
-		kindex = core->constant("index");
-		kinput = core->constant("input");		
+		kindex = core->internConstantStringLatin1("index")->atom();
+		kinput = core->internConstantStringLatin1("input")->atom();		
 	}
 	
 	// this = argv[0] (ignored)
@@ -92,7 +66,7 @@ namespace avmplus
 		// return pattern unchanged.
 		if (argc > 0) {
 			Atom flagsAtom = (argc>1) ? argv[2] : undefinedAtom;
-			if (core()->istype(argv[1], traits()->itraits) && flagsAtom == undefinedAtom) {
+			if (AvmCore::istype(argv[1], traits()->itraits) && flagsAtom == undefinedAtom) {
 				return argv[1];
 			}
 		}
@@ -112,7 +86,7 @@ namespace avmplus
 		Atom patternAtom = (argc>0) ? argv[1] : undefinedAtom;
 		Atom optionsAtom = (argc>1) ? argv[2] : undefinedAtom;
 
-		if (core->istype(patternAtom, traits()->itraits)) {
+		if (AvmCore::istype(patternAtom, traits()->itraits)) {
 			// Pattern is a RegExp object
 			if (optionsAtom != undefinedAtom) {
 				// ECMA 15.10.4.1 says to throw an error if flags specified
@@ -126,7 +100,7 @@ namespace avmplus
 				pattern = core->string(argv[1]);
 			} else {
 				// cn:  disable this, breaking ecma3 tests.   was: todo look into this. it's what SpiderMonkey does.
-				pattern = core->kEmptyString; //core->newString("(?:)");
+				pattern = core->kEmptyString; //core->newConstantStringLatin1("(?:)");
 			}
 		}
 

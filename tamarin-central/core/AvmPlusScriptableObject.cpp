@@ -47,36 +47,12 @@ namespace avmplus
 #ifdef DEBUGGER
 	AvmPlusScriptableObject::AvmPlusScriptableObject(Atom typeOrVTable)
 	{
-		AvmCore *core = this->core();
-			
-		if(core->sampling())
+		AvmCore* core = this->core();
+		Sampler* s = core->get_sampler();
+		if (s && s->sampling())
 		{
-			objId = core->sampler()->recordAllocationSample(this, typeOrVTable);
+			s->recordAllocationInfo(this, (uintptr)typeOrVTable);
 		}		
-	}
-
-	AvmPlusScriptableObject::~AvmPlusScriptableObject()
-	{
-		AvmCore *core = this->core();		
-		if(objId && core) // core should never be null except during tear down^
-		{
-			// this should have happened in Finalize
-			AvmAssertMsg(true, "Please add a call do Finalize when explicitly deleting script objects for profiling purposes");
-			core->sampler()->recordDeallocationSample(objId, 0);
-		}
-		objId = 0;
-	}
-
-	void AvmPlusScriptableObject::Finalize()
-	{
-		AvmCore *core = this->core();		
-		if(objId && core) // core should never be null except during tear down^
-		{
-			uint64 s = size();
-			core->sampler()->recordDeallocationSample(objId, s);
-		}
-		objId = 0;
-		RCObject::Finalize();
 	}
 #endif
 }

@@ -67,7 +67,7 @@ namespace avmplus
 		WBRC(GC::GetGC(this), this, &m_uri, (sint32)flags | (uintptr) uri);
 	}
 
-	void Namespace::setPrefix (Atom pre)
+	void Namespace::setPrefix(Atom pre)
 	{
 		AvmAssert (AvmCore::isName(pre) || AvmCore::isNullOrUndefined(pre));
 		// ensure that if the incoming Atom is a string, that it's interned
@@ -76,12 +76,12 @@ namespace avmplus
 		WBATOM(MMgc::GC::GetGC(this), this, &m_prefix, pre);
 	}
 
-	bool Namespace::hasPrefix () const
+	bool Namespace::hasPrefix() const
 	{
 		return (AvmCore::isName(m_prefix) && AvmCore::atomToString(m_prefix)->length()>0);
 	}
 
-	bool Namespace::equalTo(const Namespace* other) const
+	bool Namespace::EqualTo(const Namespace* other) const
 	{
 		if (isPrivate() || other->isPrivate())
 		{
@@ -135,7 +135,7 @@ namespace avmplus
 		return getURI();
 	}
 
-	Stringp Namespace::getURI() const
+	Stringp Namespace::get_uri() const
 	{
 		Stringp uri = (Stringp)(((uintptr)m_uri)&~7);
 		return uri;

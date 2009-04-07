@@ -47,7 +47,6 @@ namespace avmplus
 	class ErrorClass : public ClassClosure
 	{
 	public:
-		DECLARE_NATIVE_MAP(ErrorClass)
 		ErrorClass(VTable* cvtable);
 
 		Atom call(int argc, Atom* argv)
@@ -93,12 +92,12 @@ namespace avmplus
 #endif
 		}
 
-		Stringp stackTraceToString() const;
+		Stringp getStackTrace() const;
 #ifdef DEBUGGER
-		StackTrace *getStackTrace() const { return stackTrace; }
+		StackTrace* getStackTraceObject() const { return stackTrace; }
 
 	private:
-		StackTrace *stackTrace;
+		StackTrace* stackTrace;
 #endif /* DEBUGGER */
 	};
 
@@ -112,8 +111,6 @@ namespace avmplus
 	class NativeErrorClass : public ClassClosure
 	{
 	public:
-		DECLARE_NATIVE_MAP(NativeErrorClass)
-
 		NativeErrorClass(VTable* cvtable);
 
 		Atom call(int argc, Atom* argv)
@@ -121,6 +118,18 @@ namespace avmplus
 			return construct(argc, argv);
 		}
 	};
+
+	typedef NativeErrorClass DefinitionErrorClass;
+	typedef NativeErrorClass EvalErrorClass;
+	typedef NativeErrorClass RangeErrorClass;
+	typedef NativeErrorClass ReferenceErrorClass;
+	typedef NativeErrorClass SecurityErrorClass;
+	typedef NativeErrorClass SyntaxErrorClass;
+	typedef NativeErrorClass TypeErrorClass;
+	typedef NativeErrorClass URIErrorClass;
+	typedef NativeErrorClass VerifyErrorClass;
+	typedef NativeErrorClass UninitializedErrorClass;
+	typedef NativeErrorClass ArgumentErrorClass;
 }
 
 #endif /* __avmplus_ErrorClass__ */

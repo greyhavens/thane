@@ -35,20 +35,34 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include <math.h>
-
 #include "avmplus.h"
 #include "BigInteger.h"
+
+//on solairs gcc at least infinity and nan are not defined
+#if defined(__GNUC__)
+# if !defined(INFINITY)
+#  define INFINITY __builtin_inf()
+# endif
+# if !defined(NAN)
+#  define NAN acosh(0)
+# endif
+#endif
+
+//GCC only allows intrinsics if sse2 is enabled
+#if (defined(_MSC_VER) || (defined(__GNUC__) && defined(__SSE2__))) && (defined(AVMPLUS_IA32) || defined(AVMPLUS_AMD64))
+    #include <emmintrin.h>
+#endif
+
 namespace avmplus
 {
 	const double kLog2_10 = 0.30102999566398119521373889472449;
 
 	// optimize pow(10,x) for commonly sized numbers;
-	static double kPowersOfTen[23] = { 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10,
+	static const double kPowersOfTen[23] = { 1, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10,
 									   1e11, 1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19, 1e20,
 									   1e21, 1e22 };
 
-	static inline double quickPowTen(int exp)
+	static inline double quickPowTen(int32_t exp)
 	{
 		if (exp < 23 && exp > 0) {
 			return kPowersOfTen[exp];
@@ -57,7 +71,39 @@ namespace avmplus
 		}
 	}
 
-	
+	// skipSpaces: skip whitespace characters
+
+	static int32_t skipSpaces(const StringIndexer& s, int32_t index)
+	{
+		while (index < s->length())
+		{
+			utf32_t ch = s[index];
+			if (!(ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n' || ch == '\f' || ch == '\v' || 
+				 (ch >= 0x2000 && ch <=0x200b) || ch == 0x2028 || ch == 0x2029 || ch == 0x205f || ch == 0x3000 ))
+				break;
+			index++;
+		}
+		return index;
+	}
+
+	// handleSign: helper function which checks for sign indicator
+	//
+
+	int32_t handleSign(const StringIndexer& s, int32_t index, bool& negative)
+	{
+		negative = false;
+		if (index >= s->length())
+			return index;
+		utf32_t ch = s[index];
+		if (ch == '+') {
+			index++;
+		} else if (ch == '-') {
+			negative = true;
+			index++;
+		}
+		return index;
+	}
+
 	bool MathUtils::equals(double x, double y)
 	{
 		// Infiniti-ness must match up
@@ -71,16 +117,28 @@ namespace avmplus
 		return x == y;
 	}
 
-	double MathUtils::infinity()
+	static double _nan()
 	{
-		#if defined(UNIX) && defined(INFINITY)
-		return INFINITY;
-		#else
-		float result;
-		*((uint32*)&result) = 0x7F800000;
-		return result;
-		#endif
+		union { float f; uint32_t d; }; d = 0x7FFFFFFF;
+		return f;
 	}
+
+	static double _infinity()
+	{
+		union { float f; uint32_t d; }; d = 0x7F800000;
+		return f;
+	}
+
+	static double _neg_infinity()
+	{
+		union { float f; uint32_t d; }; d = 0xFF800000;
+		return f;
+	}
+
+
+	/*static*/ const double MathUtils::kNaN = _nan();
+	/*static*/ const double MathUtils::kInfinity = _infinity();
+	/*static*/ const double MathUtils::kNegInfinity = _neg_infinity();
 
 #ifdef UNIX
 	/*
@@ -95,22 +153,23 @@ namespace avmplus
 	 *======================================================
 	 */
 
-	int MathUtils::isInfinite(double x)
+	union double_overlay {
+		double value;
+		#if defined AVMPLUS_BIG_ENDIAN || defined AVMPLUS_ARM_OLDABI
+			struct { uint32_t msw, lsw; } parts;
+		#else
+			struct { uint32_t lsw, msw; } parts;
+		#endif
+	};
+		
+
+	int32_t MathUtils::isInfinite(double x)
 	{
-		union {
-			double value;
-			struct {
-#ifdef AVM10_BIG_ENDIAN
-				uint32 msw, lsw;
-#else
-				uint32 lsw, msw;
-#endif
-			} parts;
-		} u;
+		double_overlay u;
 		u.value = x;
 
-		int hx = u.parts.msw;
-		int lx = u.parts.lsw;
+		int32_t hx = u.parts.msw;
+		int32_t lx = u.parts.lsw;
 
 		lx |= (hx & 0x7FFFFFFF) ^ 0x7FF00000;
 		lx |= -lx;
@@ -125,45 +184,27 @@ namespace avmplus
 			return false;
 		}
 
-		union {
-			double value;
-			struct {
-#ifdef AVM10_BIG_ENDIAN
-				uint32 msw, lsw;
-#else
-				uint32 lsw, msw;
-#endif
-			} parts;
-		} u;
+		double_overlay u;
 		u.value = x;
 
-		int hx = u.parts.msw;
-		int lx = u.parts.lsw;
+		int32_t hx = u.parts.msw;
+		int32_t lx = u.parts.lsw;
 
 		hx &= 0x7FFFFFFF;
-		hx |= (uint32) (lx | (-lx)) >> 31;
+		hx |= (uint32_t) (lx | (-lx)) >> 31;
 		hx = 0x7FF00000 - hx;
-		return (bool) (((uint32)(hx) >> 31) != 0);
+		return (bool) (((uint32_t)(hx) >> 31) != 0);
 	}
 
 	bool MathUtils::isNegZero(double x)
 	{
-		union {
-			double value;
-			struct {
-#ifdef AVM10_BIG_ENDIAN
-				uint32 msw, lsw;
-#else
-				uint32 lsw, msw;
-#endif
-			} parts;
-		} u;
+		double_overlay u;
 		u.value = x;
 
-		int hx = u.parts.msw;
-		int lx = u.parts.lsw;
+		int32_t hx = u.parts.msw;
+		int32_t lx = u.parts.lsw;
 
-		return (hx == (int)0x80000000 && lx == (int)0x0);
+		return (hx == (int32_t)0x80000000 && lx == (int32_t)0x0);
 	}
 
 #else
@@ -178,9 +219,9 @@ namespace avmplus
 		       FFFx xxxx xxxx xxxx
      */
 
-	int MathUtils::isInfinite(double x)
+	int32_t MathUtils::isInfinite(double x)
 	{
-		uint64 v = *((uint64 *)&x);
+		union { double d; uint64 v; }; d = x;
 		if ((v & 0x7fffffffffffffffLL) != 0x7FF0000000000000LL)
 			return 0;
 		if (v & 0x8000000000000000LL)
@@ -189,42 +230,28 @@ namespace avmplus
 			return 1;
 	}
 
-	#if 0
-	bool MathUtils::isNaN(double x)
+	bool MathUtils::isNaN(double value)
 	{
-		return x != x;
-		uint64 v = *((uint64 *)&x);
-		return ((v & 0x7ff0000000000000LL) == 0x7ff0000000000000LL &&  // is a special value
-			    (v & 0x000fffffffffffffLL) != 0x0000000000000000LL);   // not inf
+		union {
+			  double dvalue;
+			  uint64 lvalue;
+		};
+		dvalue = value;
+		return ( ( int64(lvalue) & ~0x8000000000000000ULL ) > 0x7ff0000000000000ULL ); 
+		//return x != x;
 	}
-	#endif
 
 	bool MathUtils::isNegZero(double x)
 	{
-		uint64 v = *((uint64 *)&x);
+		union { double d; uint64 v; }; d = x;
 		return (v == 0x8000000000000000LL);
 	}
 
 #endif // UNIX
 
-	double MathUtils::nan()
+	int32_t MathUtils::nextPowerOfTwo(int32_t n)
 	{
-#if defined(UNIX) && defined(NAN)
-		return NAN;
-#else
-#ifdef AVM10_BIG_ENDIAN
-		uint32 nan[2]={0x7fffffff, 0xffffffff};
-#else
-		uint32 nan[2]= {0xffffffff, 0x7fffffff}; 
-#endif
-		double g = *(double*)nan;
-		return g;
-#endif
-	}
-
-	int MathUtils::nextPowerOfTwo(int n)
-	{
-		int i = 2;
+		int32_t i = 2;
 		while (i < n)
 		{
 			i <<= 1;
@@ -233,17 +260,18 @@ namespace avmplus
 		return (i);
 	}
 
-	bool MathUtils::isHexNumber(const wchar *str)
+	static bool isHexNumber(const StringIndexer& s, int32_t index)
 	{
-		bool dummy;
-		str = handleSign(str, dummy);
-		return (*str == '0' && *(str+1) == 'x') || (*str == '0' && *(str+1) == 'X');
+		if (s->length() - index < 2 || s[index] != '0')
+			return false;
+		utf32_t ch = s[index+1];
+		return (ch == 'x' || ch == 'X');
 	}
 
 	// parseIntDigit: Helper for ParseInt and ConvertStringToInteger
 	//
 
-	int MathUtils::parseIntDigit(wchar ch)
+	static int32_t parseIntDigit(wchar ch)
 	{
 		if (ch >= '0' && ch <= '9') {
 			return (ch - '0');
@@ -257,17 +285,17 @@ namespace avmplus
 	}
 
 	// parseInt: Implementation of ECMA-262 parseInt function
-	double MathUtils::parseInt(const wchar* s, int len, int radix /*=10*/, bool strict /*=false*/ )
+	double MathUtils::parseInt(Stringp inStr, int32_t radix /*=10*/, bool strict /*=false*/ )
 	{
 		bool negate;
 		bool gotDigits = false;
 		double result = 0;
 
-		s = skipSpaces(s); // leading and trailing whitespace is valid.
-		s = handleSign(s,negate);
-		if (MathUtils::isHexNumber(s) && (radix == 16 || radix == 0) ) {
-			s += 2;
-			len -=2;
+		StringIndexer s(inStr);
+		int32_t index = skipSpaces(s, 0); // leading and trailing whitespace is valid.
+		index = handleSign(s, index, negate);
+		if (isHexNumber(s, index) && (radix == 16 || radix == 0) ) {
+			index += 2;
 			if (radix == 0)
 				radix = 16;
 		} else if (radix == 0) {
@@ -276,24 +304,24 @@ namespace avmplus
 		}
 
 		// Make sure radix is valid, and we have digits
-		if (radix >= 2 && radix <= 36 && *s)  {
+		if (radix >= 2 && radix <= 36 && index < s->length()) {
 				result = 0;
-				const wchar* sStart = s; 
+				int32_t start = index; 
 
 				// Read the digits, generate result
-				while (*s) {
-					int v = parseIntDigit(*s);
+				while (index < s->length()) {
+					int32_t v = parseIntDigit(s[index]);
 					if (v == -1 || v >= radix) {
 						break;
 					}
 					result = result * radix + v;
 					gotDigits = true;
-					s++;
+					index++;
 				}
 				
-				s = skipSpaces(s); // leading and trailing whitespace is valid.
-				if (strict && *s) {
-					return MathUtils::nan();
+				index = skipSpaces(s, index); // leading and trailing whitespace is valid.
+				if (strict && index < s->length()) {
+					return MathUtils::kNaN;
 				}
 
 			if ( result >= 0x20000000000000LL &&  // i.e. if the result may need at least 54 bits of mantissa
@@ -305,17 +333,19 @@ namespace avmplus
 				//  this from the result, so we have to recalculate it more slowly.
 				result = 0;
 
-				int powOf2 = 1;
-				for(int x = radix; (x != 1); x >>= 1)
+				int32_t powOf2 = 1;
+				for(int32_t x = radix; (x != 1); x >>= 1)
 					powOf2++;
 				powOf2--; // each word contains one less than this # of bits.
-				s = sStart;
-				int v=0;
+				index = start;
+				int32_t v=0;
 				
-				int end,next;
+				int32_t end,next;
 				// skip leading zeros
-				for(end=0; s[end] == '0'; end++)
+				for(end=index; end < s->length() && s[end] == '0'; end++)
 					;
+				if (end >= s->length())
+					return 0;
 
 				for (next=0; next*powOf2 <= 52; next++) { // read first 52 non-zero digits.  Once charPosition*log2(radix) is > 53, we can have rounding issues
 					v = parseIntDigit(s[end++]);
@@ -324,11 +354,13 @@ namespace avmplus
 						break;
 					}
 					result = result * radix + v;
+					if (end >= s->length())
+						break;
 				}
 				if (next*powOf2 > 52) { // If number contains more than 53 bits of precision, may need to roundUp last digit processed.
 					bool roundUp = false;
-					int bit53 = 0;
-					int bit54 = 0;
+					int32_t bit53 = 0;
+					int32_t bit54 = 0;
 
 					double factor = 1;
 
@@ -386,7 +418,7 @@ namespace avmplus
 					bit54 = !!bit54;
 					
 					
-					while(++end < len) {
+					while(++end < s->length()) {
 						v = parseIntDigit(s[end]);
 						if (v == -1 || v >= radix) {
 							break;
@@ -403,26 +435,26 @@ namespace avmplus
 			/*
 			else if (radix == 10 && result >= 0x20000000000000)
 			// if there are more than 15 digits, roundoff error may affect us.  Need to use exact integer rep instead of float
-			//int numDigits = len - (s - sStart);
+			//int32_t numDigits = len - (s - sStart);
 			*/
 			if (negate) {
 				result = -result;
 			}
 		}
-		return gotDigits ? result : MathUtils::nan();
+		return gotDigits ? result : MathUtils::kNaN;
 	}
 
 	// used by AvmCore::number() and numberAtom() for converting arbitrary string to a number.
-	double MathUtils::convertStringToNumber(const wchar* ptr, int strlen)
+	double MathUtils::convertStringToNumber(Stringp inStr)
 	{
 		double value;
 
-		if (*ptr == 0) { // toNumber("") should be 0, not NaN
+		if (inStr->length() == 0) { // toNumber("") should be 0, not NaN
 			value = 0;
-		} else if (MathUtils::convertStringToDouble(ptr, strlen, &value, true)) {
+		} else if (MathUtils::convertStringToDouble(inStr, &value, true)) {
 			// nothing to do, value set by side effect.
 		} else  {
-			value = MathUtils::parseInt(ptr, strlen, 0,true); // 0 radix means figure it out from the string.
+			value = MathUtils::parseInt(inStr, 0,true); // 0 radix means figure it out from the string.
 		}
 		return value;
 	}
@@ -436,20 +468,19 @@ namespace avmplus
 	// ECMA-262 section 9.4
 	double MathUtils::toInt(double value)
 	{
-#ifdef WIN32
-		#ifdef AVMPLUS_AMD64
-		int intValue = _mm_cvttsd_si32(_mm_set_sd(value));
-		#else
-		int intValue;
+#if defined(WIN32) && defined(AVMPLUS_AMD64)
+		int32_t intValue = _mm_cvttsd_si32(_mm_set_sd(value));
+#elif defined(WIN32) && defined(AVMPLUS_IA32)
+		int32_t intValue;
 		_asm fld [value];
 		_asm fistp [intValue];
-		#endif
 #elif defined(_MAC) && (defined(AVMPLUS_IA32) || defined(AVMPLUS_AMD64))
-		int intValue = _mm_cvttsd_si32(_mm_set_sd(value));
+		int32_t intValue = _mm_cvttsd_si32(_mm_set_sd(value));
 #else
-		int intValue = real2int(value);
+		int32_t intValue = real2int(value);
 #endif
-		if ((value == (double)(intValue)) && ((uint32)intValue != 0x80000000))
+
+		if ((value == (double)(intValue)) && ((uint32_t)intValue != 0x80000000))
 			return value;
 
 		if (MathUtils::isNaN(value)) {
@@ -465,38 +496,12 @@ namespace avmplus
 		}
 	}
 
-	// skipSpaces: skip whitespace characters
-
-	wchar* MathUtils::skipSpaces(const wchar *s)
-	{
-		while (*s == ' ' || *s == '\t' || *s == '\r' || *s == '\n' || *s == '\f' || *s == '\v' || 
-			   (*s >= 0x2000 && *s <=0x200b) || *s == 0x2028 || *s == 0x2029 || *s == 0x205f || *s == 0x3000 ) {
-			s++;
-		}
-		return const_cast< wchar* >( s );		// we're constant but not necessarily our caller.
-	}
-
-	// handleSign: helper function which checks for sign indicator
-	//
-
-	wchar* MathUtils::handleSign(const wchar *s, bool& negative)
-	{
-		negative = false;
-		if (*s == '+') {
-			s++;
-		} else if (*s == '-') {
-			negative = true;
-			s++;
-		}
-		return const_cast< wchar* >( s );		// we're constant but not necessarily our caller.
-	}
-
 	//
 	// powerOfTen(exponent, value) returns the value
 	//    value * 10 ^ exponent
 	//
 
-	double MathUtils::powerOfTen(int exponent, double value)
+	double MathUtils::powerOfTen(int32_t exponent, double value)
 	{
 		double base = 10.0;
 
@@ -526,11 +531,11 @@ namespace avmplus
 	//    base ^ exponent
 	// where exponent is an integer.
 	//
-	static double powInt(double base, int exponent)
+	static double powInt(double base, int32_t exponent)
 	{
 		double value = 1.0;
 		double original_base = base;
-		int original_exponent = exponent;
+		int32_t original_exponent = exponent;
 
 		if (MathUtils::isInfinite(base))
 		{
@@ -576,7 +581,7 @@ namespace avmplus
 	{
 		if (MathUtils::isNaN(y)) {
 			// x^NaN = NaN
-			return MathUtils::nan();
+			return MathUtils::kNaN;
 		}
 
 		if (y == 0) {
@@ -584,13 +589,13 @@ namespace avmplus
 			return 1;
 		}
 
-		int infy = MathUtils::isInfinite(y);
+		int32_t infy = MathUtils::isInfinite(y);
 
-		if (infy == 0 && y == (int)y) {
+		if (infy == 0 && y == (int32_t)y) {
 			// If y is an integer, use multiplication
 			// algorithm which yields more accurate
 			// results
-			return powInt(x, (int)y);
+			return powInt(x, (int32_t)y);
 		}
 		
 		double absx = MathUtils::abs(x);
@@ -600,11 +605,11 @@ namespace avmplus
 		}
 		if (absx == 1 && infy != 0) {
 			// (+/-)1^(+/-)Infinity = NaN
-			return MathUtils::nan();
+			return MathUtils::kNaN;
 		}
 		if (infy == 1) {
 			// x^Infinity = Infinity
-			return MathUtils::infinity();
+			return MathUtils::kInfinity;
 		} else if (infy == -1) {
 			// x^-Infinity = +0
 			return +0;
@@ -619,7 +624,7 @@ namespace avmplus
 				return 0;
 			} else {
 				if (y < 1.0) {
-					return MathUtils::infinity();
+					return MathUtils::kInfinity;
 				} else {
 					// y>0
 					// Infinity^y = Infinity
@@ -634,7 +639,7 @@ namespace avmplus
 		if (x < 0.0) {
 			// If y is non-integer, return NaN.
 			if (y != MathUtils::floor(y)) {
-				return MathUtils::nan();
+				return MathUtils::kNaN;
 			}
 			// Switch sign of base
 			x = -x;
@@ -650,7 +655,7 @@ namespace avmplus
 		if (x == 0.0)
 		{
 			if (y < 0.0)
-				return MathUtils::infinity();
+				return MathUtils::kInfinity;
 			else
 				return 0.0;
 		}
@@ -658,73 +663,95 @@ namespace avmplus
 		return powInternal(x, y);
 	}
 
-	// convertDoubleToString: Converts a double-precision floating-point number
-	// to its ASCII representation
-	//
-
-	int MathUtils::nextDigit(double *value)
+	int32_t MathUtils::nextDigit(double *value)
 	{
-		int digit;
-		#ifdef WIN32
-		#ifdef AVMPLUS_AMD64
+		int32_t digit;
+
+		#if defined(WIN32) && defined(AVMPLUS_AMD64)
 		digit = _mm_cvttsd_si32(_mm_set_sd(*value));
-		#else
+		#elif defined(WIN32) && defined(AVMPLUS_IA32)
 		// WARNING! nextDigit assumes that rounding mode is
 		// set to truncate.
 		_asm mov eax,[value];
 		_asm fld qword ptr [eax];
 		_asm fistp [digit];
-		#endif
 		#elif defined(_MAC) && (defined(AVMPLUS_IA32) || defined(AVMPLUS_AMD64))
 		digit = _mm_cvttsd_si32(_mm_set_sd(*value));
 		#else
-		digit = (int) *value;
+		digit = (int32_t) *value;
 		#endif
+
 		*value -= digit;
 		*value *= 10;
 		return digit;
 	}
 
-	int MathUtils::roundInt(double x)
+	int32_t MathUtils::roundInt(double x)
 	{
 		if (x < 0) {
-			return (int) (x - 0.5);
+			return (int32_t) (x - 0.5);
 		} else {
-			return (int) (x + 0.5);
+			return (int32_t) (x + 0.5);
 		}
 	}
 
-	bool MathUtils::convertIntegerToString(sintptr value,
-								           wchar *buffer,
-										   int& len,
-								           int radix /*=10*/,
-										   bool valIsUnsigned /*=false*/)
+	Stringp MathUtils::convertIntegerToStringRadix(AvmCore* core,
+											  intptr_t value,
+											  int32_t radix,
+											  UnsignedTreatment treatAs)
 	{
-		// buffer should be at least wchar[65].  largest should be
-		// radix 2, with sign plus 31/63 bits.
-		
+		MMgc::GC::AllocaAutoPtr _buffer;
+		char* buffer = (char*)VMPI_alloca(core, _buffer, kMinSizeForInt64_t_toString);
+		int32_t len = kMinSizeForInt64_t_toString;
+		char* p = convertIntegerToStringBuffer(value, buffer, len, radix, treatAs);
+		return core->newStringLatin1(p, len);
+	}
+
+	Stringp MathUtils::convertIntegerToStringBase10(AvmCore* core,
+											  int32_t  value,
+											  UnsignedTreatment treatAs)
+	{
+		char buffer[kMinSizeForInt32_t_base10_toString];
+		int32_t len = kMinSizeForInt32_t_base10_toString;
+	#ifdef AVMPLUS_64BIT
+		intptr_t wideVal = treatAs == kTreatAsUnsigned ? (intptr_t)(uint32_t)value : (intptr_t)value;
+	#else
+		intptr_t wideVal = (intptr_t) value;
+	#endif
+		char* p = convertIntegerToStringBuffer(wideVal, buffer, len, 10, treatAs);
+		return core->newStringLatin1(p, len);
+	}
+
+	char* MathUtils::convertIntegerToStringBuffer(intptr_t value,
+								            char *buffer,
+										    int32_t& len,
+								            int32_t radix,
+										    UnsignedTreatment treatAs)
+	{		
 		#ifndef AVMPLUS_64BIT
 		// This routines does not work with this integer number since negating
 		// this value returns the same negative value and screws up our code 
 		// in the while loop below.
-		if ( (uint32)value == 0x80000000 && valIsUnsigned == false) // MathUtils::convertIntegerToString doesn't deal with this number because you can't negate it.
+		if ( (uint32_t)value == 0x80000000 && treatAs == kTreatAsSigned) 
+		// MathUtils::convertIntegerToString doesn't deal with this number because you can't negate it.
 		{
-			UnicodeUtils::Utf8ToUtf16((uint8*)"-2147483648", 12, buffer, 24);
+			AvmAssert(len >= 12);
+			if (len < 12)
+				return NULL;
+			VMPI_memcpy (buffer, "-2147483648", 12);
 			len = 11;
-			return true;
+			return buffer;
 		}
 		#endif
 
 		if (radix < 2 || radix > 36) 
 		{
 			AvmAssert( 0 );
-			return false;
+			return NULL;
 		}
 
-		wchar tmp[65];
-		const int size_buffer = sizeof(tmp)/sizeof(wchar);
-		wchar *src = tmp + size_buffer - 1;
-		wchar *srcEnd = src;
+		char *src = buffer + len - 1;
+		char *srcEnd = src;
 
 		*src-- = '\0';
 
@@ -737,7 +764,7 @@ namespace avmplus
 			uintptr uVal;
 			bool negative=false;
 
-			if (valIsUnsigned)
+			if (treatAs == kTreatAsUnsigned)
 			{
 				uVal = (uintptr)value;
 			}
@@ -751,29 +778,34 @@ namespace avmplus
 
 			while (uVal != 0)
 			{
+				// buffer too small?
+				AvmAssert(src >= buffer);
 				uintptr j = uVal;
 				uVal = uVal / radix;
 				j -= (uVal * radix);
 
-				*src-- = (wchar)((j < 10) ? (j + '0') : (j + ('a' - 10)));
-
-				AvmAssert(src > tmp);
+				*src-- = (char)((j < 10) ? (j + '0') : (j + ('a' - 10)));
 			}
 
 			if (negative)
+			{
+				AvmAssert(src >= buffer);
+				if (src < buffer)
+					// buffer too small
+					return NULL;
 				*src-- = '-';
+			}
 		}
 
-		len = (int)(srcEnd-src-1);
-		memcpy(buffer, src+1, (srcEnd-src)*sizeof(wchar));
+		src++;
+		len = (int32_t)(srcEnd-src);
 
-		AvmAssert(len==String::Length(buffer));
-		return true;
+		return src;
 	}
 
 	Stringp MathUtils::convertDoubleToStringRadix(AvmCore *core,
 												  double value,
-										          int radix)
+										          int32_t radix)
 	{
 		if (radix < 2 || radix > 36) 
 		{
@@ -781,12 +813,10 @@ namespace avmplus
 			return NULL;
 		}
 
-		wchar tmp[2048];
-		const int size_buffer = sizeof(tmp)/sizeof(wchar);
-		wchar *src = tmp + size_buffer - 1;
-		wchar *srcEnd = src;
-
-		*src-- = '\0';
+		MMgc::GC::AllocaAutoPtr _tmp;
+		char* tmp = (char*)VMPI_alloca(core, _tmp, kMinSizeForDouble_toString);
+		char *src = tmp + kMinSizeForDouble_toString - 1;
+		char *srcEnd = src;
 
 		bool negative=false;
 
@@ -808,7 +838,7 @@ namespace avmplus
 				uVal = MathUtils::floor(uVal / radix);
 				j -= (uVal * radix);
 
-				*src-- = (wchar)((j < 10) ? ((int)j + '0') : ((int)j + ('a' - 10)));
+				*src-- = (char)((j < 10) ? ((int32_t)j + '0') : ((int32_t)j + ('a' - 10)));
 
 				AvmAssert(src > tmp);
 			}
@@ -817,72 +847,65 @@ namespace avmplus
 				*src-- = '-';
 		}
 
-		int len = (int)(srcEnd-src-1);
-		return new (core->GetGC()) String(src+1, len);
+		int32_t len = (int32_t)(srcEnd-src);
+		return core->newStringLatin1(src+1, len);
 	}
 	
-	void MathUtils::convertDoubleToString(double value,
-										  wchar *buffer,
-										  int& len,
-										  int mode,
-										  int precision)
+	Stringp MathUtils::convertDoubleToString(AvmCore* core,
+											 double value,
+										     int32_t mode,
+										     int32_t precision)
 	{
 		switch (isInfinite(value)) {
 		case -1:
-			UnicodeUtils::Utf8ToUtf16((uint8*)"-Infinity", 10, buffer, 20);
-			len = 9;
-			return;
+			return core->newConstantStringLatin1("-Infinity");
 		case 1:
-			UnicodeUtils::Utf8ToUtf16((uint8*)"Infinity", 9, buffer, 18);
-			len = 8;
-			return;
+			return core->newConstantStringLatin1("Infinity");
 		}
 		if (isNaN(value)) {
-			UnicodeUtils::Utf8ToUtf16((uint8*)"NaN", 4, buffer, 8);
-			len = 3;
-			return;
+			return core->newConstantStringLatin1("NaN");
 		}
 
 		// If our double is really an integer, call our integer version which
 		// is much, much faster then our double version.  (Skips a ton of _ftol
 		// which are slow).
 		if (mode == DTOSTR_NORMAL) {
-#ifdef WIN32
-			#ifdef AVMPLUS_AMD64
-			int intValue = _mm_cvttsd_si32(_mm_set_sd(value));
-			#else
-			int intValue;
+#if defined(WIN32) && defined(AVMPLUS_AMD64)
+			int32_t intValue = _mm_cvttsd_si32(_mm_set_sd(value));
+#elif defined(WIN32) && defined(AVMPLUS_IA32)
+			int32_t intValue;
 			_asm fld [value];
 			_asm fistp [intValue];
-			#endif
 #elif defined(_MAC) && (defined(AVMPLUS_IA32) || defined(AVMPLUS_AMD64))
-			int intValue = _mm_cvttsd_si32(_mm_set_sd(value));
+			int32_t intValue = _mm_cvttsd_si32(_mm_set_sd(value));
 #else
-			int intValue = real2int(value);
+			int32_t intValue = real2int(value);
 #endif
-			if ((value == (double)(intValue)) && ((uint32)intValue != 0x80000000))
-			{
-				convertIntegerToString(intValue, buffer, len);
-				return;
-			}
+			if ((value == (double)(intValue)) && ((uint32_t)intValue != 0x80000000))
+				return convertIntegerToStringBase10(core, intValue, kTreatAsSigned);
 		}
 		
-		int i;
+		int32_t i, len = 0;
 
-		wchar *s = buffer;
+		MMgc::GC::AllocaAutoPtr _buffer;
+		char* buffer = (char*)VMPI_alloca(core, _buffer, kMinSizeForDouble_toString);
+		char *s = buffer;
+		bool negative = false;
 
 		// Deal with negative numbers
 		if (value < 0) {
 			value = -value;
-			*s++ = '-';
+			negative = true;
+			// make room for minus sign later (after applying sentinel)
+			s++;
 		}
 
 		// initialize d2a engine
 		D2A *d2a = new D2A(value, mode, precision);
-		int exp10 = d2a->expBase10()-1;
+		int32_t exp10 = d2a->expBase10()-1;
 		
 		// Sentinel is used for rounding
-		wchar *sentinel = s;
+		char *sentinel = s;
 
 		enum {
 			kNormal,
@@ -890,8 +913,8 @@ namespace avmplus
 			kFraction,
 			kFixedFraction
 		};
-		int format;
-		int digit;
+		int32_t format;
+		int32_t digit;
 
 		switch (mode) {
 		case DTOSTR_FIXED:
@@ -949,7 +972,7 @@ namespace avmplus
 		switch (format) {
 		case kNormal:
 			{
-				int digits = 0;
+				int32_t digits = 0;
 				sentinel = s;
 				*s++ = '0';
 				digit = d2a->nextDigit(); 
@@ -992,7 +1015,7 @@ namespace avmplus
 				*s++ = '.';
 				wroteDecimal = true;
 				// Write out leading zeros
-				int digits = 0;
+				int32_t digits = 0;
 				if (exp10 > 0) {
 					while (++exp10 < 10 && digits < precision) {
 						*s++ = '0';
@@ -1077,7 +1100,7 @@ namespace avmplus
 		{
 			i = d2a->nextDigit();
 			if (i > 4) {
-				wchar *ptr = s-1;
+				char *ptr = s-1;
 				while (ptr >= buffer) {
 					if (*ptr < '0') {
 						ptr--;
@@ -1102,7 +1125,7 @@ namespace avmplus
 		}
 
 		if (exp10) {
-			wchar *firstNonZero = buffer;
+			char *firstNonZero = buffer + int(negative);
 			while (firstNonZero < s && *firstNonZero == '0') {
 				firstNonZero++;
 			}
@@ -1112,7 +1135,7 @@ namespace avmplus
 				*s++ = '1';
 				exp10++;
 			} else {
-				wchar *lastNonZero = s;
+				char *lastNonZero = s;
 				while (lastNonZero > firstNonZero) {
 					if (*--lastNonZero != '0') {
 						break;
@@ -1121,7 +1144,7 @@ namespace avmplus
 				if (value && (firstNonZero == lastNonZero) ) {
 					// Watch out for extra zeros like
 					// 10e+95
-					exp10 += (int) (s - firstNonZero - 1);
+					exp10 += (int32_t) (s - firstNonZero - 1);
 					s = lastNonZero+1;
 				}
 			}				
@@ -1129,27 +1152,23 @@ namespace avmplus
 			if (exp10 > 0) {
 				*s++ = '+';
 			}
-			wchar expstr[40];
-			int len;
-			convertIntegerToString(exp10, expstr, len);
-			wchar *t = expstr;
+			char expstr[kMinSizeForInt32_t_base10_toString];
+			len = kMinSizeForInt32_t_base10_toString;
+			char* t = convertIntegerToStringBuffer(exp10, expstr, len, 10, kTreatAsSigned);
 			while (*t) { *s++ = *t++; }
 		}
   
-		*s = '\0';
-		len = (int)(s-buffer);
-
+		len = (int32_t)(s-buffer);
+		s = buffer;
+		if (negative)
+			s++;
 		if (sentinel && sentinel[0] == '0' && sentinel[1] != '.') {
-			wchar *s = sentinel;
-			wchar *t = sentinel+1;
-			while ((*s++ = *t++) != 0) {
-				// nothing
-			}
-			len = String::Length(buffer);
+			s = sentinel + 1;
+			len--;
 		}
+		if (negative)
+			*--s = '-';
 
-		AvmAssert(len == String::Length(buffer));
-	
 		#if 0 // def WIN32
 		// Restore control word
 		_asm fldcw [oldcw];
@@ -1157,58 +1176,75 @@ namespace avmplus
 
 		delete d2a;
 
+		return core->newStringLatin1(s, len);
 	}
 
 	// convertStringToDouble: Converts an ASCII string in the form
 	//     [+-]######.######e[+-]###
 	// to a double-precision floating-point number
 	//
-	bool MathUtils::convertStringToDouble(const wchar *s,
-										  int len,
+	bool MathUtils::convertStringToDouble(Stringp inStr,
 										  double *value,
 										  bool strict /*=false*/ )
 	{
 		bool negate;
-		int numDigits = 0;
-		int exp10 = 0;
+		int32_t numDigits = 0;
+		int32_t exp10 = 0;
 		double result = 0;
+		utf32_t ch = 0;
 
-		const wchar *sStart = s;
+		StringIndexer s(inStr);
+		int32_t index = skipSpaces(s, 0);
 
-		s = skipSpaces(s);
-		if (*s == 0) // empty string or string of spaces == 0
+		if (index >= s->length()) // empty string or string of spaces == 0
 		{
 			*value = 0;
 			return (strict ? true : false); // odd use of strict, but Number('  ') is 0 and that uses strict == true.  parseFloat('  ') is NaN and that uses strict == false
 		}
 
-		s = handleSign(s, negate);
+		index = handleSign(s, index, negate);
 
 		// Pass 1: Validate input and determine exponents.
-		const wchar *ptr = s;
-		while (*ptr >= '0' && *ptr <= '9') {
-			numDigits++;
-			ptr++;
+		int32_t start = index;
+		while (index < s->length()) {
+			ch = s[index];
+			if (ch >= '0' && ch <= '9') {
+				numDigits++;
+				index++;
+			}
+			else
+				break;
 		}
 
 		// If decimal point encountered, read past digits
 		// to right of decimal point.
-		if (*ptr == '.') {
-			while (*++ptr >= '0' && *ptr <= '9') {
-				numDigits++;
+		if (ch == '.') {
+			while (++index < s->length()) {
+				ch = s[index];
+				if (ch >= '0' && ch <= '9') {
+					numDigits++;
+				}
+				else
+					break;
 			}
 		}
 
 		// Handle exponent
-		if (*ptr == 'e' || *ptr == 'E') {
-			int num = 0;
+		if (index < s->length() && (s[index] == 'e' || s[index] == 'E')) {
+			int32_t num = 0;
 			bool negexp;
-			ptr = handleSign(++ptr, negexp);
-			if (negexp && *ptr == 0) // fail if string ends in "e-" with no exponent value specified.
+			index = handleSign(s, ++index, negexp);
+			if (negexp && index >= s->length()) // fail if string ends in "e-" with no exponent value specified.
 				return false;
 
-			while (*ptr >= '0' && *ptr <= '9') {
-				num = num * 10 + (*ptr++ - '0');
+			while (index < s->length()) {
+				ch = s[index];
+				if (ch >= '0' && ch <= '9') {
+					num = num * 10 + (ch - '0');
+					index++;
+				}
+				else
+					break;
 			}
 			if (negexp) {
 				num = -num;
@@ -1216,25 +1252,24 @@ namespace avmplus
 			exp10 += num;
 		}
 		// ecma3 compliant to allow leading and trailing whitespace
-		ptr = skipSpaces(ptr);
+		index = skipSpaces(s, index);
 
 		// If we got no digits, check for Infinity/-Infinity, else fail
 		if (numDigits == 0) {
 			// check for the strings "Infinity" and "-Infinity"
-			wchar buff[10];
-			if ( (len - (ptr-sStart)) > 7 )  { // there may be trailing whitespace
-				memcpy(buff,ptr,16);
-				buff[8] = 0;
-				if (String::Compare(buff,"Infinity",8) == 0) { 
-					*value = (negate ? 0.0 - MathUtils::infinity() : MathUtils::infinity());
-					return true;
-				}
+			if (s->matchesLatin1("Infinity", 8, index)) {
+				index += 8;
+				// there may be trailing whitespace
+				if (index < s->length() && skipSpaces(s, index) == index)
+					return false;
+				*value = (negate ? MathUtils::kNegInfinity : MathUtils::kInfinity);
+				return true;
 			}
 			return false;
 		}
 
 		// If we got digits, but we're in strict mode and not at end of string, fail.
-		if (*ptr && strict) {
+		if (index < s->length() && strict) {
 			return false;
 		}
 
@@ -1250,21 +1285,27 @@ namespace avmplus
 			s++;
 		}
 		*/
+		index = start;
 		if (numDigits > 15) // after 15 digits, we can run into roundoff error
 		{
 			BigInteger exactInt;
 			exactInt.setFromInteger(0);
-			int decimalDigits= -1;
-			while ((*s >= '0' && *s <= '9') || *s == '.') {
-				if (decimalDigits != -1) {
-					decimalDigits++;
+			int32_t decimalDigits= -1;
+			while (index < s->length()) {
+				ch = s[index];
+				if ((ch >= '0' && ch <= '9') || ch == '.') {
+					if (decimalDigits != -1) {
+						decimalDigits++;
+					}
+					if (ch != '.') {
+						exactInt.multAndIncrementBy(10, ch - '0');
+					} else {
+						decimalDigits=0;
+					}
+					index++;
 				}
-				if (*s != '.') {
-					exactInt.multAndIncrementBy(10, *s - '0');
-				} else {
-					decimalDigits=0;
-				}
-				s++;
+				else
+					break;
 			}
 			if (decimalDigits > 0) {
 				exp10 -= decimalDigits;
@@ -1278,7 +1319,7 @@ namespace avmplus
 			result = exactInt.doubleValueOf();
 			if (exp10 < 0) {
 				if (exp10 < -307) { // max positive value is e308. min neg value is e-324  Avoid overflow
-					int diff = exp10 + 307;
+					int32_t diff = exp10 + 307;
 					result /= quickPowTen(-diff);
 					exp10 -= diff;
 				}
@@ -1287,17 +1328,23 @@ namespace avmplus
 		}
 		else // we can use double
 		{
-			int decimalDigits= -1;
-			while ((*s >= '0' && *s <= '9') || *s == '.') {
-				if (decimalDigits != -1) {
-					decimalDigits++;
+			int32_t decimalDigits= -1;
+			while (index < s->length())
+			{
+				ch = s[index];
+				if ((ch >= '0' && ch <= '9') || ch == '.') {
+					if (decimalDigits != -1) {
+						decimalDigits++;
+					}
+					if (ch != '.') {
+						result = result*10 + ch - '0';
+					} else {
+						decimalDigits=0;
+					}
+					index++;
 				}
-				if (*s != '.') {
-					result = result*10 + *s - '0';
-				} else {
-					decimalDigits=0;
-				}
-				s++;
+				else
+					break;
 			}
 			if (decimalDigits > 0) {
 				exp10 -= decimalDigits;
@@ -1307,7 +1354,7 @@ namespace avmplus
 			
 			} else {			
 				if (exp10 < -307) { // max positive value is e308.  min neg value is e-324. Avoid overflow
-					int diff = exp10 + 307;
+					int32_t diff = exp10 + 307;
 					result /= quickPowTen(-diff);
 					exp10 -= diff;
 				}
@@ -1367,7 +1414,7 @@ namespace avmplus
 		return true;
 	}
 
-	MathUtils::Bellerophon_MultiplyAndTest(BigInteger* f, int exp10, int slop)
+	MathUtils::Bellerophon_MultiplyAndTest(BigInteger* f, int32_t exp10, int32_t slop)
 	{
 		double x = f->doubleValueOf();
 		double y = quickPowTen(exp10);
@@ -1386,9 +1433,9 @@ namespace avmplus
 		return estimate;
 	}
 
-	MathUtils::findClosestFloat(BigInteger* f, int e, double estimate)
+	MathUtils::findClosestFloat(BigInteger* f, int32_t e, double estimate)
 	{
-		int k;
+		int32_t k;
 		uint64 m = frexp(estimate,&k);
 		BigInteger *m = BigInteger::newFromUint64(m);
 		BigInteger* compX;
@@ -1429,7 +1476,7 @@ namespace avmplus
 #define c1  1376312589L
 
 	/* Read-only, XOR masks for random # generation. */
-	static const uint32 Random_Xor_Masks[31] =
+	static const uint32_t Random_Xor_Masks[31] =
 		{
 			/* First mask is for generating sequences of 3 (2^2 - 1) random numbers,
 			   /  Second mask is for generating sequences of 7 (2^3 - 1) random numbers,
@@ -1479,7 +1526,7 @@ namespace avmplus
 
 		/* The sequence always starts with 1. */
 		//    pRandomFast->uValue = 1L;
-		pRandomFast->uValue = (uint32)(OSDep::currentTimeMillis());
+		pRandomFast->uValue = (uint32_t)(VMPI_getTime());
 
 		/* Figure out the sequence length (2^n - 1). */
 		pRandomFast->uSequenceLength = (1L << n) - 1L;
@@ -1637,7 +1684,7 @@ namespace avmplus
 	//  Support functions
 
 	// For results larger than 10^22, error creeps into the double estimate.  Use BigIntegers to avoid error
-	static inline void quickBigPowTen(int exp, BigInteger* result)
+	static inline void quickBigPowTen(int32_t exp, BigInteger* result)
 	{
 		if (exp < 22 && exp > 0) {
 			result->setFromDouble(kPowersOfTen[exp]);
@@ -1645,14 +1692,14 @@ namespace avmplus
 			result->setFromDouble(kPowersOfTen[21]);
 			exp -= 21;
 			while (exp-- > 0)
-				result->multBy(10);
+				result->multBy((int32)10);
 		} else { // we won't get here because we only deal in positive exponents
 			result->setFromDouble(MathUtils::pow(10,exp)); // but just in case
 		}
 	}
 
 	// Use left shifts to compute powers of 2 < 63
-	static inline double quickPowTwo(int exp)
+	static inline double quickPowTwo(int32_t exp)
 	{
 		static uint64 one = 1; // max we can shift is 64bits
 		if (exp < 64 && exp > 0)
@@ -1663,18 +1710,18 @@ namespace avmplus
 
 	// nextDigit() returns the next relevant digit in the number being converted, else -1 if 
 	//  there are no more relevant digits.  
-	int D2A::nextDigit()
+	int32_t D2A::nextDigit()
 	{
 		if (finished)
 			return -1;
 
 		bool withinLowEndRoundRange;
 		bool withinHighEndRoundRange;
-		int quotient;
+		int32_t quotient;
 
 		if ( bFastEstimateOk )
 		{
-			quotient = (int)(dr / ds);
+			quotient = (int32_t)(dr / ds);
 			double mod = MathUtils::mod(dr,ds);
 			dr = mod;
          
@@ -1714,9 +1761,9 @@ namespace avmplus
 				}
 				else
 				{
-					r.multBy(10); 
-					mPlus.multBy(10);
-					mMinus.multBy(10);
+					r.multBy((int32)10); 
+					mPlus.multBy((int32)10);
+					mMinus.multBy((int32)10);
 				}
 			}
 			else
@@ -1746,9 +1793,9 @@ namespace avmplus
 	}
 
 
-	int D2A::fixup_ExponentEstimate(int exponentEstimate)
+	int32_t D2A::fixup_ExponentEstimate(int32_t exponentEstimate)
 	{
-		int correctedEstimate;
+		int32_t correctedEstimate;
 		if (bFastEstimateOk)
 		{
 			if (highOk ? (dr+dMPlus) >= ds : dr+dMPlus > ds)
@@ -1771,20 +1818,20 @@ namespace avmplus
 			}
 			else
 			{
-				r.multBy(10);
-				mPlus.multBy(10);
-				mMinus.multBy(10);
+				r.multBy((int32)10);
+				mPlus.multBy((int32)10);
+				mMinus.multBy((int32)10);
 				correctedEstimate = exponentEstimate;
 			}
 		}
 		return correctedEstimate;
 	}
 
-	int D2A::scale()
+	int32_t D2A::scale()
 	{
 		// estimate base10 exponent:
-		int base2Exponent = e + mantissaPrec-1;
-		int exponentEstimate = (int)MathUtils::ceil( (base2Exponent * kLog2_10) - 0.0000000001);
+		int32_t base2Exponent = e + mantissaPrec-1;
+		int32_t exponentEstimate = (int32_t)MathUtils::ceil( (base2Exponent * kLog2_10) - 0.0000000001);
 
 
 		if (bFastEstimateOk)
@@ -1831,7 +1878,7 @@ namespace avmplus
 	}
 
 
-	D2A::D2A(double avalue, int mode, int minDigits)
+	D2A::D2A(double avalue, int32_t mode, int32_t minDigits)
 		: value(avalue), finished(false), bFastEstimateOk(false), minPrecision(minDigits)
 	{
 		// break double down into integer mantissa (max size unsigned 53 bits) and integer base 2
@@ -1855,7 +1902,7 @@ namespace avmplus
 			; // skip leading zeros
 		mantissaPrec++; 
 	
-		int absE = (e > 0 ? e : -e);
+		int32_t absE = (e > 0 ? e : -e);
 		if ((absE + mantissaPrec-1) < 50) // we get error prone when there is more than 15 base 10 digits of precision.  (15 / kLog2_10) == 49.828921423310435218054791442341)
 			bFastEstimateOk = true;
 
@@ -1982,7 +2029,7 @@ namespace avmplus
 
 
 	/*
-	A2D::A2D(String source,int radix)
+	A2D::A2D(String source,int32_t radix)
 	{
 		bitsPerChar = 0;
 		while ( (radix >>= 1) != 1 )
@@ -1999,7 +2046,7 @@ namespace avmplus
 		next--;
 	}
 
-	inline int A2D::parseIntDigit(wchar ch)
+	inline int32_t A2D::parseIntDigit(wchar ch)
 	{
 		if (ch >= '0' && ch <= '9') {
 			return (ch - '0');
@@ -2011,13 +2058,13 @@ namespace avmplus
 			return -1;
 		}
 	}
-	int A2D::nextDigit()
+	int32_t A2D::nextDigit()
 	{
 		if (finished)
 			return -1;
 
 		wc = source[next++];
-		int result = parseIntDigit(wc);
+		int32_t result = parseIntDigit(wc);
 		if (next == end || result == -1)
 			finished = true;
 		return result;

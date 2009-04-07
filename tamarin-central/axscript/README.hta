@@ -25,6 +25,9 @@
     <a href="http://www.mozilla.org/projects/tamarin/">Tamarin</a> virtual machine.
     It allows you to use JavaScript 2 inside Internet Explorer, Windows Scripting Host,
     Active Server Pages, and any other application which supports ActiveScripting.
+    For those who care, it is built using tamarin-central but will move to
+    tamarin-tracing as soon as possible (see
+    <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=431541">bug 431541</a>.)
   </p>
   <!-- a <div> that will be hidden by our script code - so if we aren't
        installed it remains visible
@@ -61,6 +64,20 @@
        <a href="http://wiki.mozilla.org/Tamarin:ScreamingMonkey">main project page</a>
        for current information</p>
 
+    <h4>Using Tamarin with the Windows Scripting Host</h4>
+    <p>Tamarin registers the <code>.js2</code> and <code>.es4</code> extensions,
+       which means the Windows Scripting Host will automatically use the Tamarin
+       engine for script files with these extensions.  For more information on
+       WSH, please see
+       <a href="http://support.microsoft.com/kb/232211">Microsoft KB article 232211</a>
+    </p>
+    <p>A quick example: create a file named <code>hello.js2</code> with the contents:</p>
+    <pre>WScript.Echo("Hello from WSH version " + WScript.Version)</pre>
+    <p>and double-click on this file (alternatively, execute either
+      <code>cscript.exe hello.js2</code> or <code>wscript.exe hello.js2</code>)
+      and you should see a message box with the version of WSH you are running.
+    </p>
+
     <h3>Getting Involved</h3>
     <p>Please help us put together better documentation or demos.  Report
        bugs you find - anything you can help us with will be gratefully 
@@ -69,8 +86,9 @@
     </p>
     <p>The source code can be browsed at 
        <a href="http://hg.mozilla.org/tamarin-central/">http://hg.mozilla.org/tamarin-central/</a>
-       in the <code>axscript</code> directory (hrm - how to link directly to it?).
-       See the <a href="http://www.mozilla.org/projects/tamarin/">Tamarin project pages</a>
+       <!-- hrm - how to link directly to the axscript dir of the repository?? -->
+       in the <code>axscript</code> directory - see the
+       <a href="http://www.mozilla.org/projects/tamarin/">Tamarin project pages</a>
        for more information.
     </p>
   </div>
@@ -78,9 +96,14 @@
   <h3>Known Issues</h3>
   <ul>
     <li>
+      eval() doesn't work.
+      <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=413434">(bug 413434)</a>
+    </li>
+    <li>
       Global object semantics don't work correctly - you must 
       always use the <code>window.</code> prefix when getting or setting
-      any attributes on the global object.
+      any attributes on the global object
+      <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=417342">(bug 417342)</a>
     </li>
     <li>
       JS2 is not yet fully implemented by the ESC compiler.  The compiler is
@@ -97,6 +120,10 @@
       security policy than for other script engines.
     </li>
   </ul>
+  <p>See the <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=screamingmonkey"
+             >tracking bug</a> for more up-to-date information about known bugs.
+  </p>
+  
 
   <h3>Contact Information</h3>
   <p>Contact us using email via the 

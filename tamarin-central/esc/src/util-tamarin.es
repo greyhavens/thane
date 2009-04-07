@@ -37,8 +37,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 use namespace "flash.utils";
-    
-// Placeholder until we have decimal support.
+use namespace "avmplus";
+
+// Placeholder class until we have decimal support
 
 class decimal {
     const value;
@@ -57,19 +58,26 @@ class decimal {
         parseFloat(value);
 }
 
-function writeFile(s:String, filename:String) {
-    var b = new ByteArray();
+Util function commandLineArguments() {
+    return System.argv;
+}
+	
+Util function writeStringToFile(s:String, filename:String) {
+    let b = new ByteArray();
     b.writeUTFBytes(s);
-    b.writeFile(filename);
+    File.writeByteArray(filename, b);
 }
     
-function readFile(filename:String) {
-    var b = ByteArray.readFile(filename);
-    return b.readUTFBytes(b.length);
+Util function readStringFromFile(fn) {
+    return File.read (fn);
 }
 
-function dumpABCFile(abcfile, filename) {
-    var bytes = abcfile.getBytes();
-    bytes.writeFile(filename);
+Util function writeBytesToFile(bytes, filename) {
+    File.writeByteArray(filename, bytes);
     return bytes.length;
 }
+
+Util function loadBytes(bytes) {
+    return Domain.currentDomain.loadBytes(bytes);
+}
+

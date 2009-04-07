@@ -38,6 +38,7 @@
 #ifndef __avmplus_List__
 #define __avmplus_List__
 
+#include "TypeTraits.h"
 
 namespace avmplus
 {
@@ -59,6 +60,50 @@ namespace avmplus
 		LIST_NonGCObjects = 0,
 		LIST_GCObjects = 1,
 		LIST_RCObjects = 2
+	};
+
+	template <bool isGCObject, bool isGCFinalizedObject, bool isRCObject>
+	struct _ListElementType
+	{
+	};
+
+	/*
+		Only valid combinations of the above variables are listed below.
+	*/
+	template <>
+	struct _ListElementType<true, false, false>
+	{
+		static const ListElementType kElementType = LIST_GCObjects;
+	};
+
+	template <>
+	struct _ListElementType<false, true, false>
+	{
+		static const ListElementType kElementType = LIST_GCObjects;
+	};
+
+	template <>
+	struct _ListElementType<false, true, true>
+	{
+		static const ListElementType kElementType = LIST_RCObjects;
+	};
+
+	template <>
+	struct _ListElementType<false, false, false>
+	{
+		static const ListElementType kElementType = LIST_NonGCObjects;
+	};
+
+	template <class T>
+	struct _ListElementTypeHelper
+	{
+		typedef typename MMgc::remove_pointer<T>::type base_type;
+
+		typedef MMgc::is_base_of<MMgc::GCObject, base_type> _isGCObject;
+		typedef MMgc::is_base_of<MMgc::GCFinalizedObject, base_type> _isGCFinalizedObject;
+		typedef MMgc::is_base_of<MMgc::RCObject, base_type> _isRCObject;
+
+		static const ListElementType kElementType = _ListElementType<_isGCObject::value, _isGCFinalizedObject::value, _isRCObject::value>::kElementType;
 	};
 
 	template<class T, ListElementType kElementType>
@@ -115,7 +160,7 @@ namespace avmplus
 		}
 	};
 
-	template <class T, ListElementType kElementType>
+	template <class T, ListElementType kElementType = _ListElementTypeHelper<T>::kElementType>
 	class List : public ListBase<T, kElementType>
 	{
 		using ListBase<T, kElementType>::data;
@@ -157,6 +202,9 @@ namespace avmplus
 				delete [] data;
 			// list can be a stack object so this can help the gc
 			data = NULL;
+            len = 0;
+            max = 0;
+			gc = 0;
 		}
 		uint32 add(T value)
 		{
@@ -181,7 +229,12 @@ namespace avmplus
 		}
 		T get(uint32 index) const
 		{
+			AvmAssert(index < len);
 			return data[index];
+		}
+		T last() const
+		{
+			return data[len-1];
 		}
 		void set(uint32 index, T value)
 		{
@@ -231,7 +284,9 @@ namespace avmplus
 					set(i, 0);
 				}
 			} else {
-				memset(data, 0, len*sizeof(T));
+				if ( len ) {
+					VMPI_memset(data, 0, len*sizeof(T));
+				}
 			}
 			len = 0;
 		}
@@ -263,7 +318,7 @@ namespace avmplus
 			// and isn't decremented on next add
 			if(kElementType != LIST_NonGCObjects)
 				data[len] = NULL;
-			AvmAssert(len >= 0);
+			AvmAssert((int32_t)len >= 0);
 			return old;
 		}
 
@@ -272,6 +327,7 @@ namespace avmplus
 		
 		T operator[](uint32 index) const
 		{
+			AvmAssert(index < len);
 			return data[index];
 		}
 
@@ -302,6 +358,13 @@ namespace avmplus
 		}
 
 		const T *getData() const { return data; }
+
+        void become(List<T, kElementType> &list) {
+            clear();
+            for (int i=0, n=list.size(); i < n; i++)
+                add(list[i]);
+            list.clear();
+        }
 
 	private:
 

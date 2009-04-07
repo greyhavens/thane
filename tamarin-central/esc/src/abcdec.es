@@ -51,27 +51,27 @@
 // eval ast
 
 {
+    use namespace "avmplus";
     use namespace Parse;
     use namespace Gen;
     //print ("parsing");
     var top = [];
     var parser = new Parser(str,top);
-    var [ts,nd] = parser.program();
+    var nd = parser.program();
     var bytes = cg(nd).getBytes();
-    Domain.currentDomain.loadBytes(bytes);
+    Util::loadBytes(bytes);
 }
 
 // decode it
 
 {
     //print ("decoding");
-    var bytes = AbcDecode::abcFile (asm);  // defined by side effect
+    var abc = AbcDecode::abcFile (asm);  // defined by side effect
 }
 
 // cogen and write it
 
 {
-    
-    var len = dumpABCFile(bytes, fname+".abc");
+    var len = Util::writeBytesToFile(abc.getBytes(), fname+".abc");
     print (fname+", "/*+(t3-t1)+" ms, "*/+len+" bytes written");
 }

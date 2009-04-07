@@ -39,15 +39,8 @@
 
 # include "avmthane.h"
 
-namespace thane
+namespace avmthane
 {
-	BEGIN_NATIVE_MAP(SocketClass)
-        NATIVE_METHOD(flash_net_Socket_private_nb_connect,       SocketObject::connect)
-        NATIVE_METHOD(flash_net_Socket_private_nb_disconnect,    SocketObject::disconnect)
-        NATIVE_METHOD(flash_net_Socket_private_nb_read,          SocketObject::read)
-        NATIVE_METHOD(flash_net_Socket_private_nb_write,         SocketObject::write)
-	END_NATIVE_MAP()
-		
 	//
 	// Socket
 	//
@@ -238,22 +231,22 @@ namespace thane
 		c.set(&m_socket, sizeof(Socket));
 	}
 
-    int SocketObject::connect (Stringp host, int port)
+    int SocketObject::nb_connect (Stringp host, int port)
     {
-        return m_socket.connect(host->toUTF8String()->c_str(), port);
+        return m_socket.connect(StUTF8String(host).c_str(), port);
     }
 
-    void SocketObject::disconnect ()
+    void SocketObject::nb_disconnect ()
     {
         m_socket.disconnect();
     }
 
-    int SocketObject::write (ByteArrayObject *bytes)
+    int SocketObject::nb_write (ByteArrayObject *bytes)
     {
         return m_socket.write(bytes->GetByteArrayFile());
     }
 
-    int SocketObject::read (ByteArrayObject *bytes)
+    int SocketObject::nb_read (ByteArrayObject *bytes)
 	{
         return m_socket.read(bytes->GetByteArrayFile());
 	}

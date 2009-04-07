@@ -344,17 +344,37 @@ function Init(CubeSize) {
   for (; i < 9; i++) {
     Q[i].V = VMulti(MTrans, Q[i].V);
   }
+    
+    
   DrawQube();
   Testing.Init = true;
   Loop();
+
 }
 function run3dcube() {
-  var _sunSpiderStartDate = new Date();
+  if (CONFIG::desktop)
+      var _sunSpiderStartDate = (new Date).getTime();
+  else  // mobile
+      var _sunSpiderStartDate = getTimer();
 
   for ( var i = 20; i <= 160; i *= 2 ) {
     Init(i);
   }
-
+  
+  if (CONFIG::desktop)
+      var _sunSpiderInterval = (new Date).getTime() - _sunSpiderStartDate;
+  else  // mobile
+      var _sunSpiderInterval = getTimer() - _sunSpiderStartDate;
+  
+  // verify test results
+  var expectedResults = [250.49814997925202, 308.02382919560387, -184.27577256519325];
+  for (i=0; i<3; i++) {
+    if (Math.abs(Q[5].V[i] - expectedResults[i])>0.00001) {
+        print("Test validation failed.  Q[5].V["+i+"]: Expected: "+expectedResults[i]+" Got: "+Q[5].V[i]);
+        return;
+    }
+  }
+  
   Q = null;
   MTrans = null;
   MQube = null;
@@ -363,10 +383,10 @@ function run3dcube() {
   Testing = null;
   LoopTime = null;
   DisplArea = null;
-
-
-  var _sunSpiderInterval = new Date() - _sunSpiderStartDate;
-  return _sunSpiderInterval;
+  
+  print("metric time "+_sunSpiderInterval);
 }
 // main
-print("metric 3d-cube "+run3dcube());
+
+
+run3dcube();

@@ -6,15 +6,23 @@ var size;
 
 	var TestArray; // Array of arrays.
 	
-	var datasizes = new Array(3);
+	var datasizes = new Array(4);
 	datasizes[0] = 10000;
 	datasizes[1] = 100000;
 	datasizes[2] = 1000000;
+    datasizes[3] = 125;
 
-	var start=new Date();
-	JGFrun(1);
-	var elapsed=new Date()-start;
-	print("metric jsbench-series "+elapsed);
+    if (CONFIG::desktop) {
+        var start = new Date();
+        JGFrun(0);
+        var elapsed = new Date() - start;
+    }
+    else { // mobile
+        var start = getTimer();
+        JGFrun(3);
+        var elapsed = getTimer() - start;
+    }
+	print("metric time "+elapsed);
 	function JGFsetsize(sizel) {
 		size = sizel;
 	}
