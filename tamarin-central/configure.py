@@ -205,7 +205,7 @@ elif os == "linux":
         # workaround https://bugzilla.mozilla.org/show_bug.cgi?id=467776
         OPT_CXXFLAGS += '-fno-schedule-insns2 '
         # these warnings are too noisy
-        APP_CXXFLAGS += ' -Wno-parentheses -Wno-c++0x-compat -Wno-empty-body '
+        APP_CXXFLAGS += ' -Wno-parentheses '
     if config.getDebug():
         OS_LIBS.append("dl")
 elif os == "sunos":
