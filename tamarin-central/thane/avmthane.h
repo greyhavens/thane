@@ -62,6 +62,7 @@ namespace avmplus
 	class Dictionary;
 }
 
+#include "Debugger.h"
 #include "FileInputStream.h"
 #include "ConsoleOutputStream.h"
 #include "SystemClass.h"
@@ -144,6 +145,13 @@ namespace avmthane
 		int allowDebugger;
 
 		int execute(int argc, char *argv[]);
+
+	#ifdef DEBUGGER
+	protected:
+		virtual avmplus::Debugger* createDebugger() {
+            return new (GetGC()) Debugger(this);
+        }
+	#endif
 	};
 
 	class ShellToplevel : public Toplevel
