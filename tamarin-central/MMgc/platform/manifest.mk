@@ -55,6 +55,13 @@ MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
   $(NULL)
 endif
 
+ifeq (freebsd,$(TARGET_OS))
+MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
+  $(curdir)/MMgcPortUnix.cpp \
+  $(curdir)/SpinLockUnix.cpp \
+  $(NULL)
+endif
+
 ifeq (sunos,$(TARGET_OS))
 MMgc_CXXSRCS := $(MMgc_CXXSRCS) \
   $(curdir)/MMgcPortUnix.cpp \
