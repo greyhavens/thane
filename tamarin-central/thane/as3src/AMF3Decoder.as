@@ -6,13 +6,13 @@
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted
 // provided that the following conditions are met:
-// 
+//
 // 1. Redistributions of source code must retain the above copyright notice, this list of
 //    conditions and the following disclaimer.
 // 2. Redistributions in binary form must reproduce the above copyright notice, this list of
 //    conditions and the following disclaimer in the documentation and/or other materials provided
 //    with the distribution.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
 // INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
 // PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
@@ -50,8 +50,11 @@ public class AMF3Decoder
             throw new Error("Unexpected marker in AMF3: " + marker);
 
         case AMF3.MARK_XML:
+            return decodeXML();
+
         case AMF3.MARK_XML_DOC:
-            throw new Error("XML deserialization not supported");
+            // We don't even define the legacy XML type
+            throw new Error("XMLDocument is not supported");
 
         case AMF3.MARK_DATE:
             // TODO: this is just lazy, it's super trivial
@@ -132,6 +135,25 @@ public class AMF3Decoder
             return str;
         }
         return "";
+    }
+
+    private static function decodeXML () :XML
+    {
+        var code :uint = decodeInteger();
+
+        // is it a reference?
+        if ((code & 0x01) == 0) {
+            return _ctx.sRef[code >> 1];
+        }
+
+        // if not, read N bytes
+        if ((code >> 1) > 0) {
+            var str :String = _ctx.bytes.readUTFBytes(code >> 1);
+            var xml :XML = new XML(str);
+            _ctx.sRef.push(xml);
+            return xml;
+        }
+        return new XML("");
     }
 
     private static function decodeArray () :Array
