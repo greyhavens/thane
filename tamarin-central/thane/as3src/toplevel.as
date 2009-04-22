@@ -50,6 +50,16 @@ package avmplus
         }
         private static native function doExit (status :int) :void
 
+        public static function resetTimeout () :void
+        {
+            if (!Thanette.isSystemDomain()) {
+                throw new Error("Ilegal operation");
+            }
+
+            doResetTimeout();
+        }
+        private static native function doResetTimeout () :void
+
 		public native static function getAvmplusVersion():String
 		public native static function trace(linePrefix:String, a:Array):void
 		public native static function getTimer():int;

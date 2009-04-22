@@ -71,6 +71,11 @@ namespace avmthane
 		Platform::GetInstance()->exit(status);
 	}
 
+	void SystemClass::doResetTimeout()
+	{
+		((Shell*)this->core())->resetTimeout();
+	}
+
 	Stringp SystemClass::getAvmplusVersion()
 	{
 		return core()->newConstantStringLatin1(AVMPLUS_VERSION_USER " " AVMPLUS_BUILD_CODE);

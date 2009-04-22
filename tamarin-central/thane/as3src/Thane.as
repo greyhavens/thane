@@ -27,6 +27,7 @@ package {
 import flash.events.EventDispatcher;
 import flash.utils.Dictionary;
 import avmplus.Domain;
+import avmplus.System;
 
 public class Thane
 {
@@ -109,9 +110,12 @@ public class Thane
     {
         for each (var heart :Function in _hearts) {
             try {
+                // each top-level script gets its own 15 second timeout
+                System.resetTimeout();
+
                 heart();
             } catch (err :Error) {
-                trace("Heartbeat error: " + err);
+                trace("Heartbeat error: " + err.getStackTrace());
             }
         }
         for each (var spawned :SpawnedDomain in _spawnedDomains) {
@@ -121,7 +125,7 @@ public class Thane
             try {
                 spawned.heartbeat();
             } catch (err :Error) {
-                trace("Heartbeat error: " + err);
+                trace("Heartbeat error: " + err.getStackTrace());
             }
         }
     }

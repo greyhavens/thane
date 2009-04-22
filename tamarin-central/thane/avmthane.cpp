@@ -74,9 +74,6 @@ namespace avmplus {
 
 namespace avmthane
 {
-	const int kScriptTimeout = 15;
-	const int kScriptGracePeriod = 5;
-
 	bool show_error = false;
 
 	ShellToplevel::ShellToplevel(AbcEnv* abcEnv) : Toplevel(abcEnv)
@@ -178,6 +175,7 @@ namespace avmthane
 		
 	void Shell::interruptTimerCallback(void* data)
 	{
+        fprintf(stderr, "Interrupted! Eek!\n");
 		((AvmCore*)data)->interrupted = true;
 	}
 	
@@ -203,7 +201,7 @@ namespace avmthane
 		// clean up, and throw an exception.
 		gracePeriod = true;
 
-		Platform::GetInstance()->setTimer(kScriptGracePeriod, interruptTimerCallback, this);
+        Platform::GetInstance()->setTimer(kScriptGracePeriod, interruptTimerCallback, this);
 
 		toplevel->throwError(kScriptTimeoutError);
 	}
@@ -819,7 +817,7 @@ namespace avmthane
 			
 			// start the 15 second timeout if applicable
 			if (config.interrupts) {
-				Platform::GetInstance()->setTimer(kScriptTimeout, interruptTimerCallback, this);
+                resetTimeout();
 			}
 
 			if(endFilenamePos == -1)
@@ -918,9 +916,6 @@ namespace avmthane
             Atom args[1] = { cc->atom() };
             // now just call heartbeat() forever
             while (true) {
-                if (config.interrupts) {
-                    Platform::GetInstance()->setTimer(kScriptTimeout, interruptTimerCallback, this);
-                }
                 heartMethod->coerceEnter(0, args);
                 // call heartbeat() no more than 50 times per second
 # ifdef WIN32

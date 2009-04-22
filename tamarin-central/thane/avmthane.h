@@ -90,6 +90,9 @@ namespace avmplus
 
 namespace avmthane
 { 
+	const int kScriptTimeout = 15;
+	const int kScriptGracePeriod = 5;
+
 	// exit codes
 	enum {
 		OUT_OF_MEMORY = 128,
@@ -116,6 +119,13 @@ namespace avmthane
 		void stackOverflow(MethodEnv *env);
 
 		void setEnv(Toplevel *toplevel, int argc, char *argv[]);
+
+        void resetTimeout ()
+        {
+            if (config.interrupts) {
+                Platform::GetInstance()->setTimer(kScriptTimeout, interruptTimerCallback, this);
+            }
+        }
 
 		virtual Toplevel* createToplevel(AbcEnv* abcEnv);
 		Toplevel* initShellBuiltins();

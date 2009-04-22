@@ -100,6 +100,8 @@ namespace avmthane
 		 */
 		void doExit(int status);
 
+        void doResetTimeout ();
+
 		/**
 		 * Implementation of System.getAvmplusVersion
 		 * AS usage: System.getAvmplusVersion();
