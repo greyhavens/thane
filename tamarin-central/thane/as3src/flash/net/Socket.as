@@ -128,7 +128,7 @@ public class Socket extends EventDispatcher
 
             _oPos = _oBuf.position;
 
-            while (read > 0) {
+            if (read > 0) {
                 _bytesTotal += read;
                 dispatchEvent(new ProgressEvent(ProgressEvent.SOCKET_DATA));
             }
