@@ -110,8 +110,10 @@ public class Thane
     {
         for each (var heart :Function in _hearts) {
             try {
-                // each top-level script gets its own 15 second timeout
-                System.resetTimeout();
+                if (Thanette.isSystemDomain()) {
+                    // each top-level script gets its own 15 second timeout
+                    System.resetTimeout();
+                }
 
                 heart();
             } catch (err :Error) {
