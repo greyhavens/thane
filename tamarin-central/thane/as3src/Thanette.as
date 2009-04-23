@@ -52,10 +52,9 @@ public class Thanette
     // some parts of Thanette we want to work in the system domain too
     public static function systemSetup (cacheFactory :Function) :void
     {
-        if (!isSystemDomain()) {
-            throw new Error("Already initialized as a subdomain.");
+        if (isSystemDomain()) {
+            _cacheFactory = cacheFactory;
         }
-        _cacheFactory = cacheFactory;
     }
 
     public static function initializeDomain (

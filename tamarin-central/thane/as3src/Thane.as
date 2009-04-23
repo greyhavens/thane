@@ -32,12 +32,7 @@ import avmplus.System;
 
 public class Thane
 {
-    /* static */
-    {
-        if (Thanette.isSystemDomain()) {
-            Thanette.systemSetup(httpClientFactory);
-        }
-    }
+    Thanette.systemSetup(httpClientFactory);
 
     public static function spawnDomain (
         domainId :String, consoleTracePrefix :String, bridge :EventDispatcher) :Domain
