@@ -69,6 +69,7 @@ public class Thane
                     httpClientFactory);
 
         } catch (e :Error) {
+            trace("Domain initialization error: " + e.getStackTrace());
             unspawnDomain(dom);
             return null;
 
