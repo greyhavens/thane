@@ -34,7 +34,9 @@ public class Thane
 {
     /* static */
     {
-        Thanette.systemSetup(httpClientFactory);
+        if (Thanette.isSystemDomain()) {
+            Thanette.systemSetup(httpClientFactory);
+        }
     }
 
     public static function spawnDomain (
