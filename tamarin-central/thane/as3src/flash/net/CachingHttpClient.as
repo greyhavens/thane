@@ -24,11 +24,9 @@ public class CachingHttpClient extends EventDispatcher
 
     public function request (resource :String) :void
     {
-        trace("Recevied request for: " + resource);
         // did we already load this?
         var data :ByteArray = _cached[resource];
         if (data != null) {
-            trace("Scheduling delivery of cached data for: " + resource);
             setTimeout(function () :void {
                 dispatchEvent(new HttpDataEvent(data));
                 dispatchEvent(new Event(Event.COMPLETE));
@@ -39,15 +37,11 @@ public class CachingHttpClient extends EventDispatcher
         // else, is some instance already loading it?
         var loader :HttpLoader = _loading[resource];
         if (!loader) {
-            trace("Starting download of: " + resource);
             // if not, start loading
             loader = new HttpLoader(resource);
 
             // and remember that we are
             _loading[resource] = loader;
-
-        } else {
-            trace("Resource already being loaded: " + resource);
         }
 
         // finally make sure we hear about the loader's events
