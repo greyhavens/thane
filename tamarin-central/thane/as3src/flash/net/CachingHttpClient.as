@@ -19,6 +19,7 @@ public class CachingHttpClient extends EventDispatcher
 
     public static function cache (resource :String, data :ByteArray) :void
     {
+        trace("CachingHTTPClient: Caching resource: " + resource);
         _cached[resource] = data;
     }
 
@@ -41,6 +42,7 @@ public class CachingHttpClient extends EventDispatcher
             loader = new HttpLoader(resource);
 
             // and remember that we are
+            trace("CachingHTTPClient: Now loading resource: " + resource);
             _loading[resource] = loader;
         }
 
