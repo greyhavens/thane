@@ -49,9 +49,7 @@ public class Domain
             throw new Error("Illegal operation");
         }
 
-        trace("Initializing new domain...");
         initNewDomain();
-        trace("Domain initialized!");
     }
     private native function initNewDomain () :void;
 
@@ -60,9 +58,7 @@ public class Domain
         if (!Thanette.isSystemDomain()) {
             throw new Error("Illegal operation");
         }
-        trace("Domain: loading bytes...");
         doLoadBytes(byteArray);
-        trace("Domain: bytes loaded!");
     }
 	private native function doLoadBytes (byteArray :ByteArray);
 
