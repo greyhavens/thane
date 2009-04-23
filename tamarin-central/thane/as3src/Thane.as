@@ -25,12 +25,18 @@
 package {
 
 import flash.events.EventDispatcher;
+import flash.net.CachingHttpClient;
 import flash.utils.Dictionary;
 import avmplus.Domain;
 import avmplus.System;
 
 public class Thane
 {
+    /* static */
+    {
+        Thanette.systemSetup(httpClientFactory);
+    }
+
     public static function spawnDomain (
         domainId :String, consoleTracePrefix :String, bridge :EventDispatcher) :Domain
     {
@@ -59,7 +65,8 @@ public class Thane
         _spawnedDomains[domainId].domain = dom;
         _spawningDomain = domainId;
         try {
-            initFun(domainId, consoleTracePrefix, bridge, requestSpawnedHeartbeat, registerTrace);
+            initFun(domainId, consoleTracePrefix, bridge, requestSpawnedHeartbeat, registerTrace,
+                    httpClientFactory);
 
         } catch (e :Error) {
             unspawnDomain(dom);
@@ -156,6 +163,11 @@ public class Thane
         spawned.traceFn = traceFn;
     }
     
+    protected static function httpClientFactory () :CachingHttpClient
+    {
+        return new CachingHttpClient();
+    }
+
     /** The SpawnedDomain objects created by spawnDomain. */
     private static var _spawnedDomains :Dictionary = new Dictionary();
 

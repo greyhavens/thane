@@ -25,6 +25,7 @@
 package {
 
 import flash.events.EventDispatcher;
+import flash.net.CachingHttpClient;
 
 public class Thanette
 {
@@ -48,9 +49,18 @@ public class Thanette
         return _consoleTracePrefix;
     }
 
+    // some parts of Thanette we want to work in the system domain too
+    public static function systemSetup (cacheFactory :Function) :void
+    {
+        if (!isSystemDomain()) {
+            throw new Error("Already initialized as a subdomain.");
+        }
+        _cacheFactory = cacheFactory;
+    }
+
     public static function initializeDomain (
         domainId :String, consoleTracePrefix :String, bridge :EventDispatcher,
-        foreignHeart :Function, registerTrace :Function) :void
+        foreignHeart :Function, registerTrace :Function, cacheFactory :Function) :void
     {
         if (domainId == null || domainId.length == 0) {
             throw new Error ("Domain must be spawned with an identifier");
@@ -62,6 +72,7 @@ public class Thanette
         _domainId = domainId;
         _bridge = bridge;
         _consoleTracePrefix = consoleTracePrefix;
+        _cacheFactory = cacheFactory;
 
         if (foreignHeart != null) {
             foreignHeart(Thane.heartbeat);
@@ -70,6 +81,11 @@ public class Thanette
         if (registerTrace != null) {
             registerTrace(trace);
         }
+    }
+
+    public static function getCachingHttpClient () :CachingHttpClient
+    {
+        return _cacheFactory() as CachingHttpClient;
     }
 
     public static function traceToBridge (s :Array) :void
@@ -83,5 +99,6 @@ public class Thanette
     private static var _domainId :String;
     private static var _bridge :EventDispatcher;
     private static var _consoleTracePrefix :String;
+    private static var _cacheFactory :Function;
 }
 }

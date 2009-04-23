@@ -42,6 +42,8 @@ import org.httpclient.events.HttpDataEvent;
 import org.httpclient.events.HttpErrorEvent;
 import org.httpclient.events.HttpStatusEvent;
 
+import Thanette;
+
 /**
  * The URLLoader class downloads data from a URL as text, binary data, or URL-encoded variables.
  * It is useful for downloading text files, XML, or other information to be used in a dynamic,
@@ -134,13 +136,13 @@ public class URLLoader extends EventDispatcher
         }
         reset();
 
-        _client = new HttpClient();
+        _client = Thanette.getCachingHttpClient();
         _client.addEventListener(Event.COMPLETE, handleComplete);
         _client.addEventListener(HttpDataEvent.DATA, handleData);
         _client.addEventListener(HttpErrorEvent.ERROR, handleError);
         _client.addEventListener(HttpStatusEvent.STATUS, handleStatus);
 
-        _client.request(new URI(request.url), new Get());
+        _client.request(request.url);
     }
 
     /** Deal with a HTTP Error. */
@@ -196,7 +198,7 @@ public class URLLoader extends EventDispatcher
     protected var _request :URLRequest;
     protected var _data :ByteArray;
 
-    protected var _client :HttpClient;
+    protected var _client :CachingHttpClient;
 
     protected var _bytes :ByteArray;
     protected var _bytesTotal :uint;
