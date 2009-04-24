@@ -108,7 +108,7 @@ namespace avmthane
     {
         fflush(stdout);
     }
-
+	
 	char* WinPlatform::getUserInput(char* buffer, int bufferSize)
 	{
 		fflush(stdout);
@@ -121,7 +121,7 @@ namespace avmthane
 		TimerCallbackInfo* info = new TimerCallbackInfo;
 		info->callbackFunc = callback;
 		info->userData = callbackData;
-
+		
 		timeSetEvent(seconds*1000,
 			seconds*1000,
 			(LPTIMECALLBACK)TimeoutProc,
@@ -169,7 +169,7 @@ namespace avmthane
 			}
 			else if (avmthane::show_error)
 			{
-				// if -error option dont do a dump
+				// if -error option dont do a dump 
 				return EXCEPTION_CONTINUE_SEARCH;
 			}
 
@@ -186,7 +186,7 @@ namespace avmthane
 				);
 
 			HMODULE hDbgHelp = LoadLibrary("dbghelp.dll");
-			MINIDUMP_WRITE_DUMP MiniDumpWriteDump_ = (MINIDUMP_WRITE_DUMP)GetProcAddress(hDbgHelp,
+			MINIDUMP_WRITE_DUMP MiniDumpWriteDump_ = (MINIDUMP_WRITE_DUMP)GetProcAddress(hDbgHelp, 
 				"MiniDumpWriteDump");
 
 			if (MiniDumpWriteDump_)
@@ -200,7 +200,7 @@ namespace avmthane
 
 				AvmLog("Writing minidump crash log to %s\n", DumpPath);
 
-				HANDLE hDumpFile = CreateFile(DumpPath, GENERIC_WRITE, 0,
+				HANDLE hDumpFile = CreateFile(DumpPath, GENERIC_WRITE, 0, 
 					NULL, CREATE_ALWAYS,
 					FILE_ATTRIBUTE_NORMAL, NULL);
 
@@ -232,7 +232,7 @@ namespace avmthane
 
 			_wfreopen(logname, L"w", stdout);
 
-			delete [] logname;
+			delete [] logname;	
 		#else
 			FILE *f = freopen(filename, "w", stdout);
 			if (!f)
@@ -242,7 +242,7 @@ namespace avmthane
 
 } //namespace avmthane
 
-avmthane::WinPlatform* gPlatformHandle = NULL;
+avmthane::WinPlatform* gPlatformHandle = NULL; 
 
 avmthane::Platform* avmthane::Platform::GetInstance()
 {
@@ -255,7 +255,7 @@ avmthane::Platform* avmthane::Platform::GetInstance()
 	static int executeShell(int argc, char *argv[])
 	{
 		int code = 0;
-
+		
 		__try
 		{
 			code = avmthane::Shell::run(argc, argv);
@@ -271,7 +271,7 @@ avmthane::Platform* avmthane::Platform::GetInstance()
 	int main(int argc, char *argv[])
 	{
 		SetErrorMode(SEM_NOGPFAULTERRORBOX);
-
+		
 		avmthane::WinPlatform platformInstance;
 		gPlatformHandle = &platformInstance;
 

@@ -71,7 +71,7 @@ namespace avmthane
     {
         fflush(stdout);
     }
-
+	
 	char* PosixPartialPlatform::getUserInput(char* buffer, int bufferSize)
 	{
 		fflush(stdout);
