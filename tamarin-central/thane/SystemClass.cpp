@@ -47,7 +47,7 @@ namespace avmthane
 		if (core->systemClass == NULL) {
 			core->systemClass = this;
 		}
-		
+
 		createVanillaPrototype();
 
 		// initialTime: support for getTimer
@@ -56,7 +56,7 @@ namespace avmthane
 		#ifdef PERFORMANCE_GETTIMER
 		initialTime = VMPI_getPerformanceCounter();
 		#else
-		initialTime = VMPI_getTime();		
+		initialTime = VMPI_getTime();
 		#endif // PERFORMANCE_GETTIMER
 
 	}
@@ -104,7 +104,7 @@ namespace avmthane
 				{
 					if (((j+1) < s->length()) && s[j+1] == '\n')
 					{
-						console << '\r';	
+						console << '\r';
 						j++;
 					}
 
@@ -118,6 +118,7 @@ namespace avmthane
 			}
 		}
 		console << '\n';
+        console.flush();
 	}
 
 	unsigned SystemClass::getTimer()
@@ -159,7 +160,7 @@ namespace avmthane
 		MMgc::GCHeap* gcheap = core()->GetGC()->GetGCHeap();
 		return double(gcheap->GetFreeHeapSize() * MMgc::GCHeap::kBlockSize);
 	}
-	
+
 	double SystemClass::get_privateMemory()
 	{
 		return double(MMgc::GCHeap::GetPrivateBytes() * MMgc::GCHeap::kBlockSize);

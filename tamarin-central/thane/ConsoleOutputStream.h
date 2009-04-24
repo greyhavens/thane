@@ -53,6 +53,7 @@ namespace avmthane
 	{
 	public:
 		int write(const void *buffer, int count);
+        void flush();
 	};
 }
 

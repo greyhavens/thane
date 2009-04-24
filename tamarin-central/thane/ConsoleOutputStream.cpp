@@ -68,4 +68,9 @@ namespace avmthane
 			return i;
 		}
 	}
+
+    void ConsoleOutputStream::flush()
+    {
+        Platform::GetInstance()->flushOutput();
+    }
 }

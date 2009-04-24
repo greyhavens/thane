@@ -55,11 +55,11 @@ namespace avmplus
 			return *this;
 		}
 		uintptr getValue() const { return value; }
-		
+
 	private:
 		uintptr value;
 	};
-	
+
 	/**
 	 * tabstop is an operator that can be used with PrintWriter
 	 * to advance to the specified tabstop
@@ -74,11 +74,11 @@ namespace avmplus
 			return *this;
 		}
 		int getSpaces() const { return spaces; }
-		
+
 	private:
 		int spaces;
 	};
-	
+
 	/**
 	 * percent is an operator that can be used with PrintWrtier
 	 * to output a number as a percentage
@@ -93,7 +93,7 @@ namespace avmplus
 			return *this;
 		}
 		double getPercent() const { return value; }
-		
+
 	private:
 		double value;
 	};
@@ -113,13 +113,14 @@ namespace avmplus
 
 		void setOutputStream(OutputStream *stream) { m_stream = stream; }
 		void setCore(AvmCore* core) { m_core = core; }
-		
+
 		int write(const void *buffer, int count);
+        void flush();
 
 		PrintWriter& operator<< (const char *str);
 		PrintWriter& operator<< (const wchar *str);
 		PrintWriter& operator<< (char value);
-		PrintWriter& operator<< (wchar value);		
+		PrintWriter& operator<< (wchar value);
 		PrintWriter& operator<< (int32_t value);
 		PrintWriter& operator<< (uint32_t value);
 		PrintWriter& operator<< (uint64_t value);
@@ -131,7 +132,7 @@ namespace avmplus
 		PrintWriter& operator<< (Stringp str);
 		PrintWriter& operator<< (tabstop tabs);
 		PrintWriter& operator<< (hexAddr tabs);
-		PrintWriter& operator<< (percent value);		
+		PrintWriter& operator<< (percent value);
 		PrintWriter& operator<< (bool b);
 
 		void formatTypeName(Traits* t);
@@ -139,19 +140,19 @@ namespace avmplus
 		void writeHexByte(uint8 value);
 		void writeHexWord(uint16 value);
 		void writeHexAddr(uintptr value);
-		
+
 		#ifdef AVMPLUS_VERBOSE
 		void format(const char *format, ...);
 		void formatV(const char *format, va_list ap);
 		void formatP(const char* format, Stringp arg1=0, Stringp arg2=0, Stringp arg3=0);
 		#endif
-		
+
 	private:
 		int col;
 		OutputStream *m_stream;
 		AvmCore *m_core;
 
-		void writeHexNibble(uint8 value);	
+		void writeHexNibble(uint8 value);
 
 		// These are defined for not DEBUGGER builds but fire asserts
 	public:

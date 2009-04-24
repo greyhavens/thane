@@ -40,7 +40,7 @@
 
 #include "VMPI.h"
 
-namespace avmthane 
+namespace avmthane
 {
 	/**
 	* function pointer for the timer callback function
@@ -63,7 +63,7 @@ namespace avmthane
 		* @return Pointer to singleton instance of the platform defined implementation of this base class
 		*/
 		static Platform* GetInstance();
-		
+
 		/**
 		* Virtual Destructor
 		*/
@@ -110,8 +110,13 @@ namespace avmthane
 		*/
 		virtual int logMessage(const char* message) = 0;
 
+        /**
+        * Method to flush the output stream in a platform-defined way
+        */
+        virtual void flushOutput() = 0;
+
 		/**
-		* Method to receive a NULL-terminated string of user data via console or other source 
+		* Method to receive a NULL-terminated string of user data via console or other source
 		* This method is useful while running shell in interactive mode and for debugging purposes
 		* Currently the expected encoding of the data is Latin-1
 		* @param buffer buffer for storing the input data

@@ -66,7 +66,12 @@ namespace avmthane
 	{
 		return fprintf(stdout, message);
 	}
-	
+
+    void PosixPartialPlatform::flushOutput()
+    {
+        fflush(stdout);
+    }
+
 	char* PosixPartialPlatform::getUserInput(char* buffer, int bufferSize)
 	{
 		fflush(stdout);

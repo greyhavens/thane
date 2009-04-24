@@ -54,6 +54,7 @@ namespace avmplus
 	public:
 		OutputStream() {}
 		virtual ~OutputStream() {}
+        virtual void flush() {}
 		virtual int write(const void *buffer, int count) = 0;
 	};
 }

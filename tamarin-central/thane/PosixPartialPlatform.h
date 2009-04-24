@@ -55,6 +55,7 @@ namespace avmthane
 		virtual void initializeLogging(const char* filename);
 
 		virtual int logMessage(const char* message);
+        virtual void flushOutput();
 		virtual char* getUserInput(char* buffer, int bufferSize);
 	};
 }

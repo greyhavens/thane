@@ -39,7 +39,7 @@
 #include "avmplus.h"
 #if defined FEATURE_NANOJIT
 #include "CodegenLIR.h"
-#endif 
+#endif
 
 namespace avmplus
 {
@@ -67,9 +67,16 @@ namespace avmplus
 			return result;
 		} else {
 			return 0;
-		}			
+		}
 	}
-	
+
+    void PrintWriter::flush()
+    {
+        if (m_stream) {
+            m_stream->flush();
+        }
+    }
+
 	PrintWriter& PrintWriter::operator<< (tabstop tabs)
 	{
 		while (col <= tabs.getSpaces()) {
@@ -83,7 +90,7 @@ namespace avmplus
 		writeHexAddr(value.getValue());
 		return *this;
 	}
-	
+
 	PrintWriter& PrintWriter::operator<< (percent value)
 	{
 		if (value.getPercent() < 10) {
@@ -102,7 +109,7 @@ namespace avmplus
 		}
 		return *this;
 	}
-	
+
 	PrintWriter& PrintWriter::operator<< (const char *str)
 	{
 		write(str, String::Length(str));
@@ -141,7 +148,7 @@ namespace avmplus
 		}
 		return *this;
 	}
-	
+
 	PrintWriter& PrintWriter::operator<< (int32_t value)
 	{
 		Stringp s = MathUtils::convertIntegerToStringBase10(m_core, value, MathUtils::kTreatAsSigned);
@@ -186,9 +193,9 @@ namespace avmplus
 	{
 		if (!str)
 			return *this << "(null)";
-		
+
 		StringIndexer str_idx(str);
-		for (int i=0, n=str_idx->length(); i<n; i++) 
+		for (int i=0, n=str_idx->length(); i<n; i++)
 		{
 			*this << (wchar)str_idx[i];
 		}
@@ -263,7 +270,7 @@ namespace avmplus
 		AvmAssert(0); // this is only supported in AVMPLUS_VERBOSE builds
 		return *this;
 #endif
-	}	
+	}
 
 	void PrintWriter::writeHexNibble(uint8 value)
 	{
@@ -273,7 +280,7 @@ namespace avmplus
 			*this << (char)(value+'A'-10);
 		}
 	}
-	
+
 	void PrintWriter::writeHexByte(uint8 value)
 	{
 		writeHexNibble(value>>4);
@@ -299,7 +306,7 @@ namespace avmplus
 		writeHexByte(uint8(value>>8));
 		writeHexByte(uint8(value&0xff));
 	}
-	
+
 	void PrintWriter::formatTypeName(Traits* t)
 	{
 		if (!t)
@@ -326,11 +333,11 @@ namespace avmplus
 #ifdef AVMPLUS_VERBOSE
 	void PrintWriter::formatP(const char* format, Stringp arg1, Stringp arg2, Stringp arg3)
 	{
-		while (*format) 
+		while (*format)
 		{
-			if (*format == '%') 
+			if (*format == '%')
 			{
-				switch (*++format) 
+				switch (*++format)
 				{
 					case '1':
 						AvmAssertMsg(arg1!=0, "Expected argument got null");
@@ -385,7 +392,7 @@ namespace avmplus
 				case 'o':
 					*this << va_arg(ap, ScriptObject*);
 					break;
-				case 't': 
+				case 't':
 					formatTypeName(va_arg(ap, Traits*));
 					break;
 				case 'm':
@@ -440,4 +447,4 @@ namespace avmplus
 		va_end(ap);
 	}
 #endif /* VERBOSE */
-}	
+}
