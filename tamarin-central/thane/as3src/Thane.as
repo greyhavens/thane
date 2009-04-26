@@ -26,75 +26,71 @@ package {
 
 import flash.events.EventDispatcher;
 import flash.net.CachingHttpClient;
+import flash.utils.ByteArray;
 import flash.utils.Dictionary;
-import avmplus.Domain;
+import avmplus.Yard;
 import avmplus.System;
 
 public class Thane
 {
     Thanette.systemSetup(httpClientFactory);
 
-    public static function spawnDomain (
-        domainId :String, consoleTracePrefix :String, bridge :EventDispatcher) :Domain
+    public static function spawnYard (
+        yardId :String, userCode :ByteArray, consoleTracePrefix :String,
+        bridge :EventDispatcher) :Yard
     {
-        if (!Thanette.isSystemDomain()) {
-            throw new Error("Non-system domain spawning");
+        if (!Thanette.isSystemYard()) {
+            throw new Error("Non-system playground spawning");
         }
 
-        var dom :Domain = new Domain();
-
-        if (domainId == null || domainId.length == 0) {
-            throw new Error ("Domain must be spawned with an identifier");
+        if (yardId == null || yardId.length == 0) {
+            throw new Error ("Yard must be spawned with an identifier");
         }
-        if (_spawnedDomains[domainId] != null) {
-            throw new Error ("Domain identifier not unique");
+        if (_spawnedYards[yardId] != null) {
+            throw new Error ("Yard identifier not unique");
         }
 
-        var thane :Class = dom.getClass("Thanette");
-        if (thane == null) {
-            throw new Error ("Could not locate Thanette in new Domain");
+        var env :Yard = new Yard(userCode);
+
+        var thanette :Class = env.domain.getClass("Thanette");
+        if (thanette == null) {
+            throw new Error ("Could not locate Thanette in new Yard");
         }
-        var initFun :Function = thane["initializeDomain"];
+        var initFun :Function = thanette["initializeYard"];
         if (initFun == null) {
-            throw new Error("Could not locate initializeDomain() on foreign Thanette class");
+            throw new Error("Could not locate initializeYard() on foreign Thanette class");
         }
-        _spawnedDomains[domainId] = new SpawnedDomain();
-        _spawnedDomains[domainId].domain = dom;
-        _spawningDomain = domainId;
+        _spawnedYards[yardId] = new SpawnedYard();
+        _spawnedYards[yardId].yard = env;
+        _spawningYard = yardId;
         try {
-            initFun(domainId, consoleTracePrefix, bridge, requestSpawnedHeartbeat, registerTrace,
+            initFun(yardId, consoleTracePrefix, bridge, requestSpawnedHeartbeat, registerTrace,
                     httpClientFactory);
 
         } catch (e :Error) {
-            trace("Domain initialization error: " + e.getStackTrace());
-            unspawnDomain(dom);
+            trace("Yard initialization error: " + e.getStackTrace());
+            delete _spawnedYards[yardId];
             return null;
 
         } finally {
-            _spawningDomain = null;
+            _spawningYard = null;
         }
         
-        return dom;
+        return env;
     }
 
-    public static function unspawnDomain (domain :Domain) :void
+    public static function unspawnYard (yardId :String) :void
     {
-        for (var domainId :String in _spawnedDomains) {
-            if (_spawnedDomains[domainId].domain == domain) {
-                delete _spawnedDomains[domainId];
-                return;
-            }
-        }
-        throw new Error("Domain not spawned");
+        delete _spawnedYards[yardId];
     }
 
     /**
      * Outputs a message and optional error to a domain's trace function.
      */
-    public static function outputToTrace (domain :Domain, msg :String, err :Error) :void
+    public static function outputToTrace (yard :Yard, msg :String, err :Error) :void
     {
-        for each (var spawned :SpawnedDomain in _spawnedDomains) {
-            if (spawned.domain == domain) {
+        for each (var spawned :SpawnedYard in _spawnedYards) {
+            if (spawned.yard == yard) {
                 spawned.traceFn(msg);
                 if (err != null) {
                     spawned.traceFn(err.getStackTrace());
@@ -115,7 +111,7 @@ public class Thane
     {
         for each (var heart :Function in _hearts) {
             try {
-                if (Thanette.isSystemDomain()) {
+                if (Thanette.isSystemYard()) {
                     // each top-level script gets its own 15 second timeout
                     System.resetTimeout();
                 }
@@ -125,7 +121,7 @@ public class Thane
                 trace("Heartbeat error: " + err.getStackTrace());
             }
         }
-        for each (var spawned :SpawnedDomain in _spawnedDomains) {
+        for each (var spawned :SpawnedYard in _spawnedYards) {
             if (spawned.heartbeat == null) {
                 continue;
             }
@@ -139,24 +135,25 @@ public class Thane
 
     protected static function requestSpawnedHeartbeat (heart :Function) :void
     {
-        if (!Thanette.isSystemDomain() || _spawningDomain == null) {
-            throw new Error("Master heartbeat inaccessible");
+        if (!Thanette.isSystemYard() || _spawningYard == null) {
+            throw new Error("Master heartbeat inaccessible: " +
+                            Thanette.getYardId() + ", " + _spawningYard);
         }
-        var spawned :SpawnedDomain = _spawnedDomains[_spawningDomain];
+        var spawned :SpawnedYard = _spawnedYards[_spawningYard];
         if (spawned == null) {
-            throw new Error("Domain not spawned");
+            throw new Error("Yard not spawned");
         }
         if (spawned.heartbeat != null) {
-            throw new Error("Domain heartbeat already allocated");
+            throw new Error("Yard heartbeat already allocated");
         }
         spawned.heartbeat = heart;
     }
 
     protected static function registerTrace (traceFn :Function) :void
     {
-        var spawned :SpawnedDomain = _spawnedDomains[_spawningDomain];
+        var spawned :SpawnedYard = _spawnedYards[_spawningYard];
         if (spawned == null) {
-            throw new Error("Domain not spawned");
+            throw new Error("Yard not spawned");
         }
         spawned.traceFn = traceFn;
     }
@@ -166,28 +163,28 @@ public class Thane
         return new CachingHttpClient();
     }
 
-    /** The SpawnedDomain objects created by spawnDomain. */
-    private static var _spawnedDomains :Dictionary = new Dictionary();
+    /** The SpawnedYard objects created by spawnYard. */
+    private static var _spawnedYards :Dictionary = new Dictionary();
 
-    /** Heartbeats requested in this domain. */
+    /** Heartbeats requested in this playground. */
     private static var _hearts :Array = new Array();
 
-    /** Only set when spawning a domain. */
-    private static var _spawningDomain :String = null;
+    /** Only set when spawning a yard. */
+    private static var _spawningYard :String = null;
 }
 }
 
-import avmplus.Domain;
+import avmplus.Yard;
 
-/** Tracks the things needed for a spawned domain. */
-class SpawnedDomain
+/** Tracks the things needed for a spawned yard */
+class SpawnedYard
 {
-    /** The domain object. */
-    public var domain :Domain;
+    /** The playground object. */
+    public var yard :Yard;
 
-    /** The heartbeat function within the domain to call as often as possible. */
+    /** The heartbeat function within the playground to call as often as possible. */
     public var heartbeat :Function;
 
-    /** The trace function within the domain. */
+    /** The trace function within the yard. */
     public var traceFn :Function;
 }

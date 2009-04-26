@@ -40,48 +40,30 @@ package avmplus {
 
 import flash.utils.ByteArray
 
-[native(cls="DomainClass", instance="DomainObject", methods="auto")]
-public class Domain
+[native(cls="PuddleClass", instance="PuddleObject", methods="auto")]
+public class Puddle
 {
-	public function Domain (parentDomain :Domain = null)
+	public function Puddle (env :Yard)
     {
         if (!Thanette.isSystemYard()) {
             throw new Error("Illegal operation");
         }
 
-        initNewDomain(parentDomain);
+        _domain = new Domain(env.domain);
+
+        trace("Initializing new Yard with Domain[" + env.domain + "]");
+
+        initPuddle(_domain, env);
     }
-    private native function initNewDomain (parentDomain :Domain) :void;
 
-	public native function getClass(className:String):Class;
-    public native function getVariables (value :*) :Array;
-	public native function getClassName(value :*): String;
-    public native function isAssignableAs (asClass :Class, value :*) :Boolean;
-    public native function isDynamic (value :*) :Boolean;
+    public function get domain () :Domain
+    {
+        return _domain;
+    }
 
-	public native static function get currentDomain():Domain;
+    private native function initPuddle (domain :Domain, env :Yard) :void;
 
-	/**
-	 * Gets the minimum length of a ByteArray required to be used as
-	 * ApplicationDomain.globalMemory
-	 *
-     * @tiptext 
-     * @playerversion Flash 10
-     * @langversion 3.0
-	 */	 
-	public native static function get MIN_DOMAIN_MEMORY_LENGTH():uint;
-	
-	/**
-	 * Gets and sets the ByteArray object on which global memory operations
-	 * will operate within this ApplicationDomain
-	 *
-     * @tiptext 
-     * @playerversion Flash 10
-     * @langversion 3.0
-	 */	 
-	public native function get domainMemory():ByteArray;
-	public native function set domainMemory(mem:ByteArray);
-
+    private var _domain :Domain;
 }
 
 }

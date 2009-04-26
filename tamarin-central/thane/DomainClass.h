@@ -47,8 +47,7 @@ namespace avmthane
 		DomainObject(VTable *vtable, ScriptObject *delegate);
 		~DomainObject();
 
-		void initNewDomain();
-		Atom doLoadBytes(ByteArrayObject *bytes);
+		void initNewDomain(DomainObject *);
 		ClassClosure* getClass(Stringp name);
         ScriptObject *get_domainMemory() const;
         void set_domainMemory(ScriptObject *mem);

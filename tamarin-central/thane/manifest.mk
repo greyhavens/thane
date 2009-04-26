@@ -55,6 +55,8 @@ shell_CXXSRCS := $(shell_CXXSRCS) \
   $(curdir)/ConsoleOutputStream.cpp \
   $(curdir)/DataIO.cpp \
   $(curdir)/DomainClass.cpp \
+  $(curdir)/YardClass.cpp \
+  $(curdir)/PuddleClass.cpp \
   $(curdir)/FileInputStream.cpp \
   $(curdir)/SystemClass.cpp \
   $(curdir)/as3src/flash/net/SocketGlue.cpp \

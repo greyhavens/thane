@@ -49,34 +49,26 @@ namespace avmthane
 	{
 	}
 
-    void DomainObject::initNewDomain()
+    void DomainObject::initNewDomain(DomainObject *parentDomain)
 	{
 		Shell *core = (Shell*) this->core();
 
-        Domain* domain = new (core->GetGC()) Domain(core, core->builtinDomain);
+		Domain* baseDomain;
+		if (parentDomain) {
+			baseDomain = parentDomain->domainEnv->domain();
+		} else {
+			baseDomain = core->builtinDomain;
+		}
 
-        domainToplevel = core->initShellBuiltins();
+        Domain* domain = new (core->GetGC()) Domain(core, baseDomain);
+
+		if (parentDomain) {
+			domainToplevel = parentDomain->domainToplevel;
+		} else {
+			domainToplevel = core->initShellBuiltins();
+		}
+
         domainEnv = new (core->GetGC()) DomainEnv(core, domain, domainToplevel->domainEnv());
-	}
-
-	Atom DomainObject::doLoadBytes(ByteArrayObject *b)
-	{
-		AvmCore* core = this->core();
-		if (!b)
-			toplevel()->throwTypeError(kNullArgumentError, core->toErrorString("bytes"));
-
-		ShellCodeContext* codeContext = new (core->GetGC()) ShellCodeContext();
-		codeContext->m_domainEnv = domainEnv;
-
-		// parse new bytecode
-		size_t len = b->get_length();
-		ScriptBuffer code = core->newScriptBuffer(len);
-		VMPI_memcpy(code.getBuffer(), &b->GetByteArray()[0], len); 
-		Toplevel *toplevel = domainToplevel;
-		return core->handleActionBlock(code, 0,
-								  domainEnv,
-								  toplevel,
-								  NULL, codeContext);
 	}
 
 	ScriptObject* DomainObject::finddef(const Multiname& multiname,

@@ -68,6 +68,8 @@ namespace avmplus
 #include "SystemClass.h"
 #include "FileClass.h"
 #include "DomainClass.h"
+#include "YardClass.h"
+#include "PuddleClass.h"
 #include "DataIO.h"
 #include "as3src/flash/utils/ByteArrayGlue.h"
 #include "as3src/flash/utils/DictionaryGlue.h"

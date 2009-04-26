@@ -29,14 +29,14 @@ import flash.net.CachingHttpClient;
 
 public class Thanette
 {
-    public static function isSystemDomain () :Boolean
+    public static function isSystemYard () :Boolean
     {
-        return _domainId == null;
+        return _yardId == null;
     }
 
-    public static function getDomainId () :String
+    public static function getYardId () :String
     {
-        return _domainId;
+        return _yardId;
     }
 
     public static function getBridgeHome () :EventDispatcher
@@ -49,26 +49,26 @@ public class Thanette
         return _consoleTracePrefix;
     }
 
-    // some parts of Thanette we want to work in the system domain too
+    // some parts of Thanette we want to work in the system yard too
     public static function systemSetup (cacheFactory :Function) :void
     {
-        if (isSystemDomain()) {
+        if (isSystemYard()) {
             _cacheFactory = cacheFactory;
         }
     }
 
-    public static function initializeDomain (
-        domainId :String, consoleTracePrefix :String, bridge :EventDispatcher,
+    public static function initializeYard (
+        yardId :String, consoleTracePrefix :String, bridge :EventDispatcher,
         foreignHeart :Function, registerTrace :Function, cacheFactory :Function) :void
     {
-        if (domainId == null || domainId.length == 0) {
-            throw new Error ("Domain must be spawned with an identifier");
+        if (yardId == null || yardId.length == 0) {
+            throw new Error ("Yard must be spawned with an identifier");
         }
         if (_initialized) {
-            throw new Error("This domain has already been initialized");
+            throw new Error("This yard has already been initialized");
         }
         _initialized = true;
-        _domainId = domainId;
+        _yardId = yardId;
         _bridge = bridge;
         _consoleTracePrefix = consoleTracePrefix;
         _cacheFactory = cacheFactory;
@@ -95,7 +95,7 @@ public class Thanette
     }
 
     private static var _initialized :Boolean;
-    private static var _domainId :String;
+    private static var _yardId :String;
     private static var _bridge :EventDispatcher;
     private static var _consoleTracePrefix :String;
     private static var _cacheFactory :Function;
