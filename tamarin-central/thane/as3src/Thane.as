@@ -40,7 +40,7 @@ public class Thane
         bridge :EventDispatcher) :Yard
     {
         if (!Thanette.isSystemYard()) {
-            throw new Error("Non-system playground spawning");
+            throw new Error("Non-system yard spawning");
         }
 
         if (yardId == null || yardId.length == 0) {
@@ -166,7 +166,7 @@ public class Thane
     /** The SpawnedYard objects created by spawnYard. */
     private static var _spawnedYards :Dictionary = new Dictionary();
 
-    /** Heartbeats requested in this playground. */
+    /** Heartbeats requested in this yard. */
     private static var _hearts :Array = new Array();
 
     /** Only set when spawning a yard. */
@@ -179,10 +179,10 @@ import avmplus.Yard;
 /** Tracks the things needed for a spawned yard */
 class SpawnedYard
 {
-    /** The playground object. */
+    /** The yard object. */
     public var yard :Yard;
 
-    /** The heartbeat function within the playground to call as often as possible. */
+    /** The heartbeat function within the yard to call as often as possible. */
     public var heartbeat :Function;
 
     /** The trace function within the yard. */
