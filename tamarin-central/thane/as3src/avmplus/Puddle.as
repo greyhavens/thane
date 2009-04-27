@@ -51,7 +51,7 @@ public class Puddle
 
         _domain = new Domain(env.domain);
 
-        trace("Initializing new Yard with Domain[" + env.domain + "]");
+        trace("Initializing new Puddle with Domain[" + env.domain + "]");
 
         initPuddle(_domain, env);
     }
