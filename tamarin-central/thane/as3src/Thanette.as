@@ -24,6 +24,8 @@
 
 package {
 
+import avmplus.Domain;
+
 import flash.events.EventDispatcher;
 import flash.net.CachingHttpClient;
 
@@ -90,7 +92,8 @@ public class Thanette
     public static function traceToBridge (s :Array) :void
     {
         if (_bridge != null) {
-            _bridge.dispatchEvent(new TraceEvent(TraceEvent.TRACE, false, false, s));
+            _bridge.dispatchEvent(
+                new TraceEvent(TraceEvent.TRACE, false, false, Domain.currentDomain, s));
         }
     }
 

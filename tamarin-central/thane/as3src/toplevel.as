@@ -100,7 +100,7 @@ package {
 	// nonstandard Flash Player extensions
 	public function trace(... s) :void
 	{
-        System.trace(Thanette.getConsoleTracePrefix(),s);
+        System.trace(Thanette.getConsoleTracePrefix(), s);
         // dispatch the trace on the Thane emitter, with recursion protection
         if (!tracing) {
             tracing = true;
