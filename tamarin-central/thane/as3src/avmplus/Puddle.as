@@ -45,15 +45,21 @@ public class Puddle
 {
 	public function Puddle (env :Yard)
     {
-        if (!Thanette.isSystemYard()) {
+        if (!Thanette.isSystemPuddle()) {
             throw new Error("Illegal operation");
         }
 
-        _domain = new Domain(env.domain);
+        _yard = yard;
+        _domain = new Domain();
 
-        trace("Initializing new Puddle with Domain[" + env.domain + "]");
+        trace("Initializing new Puddle...");
 
         initPuddle(_domain, env);
+    }
+
+    public function get yard () :Yard
+    {
+        return _yard;
     }
 
     public function get domain () :Domain
@@ -63,6 +69,7 @@ public class Puddle
 
     private native function initPuddle (domain :Domain, env :Yard) :void;
 
+    private var _yard :Yard;
     private var _domain :Domain;
 }
 

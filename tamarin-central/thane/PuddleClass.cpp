@@ -47,11 +47,12 @@ namespace avmthane
 
 	PuddleObject::~PuddleObject()
 	{
+        this->core()->console << "PuddleObject deconstructing...\n";
 	}
 
 	void PuddleObject::initPuddle(DomainObject *domain, YardObject *yard)
 	{
-		AvmCore* core = this->core();
+		Shell* core = (Shell *) this->core();
 
 		ShellCodeContext* codeContext = new (core->GetGC()) ShellCodeContext();
 		codeContext->m_domainEnv = domain->domainEnv;

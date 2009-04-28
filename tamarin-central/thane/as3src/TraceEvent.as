@@ -24,26 +24,17 @@
 
 package {
 
-import avmplus.Domain;
-
 import flash.events.Event;
 
 public class TraceEvent extends Event
 {
     public static const TRACE :String = "trace";
 
-    public function TraceEvent (
-        type :String, bubbles :Boolean, cancelable :Boolean, domain :Domain, trace)
+    public function TraceEvent (type :String, bubbles :Boolean, cancelable :Boolean, trace :Array)
     {
         super(type, bubbles, cancelable);
 
-        _domain = domain;
         _trace = trace;
-    }
-
-    public function get domain () :Domain
-    {
-        return _domain;
     }
 
     public function get trace () :Array
@@ -51,7 +42,6 @@ public class TraceEvent extends Event
         return _trace;
     }
 
-    protected var _domain :Domain = null;
     protected var _trace :Array = null;
 }
 }

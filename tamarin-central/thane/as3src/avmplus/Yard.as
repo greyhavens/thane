@@ -45,7 +45,7 @@ public class Yard
 {
 	public function Yard (userCode :ByteArray)
     {
-        if (!Thanette.isSystemYard()) {
+        if (!Thanette.isSystemPuddle()) {
             throw new Error("Illegal operation");
         }
 

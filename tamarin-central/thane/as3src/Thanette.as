@@ -31,14 +31,14 @@ import flash.net.CachingHttpClient;
 
 public class Thanette
 {
-    public static function isSystemYard () :Boolean
+    public static function isSystemPuddle () :Boolean
     {
-        return _yardId == null;
+        return _puddleId == null;
     }
 
-    public static function getYardId () :String
+    public static function getPuddleId () :String
     {
-        return _yardId;
+        return _puddleId;
     }
 
     public static function getBridgeHome () :EventDispatcher
@@ -51,26 +51,26 @@ public class Thanette
         return _consoleTracePrefix;
     }
 
-    // some parts of Thanette we want to work in the system yard too
+    // some parts of Thanette we want to work in the system puddle too
     public static function systemSetup (cacheFactory :Function) :void
     {
-        if (isSystemYard()) {
+        if (isSystemPuddle()) {
             _cacheFactory = cacheFactory;
         }
     }
 
-    public static function initializeYard (
-        yardId :String, consoleTracePrefix :String, bridge :EventDispatcher,
+    public static function initializePuddle (
+        puddleId :String, consoleTracePrefix :String, bridge :EventDispatcher,
         foreignHeart :Function, registerTrace :Function, cacheFactory :Function) :void
     {
-        if (yardId == null || yardId.length == 0) {
-            throw new Error ("Yard must be spawned with an identifier");
+        if (puddleId == null || puddleId.length == 0) {
+            throw new Error ("Puddle must be spawned with an identifier");
         }
         if (_initialized) {
-            throw new Error("This yard has already been initialized");
+            throw new Error("This puddle has already been initialized");
         }
         _initialized = true;
-        _yardId = yardId;
+        _puddleId = puddleId;
         _bridge = bridge;
         _consoleTracePrefix = consoleTracePrefix;
         _cacheFactory = cacheFactory;
@@ -93,12 +93,12 @@ public class Thanette
     {
         if (_bridge != null) {
             _bridge.dispatchEvent(
-                new TraceEvent(TraceEvent.TRACE, false, false, Domain.currentDomain, s));
+                new TraceEvent(TraceEvent.TRACE, false, false, s));
         }
     }
 
     private static var _initialized :Boolean;
-    private static var _yardId :String;
+    private static var _puddleId :String;
     private static var _bridge :EventDispatcher;
     private static var _consoleTracePrefix :String;
     private static var _cacheFactory :Function;

@@ -45,7 +45,7 @@ public class Domain
 {
 	public function Domain (parentDomain :Domain = null)
     {
-        if (!Thanette.isSystemYard()) {
+        if (!Thanette.isSystemPuddle()) {
             throw new Error("Illegal operation");
         }
 

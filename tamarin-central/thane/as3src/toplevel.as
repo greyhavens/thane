@@ -42,7 +42,7 @@ package avmplus
 	{
         public static function exit (status :int) :void
         {
-            if (!Thanette.isSystemYard()) {
+            if (!Thanette.isSystemPuddle()) {
                 throw new Error("Ilegal operation");
             }
 
@@ -52,7 +52,7 @@ package avmplus
 
         public static function resetTimeout () :void
         {
-            if (!Thanette.isSystemYard()) {
+            if (!Thanette.isSystemPuddle()) {
                 throw new Error("Ilegal operation");
             }
 

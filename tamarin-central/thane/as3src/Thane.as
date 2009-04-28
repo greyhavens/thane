@@ -28,69 +28,71 @@ import flash.events.EventDispatcher;
 import flash.net.CachingHttpClient;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
-import avmplus.Yard;
+
+import avmplus.Puddle;
 import avmplus.System;
+import avmplus.Yard;
 
 public class Thane
 {
     Thanette.systemSetup(httpClientFactory);
 
-    public static function spawnYard (
-        yardId :String, userCode :ByteArray, consoleTracePrefix :String,
-        bridge :EventDispatcher) :Yard
+    public static function spawnPuddle (
+        puddleId :String, yard :Yard, consoleTracePrefix :String,
+        bridge :EventDispatcher) :Puddle
     {
-        if (!Thanette.isSystemYard()) {
-            throw new Error("Non-system yard spawning");
+        if (!Thanette.isSystemPuddle()) {
+            throw new Error("Non-system puddle spawning");
         }
 
-        if (yardId == null || yardId.length == 0) {
-            throw new Error ("Yard must be spawned with an identifier");
+        if (puddleId == null || puddleId.length == 0) {
+            throw new Error ("Puddle must be spawned with an identifier");
         }
-        if (_spawnedYards[yardId] != null) {
-            throw new Error ("Yard identifier not unique");
+        if (_spawnedPuddles[puddleId] != null) {
+            throw new Error ("Puddle identifier not unique");
         }
 
-        var env :Yard = new Yard(userCode);
+        var env :Puddle = new Puddle(yard);
 
         var thanette :Class = env.domain.getClass("Thanette");
         if (thanette == null) {
-            throw new Error ("Could not locate Thanette in new Yard");
+            throw new Error ("Could not locate Thanette in new Puddle");
         }
-        var initFun :Function = thanette["initializeYard"];
+        var initFun :Function = thanette["initializePuddle"];
         if (initFun == null) {
-            throw new Error("Could not locate initializeYard() on foreign Thanette class");
+            throw new Error("Could not locate initializePuddle() on foreign Thanette class");
         }
-        _spawnedYards[yardId] = new SpawnedYard();
-        _spawnedYards[yardId].yard = env;
-        _spawningYard = yardId;
+        _spawnedPuddles[puddleId] = new SpawnedPuddle();
+        _spawnedPuddles[puddleId].puddle = env;
+        _spawningPuddle = puddleId;
         try {
-            initFun(yardId, consoleTracePrefix, bridge, requestSpawnedHeartbeat, registerTrace,
+            initFun(puddleId, consoleTracePrefix, bridge, requestSpawnedHeartbeat, registerTrace,
                     httpClientFactory);
 
         } catch (e :Error) {
-            trace("Yard initialization error: " + e.getStackTrace());
-            delete _spawnedYards[yardId];
+            trace("Puddle initialization error: " + e.getStackTrace());
+            delete _spawnedPuddles[puddleId];
             return null;
 
         } finally {
-            _spawningYard = null;
+            _spawningPuddle = null;
         }
         
         return env;
     }
 
-    public static function unspawnYard (yardId :String) :void
+    public static function unspawnPuddle (puddleId :String) :void
     {
-        delete _spawnedYards[yardId];
+        delete _spawnedPuddles[puddleId];
     }
 
     /**
      * Outputs a message and optional error to a domain's trace function.
      */
-    public static function outputToTrace (yard :Yard, msg :String, err :Error) :void
+    public static function outputToTrace (puddle :Puddle, msg :String, err :Error) :void
     {
-        for each (var spawned :SpawnedYard in _spawnedYards) {
-            if (spawned.yard == yard) {
+        for each (var spawned :SpawnedPuddle in _spawnedPuddles) {
+            if (spawned.puddle == puddle) {
                 spawned.traceFn(msg);
                 if (err != null) {
                     spawned.traceFn(err.getStackTrace());
@@ -111,7 +113,7 @@ public class Thane
     {
         for each (var heart :Function in _hearts) {
             try {
-                if (Thanette.isSystemYard()) {
+                if (Thanette.isSystemPuddle()) {
                     // each top-level script gets its own 15 second timeout
                     System.resetTimeout();
                 }
@@ -121,7 +123,7 @@ public class Thane
                 trace("Heartbeat error: " + err.getStackTrace());
             }
         }
-        for each (var spawned :SpawnedYard in _spawnedYards) {
+        for each (var spawned :SpawnedPuddle in _spawnedPuddles) {
             if (spawned.heartbeat == null) {
                 continue;
             }
@@ -135,25 +137,25 @@ public class Thane
 
     protected static function requestSpawnedHeartbeat (heart :Function) :void
     {
-        if (!Thanette.isSystemYard() || _spawningYard == null) {
+        if (!Thanette.isSystemPuddle() || _spawningPuddle == null) {
             throw new Error("Master heartbeat inaccessible: " +
-                            Thanette.getYardId() + ", " + _spawningYard);
+                            Thanette.getPuddleId() + ", " + _spawningPuddle);
         }
-        var spawned :SpawnedYard = _spawnedYards[_spawningYard];
+        var spawned :SpawnedPuddle = _spawnedPuddles[_spawningPuddle];
         if (spawned == null) {
-            throw new Error("Yard not spawned");
+            throw new Error("Puddle not spawned");
         }
         if (spawned.heartbeat != null) {
-            throw new Error("Yard heartbeat already allocated");
+            throw new Error("Puddle heartbeat already allocated");
         }
         spawned.heartbeat = heart;
     }
 
     protected static function registerTrace (traceFn :Function) :void
     {
-        var spawned :SpawnedYard = _spawnedYards[_spawningYard];
+        var spawned :SpawnedPuddle = _spawnedPuddles[_spawningPuddle];
         if (spawned == null) {
-            throw new Error("Yard not spawned");
+            throw new Error("Puddle not spawned");
         }
         spawned.traceFn = traceFn;
     }
@@ -163,28 +165,28 @@ public class Thane
         return new CachingHttpClient();
     }
 
-    /** The SpawnedYard objects created by spawnYard. */
-    private static var _spawnedYards :Dictionary = new Dictionary();
+    /** The SpawnedPuddle objects created by spawnPuddle. */
+    private static var _spawnedPuddles :Dictionary = new Dictionary();
 
-    /** Heartbeats requested in this yard. */
+    /** Heartbeats requested in this puddle. */
     private static var _hearts :Array = new Array();
 
-    /** Only set when spawning a yard. */
-    private static var _spawningYard :String = null;
+    /** Only set when spawning a puddle. */
+    private static var _spawningPuddle :String = null;
 }
 }
 
-import avmplus.Yard;
+import avmplus.Puddle;
 
-/** Tracks the things needed for a spawned yard */
-class SpawnedYard
+/** Tracks the things needed for a spawned puddle */
+class SpawnedPuddle
 {
-    /** The yard object. */
-    public var yard :Yard;
+    /** The puddle object. */
+    public var puddle :Puddle;
 
-    /** The heartbeat function within the yard to call as often as possible. */
+    /** The heartbeat function within the puddle to call as often as possible. */
     public var heartbeat :Function;
 
-    /** The trace function within the yard. */
+    /** The trace function within the puddle. */
     public var traceFn :Function;
 }

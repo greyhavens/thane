@@ -47,6 +47,7 @@ namespace avmthane
 
 	YardObject::~YardObject()
 	{
+        this->core()->console << "YardObject deconstructing...\n";
 	}
 
 	void YardObject::initYard(DomainObject *domain, ByteArrayObject *bytes)
