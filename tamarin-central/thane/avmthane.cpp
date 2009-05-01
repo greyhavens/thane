@@ -39,9 +39,6 @@
 
 #include "Platform.h"
 
-// TODO: When we fix WIN32 build, intergrate into Platform
-# include <unistd.h>
-
 #ifdef __SUNPRO_CC
 #define PRIVATE __hidden
 #else
@@ -55,6 +52,11 @@ bool P4Available();
 #elif defined AVMPLUS_UNIX
 bool P4Available();
 #endif
+
+# ifndef WIN32
+// TODO: When we fix WIN32 build, intergrate into Platform
+# include <unistd.h>
+# endif
 
 // [tpr] I removed the override global new stuff, it was apparently added b/c we'd crash when 
 // OS would use our new pre-main that was fixed by making the project not export any 
@@ -175,7 +177,6 @@ namespace avmthane
 		
 	void Shell::interruptTimerCallback(void* data)
 	{
-        fprintf(stderr, "Interrupted! Eek!\n");
 		((AvmCore*)data)->interrupted = true;
 	}
 	
@@ -825,6 +826,19 @@ namespace avmthane
 			SystemClass::user_argc = argc-endFilenamePos-1; 
 			SystemClass::user_argv = &argv[endFilenamePos+1];
 		
+#ifdef WIN32
+            WSADATA wsaData;
+            int err;
+
+            err = WSAStartup(MAKEWORD(2, 2), &wsaData);
+            if (err != 0 || LOBYTE(wsaData.wVersion) != 2 ||
+                HIBYTE(wsaData.wVersion) != 2) {
+                printf("This system lacks a usable Winsock\n");
+                WSACleanup();
+                return 1;
+			}
+# endif
+
 			// init toplevel internally
 			Toplevel* toplevel = initShellBuiltins();
 

@@ -174,6 +174,7 @@ public class URLLoader extends EventDispatcher
     protected function handleComplete (evt :Event) :void
     {
         _data = _bytes;
+        _data.position = 0;
         _bytes = null;
 
         dispatchEvent(new Event(Event.COMPLETE));

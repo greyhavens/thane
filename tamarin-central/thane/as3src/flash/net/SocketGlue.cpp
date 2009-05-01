@@ -126,7 +126,7 @@ namespace avmthane
 				default:
 	                // anything else is a real error
 		            disconnect();
-			        return -1;
+					return -1;
 			}
         }
         // success!
@@ -184,7 +184,7 @@ namespace avmthane
 
     int Socket::write (ByteArrayFile &bytes)
     {
-        if (m_socket_ref < 0) {
+		if (m_socket_ref == INVALID_SOCKET) {
             return -1;
         }
 
