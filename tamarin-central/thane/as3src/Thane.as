@@ -29,6 +29,8 @@ import flash.net.CachingHttpClient;
 import flash.utils.ByteArray;
 import flash.utils.Dictionary;
 
+import com.adobe.utils.ArrayUtil;
+
 import avmplus.Puddle;
 import avmplus.System;
 import avmplus.Yard;
@@ -83,6 +85,10 @@ public class Thane
 
     public static function unspawnPuddle (puddleId :String) :void
     {
+        var puddle :SpawnedPuddle = _spawnedPuddles[puddleId];
+        if (puddle != null) {
+            ArrayUtil.removeValueFromArray(_hearts, puddle.heartbeat);
+        }
         delete _spawnedPuddles[puddleId];
     }
 
