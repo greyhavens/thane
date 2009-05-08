@@ -81,7 +81,7 @@ public class Matrix
     {
         configure(a*m.a + b*m.c, a*m.b + b*m.d,
                   c*m.a + d*m.c, c*m.b + d*m.d,
-                  a*m.tx + b*m.ty, c*m.tx + d*m.ty);
+                  tx*m.a + ty*m.c + m.tx, tx*m.b + ty*m.d + m.ty);
     }
 
     /**
@@ -135,12 +135,12 @@ public class Matrix
     {
         var cs :Number = Math.cos(angle);
         var sn :Number = Math.sin(angle);
-        configure(a*cs - b*sn, a*sn + b*cs, c*cs - d*sn, c*sn + d*cs, tx, ty);
+        concat(new Matrix(cs, sn, -sn, cs));
     }
 
     /**
      * Applies a scaling transformation to the matrix. The x axis is multiplied by sx,
-     * and the y axis it is multiplied by sy.
+     * and the y axis is multiplied by sy.
      */
     public function scale (sx :Number, sy :Number) :void
     {
@@ -153,7 +153,7 @@ public class Matrix
      */
     public function transformPoint (point :Point) :Point
     {
-        return new Point(a*point.x + b*point.y + tx, c*point.x + d*point.y + ty);
+        return new Point(a*point.x + c*point.y + tx, b*point.x + d*point.y + ty);
     }
 
     /**
@@ -161,7 +161,7 @@ public class Matrix
      */
     public function translate (dx :Number, dy :Number) :void
     {
-        configure(a, b, c, d, tx + dx, ty + dy);
+        concat(new Matrix(1, 0, 0, 1, dx, dy));
     }
 
     /**
