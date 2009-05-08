@@ -125,6 +125,16 @@ public class Matrix
      */
     public function invert () :void
     {
+        var det :Number = d*a - b*c;
+        if (Math.abs(det) < 1E-8) {
+            throw new Error("Matrix is singular, can't invert");
+        }
+        var newA :Number =  d / det;
+        var newB :Number = -b / det;
+        var newC :Number = -c / det;
+        var newD :Number =  a / det;
+
+        // tx and ty are slightly more complex, but now I'm really going home
         throw new Error("not implemented");
     }
 
