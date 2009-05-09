@@ -129,7 +129,7 @@ public class Matrix
         if (Math.abs(det) < 1E-8) {
             throw new Error("Matrix is singular, can't invert");
         }
-        configure(d/det, -b/det, -c/det, a/det, (c*ty - d*tx) / det, (a*ty - b*tx) / det);
+        configure(d/det, -b/det, -c/det, a/det, (c*ty - d*tx)/det, (b*tx - a*ty)/det);
     }
 
     /**
