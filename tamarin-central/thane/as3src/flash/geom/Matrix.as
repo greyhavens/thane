@@ -129,13 +129,7 @@ public class Matrix
         if (Math.abs(det) < 1E-8) {
             throw new Error("Matrix is singular, can't invert");
         }
-        var newA :Number =  d / det;
-        var newB :Number = -b / det;
-        var newC :Number = -c / det;
-        var newD :Number =  a / det;
-
-        // tx and ty are slightly more complex, but now I'm really going home
-        throw new Error("not implemented");
+        configure(d/det, -b/det, -c/det, a/det, (c*ty - d*tx) / det, (a*ty - b*tx) / det);
     }
 
     /**
