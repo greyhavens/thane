@@ -24,25 +24,34 @@
 
 package flash.utils {
 
+import avmplus.describeType;
+import avmplus.FLASH10_FLAGS;
 import avmplus.Domain;
 
 public function describeType (c :Object) :XML
 {
-    throw new Error("describeType() Not implemented");
+    return avmplus.describeType(c, FLASH10_FLAGS);
+}
+
+public function describeTypeWithFlags (value :*, flags :uint) :XML
+{
+    return avmplus.describeType(value, flags);
 }
 
 public function getDefinitionByName (name :String) :Class
 {
-    return Domain.currentDomain.getClass(name.replace("::", "."));
+    return avmplus.Domain.currentDomain.getClass(name.replace("::", "."));
 }
 
 public function getQualifiedClassName (c :*) :String
 {
-    return Domain.currentDomain.getClassName(c);
+    // TODO: This function now exists in avmplus.*, see core/DescribeType.as
+    return avmplus.Domain.currentDomain.getClassName(c);
 }
 
 public function getQualifiedSuperclassName (c :*) :String
 {
+    // TODO: This function now exists in avmplus.*, see core/DescribeType.as
     throw new Error("getQualifiedSuperclassName() not implemented");
 }
 
