@@ -1,5 +1,7 @@
---- modules/swfutils/src/java/flash/swf/tools/SwfxPrinter.java	2008-10-30 15:12:16.000000000 -0500
-+++ modules/swfutils/src/java/flash/swf/tools/SwfxPrinter.java	2008-10-17 09:56:49.000000000 -0500
+Index: src/java/flash/swf/tools/SwfxPrinter.java
+===================================================================
+--- src/java/flash/swf/tools/SwfxPrinter.java	(revision 7755)
++++ src/java/flash/swf/tools/SwfxPrinter.java	(working copy)
 @@ -12,6 +12,8 @@
  package flash.swf.tools;
  
@@ -20,60 +22,60 @@
 @@ -87,6 +90,8 @@
   */
  public final class SwfxPrinter extends TagHandler
- {
-+    private static List<BytecodeBuffer> byteCodes = null;
+ 	{
++        private static List<BytecodeBuffer> byteCodes = null;
 +
-     /**
-      * this value should get set after the header is parsed
-      */
-@@ -1831,6 +1836,9 @@
- 
-     public void doABC(DoABC tag)
-     {
+ 		/**
+ 		 * this value should get set after the header is parsed
+ 		 */
+@@ -1842,6 +1847,9 @@
+ 		
+ 		public void doABC(DoABC tag)
+ 		{
 +        if (byteCodes != null) {
 +            byteCodes.add(new BytecodeBuffer(tag.abc));
 +        }
-         if (abc)
-         {
-             open(tag);
-@@ -1985,12 +1993,13 @@
-     {
-         if (args.length == 0)
-         {
--            System.err.println("Usage: java tools.SwfxPrinter [-encode] [-asm] [-abc] [-noactions] [-showdebugsource] [-showoffset] [-noglyphs] [-external] [-save file.swf] [-nofunctions] [-out file.swfx] file1.swf ...");
-+            System.err.println("Usage: java tools.SwfxPrinter [-encode] [-asm] [-abc] [-noactions] [-showdebugsource] [-showoffset] [-noglyphs] [-external] [-dump file.abc] [-save file.swf] [-nofunctions] [-out file.swfx] file1.swf ...");
-             System.exit(1);
-         }
- 
-         int index = 0;
-         PrintWriter out = null;
-+        OutputStream abcOut = null;
-         String outfile = null;
- 
-         while ((index < args.length) && (args[index].startsWith("-")))
-@@ -2006,6 +2015,12 @@
-                 saveOption = true;
-                 outfile = args[index++];
-             }
+ 			if (abc)
+ 			{
+ 				open(tag);
+@@ -1997,12 +2005,13 @@
+ 		{
+ 			if (args.length == 0)
+ 			{
+-				System.err.println("Usage: java tools.SwfxPrinter [-encode] [-asm] [-abc] [-showbytecode] [-noactions] [-showdebugsource] [-showoffset] [-noglyphs] [-external] [-save file.swf] [-nofunctions] [-out file.swfx] file1.swf ...");
++				System.err.println("Usage: java tools.SwfxPrinter [-encode] [-asm] [-abc] [-showbytecode] [-noactions] [-showdebugsource] [-showoffset] [-noglyphs] [-external] [-dump file.abc] [-save file.swf] [-nofunctions] [-out file.swfx] file1.swf ...");
+ 				System.exit(1);
+ 			}
+ 			
+ 			int index = 0;
+ 			PrintWriter out = null;
++            OutputStream abcOut = null;
+ 			String outfile = null;
+ 			
+ 			while ((index < args.length) && (args[index].startsWith("-")))
+@@ -2018,6 +2027,12 @@
+ 					saveOption = true;
+ 					outfile = args[index++];
+ 				}
 +            else if (args[index].equals("-dump"))
 +            {
 +                ++index;
 +                byteCodes = new ArrayList<BytecodeBuffer>();
 +                abcOut = new BufferedOutputStream(new FileOutputStream(args[index++]));
 +            }
-             else if (args[index].equals("-decompile"))
-             {
-                 decompileOption = true;
-@@ -2156,6 +2171,12 @@
-                     printer.printActions(actions);
-                 }
-                 out.flush();
+ 				else if (args[index].equals("-decompile"))
+ 				{
+ 					decompileOption = true;
+@@ -2173,6 +2188,12 @@
+ 						printer.printActions(actions);
+ 					}
+ 					out.flush();
 +                if (abcOut != null) {
 +                    BytecodeBuffer[] codes = byteCodes.toArray(new BytecodeBuffer[0]);
 +                    abcOut.write(Optimizer.optimize(codes, true));
 +                    abcOut.close();
 +                    abcOut = null;
 +                }
-             }
-             catch (Error e)
-             {
+ 				}
+ 				catch (Error e)
+ 				{
