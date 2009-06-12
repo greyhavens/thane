@@ -82,7 +82,7 @@
 
   <!-- enable debugging -->
   <!-- TODO: are 2 individual targets needed and what do we do with them? -->
-  <property name="tamarin-debugger" value="--enable-debugger"/>
+  <property name="tamarin-debugger" value="--enable-debugger --enable-debug"/>
 
   <!-- build tamarin -->
   <target name="tamarin" depends="prepare,thanelib" if="isunix">
@@ -99,11 +99,15 @@
   </target>
 
   <!-- copy pre-built binary files to dist -->
-  <target name="distbinaries" depends="prepare,detect-arch">
-    <copy file="${bin.dir}/${lib.name}.swc" todir="${deploy.dir}"/>
+  <target name="distbinary" depends="prepare,detect-arch">
     <copy todir="${deploy.dir}">
       <fileset dir="${bin.dir}/${arch.id}" includes="avm${lib.name}*"/>
     </copy>
+  </target>
+
+  <!-- copy pre-built library files to dist -->
+  <target name="distlibrary" depends="prepare,detect-arch">
+    <copy file="${bin.dir}/${lib.name}.swc" todir="${deploy.dir}"/>
   </target>
 
   <!-- cleans up our build artifacts -->
@@ -125,10 +129,10 @@
   <target name="distclean" depends="clean"/>
 
   <!-- copies to the dist directory -->
-  <target name="dist" depends="prepare,distbinaries"/>
+  <target name="dist" depends="distlibrary,distbinary"/>
 
   <!-- deploys our built libraries to maven -->
-  <target name="deploy" depends="dist">
+  <target name="deploy" depends="prepare,distlibrary">
     <antcall target="maven-deploy"/>
   </target>
 
