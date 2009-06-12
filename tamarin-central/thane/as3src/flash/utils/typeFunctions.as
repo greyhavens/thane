@@ -33,11 +33,6 @@ public function describeType (c :Object) :XML
     return avmplus.describeType(c, FLASH10_FLAGS);
 }
 
-public function describeTypeWithFlags (value :*, flags :uint) :XML
-{
-    return avmplus.describeType(value, flags);
-}
-
 public function getDefinitionByName (name :String) :Class
 {
     return avmplus.Domain.currentDomain.getClass(name.replace("::", "."));
