@@ -98,7 +98,8 @@
     </exec>
   </target>
 
-  <!-- copy pre-built binary files to dist -->
+  <!-- copy pre-built binary files to dist. we can't do this as part of dist because the -->
+  <!-- dist target must be runnable on an arbitrary architecture -->
   <target name="distbinary" depends="prepare,detect-arch">
     <copy todir="${deploy.dir}">
       <fileset dir="${bin.dir}/${arch.id}" includes="avm${lib.name}*"/>
@@ -106,7 +107,7 @@
   </target>
 
   <!-- copy pre-built library files to dist -->
-  <target name="distlibrary" depends="prepare,detect-arch">
+  <target name="distlibrary" depends="prepare">
     <copy file="${bin.dir}/${lib.name}.swc" todir="${deploy.dir}"/>
   </target>
 
@@ -129,7 +130,7 @@
   <target name="distclean" depends="clean"/>
 
   <!-- copies to the dist directory -->
-  <target name="dist" depends="distlibrary,distbinary"/>
+  <target name="dist" depends="distlibrary"/>
 
   <!-- deploys our built libraries to maven -->
   <target name="deploy" depends="prepare,distlibrary">
