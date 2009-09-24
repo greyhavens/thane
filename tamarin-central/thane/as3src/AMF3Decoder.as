@@ -255,7 +255,10 @@ public class AMF3Decoder
         _ctx.oRef.push(bytes);
 
         // and read the bytes
-        _ctx.bytes.readBytes(bytes, 0, code >> 1);
+        var length :uint = code >> 1;
+        if (length > 0) {
+            _ctx.bytes.readBytes(bytes, 0, length);
+        }
         return bytes;
     }
 
