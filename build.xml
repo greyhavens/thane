@@ -140,14 +140,18 @@
   <!-- Detects the architecture id of this computer -->
   <target name="detect-arch">
     <!-- apparently Java uses both amd64 and x86_64 -->
-    <condition property="arch" value="64" else="32">
+    <condition property="arch.width" value="64" else="32">
       <and>
-        <!-- Mac binaries all get called '32-bit' -->
-        <not><os name="Mac OS X"/></not>
+        <!-- Mac binaries and windows binaries all get called '32-bit' -->
+        <not><or><os name="Mac OS X"/><os family="windows"/></or></not>
         <or><os arch="amd64"/><os arch="x86_64"/></or>
       </and>
     </condition>
-    <property name="arch.id" value="${os.name}-${arch}"/>
+    <!-- Make "Windows 7" just be "Windows" -->
+    <condition property="arch.os" value="Windows" else="${os.name}">
+      <os family="windows"/>
+    </condition>
+    <property name="arch.id" value="${arch.os}-${arch.width}"/>
     <echo>Architecture is ${arch.id}</echo>
   </target>
 
