@@ -35,32 +35,20 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package {
-
-	import avmplus.*
-
-	public function getClassByName(name:String):Class
+// The flash.system package is present so identical ATS test media can be used
+// in the command-line VM and the Player
+package flash.system
+{
+	import avmplus.*;
+	
+	public final class Capabilities
 	{
-		return Domain.currentDomain.getClass(name);
+		public static function get playerType():String { return "AVMPlus"; }
+            // TODO: when are we a debugger?
+            public static const isDebugger :Boolean = false;
 	}
 
-    var tracing :Boolean = false;
-
-	// nonstandard Flash Player extensions
-	public function trace(... s) :void
-	{
-        System.trace(Thanette.getConsoleTracePrefix(), s);
-        // dispatch the trace on the Thane emitter, with recursion protection
-        if (!tracing) {
-            tracing = true;
-            try {
-                Thanette.traceToBridge(s);
-
-            } catch (e :Error) {
-                tracing = false;
-                throw e;
-            }
-            tracing = false;
-        }
-	}
+    public final class System
+    {
+    }
 }

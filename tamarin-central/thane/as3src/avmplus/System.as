@@ -35,32 +35,37 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-package {
 
-	import avmplus.*
-
-	public function getClassByName(name:String):Class
+package avmplus 
+{
+	[native(cls="SystemClass", methods="auto")]
+	public class System
 	{
-		return Domain.currentDomain.getClass(name);
-	}
-
-    var tracing :Boolean = false;
-
-	// nonstandard Flash Player extensions
-	public function trace(... s) :void
-	{
-        System.trace(Thanette.getConsoleTracePrefix(), s);
-        // dispatch the trace on the Thane emitter, with recursion protection
-        if (!tracing) {
-            tracing = true;
-            try {
-                Thanette.traceToBridge(s);
-
-            } catch (e :Error) {
-                tracing = false;
-                throw e;
+        public static function exit (status :int) :void
+        {
+            if (!Thanette.isSystemPuddle()) {
+                throw new Error("Ilegal operation");
             }
-            tracing = false;
+
+            doExit(status);
         }
-	}
+        private static native function doExit (status :int) :void
+
+        public static function resetTimeout () :void
+        {
+            if (!Thanette.isSystemPuddle()) {
+                throw new Error("Ilegal operation");
+            }
+
+            doResetTimeout();
+        }
+        private static native function doResetTimeout () :void
+
+		public native static function getAvmplusVersion():String
+		public native static function trace(linePrefix:String, a:Array):void
+		public native static function getTimer():int;
+		private native static function getArgv():Array
+		public static const argv:Array = getArgv();
+	}	
 }
+
